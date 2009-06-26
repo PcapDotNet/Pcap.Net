@@ -21,6 +21,8 @@ namespace PcapDotNet
 
         DeviceHandlerResult GetNextPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
 
+        void SendPacket(BPacket::Packet^ packet);
+
         BpfFilter^ CreateFilter(System::String^ filterString);
         void SetFilter(BpfFilter^ filter);
         void SetFilter(System::String^ filterString);
