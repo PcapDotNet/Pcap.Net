@@ -190,10 +190,14 @@
 		/>
 	</References>
 	<Files>
-		<File
-			RelativePath=".\AssemblyInfo.cpp"
+		<Filter
+			Name="Properties"
 			>
-		</File>
+			<File
+				RelativePath=".\Properties\AssemblyInfo.cpp"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\BpfFilter.cpp"
 			>
