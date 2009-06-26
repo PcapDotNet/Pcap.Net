@@ -7,6 +7,7 @@
 
 using namespace System;
 using namespace System::Collections::Generic;
+using namespace System::Collections::ObjectModel;
 using namespace PcapDotNet;
 
 PcapOfflineDevice::PcapOfflineDevice(System::String^ filename)
@@ -29,12 +30,12 @@ DeviceFlags^ PcapOfflineDevice::Flags::get()
     return DeviceFlags::None;
 }
 
-List<PcapAddress^>^ PcapOfflineDevice::Addresses::get()
+ReadOnlyCollection<PcapAddress^>^ PcapOfflineDevice::Addresses::get()
 {
-    return gcnew List<PcapAddress^>();
+    return gcnew ReadOnlyCollection<PcapAddress^>(gcnew List<PcapAddress^>());
 }
 
-PcapDeviceHandler^ PcapOfflineDevice::Open(int snapLen, PcapDeviceOpenFlags flags, int readTimeout)
+PcapDeviceHandler^ PcapOfflineDevice::Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout)
 {
     std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(_filename);
 
@@ -52,5 +53,5 @@ PcapDeviceHandler^ PcapOfflineDevice::Open(int snapLen, PcapDeviceOpenFlags flag
         throw gcnew InvalidOperationException("Error creating a source string from filename " + _filename + " Error: " + gcnew String(errbuf));
     }
 
-    return gcnew PcapDeviceHandler(source, snapLen, flags, readTimeout, NULL, nullptr);
+    return gcnew PcapDeviceHandler(source, snapshotLength, flags, readTimeout, NULL, nullptr);
 }

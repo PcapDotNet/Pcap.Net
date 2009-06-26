@@ -24,12 +24,12 @@ namespace PcapDotNet
             DeviceFlags^ get() override;
         }
 
-        virtual property System::Collections::Generic::List<PcapAddress^>^ Addresses
+        virtual property System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ Addresses
         {
-            System::Collections::Generic::List<PcapAddress^>^ get() override;
+            System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ get() override;
         }
 
-        virtual PcapDeviceHandler^ Open(int snapLen, PcapDeviceOpenFlags flags, int readTimeout) override;
+        virtual PcapDeviceHandler^ Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout) override;
 
     private:
         System::String^ _filename;

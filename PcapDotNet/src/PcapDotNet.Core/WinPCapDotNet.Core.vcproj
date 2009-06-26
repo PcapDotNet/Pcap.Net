@@ -247,6 +247,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PcapDataLink.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapDataLink.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapDeclarations.cpp"
 			>
 		</File>

@@ -5,6 +5,7 @@
 #include "PcapDumpFile.h"
 #include "PcapDeviceOpenFlags.h"
 #include "PcapStatistics.h"
+#include "PcapDataLink.h"
 
 namespace PcapDotNet 
 {
@@ -27,8 +28,19 @@ namespace PcapDotNet
     public ref class PcapDeviceHandler : System::IDisposable
     {
     public:
-        PcapDeviceHandler(const char* source, int snapLen, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, 
+        PcapDeviceHandler(const char* source, int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, 
                           SocketAddress^ netmask);
+
+        property PcapDataLink DataLink
+        {
+            PcapDataLink get();
+            void set(PcapDataLink value);
+        }
+
+        property System::Collections::ObjectModel::ReadOnlyCollection<PcapDataLink>^ SupportedDataLinks
+        {
+            System::Collections::ObjectModel::ReadOnlyCollection<PcapDataLink>^ get();
+        }
 
         property DeviceHandlerMode Mode
         {
