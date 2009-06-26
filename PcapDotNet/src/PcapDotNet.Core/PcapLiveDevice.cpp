@@ -67,13 +67,11 @@ List<PcapAddress^>^ PcapLiveDevice::Addresses::get()
 
 PcapDeviceHandler^ PcapLiveDevice::Open(int snapLen, PcapDeviceOpenFlags flags, int readTimeout)
 {
-    pcap_t *adhandle;
-    char errbuf[PCAP_ERRBUF_SIZE];
-
     std::string deviceName = MarshalingServices::ManagedToUnmanagedString(Name);
     
     // Open the device
-    adhandle = pcap_open(deviceName.c_str(),    // name of the device
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *pcapDescriptor = pcap_open(deviceName.c_str(),    // name of the device
                          snapLen,               // portion of the packet to capture
                                                 // 65536 guarantees that the whole packet will be captured on all the link layers
                          safe_cast<int>(flags),
@@ -81,7 +79,7 @@ PcapDeviceHandler^ PcapLiveDevice::Open(int snapLen, PcapDeviceOpenFlags flags, 
                          NULL,                  // authentication on the remote machine
                          errbuf);               // error buffer
 
-    if (adhandle == NULL)
+    if (pcapDescriptor == NULL)
     {
         gcnew InvalidOperationException(String::Format("Unable to open the adapter. %s is not supported by WinPcap", Name));
     }
@@ -89,7 +87,7 @@ PcapDeviceHandler^ PcapLiveDevice::Open(int snapLen, PcapDeviceOpenFlags flags, 
     SocketAddress^ netmask;
     if (Addresses->Count != 0)
         netmask = Addresses[0]->Netmask;
-    return gcnew PcapDeviceHandler(adhandle, netmask);
+    return gcnew PcapDeviceHandler(pcapDescriptor, netmask);
 }
 
 // Private Methods
