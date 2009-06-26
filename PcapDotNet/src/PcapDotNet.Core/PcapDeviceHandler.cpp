@@ -38,6 +38,15 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([System::Runtime::InteropSe
     return result;
 }
 
+void PcapDeviceHandler::SendPacket(Packet^ packet)
+{
+    pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
+    if (pcap_sendpacket(_handler, unamangedPacketBytes, packet->Length) != 0)
+    {
+        throw gcnew InvalidOperationException("Failed sending packet");
+    }
+}
+
 BpfFilter^ PcapDeviceHandler::CreateFilter(String^ filterString)
 {
     return gcnew BpfFilter(_handler, filterString, _ipV4Netmask);
