@@ -33,30 +33,121 @@ namespace WinPcapDotNet.Console
                 
             } while (index < 0 || index >= devices.Count);
 
-            StartReadingFromDevice(devices[index]);
+            const string filename = @"c:\tmp.pcap";
+
+            IPcapDevice chosenDevice = devices[index];
+
+            System.Console.WriteLine("Start Capturing packets");
+            CapturePacketsToFile(chosenDevice, "port 80", filename);
+            System.Console.WriteLine("Finished capturing packets");
+            System.Console.ReadKey();
+            
+            System.Console.WriteLine("Start Sending packets");
+            SendPacketsFromFile(filename, chosenDevice);
+            System.Console.WriteLine("Finished Sending packets");
+            System.Console.ReadKey();
+
+            System.Console.WriteLine("Start Transmitting packets");
+            TransmitPacketsFromFile(filename, chosenDevice);
+            System.Console.WriteLine("Finished Transmitting packets");
         }
 
-        private static void StartReadingFromDevice(PcapLiveDevice device)
+        private static void TransmitPacketsFromFile(string filename, IPcapDevice liveDevice)
         {
-            PcapDeviceHandler handler1 = device.Open();
-            PcapDeviceHandler handler2 = device.Open();
-            handler1.SetFilter("port 80");
-            handler2.SetFilter("port 53");
-            PcapDumpFile dumpFile1 = handler1.OpenDump(@"c:\tmp.pcap");
-            for (int i = 0; i != 100; ++i)
+            IPcapDevice offlineDevice = new PcapOfflineDevice(filename);
+            using (PcapSendQueue sendQueue = new PcapSendQueue(1024 * 1024))
             {
-                Packet packet;
-                handler1.GetNextPacket(out packet);
-                if (packet != null)
+                using (PcapDeviceHandler offlineHandler = offlineDevice.Open())
                 {
-                    System.Console.WriteLine("Port 80 Packet Length = " + packet.Length + " Timestamp = " +
-                                             packet.Timestamp);
-                    dumpFile1.Dump(packet);
+                    for (int i = 0; i != 100; ++i)
+                    {
+                        Packet packet;
+                        DeviceHandlerResult result = offlineHandler.GetNextPacket(out packet);
+                        switch (result)
+                        {
+                            case DeviceHandlerResult.Ok:
+                                break;
+                            case DeviceHandlerResult.Timeout:
+                                continue;
+                            case DeviceHandlerResult.Error:
+                                throw new InvalidOperationException("Failed reading from device");
+                            case DeviceHandlerResult.Eof:
+                                continue;
+                        }
+
+                        sendQueue.Enqueue(packet);
+                    }
                 }
-                handler2.GetNextPacket(out packet);
-                if (packet != null)
-                    System.Console.WriteLine("Port 53 Packet Length = " + packet.Length + " Timestamp = " + packet.Timestamp);
+
+                using (PcapDeviceHandler liveHandler = liveDevice.Open())
+                {
+                    sendQueue.Transmit(liveHandler, true);
+                }
             }
+        }
+
+        private static void SendPacketsFromFile(string filename, IPcapDevice liveDevice)
+        {
+            IPcapDevice offlineDevice = new PcapOfflineDevice(filename);
+            using (PcapDeviceHandler liveHandler = liveDevice.Open())
+            {
+                using (PcapDeviceHandler offlineHandler = offlineDevice.Open())
+                {
+                    for (int i = 0; i != 100; ++i)
+                    {
+                        Packet packet;
+                        DeviceHandlerResult result = offlineHandler.GetNextPacket(out packet);
+                        switch (result)
+                        {
+                            case DeviceHandlerResult.Ok:
+                                break;
+                            case DeviceHandlerResult.Timeout:
+                                continue;
+                            case DeviceHandlerResult.Error:
+                                throw new InvalidOperationException("Failed reading from device");
+                            case DeviceHandlerResult.Eof:
+                                continue;
+                        }
+
+                        liveHandler.SendPacket(packet);
+                    }
+                }
+            }
+        }
+
+        private static void CapturePacketsToFile(IPcapDevice device, string filter, string filename)
+        {
+            using (PcapDeviceHandler liveHandler = device.Open())
+            {
+                liveHandler.SetFilter(filter);
+                PcapDumpFile dumpFile = liveHandler.OpenDump(filename);
+                for (int i = 0; i != 100; ++i)
+                {
+                    Packet packet;
+                    DeviceHandlerResult result = liveHandler.GetNextPacket(out packet);
+                    switch (result)
+                    {
+                        case DeviceHandlerResult.Ok:
+                            break;
+                        case DeviceHandlerResult.Timeout:
+                            continue;
+                        case DeviceHandlerResult.Error:
+                            throw new InvalidOperationException("Failed reading from device");
+                        case DeviceHandlerResult.Eof:
+                            continue;
+                    }
+
+                    System.Console.WriteLine(filter + " Packet Length = " + packet.Length + " Timestamp = " +
+                                             packet.Timestamp);
+
+                    dumpFile.Dump(packet);
+                }
+            }
+        }
+
+        private static void Test(IPcapDevice device)
+        {
+
         }
     }
 }
