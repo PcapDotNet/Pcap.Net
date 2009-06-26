@@ -38,6 +38,11 @@ namespace WinPcapDotNet.Console
 
             IPcapDevice chosenDevice = devices[index];
 
+            System.Console.WriteLine("Start GetNextPackets");
+            GetNextPackets(chosenDevice, filter);
+            System.Console.WriteLine("Finished GetNextPackets");
+            System.Console.ReadKey();
+
             System.Console.WriteLine("Start Statistics Mode");
             StatisticsMode(chosenDevice, filter);
             System.Console.WriteLine("Finished Statistics Mode");
@@ -58,6 +63,20 @@ namespace WinPcapDotNet.Console
             System.Console.WriteLine("Finished Transmitting packets");
         }
 
+        private static void GetNextPackets(IPcapDevice device, string filter)
+        {
+            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapLen, PcapDeviceOpenFlags.Promiscuous, 1 * 1000))
+            {
+                deviceHandler.SetFilter(filter);
+                int numPacketsGot;
+                deviceHandler.GetNextPackets(1000,
+                                             packet =>
+                                             System.Console.WriteLine("Got packet with " + packet.Timestamp +
+                                                                      " timestamp and " + packet.Length + " size"),
+                                             out numPacketsGot);
+            }
+        }
+
         private static void StatisticsMode(IPcapDevice device, string filter)
         {
             using (PcapDeviceHandler deviceHandler = device.Open())
@@ -65,7 +84,7 @@ namespace WinPcapDotNet.Console
                 deviceHandler.SetFilter(filter);
                 deviceHandler.Mode = DeviceHandlerMode.Statistics;
 
-                for (int i = 0; i != 100; ++i)
+                for (int i = 0; i != 10; ++i)
                 {
                     PcapStatistics statistics;
                     DeviceHandlerResult result = deviceHandler.GetNextStatistics(out statistics);

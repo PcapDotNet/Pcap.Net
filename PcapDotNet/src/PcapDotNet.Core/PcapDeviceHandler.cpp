@@ -10,6 +10,8 @@ using namespace BPacket;
 using namespace PcapDotNet;
 using namespace System::Runtime::InteropServices;
 
+void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
+
 PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapLen, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
@@ -50,7 +52,7 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
-    DeviceHandlerResult result = safe_cast<DeviceHandlerResult>(pcap_next_ex(_pcapDescriptor, &packetHeader, &packetData));
+    DeviceHandlerResult result = RunPcapNextEx(&packetHeader, &packetData);
 
     if (result != DeviceHandlerResult::Ok)
     {
@@ -58,14 +60,36 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
         return result;
     }
 
-    timeval pcapTimestamp = packetHeader->ts;
-    DateTime timestamp;
-    Timestamp::PcapTimestampToDateTime(packetHeader->ts, timestamp);
-
-    array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader->caplen);
-    packet = gcnew Packet(managedPacketData, timestamp);
-
+    packet = CreatePacket(*packetHeader, packetData);
     return result;
+}
+
+DeviceHandlerResult PcapDeviceHandler::GetNextPackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
+{
+    if (Mode != DeviceHandlerMode::Capture)
+        throw gcnew InvalidOperationException("Must be in capture mode to get packets");
+
+    PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
+    PacketHandler::Delegate^ packetHandlerDelegate = gcnew PacketHandler::Delegate(packetHandler, 
+                                                                                  &PacketHandler::Handle);
+    pcap_handler functionPointer = 
+        (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
+
+    numPacketsGot = pcap_dispatch(_pcapDescriptor, 
+                                  maxPackets, 
+                                  functionPointer,
+                                  NULL);
+
+    if (numPacketsGot == -1)
+    {
+        throw gcnew InvalidOperationException("Failed Getting packets. Error: " + gcnew String(pcap_geterr(_pcapDescriptor)));
+    }
+    if (numPacketsGot == -2)
+    {
+        return DeviceHandlerResult::BreakLoop;
+    }
+
+    return DeviceHandlerResult::Ok;
 }
 
 DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% statistics)
@@ -75,7 +99,7 @@ DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% 
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
-    DeviceHandlerResult result = safe_cast<DeviceHandlerResult>(pcap_next_ex(_pcapDescriptor, &packetHeader, &packetData));
+    DeviceHandlerResult result = RunPcapNextEx(&packetHeader, &packetData);
 
     if (result != DeviceHandlerResult::Ok)
     {
@@ -147,4 +171,37 @@ PcapDeviceHandler::~PcapDeviceHandler()
 pcap_t* PcapDeviceHandler::Descriptor::get()
 {
     return _pcapDescriptor;
+}
+
+// static
+Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
+{
+    DateTime timestamp;
+    Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
+
+    array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader.caplen);
+    return gcnew Packet(managedPacketData, timestamp);
+}
+
+DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
+{
+    int result = pcap_next_ex(_pcapDescriptor, packetHeader, packetData);
+    switch (result)
+    {
+    case -2: 
+        return DeviceHandlerResult::Eof;
+    case -1: 
+        return DeviceHandlerResult::Error;
+    case 0: 
+        return DeviceHandlerResult::Timeout;
+    case 1: 
+        return DeviceHandlerResult::Ok;
+    default: 
+        throw gcnew InvalidOperationException("Result value " + result + " is undefined");
+    }
+}
+
+void PcapDeviceHandler::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+{
+    _callBack->Invoke(CreatePacket(*packetHeader, packetData));
 }

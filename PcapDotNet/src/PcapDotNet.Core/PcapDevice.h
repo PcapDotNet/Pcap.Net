@@ -7,6 +7,8 @@ namespace PcapDotNet
     public ref class PcapDevice abstract : IPcapDevice
     {
     public:
+        static const int DefaultSnapLen = 65536;
+
         virtual property System::String^ Name
         {
             System::String^ get() = 0;
