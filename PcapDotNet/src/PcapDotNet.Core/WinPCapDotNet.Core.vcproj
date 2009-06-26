@@ -219,11 +219,31 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PacketHeader.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketHeader.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Pcap.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapAddress.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\PcapAddress.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapDeclarations.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapDeclarations.h"
 			>
 		</File>
 		<File
@@ -267,11 +287,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\PcapTypedefs.cpp"
+			RelativePath=".\PcapSendQueue.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\PcapTypedefs.h"
+			RelativePath=".\PcapSendQueue.h"
 			>
 		</File>
 		<File

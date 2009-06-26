@@ -1,4 +1,4 @@
-#include "PcapTypedefs.h"
+#include "PcapDeclarations.h"
 
 struct pcap{};
 struct pcap_dumper{};

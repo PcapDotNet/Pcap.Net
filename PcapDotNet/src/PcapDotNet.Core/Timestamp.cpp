@@ -1,7 +1,5 @@
 #include "Timestamp.h"
-
-#include <stdio.h>
-#include <pcap.h>
+#include "Pcap.h"
 
 using namespace System;
 using namespace PcapDotNet;

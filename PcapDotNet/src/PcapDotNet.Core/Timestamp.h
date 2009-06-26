@@ -1,6 +1,6 @@
 #pragma once
 
-struct timeval;
+#include "PcapDeclarations.h"
 
 namespace PcapDotNet 
 {

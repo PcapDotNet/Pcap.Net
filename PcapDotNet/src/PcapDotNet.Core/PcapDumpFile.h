@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PcapTypedefs.h"
+#include "PcapDeclarations.h"
 
 namespace PcapDotNet 
 {

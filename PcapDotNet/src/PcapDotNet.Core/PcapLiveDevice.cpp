@@ -1,11 +1,9 @@
 #include "PcapLiveDevice.h"
 
-#include <stdio.h>
-#include <pcap.h>
-#include <remote-ext.h>
 #include <string>
 
 #include "MarshalingServices.h"
+#include "Pcap.h"
 
 using namespace System;
 using namespace System::Collections::Generic;

@@ -1,8 +1,5 @@
 #include "BpfFilter.h"
-
-#include <stdio.h>
-#include <pcap.h>
-
+#include "Pcap.h"
 #include "MarshalingServices.h"
 
 using namespace System;

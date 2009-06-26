@@ -1,7 +1,6 @@
 #pragma once
 
-struct sockaddr;
-typedef struct pcap_addr pcap_addr_t;
+#include "PcapDeclarations.h"
 
 namespace PcapDotNet 
 {
