@@ -3,6 +3,7 @@
 #include "MarshalingServices.h"
 #include "PcapDumpFile.h"
 #include "Timestamp.h"
+#include "PcapError.h"
 #include "Pcap.h"
 
 using namespace System;
@@ -47,8 +48,7 @@ void PcapDeviceHandler::Mode::set(DeviceHandlerMode value)
 
 DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
 {
-    if (Mode != DeviceHandlerMode::Capture)
-        throw gcnew InvalidOperationException("Must be in capture mode to get packets");
+    AssertMode(DeviceHandlerMode::Capture);
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
@@ -66,36 +66,18 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
 
 DeviceHandlerResult PcapDeviceHandler::GetNextPackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
 {
-    if (Mode != DeviceHandlerMode::Capture)
-        throw gcnew InvalidOperationException("Must be in capture mode to get packets");
+    AssertMode(DeviceHandlerMode::Capture);
 
     PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
-    PacketHandler::Delegate^ packetHandlerDelegate = gcnew PacketHandler::Delegate(packetHandler, 
-                                                                                  &PacketHandler::Handle);
-    pcap_handler functionPointer = 
-        (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
+    HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, 
+                                                                   &PacketHandler::Handle);
 
-    numPacketsGot = pcap_dispatch(_pcapDescriptor, 
-                                  maxPackets, 
-                                  functionPointer,
-                                  NULL);
-
-    if (numPacketsGot == -1)
-    {
-        throw gcnew InvalidOperationException("Failed Getting packets. Error: " + gcnew String(pcap_geterr(_pcapDescriptor)));
-    }
-    if (numPacketsGot == -2)
-    {
-        return DeviceHandlerResult::BreakLoop;
-    }
-
-    return DeviceHandlerResult::Ok;
+    return RunPcapDispatch(maxPackets, packetHandlerDelegate, numPacketsGot);
 }
 
 DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% statistics)
 {
-    if (Mode != DeviceHandlerMode::Statistics)
-        throw gcnew InvalidOperationException("Must be in statistics mode to get statistics");
+    AssertMode(DeviceHandlerMode::Statistics);
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
@@ -107,14 +89,7 @@ DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% 
         return result;
     }
 
-    timeval pcapTimestamp = packetHeader->ts;
-    DateTime timestamp;
-    Timestamp::PcapTimestampToDateTime(packetHeader->ts, timestamp);
-
-    unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
-    unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
-
-    statistics = gcnew PcapStatistics(timestamp, acceptedPackets, acceptedBytes);
+    statistics = CreateStatistics(*packetHeader, packetData);
 
     return result;
 }
@@ -123,9 +98,7 @@ void PcapDeviceHandler::SendPacket(Packet^ packet)
 {
     pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
     if (pcap_sendpacket(_pcapDescriptor, unamangedPacketBytes, packet->Length) != 0)
-    {
-        throw gcnew InvalidOperationException("Failed sending packet");
-    }
+        throw BuildInvalidOperation("Failed writing to device");
 }
 
 BpfFilter^ PcapDeviceHandler::CreateFilter(String^ filterString)
@@ -135,10 +108,7 @@ BpfFilter^ PcapDeviceHandler::CreateFilter(String^ filterString)
 
 void PcapDeviceHandler::SetFilter(BpfFilter^ filter)
 {
-    if (pcap_setfilter(_pcapDescriptor, &filter->Bpf) < 0)
-    {
-        throw gcnew InvalidOperationException("Error setting the filter: " + gcnew String(pcap_geterr(_pcapDescriptor)));
-    }
+    filter->SetFilter(_pcapDescriptor);
 }
 
 void PcapDeviceHandler::SetFilter(String^ filterString)
@@ -156,11 +126,7 @@ void PcapDeviceHandler::SetFilter(String^ filterString)
 
 PcapDumpFile^ PcapDeviceHandler::OpenDump(System::String^ filename)
 {
-    std::string unmanagedString = MarshalingServices::ManagedToUnmanagedString(filename);
-    pcap_dumper_t* dumpFile = pcap_dump_open(_pcapDescriptor, unmanagedString.c_str());
-    if (dumpFile == NULL)
-        throw gcnew InvalidOperationException("Error opening output file " + filename + " Error: " + gcnew System::String(pcap_geterr(_pcapDescriptor)));
-    return gcnew PcapDumpFile(dumpFile, filename);
+    return gcnew PcapDumpFile(_pcapDescriptor, filename);
 }
 
 PcapDeviceHandler::~PcapDeviceHandler()
@@ -183,6 +149,18 @@ Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const u
     return gcnew Packet(managedPacketData, timestamp);
 }
 
+// static
+PcapStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
+{
+    DateTime timestamp;
+    Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
+
+    unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
+    unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
+
+    return gcnew PcapStatistics(timestamp, acceptedPackets, acceptedBytes);
+}
+
 DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
 {
     int result = pcap_next_ex(_pcapDescriptor, packetHeader, packetData);
@@ -191,17 +169,60 @@ DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader,
     case -2: 
         return DeviceHandlerResult::Eof;
     case -1: 
-        return DeviceHandlerResult::Error;
+        throw PcapError::BuildInvalidOperation("Failed reading from device", _pcapDescriptor);
     case 0: 
         return DeviceHandlerResult::Timeout;
     case 1: 
         return DeviceHandlerResult::Ok;
     default: 
-        throw gcnew InvalidOperationException("Result value " + result + " is undefined");
+        throw gcnew InvalidOperationException("Result value " + result.ToString() + " is undefined");
     }
+}
+
+DeviceHandlerResult PcapDeviceHandler::RunPcapDispatch(int maxInstances, HandlerDelegate^ callBack, [System::Runtime::InteropServices::Out] int% numInstancesGot)
+{
+    pcap_handler functionPointer = 
+        (pcap_handler)Marshal::GetFunctionPointerForDelegate(callBack).ToPointer();
+
+    numInstancesGot = pcap_dispatch(_pcapDescriptor, 
+                                    maxInstances, 
+                                    functionPointer,
+                                    NULL);
+
+    if (numInstancesGot == -1)
+    {
+        throw BuildInvalidOperation("Failed reading from device");
+    }
+    if (numInstancesGot == -2)
+    {
+        return DeviceHandlerResult::BreakLoop;
+    }
+
+    return DeviceHandlerResult::Ok;
+}
+
+void PcapDeviceHandler::AssertMode(DeviceHandlerMode mode)
+{
+    if (Mode != mode)
+        throw gcnew InvalidOperationException("Wrong Mode. Must be in mode " + mode.ToString() + " and not in mode " + Mode.ToString());
+}
+
+String^ PcapDeviceHandler::ErrorMessage::get()
+{
+    return PcapError::GetErrorMessage(_pcapDescriptor);
+}
+
+InvalidOperationException^ PcapDeviceHandler::BuildInvalidOperation(System::String^ errorMessage)
+{
+    return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
 }
 
 void PcapDeviceHandler::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     _callBack->Invoke(CreatePacket(*packetHeader, packetData));
+}
+
+void PcapDeviceHandler::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+{
+    _callBack->Invoke(CreateStatistics(*packetHeader, packetData));
 }

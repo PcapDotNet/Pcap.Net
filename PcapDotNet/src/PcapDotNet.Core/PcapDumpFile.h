@@ -4,15 +4,24 @@
 
 namespace PcapDotNet 
 {
-    public ref class PcapDumpFile
+    public ref class PcapDumpFile : System::IDisposable
     {
     public:
-        PcapDumpFile(pcap_dumper_t* handler, System::String^ filename);
+        PcapDumpFile(pcap_t* pcapDescriptor, System::String^ filename);
 
         void Dump(BPacket::Packet^ packet);
 
+        void Flush();
+
+        property long Position
+        {
+            long get();
+        }
+
+        ~PcapDumpFile();
+
     private:
-        pcap_dumper_t* _handler;
+        pcap_dumper_t* _pcapDumper;
         System::String^ _filename;
     };
 }

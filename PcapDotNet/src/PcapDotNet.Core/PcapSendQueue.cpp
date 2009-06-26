@@ -1,5 +1,6 @@
 #include "PcapSendQueue.h"
 #include "PacketHeader.h"
+#include "PcapError.h"
 #include "Pcap.h"
 
 using namespace System;
@@ -16,17 +17,15 @@ void PcapSendQueue::Enqueue(Packet^ packet)
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
     pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
-    if (pcap_sendqueue_queue(_pcapSendQueue, &pcapHeader, unamangedPacketBytes) == -1)
-        throw gcnew InvalidOperationException("Failed enqueue packet");
+    if (pcap_sendqueue_queue(_pcapSendQueue, &pcapHeader, unamangedPacketBytes) != 0)
+        throw gcnew InvalidOperationException("Failed enqueueing to SendQueue");
 }
 
 void PcapSendQueue::Transmit(PcapDeviceHandler^ deviceHandler, bool isSync)
 {
     unsigned int numBytesTransmitted = pcap_sendqueue_transmit(deviceHandler->Descriptor, _pcapSendQueue, isSync);
     if (numBytesTransmitted < _pcapSendQueue->len)
-    {
-        throw gcnew InvalidOperationException(String::Format("An error occurred sending the packets: %s. Only %d bytes were sent", gcnew String(pcap_geterr(deviceHandler->Descriptor)), numBytesTransmitted));
-    }
+        throw PcapError::BuildInvalidOperation("Failed transmiting packets from queue", deviceHandler->Descriptor);
 }
 
 PcapSendQueue::~PcapSendQueue()
