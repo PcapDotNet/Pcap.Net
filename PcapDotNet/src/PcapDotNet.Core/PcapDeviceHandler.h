@@ -36,6 +36,12 @@ namespace PcapDotNet
             void set(DeviceHandlerMode value);
         }
 
+        property bool NonBlocking
+        {
+            bool get();
+            void set(bool value);
+        }
+
         delegate void HandlePacket(BPacket::Packet^ packet);
         DeviceHandlerResult GetNextPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
         DeviceHandlerResult GetNextPackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
