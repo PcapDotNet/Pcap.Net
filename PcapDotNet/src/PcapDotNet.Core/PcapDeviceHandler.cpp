@@ -62,7 +62,7 @@ void PcapDeviceHandler::NonBlocking::set(bool value)
         throw gcnew InvalidOperationException("Error setting NonBlocking to " + value.ToString());
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
+DeviceHandlerResult PcapDeviceHandler::GetPacket([Out] Packet^% packet)
 {
     AssertMode(DeviceHandlerMode::Capture);
 
@@ -80,15 +80,40 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
     return result;
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetNextPackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
+DeviceHandlerResult PcapDeviceHandler::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
 {
     AssertMode(DeviceHandlerMode::Capture);
 
     PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
-    HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, 
-                                                                   &PacketHandler::Handle);
+    HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
+    pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
-    return RunPcapDispatch(maxPackets, packetHandlerDelegate, numPacketsGot);
+    numPacketsGot = pcap_dispatch(_pcapDescriptor, 
+                                  maxPackets, 
+                                  functionPointer,
+                                  NULL);
+
+    if (numPacketsGot == -1)
+        throw BuildInvalidOperation("Failed reading from device");
+    if (numPacketsGot == -2)
+        return DeviceHandlerResult::BreakLoop;
+    return DeviceHandlerResult::Ok;
+}
+
+DeviceHandlerResult PcapDeviceHandler::GetPackets(int numPackets, HandlePacket^ callBack)
+{
+    AssertMode(DeviceHandlerMode::Capture);
+
+    PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
+    HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
+    pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
+
+    int result = pcap_loop(_pcapDescriptor, numPackets, functionPointer, NULL);
+    if (result == -1)
+        throw BuildInvalidOperation("Failed reading from device");
+    if (result == -2)
+        return DeviceHandlerResult::BreakLoop;
+    return DeviceHandlerResult::Ok;
 }
 
 DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% statistics)
@@ -193,28 +218,6 @@ DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader,
     default: 
         throw gcnew InvalidOperationException("Result value " + result.ToString() + " is undefined");
     }
-}
-
-DeviceHandlerResult PcapDeviceHandler::RunPcapDispatch(int maxInstances, HandlerDelegate^ callBack, [System::Runtime::InteropServices::Out] int% numInstancesGot)
-{
-    pcap_handler functionPointer = 
-        (pcap_handler)Marshal::GetFunctionPointerForDelegate(callBack).ToPointer();
-
-    numInstancesGot = pcap_dispatch(_pcapDescriptor, 
-                                    maxInstances, 
-                                    functionPointer,
-                                    NULL);
-
-    if (numInstancesGot == -1)
-    {
-        throw BuildInvalidOperation("Failed reading from device");
-    }
-    if (numInstancesGot == -2)
-    {
-        return DeviceHandlerResult::BreakLoop;
-    }
-
-    return DeviceHandlerResult::Ok;
 }
 
 void PcapDeviceHandler::AssertMode(DeviceHandlerMode mode)

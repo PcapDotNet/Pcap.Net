@@ -43,8 +43,9 @@ namespace PcapDotNet
         }
 
         delegate void HandlePacket(BPacket::Packet^ packet);
-        DeviceHandlerResult GetNextPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
-        DeviceHandlerResult GetNextPackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
+        DeviceHandlerResult GetPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
+        DeviceHandlerResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
+        DeviceHandlerResult GetPackets(int numPackets, HandlePacket^ callBack);
         
         delegate void HandleStatistics(PcapStatistics^ statistics);
         DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapStatistics^% statistics);
@@ -73,8 +74,6 @@ namespace PcapDotNet
 
         [System::Runtime::InteropServices::UnmanagedFunctionPointer(System::Runtime::InteropServices::CallingConvention::Cdecl)]
         delegate void HandlerDelegate(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
-
-        DeviceHandlerResult RunPcapDispatch(int maxInstances, HandlerDelegate^ callBack, [System::Runtime::InteropServices::Out] int% numInstancesGot);
 
         void AssertMode(DeviceHandlerMode mode);
 
