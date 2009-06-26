@@ -263,6 +263,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PcapDeviceOpenFlags.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapDumpFile.cpp"
 			>
 		</File>
@@ -292,6 +296,14 @@
 		</File>
 		<File
 			RelativePath=".\PcapSendQueue.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapStatistics.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapStatistics.h"
 			>
 		</File>
 		<File

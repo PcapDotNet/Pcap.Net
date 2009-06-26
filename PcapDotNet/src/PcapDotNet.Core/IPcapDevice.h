@@ -12,17 +12,6 @@ namespace PcapDotNet
         LoopBack = 0x00000001
     };
 
-    [System::Flags]
-    public enum class PcapDeviceOpenFlags : System::Int32
-    {
-        None               = 0,
-        PROMISCUOUS        = 1, // Defines if the adapter has to go in promiscuous mode.
-        DATATX_UDP         = 2, // Defines if the data trasfer (in case of a remote capture) has to be done with UDP protocol.
-        NOCAPTURE_RPCAP    = 4, // Defines if the remote probe will capture its own generated traffic.
-        NOCAPTURE_LOCAL    = 8, // Defines if the local adapter will capture its own generated traffic.
-        MAX_RESPONSIVENESS = 16 // This flag configures the adapter for maximum responsiveness.     
-    };
-
     public interface class IPcapDevice
     {
         property System::String^ Name { System::String^ get(); };
