@@ -14,10 +14,10 @@ namespace PcapDotNet
         Eof     = -2  // if EOF was reached reading from an offline capture
     };
 
-    public ref class PcapDeviceHandler
+    public ref class PcapDeviceHandler : System::IDisposable
     {
     public:
-        PcapDeviceHandler(pcap_t* handler, SocketAddress^ netmask);
+        PcapDeviceHandler(pcap_t* pcapDescriptor, SocketAddress^ netmask);
 
         DeviceHandlerResult GetNextPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
 
@@ -29,14 +29,16 @@ namespace PcapDotNet
 
         PcapDumpFile^ OpenDump(System::String^ filename);
 
+        ~PcapDeviceHandler();
+
     internal:
-        property pcap_t* Handler
+        property pcap_t* Descriptor
         {
             pcap_t* get();
         }
 
     private:
-        pcap_t* _handler;
+        pcap_t* _pcapDescriptor;
         IpV4SocketAddress^ _ipV4Netmask;
     };
 }

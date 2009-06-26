@@ -22,10 +22,10 @@ void PcapSendQueue::Enqueue(Packet^ packet)
 
 void PcapSendQueue::Transmit(PcapDeviceHandler^ deviceHandler, bool isSync)
 {
-    unsigned int numBytesTransmitted = pcap_sendqueue_transmit(deviceHandler->Handler, _pcapSendQueue, isSync);
+    unsigned int numBytesTransmitted = pcap_sendqueue_transmit(deviceHandler->Descriptor, _pcapSendQueue, isSync);
     if (numBytesTransmitted < _pcapSendQueue->len)
     {
-        throw gcnew InvalidOperationException(String::Format("An error occurred sending the packets: %s. Only %d bytes were sent", gcnew String(pcap_geterr(deviceHandler->Handler)), numBytesTransmitted));
+        throw gcnew InvalidOperationException(String::Format("An error occurred sending the packets: %s. Only %d bytes were sent", gcnew String(pcap_geterr(deviceHandler->Descriptor)), numBytesTransmitted));
     }
 }
 
