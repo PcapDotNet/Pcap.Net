@@ -69,7 +69,7 @@ namespace WinPcapDotNet.Console
             {
                 deviceHandler.SetFilter(filter);
                 int numPacketsGot;
-                deviceHandler.GetNextPackets(1000,
+                deviceHandler.GetSomePackets(1000,
                                              packet =>
                                              System.Console.WriteLine("Got packet with " + packet.Timestamp +
                                                                       " timestamp and " + packet.Length + " size"),
@@ -113,7 +113,7 @@ namespace WinPcapDotNet.Console
                     for (int i = 0; i != 100; ++i)
                     {
                         Packet packet;
-                        DeviceHandlerResult result = offlineHandler.GetNextPacket(out packet);
+                        DeviceHandlerResult result = offlineHandler.GetPacket(out packet);
                         switch (result)
                         {
                             case DeviceHandlerResult.Ok:
@@ -145,7 +145,7 @@ namespace WinPcapDotNet.Console
                     for (int i = 0; i != 100; ++i)
                     {
                         Packet packet;
-                        DeviceHandlerResult result = offlineHandler.GetNextPacket(out packet);
+                        DeviceHandlerResult result = offlineHandler.GetPacket(out packet);
                         switch (result)
                         {
                             case DeviceHandlerResult.Ok:
@@ -171,7 +171,7 @@ namespace WinPcapDotNet.Console
                 for (int i = 0; i != 100; ++i)
                 {
                     Packet packet;
-                    DeviceHandlerResult result = liveHandler.GetNextPacket(out packet);
+                    DeviceHandlerResult result = liveHandler.GetPacket(out packet);
                     switch (result)
                     {
                         case DeviceHandlerResult.Ok:
