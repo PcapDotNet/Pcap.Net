@@ -42,8 +42,24 @@ DeviceHandlerMode PcapDeviceHandler::Mode::get()
 void PcapDeviceHandler::Mode::set(DeviceHandlerMode value)
 {
     if (pcap_setmode(_pcapDescriptor, safe_cast<int>(value)) < 0)
-        throw gcnew InvalidOperationException("Error setting the mode.");
+        throw BuildInvalidOperation("Error setting mode " + value.ToString());
     _mode = value;
+}
+
+bool PcapDeviceHandler::NonBlocking::get()
+{
+    char errbuf[PCAP_ERRBUF_SIZE];
+    int nonBlockValue = pcap_getnonblock(_pcapDescriptor, errbuf);
+    if (nonBlockValue == -1)
+        throw gcnew InvalidOperationException("Error getting NonBlocking value");
+    return nonBlockValue != 0;
+}
+
+void PcapDeviceHandler::NonBlocking::set(bool value)
+{
+    char errbuf[PCAP_ERRBUF_SIZE];
+    if (pcap_setnonblock(_pcapDescriptor, value, errbuf) != 0)
+        throw gcnew InvalidOperationException("Error setting NonBlocking to " + value.ToString());
 }
 
 DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
