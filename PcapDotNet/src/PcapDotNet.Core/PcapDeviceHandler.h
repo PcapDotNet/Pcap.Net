@@ -12,7 +12,6 @@ namespace PcapDotNet
     {
         Ok,       // if the packet has been read without problems
         Timeout,  // if the timeout set with Open() has elapsed.
-        Error,    // if an error occurred
         Eof,      // if EOF was reached reading from an offline capture
         BreakLoop // 
     };
@@ -38,9 +37,10 @@ namespace PcapDotNet
         }
 
         delegate void HandlePacket(BPacket::Packet^ packet);
-
         DeviceHandlerResult GetNextPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
         DeviceHandlerResult GetNextPackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
+        
+        delegate void HandleStatistics(PcapStatistics^ statistics);
         DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapStatistics^% statistics);
 
         void SendPacket(BPacket::Packet^ packet);
@@ -61,8 +61,23 @@ namespace PcapDotNet
 
     private:
         static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
+        static PcapStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
         DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
+
+        [System::Runtime::InteropServices::UnmanagedFunctionPointer(System::Runtime::InteropServices::CallingConvention::Cdecl)]
+        delegate void HandlerDelegate(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
+
+        DeviceHandlerResult RunPcapDispatch(int maxInstances, HandlerDelegate^ callBack, [System::Runtime::InteropServices::Out] int% numInstancesGot);
+
+        void AssertMode(DeviceHandlerMode mode);
+
+        property System::String^ ErrorMessage
+        {
+            System::String^ get();
+        }
+
+        System::InvalidOperationException^ BuildInvalidOperation(System::String^ errorMessage);
 
         ref class PacketHandler
         {
@@ -72,12 +87,22 @@ namespace PcapDotNet
                 _callBack = callBack;
             }
 
-            [System::Runtime::InteropServices::UnmanagedFunctionPointer(System::Runtime::InteropServices::CallingConvention::Cdecl)]
-            delegate void Delegate(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
-
             void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
             HandlePacket^ _callBack;
+        };
+
+        ref class StatisticsHandler
+        {
+        public:
+            StatisticsHandler(HandleStatistics^ callBack)
+            {
+                _callBack = callBack;
+            }
+
+            void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
+
+            HandleStatistics^ _callBack;
         };
 
     private:

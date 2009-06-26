@@ -8,14 +8,11 @@ namespace PcapDotNet
     public ref class BpfFilter : System::IDisposable
     {
     public:
-        BpfFilter(pcap_t* handler, System::String^ filterString, IpV4SocketAddress^ netmask);
+        BpfFilter(pcap_t* pcapDescriptor, System::String^ filterString, IpV4SocketAddress^ netmask);
+
+        void SetFilter(pcap_t* pcapDescriptor);
 
         ~BpfFilter(); // IDisposable
-
-        property bpf_program& Bpf
-        {
-            bpf_program& get();
-        }
 
     private:
         bpf_program* _bpf;

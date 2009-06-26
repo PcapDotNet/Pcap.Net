@@ -65,7 +65,7 @@ namespace WinPcapDotNet.Console
 
         private static void GetNextPackets(IPcapDevice device, string filter)
         {
-            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapLen, PcapDeviceOpenFlags.Promiscuous, 1 * 1000))
+            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapLen, PcapDeviceOpenFlags.Promiscuous, 10 * 1000))
             {
                 deviceHandler.SetFilter(filter);
                 int numPacketsGot;
@@ -94,8 +94,6 @@ namespace WinPcapDotNet.Console
                             break;
                         case DeviceHandlerResult.Timeout:
                             continue;
-                        case DeviceHandlerResult.Error:
-                            throw new InvalidOperationException("Failed reading from device");
                         case DeviceHandlerResult.Eof:
                             continue;
                     }
@@ -122,8 +120,6 @@ namespace WinPcapDotNet.Console
                                 break;
                             case DeviceHandlerResult.Timeout:
                                 continue;
-                            case DeviceHandlerResult.Error:
-                                throw new InvalidOperationException("Failed reading from device");
                             case DeviceHandlerResult.Eof:
                                 continue;
                         }
@@ -156,8 +152,6 @@ namespace WinPcapDotNet.Console
                                 break;
                             case DeviceHandlerResult.Timeout:
                                 continue;
-                            case DeviceHandlerResult.Error:
-                                throw new InvalidOperationException("Failed reading from device");
                             case DeviceHandlerResult.Eof:
                                 continue;
                         }
@@ -184,8 +178,6 @@ namespace WinPcapDotNet.Console
                             break;
                         case DeviceHandlerResult.Timeout:
                             continue;
-                        case DeviceHandlerResult.Error:
-                            throw new InvalidOperationException("Failed reading from device");
                         case DeviceHandlerResult.Eof:
                             continue;
                     }

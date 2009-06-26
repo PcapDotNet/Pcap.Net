@@ -283,6 +283,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PcapError.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapError.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapLiveDevice.cpp"
 			>
 		</File>

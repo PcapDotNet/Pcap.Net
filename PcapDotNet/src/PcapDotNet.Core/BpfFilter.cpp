@@ -1,11 +1,12 @@
 #include "BpfFilter.h"
 #include "Pcap.h"
 #include "MarshalingServices.h"
+#include "PcapError.h"
 
 using namespace System;
 using namespace PcapDotNet;
 
-BpfFilter::BpfFilter(pcap_t* handler, String^ filterString, IpV4SocketAddress^ netmask)
+BpfFilter::BpfFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
 {
     std::string unmanagedFilterString = MarshalingServices::ManagedToUnmanagedString(filterString);
 
@@ -17,9 +18,9 @@ BpfFilter::BpfFilter(pcap_t* handler, String^ filterString, IpV4SocketAddress^ n
 
     try
     {
-        if (pcap_compile(handler, _bpf, const_cast<char*>(unmanagedFilterString.c_str()), 1, netmaskValue) < 0)
+        if (pcap_compile(pcapDescriptor, _bpf, const_cast<char*>(unmanagedFilterString.c_str()), 1, netmaskValue) < 0)
         {
-            gcnew ArgumentException("An error has occured when compiling the filter: " + gcnew String(pcap_geterr(handler)));
+            gcnew ArgumentException("An error has occured when compiling the filter: " + PcapError::GetErrorMessage(pcapDescriptor));
         }
     }
     catch(...)
@@ -29,12 +30,15 @@ BpfFilter::BpfFilter(pcap_t* handler, String^ filterString, IpV4SocketAddress^ n
     }
 }
 
-BpfFilter::~BpfFilter()
+void BpfFilter::SetFilter(pcap_t* pcapDescriptor)
 {
-    delete _bpf;
+    if (pcap_setfilter(pcapDescriptor, _bpf) != 0)
+        throw PcapError::BuildInvalidOperation("Failed setting bpf filter", pcapDescriptor);
 }
 
-bpf_program& BpfFilter::Bpf::get()
+
+BpfFilter::~BpfFilter()
 {
-    return *_bpf;
+    pcap_freecode(_bpf);
+    delete _bpf;
 }

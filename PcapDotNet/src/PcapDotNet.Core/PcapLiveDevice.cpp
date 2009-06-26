@@ -16,33 +16,38 @@ List<PcapLiveDevice^>^ PcapLiveDevice::AllLocalMachine::get()
     char errbuf[PCAP_ERRBUF_SIZE];
 
     // Retrieve the device list from the local machine 
-    if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL // auth is not needed 
-        , &alldevs, errbuf) == -1)
+    if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, // auth is not needed 
+        &alldevs, errbuf) == -1)
     {
         String^ errorString = gcnew String(errbuf);
-        throw gcnew InvalidOperationException(String::Format("Error in pcap_findalldevs_ex: %s\n", errorString));
+        throw gcnew InvalidOperationException(String::Format("Failed getting devices. Error: %s", errorString));
     }
     
-    List<PcapLiveDevice^>^ result = gcnew List<PcapLiveDevice^>();
-    for (pcap_if_t *d = alldevs; d != NULL; d = d->next)
+    try
     {
-        // IP addresses
-        List<PcapAddress^>^ addresses = gcnew List<PcapAddress^>();
-        for (pcap_addr_t *a = d->addresses; a; a = a->next) 
+        List<PcapLiveDevice^>^ result = gcnew List<PcapLiveDevice^>();
+        for (pcap_if_t *d = alldevs; d != NULL; d = d->next)
         {
-            PcapAddress^ deviceAddress = gcnew PcapAddress(a);
-            addresses->Add(deviceAddress);
+            // IP addresses
+            List<PcapAddress^>^ addresses = gcnew List<PcapAddress^>();
+            for (pcap_addr_t *a = d->addresses; a; a = a->next) 
+            {
+                PcapAddress^ deviceAddress = gcnew PcapAddress(a);
+                addresses->Add(deviceAddress);
+            }
+
+            result->Add(gcnew PcapLiveDevice(gcnew String(d->name), 
+                                     gcnew String(d->description), 
+                                     safe_cast<DeviceFlags>(d->flags),
+                                     addresses));
         }
-
-        result->Add(gcnew PcapLiveDevice(gcnew String(d->name), 
-                                 gcnew String(d->description), 
-                                 safe_cast<DeviceFlags>(d->flags),
-                                 addresses));
+        return result;
     }
-
-    // We don't need any more the device list. Free it 
-    pcap_freealldevs(alldevs);
-    return result;
+    finally
+    {
+        // We don't need any more the device list. Free it 
+        pcap_freealldevs(alldevs);
+    }
 }
 
 String^ PcapLiveDevice::Name::get()
