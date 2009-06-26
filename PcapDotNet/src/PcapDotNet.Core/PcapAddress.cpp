@@ -1,7 +1,5 @@
 #include "PcapAddress.h"
-
-#include <stdio.h>
-#include <pcap.h>
+#include "Pcap.h"
 
 using namespace System;
 using namespace System::Text;

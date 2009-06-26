@@ -1,9 +1,7 @@
 #pragma once
 
-#include "PcapTypedefs.h"
 #include "PcapAddress.h"
-
-struct bpf_program;
+#include "PcapDeclarations.h"
 
 namespace PcapDotNet 
 {

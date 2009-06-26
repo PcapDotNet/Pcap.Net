@@ -1,11 +1,9 @@
 #include "PcapDeviceHandler.h"
 
-#include <stdio.h>
-#include <pcap.h>
-
 #include "MarshalingServices.h"
 #include "PcapDumpFile.h"
 #include "Timestamp.h"
+#include "Pcap.h"
 
 using namespace System;
 using namespace BPacket;

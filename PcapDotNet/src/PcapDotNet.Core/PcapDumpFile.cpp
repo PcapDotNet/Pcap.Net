@@ -1,10 +1,8 @@
 #include "PcapDumpFile.h"
-
-#include <stdio.h>
-#include <pcap.h>
-
 #include "Timestamp.h"
+#include "PacketHeader.h"
 #include "MarshalingServices.h"
+#include "Pcap.h"
 
 using namespace System;
 using namespace PcapDotNet;
@@ -19,9 +17,7 @@ PcapDumpFile::PcapDumpFile(pcap_dumper_t* handler, System::String^ filename)
 void PcapDumpFile::Dump(Packet^ packet)
 {
     pcap_pkthdr header;
-    Timestamp::DateTimeToPcapTimestamp(packet->Timestamp, header.ts);
-    header.len = packet->Length;
-    header.caplen = packet->Length;
+    PacketHeader::GetPcapHeader(header, packet);
     std::string unmanagedFilename = MarshalingServices::ManagedToUnmanagedString(_filename);
 
     pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
