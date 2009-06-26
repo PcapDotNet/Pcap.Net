@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPacket", "BPacket\BPacket.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinPcapDotNet.Console", "PcapDotNet.Console\WinPcapDotNet.Console.csproj", "{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Console", "PcapDotNet.Console\PcapDotNet.Console.csproj", "{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\WinPCapDotNet.Core.vcproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
 EndProject
@@ -16,12 +16,12 @@ Global
 		SccProjectUniqueName1 = BPacket\\BPacket.csproj
 		SccProjectName1 = BPacket
 		SccLocalPath1 = BPacket
-		SccProjectUniqueName2 = PcapDotNet.Console\\WinPcapDotNet.Console.csproj
-		SccProjectName2 = PcapDotNet.Console
-		SccLocalPath2 = PcapDotNet.Console
-		SccProjectUniqueName3 = PcapDotNet.Core\\WinPCapDotNet.Core.vcproj
-		SccProjectName3 = PcapDotNet.Core
-		SccLocalPath3 = PcapDotNet.Core
+		SccProjectUniqueName2 = PcapDotNet.Core\\WinPCapDotNet.Core.vcproj
+		SccProjectName2 = PcapDotNet.Core
+		SccLocalPath2 = PcapDotNet.Core
+		SccProjectUniqueName3 = PcapDotNet.Console\\PcapDotNet.Console.csproj
+		SccProjectName3 = PcapDotNet.Console
+		SccLocalPath3 = PcapDotNet.Console
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
