@@ -7,7 +7,7 @@ namespace PcapDotNet
     public ref class PcapDevice abstract : IPcapDevice
     {
     public:
-        static const int DefaultSnapLen = 65536;
+        static const int DefaultSnapshotLength = 65536;
 
         virtual property System::String^ Name
         {
@@ -24,12 +24,12 @@ namespace PcapDotNet
             DeviceFlags^ get() = 0;
         }
 
-        virtual property System::Collections::Generic::List<PcapAddress^>^ Addresses
+        virtual property System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ Addresses
         {
-            System::Collections::Generic::List<PcapAddress^>^ get() = 0;
+            System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ get() = 0;
         }
 
-        virtual PcapDeviceHandler^ Open(int snapLen, PcapDeviceOpenFlags flags, int readTimeout) = 0;
+        virtual PcapDeviceHandler^ Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout) = 0;
 
         virtual PcapDeviceHandler^ Open();
     };

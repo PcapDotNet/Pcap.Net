@@ -7,18 +7,20 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace System::Runtime::InteropServices;
+using namespace System::Collections::ObjectModel;
+using namespace System::Collections::Generic;
 using namespace BPacket;
 using namespace PcapDotNet;
-using namespace System::Runtime::InteropServices;
 
 void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
 
-PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapLen, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
+PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
-                                       snapLen,               // portion of the packet to capture
+                                       snapshotLength,               // portion of the packet to capture
                                                               // 65536 guarantees that the whole packet will be captured on all the link layers
                                        safe_cast<int>(flags),
                                        readTimeout,           // read timeout
@@ -27,13 +29,48 @@ PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapLen, PcapDevice
 
     if (pcapDescriptor == NULL)
     {
-        gcnew InvalidOperationException(String::Format("Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
+        throw gcnew InvalidOperationException(String::Format("Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
     }
 
     _pcapDescriptor = pcapDescriptor;
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
 }
 
+PcapDataLink PcapDeviceHandler::DataLink::get()
+{
+    return PcapDataLink(pcap_datalink(_pcapDescriptor));
+}
+
+void PcapDeviceHandler::DataLink::set(PcapDataLink value)
+{
+    if (pcap_set_datalink(_pcapDescriptor, value.Value) == -1)
+        throw BuildInvalidOperation("Failed setting datalink " + value.ToString());
+}
+
+ReadOnlyCollection<PcapDataLink>^ PcapDeviceHandler::SupportedDataLinks::get()
+{
+    throw gcnew NotSupportedException("Supported DataLinks is unsupported to avoid winpcap memory leak");
+
+    int* dataLinks;
+    int numDatalinks = pcap_list_datalinks(_pcapDescriptor, &dataLinks);
+    if (numDatalinks == -1)
+        throw BuildInvalidOperation("Failed getting supported datalinks");
+
+    try
+    {
+        List<PcapDataLink>^ results = gcnew List<PcapDataLink>(numDatalinks);
+        for (int i = 0; i != numDatalinks; ++i)
+            results->Add(PcapDataLink(dataLinks[i]));
+        return gcnew ReadOnlyCollection<PcapDataLink>(results);
+    }
+    finally
+    {
+        // This doesn't work because of a bug. See http://www.winpcap.org/pipermail/winpcap-users/2008-May/002500.html
+        // todo look for pcap_free_datalinks()
+        // free(dataLinks);
+    }
+}
+ 
 DeviceHandlerMode PcapDeviceHandler::Mode::get()
 {
     return _mode;

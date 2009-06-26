@@ -4,5 +4,5 @@ using namespace PcapDotNet;
 
 PcapDeviceHandler^ PcapDevice::Open()
 {
-    return Open(DefaultSnapLen, PcapDeviceOpenFlags::Promiscuous, 1000);
+    return Open(DefaultSnapshotLength, PcapDeviceOpenFlags::Promiscuous, 1000);
 }

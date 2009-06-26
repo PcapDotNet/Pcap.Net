@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using PcapDotNet;
@@ -16,7 +17,7 @@ namespace WinPcapDotNet.Console
         static void Main(string[] args)
         {
             System.Console.WriteLine("Start");
-            List<PcapLiveDevice> devices = PcapLiveDevice.AllLocalMachine;
+            IList<PcapLiveDevice> devices = PcapLiveDevice.AllLocalMachine;
             if (devices.Count == 0)
                 return;
 
@@ -65,8 +66,11 @@ namespace WinPcapDotNet.Console
 
         private static void GetNextPackets(IPcapDevice device, string filter)
         {
-            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapLen, PcapDeviceOpenFlags.Promiscuous, 10 * 1000))
+            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapshotLength, PcapDeviceOpenFlags.Promiscuous, 10 * 1000))
             {
+                System.Console.WriteLine("datalink = " + deviceHandler.DataLink.Name + " description = " + deviceHandler.DataLink.Description);
+                //foreach (PcapDataLink datalink in deviceHandler.SupportedDataLinks)
+                  //  System.Console.WriteLine("supported datalink = " + datalink);
                 deviceHandler.SetFilter(filter);
                 int numPacketsGot;
                 deviceHandler.GetSomePackets(1000,
