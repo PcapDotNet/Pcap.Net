@@ -8,23 +8,55 @@
 using namespace System;
 using namespace BPacket;
 using namespace PcapDotNet;
+using namespace System::Runtime::InteropServices;
 
-PcapDeviceHandler::PcapDeviceHandler(pcap_t* pcapDescriptor, SocketAddress^ netmask)
+PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapLen, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
+    // Open the device
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
+                                       snapLen,               // portion of the packet to capture
+                                                              // 65536 guarantees that the whole packet will be captured on all the link layers
+                                       safe_cast<int>(flags),
+                                       readTimeout,           // read timeout
+                                       auth,                  // authentication on the remote machine
+                                       errbuf);               // error buffer
+
+    if (pcapDescriptor == NULL)
+    {
+        gcnew InvalidOperationException(String::Format("Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
+    }
+
     _pcapDescriptor = pcapDescriptor;
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetNextPacket([System::Runtime::InteropServices::Out] Packet^% packet)
+DeviceHandlerMode PcapDeviceHandler::Mode::get()
 {
-    packet = nullptr;
+    return _mode;
+}
+
+void PcapDeviceHandler::Mode::set(DeviceHandlerMode value)
+{
+    if (pcap_setmode(_pcapDescriptor, safe_cast<int>(value)) < 0)
+        throw gcnew InvalidOperationException("Error setting the mode.");
+    _mode = value;
+}
+
+DeviceHandlerResult PcapDeviceHandler::GetNextPacket([Out] Packet^% packet)
+{
+    if (Mode != DeviceHandlerMode::Capture)
+        throw gcnew InvalidOperationException("Must be in capture mode to get packets");
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
     DeviceHandlerResult result = safe_cast<DeviceHandlerResult>(pcap_next_ex(_pcapDescriptor, &packetHeader, &packetData));
 
     if (result != DeviceHandlerResult::Ok)
+    {
+        packet = nullptr;
         return result;
+    }
 
     timeval pcapTimestamp = packetHeader->ts;
     DateTime timestamp;
@@ -32,6 +64,33 @@ DeviceHandlerResult PcapDeviceHandler::GetNextPacket([System::Runtime::InteropSe
 
     array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader->caplen);
     packet = gcnew Packet(managedPacketData, timestamp);
+
+    return result;
+}
+
+DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% statistics)
+{
+    if (Mode != DeviceHandlerMode::Statistics)
+        throw gcnew InvalidOperationException("Must be in statistics mode to get statistics");
+
+    pcap_pkthdr* packetHeader;
+    const unsigned char* packetData;
+    DeviceHandlerResult result = safe_cast<DeviceHandlerResult>(pcap_next_ex(_pcapDescriptor, &packetHeader, &packetData));
+
+    if (result != DeviceHandlerResult::Ok)
+    {
+        statistics = nullptr;
+        return result;
+    }
+
+    timeval pcapTimestamp = packetHeader->ts;
+    DateTime timestamp;
+    Timestamp::PcapTimestampToDateTime(packetHeader->ts, timestamp);
+
+    unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
+    unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
+
+    statistics = gcnew PcapStatistics(timestamp, acceptedPackets, acceptedBytes);
 
     return result;
 }

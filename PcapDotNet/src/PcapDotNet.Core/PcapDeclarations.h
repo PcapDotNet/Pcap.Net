@@ -2,6 +2,7 @@
 
 struct bpf_program;
 struct pcap_pkthdr;
+struct pcap_rmtauth;
 struct pcap_send_queue;
 struct sockaddr;
 struct timeval;

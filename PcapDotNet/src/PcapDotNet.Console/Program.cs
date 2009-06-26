@@ -34,11 +34,17 @@ namespace WinPcapDotNet.Console
             } while (index < 0 || index >= devices.Count);
 
             const string filename = @"c:\tmp.pcap";
+            const string filter = "port 80";
 
             IPcapDevice chosenDevice = devices[index];
 
+            System.Console.WriteLine("Start Statistics Mode");
+            StatisticsMode(chosenDevice, filter);
+            System.Console.WriteLine("Finished Statistics Mode");
+            System.Console.ReadKey();
+
             System.Console.WriteLine("Start Capturing packets");
-            CapturePacketsToFile(chosenDevice, "port 80", filename);
+            CapturePacketsToFile(chosenDevice, filter, filename);
             System.Console.WriteLine("Finished capturing packets");
             System.Console.ReadKey();
             
@@ -50,6 +56,34 @@ namespace WinPcapDotNet.Console
             System.Console.WriteLine("Start Transmitting packets");
             TransmitPacketsFromFile(filename, chosenDevice);
             System.Console.WriteLine("Finished Transmitting packets");
+        }
+
+        private static void StatisticsMode(IPcapDevice device, string filter)
+        {
+            using (PcapDeviceHandler deviceHandler = device.Open())
+            {
+                deviceHandler.SetFilter(filter);
+                deviceHandler.Mode = DeviceHandlerMode.Statistics;
+
+                for (int i = 0; i != 100; ++i)
+                {
+                    PcapStatistics statistics;
+                    DeviceHandlerResult result = deviceHandler.GetNextStatistics(out statistics);
+                    switch (result)
+                    {
+                        case DeviceHandlerResult.Ok:
+                            break;
+                        case DeviceHandlerResult.Timeout:
+                            continue;
+                        case DeviceHandlerResult.Error:
+                            throw new InvalidOperationException("Failed reading from device");
+                        case DeviceHandlerResult.Eof:
+                            continue;
+                    }
+
+                    System.Console.WriteLine("Got statistics: " + statistics);
+                }
+            }
         }
 
         private static void TransmitPacketsFromFile(string filename, IPcapDevice liveDevice)
@@ -143,11 +177,6 @@ namespace WinPcapDotNet.Console
                     dumpFile.Dump(packet);
                 }
             }
-        }
-
-        private static void Test(IPcapDevice device)
-        {
-
         }
     }
 }
