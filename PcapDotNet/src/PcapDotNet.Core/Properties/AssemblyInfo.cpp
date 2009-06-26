@@ -9,11 +9,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("WinPCapDotNet")];
+[assembly:AssemblyTitleAttribute("PcapDotNet.Core")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("WinPCapDotNet")];
+[assembly:AssemblyProductAttribute("PcapDotNet.Core")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c)  2009")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
