@@ -211,6 +211,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\IpV4SocketAddress.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\IpV4SocketAddress.h"
+			>
+		</File>
+		<File
 			RelativePath=".\MarshalingServices.cpp"
 			>
 		</File>
@@ -304,6 +312,18 @@
 		</File>
 		<File
 			RelativePath=".\PcapStatistics.h"
+			>
+		</File>
+		<File
+			RelativePath=".\SocketAddress.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\SocketAddress.h"
+			>
+		</File>
+		<File
+			RelativePath=".\SocketAddressFamily.h"
 			>
 		</File>
 		<File

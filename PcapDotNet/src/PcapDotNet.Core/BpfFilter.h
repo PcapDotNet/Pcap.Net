@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PcapAddress.h"
+#include "IpV4socketAddress.h"
 #include "PcapDeclarations.h"
 
 namespace PcapDotNet 
