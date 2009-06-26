@@ -29,6 +29,12 @@ namespace PcapDotNet
 
         PcapDumpFile^ OpenDump(System::String^ filename);
 
+    internal:
+        property pcap_t* Handler
+        {
+            pcap_t* get();
+        }
+
     private:
         pcap_t* _handler;
         IpV4SocketAddress^ _ipV4Netmask;

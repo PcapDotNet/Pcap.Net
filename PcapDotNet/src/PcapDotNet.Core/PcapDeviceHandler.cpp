@@ -79,3 +79,8 @@ PcapDumpFile^ PcapDeviceHandler::OpenDump(System::String^ filename)
         throw gcnew InvalidOperationException("Error opening output file " + filename + " Error: " + gcnew System::String(pcap_geterr(_handler)));
     return gcnew PcapDumpFile(dumpFile, filename);
 }
+
+pcap_t* PcapDeviceHandler::Handler::get()
+{
+    return _handler;
+}
