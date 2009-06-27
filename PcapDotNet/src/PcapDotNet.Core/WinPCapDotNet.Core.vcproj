@@ -299,6 +299,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PcapLibrary.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapLibrary.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapLiveDevice.cpp"
 			>
 		</File>
@@ -315,6 +323,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PcapSampleStatistics.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PcapSampleStatistics.h"
+			>
+		</File>
+		<File
 			RelativePath=".\PcapSendQueue.cpp"
 			>
 		</File>
@@ -323,11 +339,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\PcapStatistics.cpp"
+			RelativePath=".\PcapTotalStatistics.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\PcapStatistics.h"
+			RelativePath=".\PcapTotalStatistics.h"
 			>
 		</File>
 		<File

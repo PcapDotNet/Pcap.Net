@@ -4,7 +4,8 @@
 #include "BpfFilter.h"
 #include "PcapDumpFile.h"
 #include "PcapDeviceOpenFlags.h"
-#include "PcapStatistics.h"
+#include "PcapSampleStatistics.h"
+#include "PcapTotalStatistics.h"
 #include "PcapDataLink.h"
 
 namespace PcapDotNet 
@@ -42,6 +43,31 @@ namespace PcapDotNet
             System::Collections::ObjectModel::ReadOnlyCollection<PcapDataLink>^ get();
         }
 
+        property int SnapshotLength
+        {
+            int get();
+        }
+
+        property bool IsFileSystemByteOrder
+        {
+            bool get();
+        }
+
+        property int FileMajorVersion
+        {
+            int get();
+        }
+
+        property int FileMinorVersion
+        {
+            int get();
+        }
+
+        property PcapTotalStatistics^ TotalStatistics
+        {
+            PcapTotalStatistics^ get();
+        }
+
         property DeviceHandlerMode Mode
         {
             DeviceHandlerMode get();
@@ -59,8 +85,8 @@ namespace PcapDotNet
         DeviceHandlerResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
         DeviceHandlerResult GetPackets(int numPackets, HandlePacket^ callBack);
         
-        delegate void HandleStatistics(PcapStatistics^ statistics);
-        DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapStatistics^% statistics);
+        delegate void HandleStatistics(PcapSampleStatistics^ statistics);
+        DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapSampleStatistics^% statistics);
 
         void SendPacket(BPacket::Packet^ packet);
 
@@ -80,7 +106,7 @@ namespace PcapDotNet
 
     private:
         static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
-        static PcapStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
+        static PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
         DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
 

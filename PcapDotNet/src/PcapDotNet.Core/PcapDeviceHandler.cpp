@@ -70,7 +70,44 @@ ReadOnlyCollection<PcapDataLink>^ PcapDeviceHandler::SupportedDataLinks::get()
         // free(dataLinks);
     }
 }
+
+int PcapDeviceHandler::SnapshotLength::get()
+{
+    return pcap_snapshot(_pcapDescriptor);
+}
+
+bool PcapDeviceHandler::IsFileSystemByteOrder::get()
+{
+    return (pcap_is_swapped(_pcapDescriptor) == 0);
+}
  
+int PcapDeviceHandler::FileMajorVersion::get()
+{
+    return pcap_major_version(_pcapDescriptor);
+}
+
+int PcapDeviceHandler::FileMinorVersion::get()
+{
+    return pcap_minor_version(_pcapDescriptor);
+}
+
+PcapTotalStatistics^ PcapDeviceHandler::TotalStatistics::get()
+{
+    int statisticsSize;
+    pcap_stat* statistics = pcap_stats_ex(_pcapDescriptor, &statisticsSize);
+    if (statistics == NULL)
+        throw BuildInvalidOperation("Failed getting total statistics");
+
+    unsigned int packetsReceived = statistics->ps_recv;
+    unsigned int packetsDroppedByDriver = statistics->ps_drop;
+    unsigned int packetsDroppedByInterface = statistics->ps_ifdrop;
+    unsigned int packetsCaptured = (statisticsSize >= 16 
+                                        ? *(reinterpret_cast<int*>(statistics) + 3)
+                                        : 0);
+    return gcnew PcapTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
+}
+
+
 DeviceHandlerMode PcapDeviceHandler::Mode::get()
 {
     return _mode;
@@ -153,7 +190,7 @@ DeviceHandlerResult PcapDeviceHandler::GetPackets(int numPackets, HandlePacket^ 
     return DeviceHandlerResult::Ok;
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapStatistics^% statistics)
+DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapSampleStatistics^% statistics)
 {
     AssertMode(DeviceHandlerMode::Statistics);
 
@@ -228,7 +265,7 @@ Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const u
 }
 
 // static
-PcapStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
+PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
 {
     DateTime timestamp;
     Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
@@ -236,7 +273,7 @@ PcapStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHea
     unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
     unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
 
-    return gcnew PcapStatistics(timestamp, acceptedPackets, acceptedBytes);
+    return gcnew PcapSampleStatistics(timestamp, acceptedPackets, acceptedBytes);
 }
 
 DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)

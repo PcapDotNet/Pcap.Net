@@ -1,30 +1,30 @@
-#include "PcapStatistics.h"
+#include "PcapSampleStatistics.h"
 
 using namespace System;
 using namespace PcapDotNet;
 
-PcapStatistics::PcapStatistics(DateTime timestamp, unsigned long acceptedPackets, unsigned long acceptedBytes)
+PcapSampleStatistics::PcapSampleStatistics(DateTime timestamp, unsigned long acceptedPackets, unsigned long acceptedBytes)
 {
     _timestamp = timestamp;
     _acceptedPackets = acceptedPackets;
     _acceptedBytes = acceptedBytes;
 }
 
-DateTime PcapStatistics::Timestamp::get()
+DateTime PcapSampleStatistics::Timestamp::get()
 {
     return _timestamp;
 }
-unsigned long PcapStatistics::AcceptedPackets::get()
+unsigned long PcapSampleStatistics::AcceptedPackets::get()
 {
     return _acceptedPackets;
 }
 
-unsigned long PcapStatistics::AcceptedBytes::get()
+unsigned long PcapSampleStatistics::AcceptedBytes::get()
 {
     return _acceptedBytes;
 }
         
-System::String^ PcapStatistics::ToString()
+System::String^ PcapSampleStatistics::ToString()
 {
     return _timestamp + ": " + AcceptedPackets + " packets. " + AcceptedBytes + " bytes.";
 }
