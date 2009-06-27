@@ -2,11 +2,16 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public value class PcapDataLink 
+    public value class PcapDataLink : BPacket::IDataLink
     {
     public:
         PcapDataLink(int value);
         PcapDataLink(System::String^ name);
+
+        virtual property BPacket::DataLinkKind Kind
+        {
+            BPacket::DataLinkKind get();
+        }
 
         property int Value
         {

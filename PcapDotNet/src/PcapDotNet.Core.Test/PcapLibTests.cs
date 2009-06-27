@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace PcapDotNet.Core.Test
 {
     /// <summary>
-    /// Summary description for UnitTest1
+    /// Summary description for PcapLibTests
     /// </summary>
     [TestClass]
     public class PcapLibTests

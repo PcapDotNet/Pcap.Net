@@ -9,15 +9,6 @@ using namespace System;
 using namespace PcapDotNet::Core;
 using namespace BPacket;
 
-PcapDumpFile::PcapDumpFile(pcap_t* pcapDescriptor, System::String^ filename)
-{
-    _filename = filename;
-    std::string unmanagedString = MarshalingServices::ManagedToUnmanagedString(_filename);
-    _pcapDumper = pcap_dump_open(pcapDescriptor, unmanagedString.c_str());
-    if (_pcapDumper == NULL)
-        throw gcnew InvalidOperationException("Error opening output file " + filename + " Error: " + PcapError::GetErrorMessage(pcapDescriptor));
-}
-
 void PcapDumpFile::Dump(Packet^ packet)
 {
     pcap_pkthdr header;
@@ -45,4 +36,15 @@ long PcapDumpFile::Position::get()
 PcapDumpFile::~PcapDumpFile()
 {
     pcap_dump_close(_pcapDumper);
+}
+
+// internal
+
+PcapDumpFile::PcapDumpFile(pcap_t* pcapDescriptor, System::String^ filename)
+{
+    _filename = filename;
+    std::string unmanagedString = MarshalingServices::ManagedToUnmanagedString(_filename);
+    _pcapDumper = pcap_dump_open(pcapDescriptor, unmanagedString.c_str());
+    if (_pcapDumper == NULL)
+        throw gcnew InvalidOperationException("Error opening output file " + filename + " Error: " + PcapError::GetErrorMessage(pcapDescriptor));
 }
