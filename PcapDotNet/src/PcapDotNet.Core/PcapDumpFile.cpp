@@ -42,7 +42,6 @@ long PcapDumpFile::Position::get()
     return position;
 }
 
-
 PcapDumpFile::~PcapDumpFile()
 {
     pcap_dump_close(_pcapDumper);
