@@ -78,6 +78,9 @@ namespace WinPcapDotNet.Console
                                              System.Console.WriteLine("Got packet with " + packet.Timestamp +
                                                                       " timestamp and " + packet.Length + " size"),
                                              out numPacketsGot);
+
+                PcapTotalStatistics statistics = deviceHandler.TotalStatistics;
+                System.Console.WriteLine(statistics.ToString());
             }
         }
 
@@ -90,7 +93,7 @@ namespace WinPcapDotNet.Console
 
                 for (int i = 0; i != 10; ++i)
                 {
-                    PcapStatistics statistics;
+                    PcapSampleStatistics statistics;
                     DeviceHandlerResult result = deviceHandler.GetNextStatistics(out statistics);
                     switch (result)
                     {

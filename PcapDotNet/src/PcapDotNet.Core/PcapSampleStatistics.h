@@ -2,10 +2,10 @@
 
 namespace PcapDotNet 
 {
-    public ref class PcapStatistics
+    public ref class PcapSampleStatistics
     {
     public:
-        PcapStatistics(System::DateTime timestamp, unsigned long acceptedPackets, unsigned long acceptedBytes);
+        PcapSampleStatistics(System::DateTime timestamp, unsigned long acceptedPackets, unsigned long acceptedBytes);
 
         property System::DateTime Timestamp
         {
