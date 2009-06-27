@@ -105,7 +105,7 @@ namespace PcapDotNet { namespace Core
         }
 
     private:
-        static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
+        static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, BPacket::IDataLink^ dataLink);
         static PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
         DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
@@ -125,14 +125,16 @@ namespace PcapDotNet { namespace Core
         ref class PacketHandler
         {
         public:
-            PacketHandler(HandlePacket^ callBack)
+            PacketHandler(HandlePacket^ callBack, PcapDataLink dataLink)
             {
                 _callBack = callBack;
+                _dataLink = dataLink;
             }
 
             void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
             HandlePacket^ _callBack;
+            PcapDataLink _dataLink;
         };
 
         ref class StatisticsHandler

@@ -150,7 +150,7 @@ DeviceHandlerResult PcapDeviceHandler::GetPacket([Out] Packet^% packet)
         return result;
     }
 
-    packet = CreatePacket(*packetHeader, packetData);
+    packet = CreatePacket(*packetHeader, packetData, DataLink);
     return result;
 }
 
@@ -158,7 +158,7 @@ DeviceHandlerResult PcapDeviceHandler::GetSomePackets(int maxPackets, HandlePack
 {
     AssertMode(DeviceHandlerMode::Capture);
 
-    PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
+    PacketHandler^ packetHandler = gcnew PacketHandler(callBack, DataLink);
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
@@ -178,7 +178,7 @@ DeviceHandlerResult PcapDeviceHandler::GetPackets(int numPackets, HandlePacket^ 
 {
     AssertMode(DeviceHandlerMode::Capture);
 
-    PacketHandler^ packetHandler = gcnew PacketHandler(callBack);
+    PacketHandler^ packetHandler = gcnew PacketHandler(callBack, DataLink);
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
@@ -211,7 +211,9 @@ DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapSampleStatist
 
 void PcapDeviceHandler::SendPacket(Packet^ packet)
 {
-    pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
+    pin_ptr<Byte> unamangedPacketBytes;
+    if (packet->Length != 0)
+        unamangedPacketBytes = &packet->Buffer[0];
     if (pcap_sendpacket(_pcapDescriptor, unamangedPacketBytes, packet->Length) != 0)
         throw BuildInvalidOperation("Failed writing to device");
 }
@@ -255,13 +257,13 @@ pcap_t* PcapDeviceHandler::Descriptor::get()
 }
 
 // static
-Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
+Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, IDataLink^ dataLink)
 {
     DateTime timestamp;
     Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
 
     array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader.caplen);
-    return gcnew Packet(managedPacketData, timestamp);
+    return gcnew Packet(managedPacketData, timestamp, dataLink);
 }
 
 // static
@@ -312,7 +314,7 @@ InvalidOperationException^ PcapDeviceHandler::BuildInvalidOperation(System::Stri
 
 void PcapDeviceHandler::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
-    _callBack->Invoke(CreatePacket(*packetHeader, packetData));
+    _callBack->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
 }
 
 void PcapDeviceHandler::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)

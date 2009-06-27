@@ -7,10 +7,11 @@ namespace BPacket
 {
     public class Packet
     {
-        public Packet(byte[] data, DateTime timestamp)
+        public Packet(byte[] data, DateTime timestamp, IDataLink dataLink)
         {
             _data = data;
             _timestamp = timestamp;
+            _dataLink = dataLink;
         }
 
         public int Length
@@ -23,6 +24,11 @@ namespace BPacket
             get { return _timestamp; }
         }
 
+        public IDataLink DataLink
+        {
+            get { return _dataLink; }
+        }
+
         public byte[] Buffer
         {
             get { return _data; }
@@ -30,5 +36,6 @@ namespace BPacket
 
         private readonly byte[] _data;
         private readonly DateTime _timestamp;
+        private readonly IDataLink _dataLink;
     }
 }

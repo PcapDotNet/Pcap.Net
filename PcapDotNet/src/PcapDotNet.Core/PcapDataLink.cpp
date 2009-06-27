@@ -6,6 +6,7 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace BPacket;
 using namespace PcapDotNet::Core;
 
 PcapDataLink::PcapDataLink(int value)
@@ -22,6 +23,18 @@ PcapDataLink::PcapDataLink(String^ name)
 
     _value = value;
 }
+
+DataLinkKind PcapDataLink::Kind::get()
+{
+    switch (Value)
+    {
+    case 1:
+        return DataLinkKind::Ethernet;
+    default:
+        throw gcnew NotSupportedException("PcapDataLink " + Value.ToString() + " - " + ToString() + " is unsupported");
+    }
+}
+
 
 int PcapDataLink::Value::get()
 {
@@ -49,5 +62,5 @@ String^ PcapDataLink::Description::get()
 
 String^ PcapDataLink::ToString()
 {
-    return Name;
+    return Name + " (" + Description + ")";
 }
