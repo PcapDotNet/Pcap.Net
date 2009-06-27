@@ -21,14 +21,14 @@ void PcapSendQueue::Enqueue(Packet^ packet)
         throw gcnew InvalidOperationException("Failed enqueueing to SendQueue");
 }
 
-void PcapSendQueue::Transmit(PcapDeviceHandler^ deviceHandler, bool isSync)
-{
-    unsigned int numBytesTransmitted = pcap_sendqueue_transmit(deviceHandler->Descriptor, _pcapSendQueue, isSync);
-    if (numBytesTransmitted < _pcapSendQueue->len)
-        throw PcapError::BuildInvalidOperation("Failed transmiting packets from queue", deviceHandler->Descriptor);
-}
-
 PcapSendQueue::~PcapSendQueue()
 {
     pcap_sendqueue_destroy(_pcapSendQueue);
+}
+
+void PcapSendQueue::Transmit(pcap_t* pcapDescriptor, bool isSync)
+{
+    unsigned int numBytesTransmitted = pcap_sendqueue_transmit(pcapDescriptor, _pcapSendQueue, isSync);
+    if (numBytesTransmitted < _pcapSendQueue->len)
+        throw PcapError::BuildInvalidOperation("Failed transmiting packets from queue", pcapDescriptor);
 }

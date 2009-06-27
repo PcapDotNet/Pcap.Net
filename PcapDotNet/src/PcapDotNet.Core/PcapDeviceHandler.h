@@ -7,6 +7,7 @@
 #include "PcapSampleStatistics.h"
 #include "PcapTotalStatistics.h"
 #include "PcapDataLink.h"
+#include "PcapSendQueue.h"
 
 namespace PcapDotNet { namespace Core 
 {
@@ -89,6 +90,7 @@ namespace PcapDotNet { namespace Core
         DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapSampleStatistics^% statistics);
 
         void SendPacket(BPacket::Packet^ packet);
+        void Transmit(PcapSendQueue^ sendQueue, bool isSync);
 
         BpfFilter^ CreateFilter(System::String^ filterString);
         void SetFilter(BpfFilter^ filter);
@@ -97,12 +99,6 @@ namespace PcapDotNet { namespace Core
         PcapDumpFile^ OpenDump(System::String^ filename);
 
         ~PcapDeviceHandler();
-
-    internal:
-        property pcap_t* Descriptor
-        {
-            pcap_t* get();
-        }
 
     private:
         static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, BPacket::IDataLink^ dataLink);

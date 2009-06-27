@@ -1,6 +1,5 @@
 #pragma once
 
-#include "PcapDeviceHandler.h"
 #include "PcapDeclarations.h"
 
 namespace PcapDotNet { namespace Core 
@@ -12,9 +11,10 @@ namespace PcapDotNet { namespace Core
 
         void Enqueue(BPacket::Packet^ packet);
 
-        void Transmit(PcapDeviceHandler^ deviceHandler, bool isSync);
-
         ~PcapSendQueue();
+
+    internal:
+        void Transmit(pcap_t* pcapDescriptor, bool isSync);
 
     private:
         pcap_send_queue *_pcapSendQueue;

@@ -77,35 +77,23 @@ String^ PcapAddress::ToString()
 {
     StringBuilder^ result = gcnew StringBuilder();
 
-    if (Address != nullptr)
-    {
-        result->Append("Address: ");
-        result->Append(Address->ToString());
-    }
-
-    if (Netmask != nullptr)
-    {
-        if (result->Length != 0)
-            result->Append(" ");
-        result->Append("Netmask: ");
-        result->Append(Netmask->ToString());
-    }
-
-    if (Broadcast != nullptr)
-    {
-        if (result->Length != 0)
-            result->Append(" ");
-        result->Append("Broadcast: ");
-        result->Append(Broadcast->ToString());
-    }
-
-    if (Destination != nullptr)
-    {
-        if (result->Length != 0)
-            result->Append(" ");
-        result->Append("Destination: ");
-        result->Append(Destination->ToString());
-    }
+    AppendSocketAddressString(result, Address, "Address");
+    AppendSocketAddressString(result, Netmask, "Netmask");
+    AppendSocketAddressString(result, Broadcast, "Broadcast");
+    AppendSocketAddressString(result, Destination, "Destination");
 
     return result->ToString();
+}
+
+// static
+void PcapAddress::AppendSocketAddressString(StringBuilder^ stringBuilder, SocketAddress^ socketAddress, String^ title)
+{
+    if (socketAddress != nullptr)
+    {
+        if (stringBuilder->Length != 0)
+            stringBuilder->Append(" ");
+        stringBuilder->Append(title);
+        stringBuilder->Append(": ");
+        stringBuilder->Append(socketAddress);
+    }
 }

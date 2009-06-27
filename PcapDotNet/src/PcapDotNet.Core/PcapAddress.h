@@ -33,6 +33,9 @@ namespace PcapDotNet { namespace Core
         virtual System::String^ ToString() override;
 
     private:
+        static void AppendSocketAddressString(System::Text::StringBuilder^ stringBuilder, SocketAddress^ socketAddress, System::String^ title);
+
+    private:
         SocketAddress^ _address;
         SocketAddress^ _netmask;
         SocketAddress^ _broadcast;
