@@ -4,7 +4,7 @@
 #include "Pcap.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 using namespace BPacket;
 
 PcapSendQueue::PcapSendQueue(unsigned int capacity)

@@ -4,7 +4,7 @@
 #include "PcapError.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 BpfFilter::BpfFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
 {

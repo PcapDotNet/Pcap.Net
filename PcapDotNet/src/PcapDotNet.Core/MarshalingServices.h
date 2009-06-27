@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class MarshalingServices
     {
@@ -11,4 +11,4 @@ namespace PcapDotNet
 
         static array<System::Byte>^ UnamangedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count);
     };
-}
+}}

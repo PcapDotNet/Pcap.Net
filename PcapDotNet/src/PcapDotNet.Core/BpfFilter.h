@@ -3,7 +3,7 @@
 #include "IpV4socketAddress.h"
 #include "PcapDeclarations.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class BpfFilter : System::IDisposable
     {
@@ -17,4 +17,4 @@ namespace PcapDotNet
     private:
         bpf_program* _bpf;
     };
-}
+}}

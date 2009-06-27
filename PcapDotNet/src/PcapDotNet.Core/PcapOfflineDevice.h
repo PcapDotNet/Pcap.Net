@@ -2,7 +2,7 @@
 
 #include "PcapDevice.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapOfflineDevice : PcapDevice
     {
@@ -34,4 +34,4 @@ namespace PcapDotNet
     private:
         System::String^ _filename;
     };
-}
+}}

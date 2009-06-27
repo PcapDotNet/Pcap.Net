@@ -3,7 +3,7 @@
 #include "PcapDeviceHandler.h"
 #include "PcapDeclarations.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapSendQueue : System::IDisposable
     {
@@ -19,4 +19,4 @@ namespace PcapDotNet
     private:
         pcap_send_queue *_pcapSendQueue;
     };
-}
+}}

@@ -9,7 +9,7 @@ using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace BPacket;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 ReadOnlyCollection<PcapLiveDevice^>^ PcapLiveDevice::AllLocalMachine::get()
 {

@@ -11,7 +11,7 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Generic;
 using namespace BPacket;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
 

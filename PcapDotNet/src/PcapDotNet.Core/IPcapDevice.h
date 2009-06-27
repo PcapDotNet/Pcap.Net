@@ -3,7 +3,7 @@
 #include "PcapAddress.h"
 #include "PcapDeviceHandler.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     [System::Flags]
     public enum class DeviceFlags : System::UInt32
@@ -36,4 +36,4 @@ namespace PcapDotNet
         /// </summary>
         PcapDeviceHandler^ Open();
     };
-}
+}}

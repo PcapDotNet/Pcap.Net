@@ -3,7 +3,7 @@
 
 using namespace System;
 using namespace System::Text;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 IpV4SocketAddress::IpV4SocketAddress(sockaddr *address)
 : SocketAddress(address->sa_family)

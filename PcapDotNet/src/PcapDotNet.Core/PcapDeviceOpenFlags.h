@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     [System::Flags]
     public enum class PcapDeviceOpenFlags : System::Int32
@@ -12,4 +12,4 @@ namespace PcapDotNet
         NoCaptureLocal          = 8, // Defines if the local adapter will capture its own generated traffic.
         MaximumResponsiveness   = 16 // This flag configures the adapter for maximum responsiveness.     
     };
-}
+}}

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapLibrary
     {
@@ -9,4 +9,4 @@ namespace PcapDotNet
             System::String^ get();
         }
     };
-}
+}}

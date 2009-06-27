@@ -4,7 +4,7 @@
 
 using namespace System;
 using namespace System::Text;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 PcapAddress::PcapAddress(pcap_addr_t* pcapAddress)
 {

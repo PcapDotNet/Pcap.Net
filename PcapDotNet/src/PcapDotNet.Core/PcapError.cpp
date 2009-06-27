@@ -3,7 +3,7 @@
 
 using namespace System;
 using namespace System::Text;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 // static 
 String^ PcapError::GetErrorMessage(pcap_t* pcapDescriptor)

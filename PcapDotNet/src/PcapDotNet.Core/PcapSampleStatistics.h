@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapSampleStatistics
     {
@@ -29,4 +29,4 @@ namespace PcapDotNet
         unsigned long _acceptedPackets;
         unsigned long _acceptedBytes;
     };
-}
+}}

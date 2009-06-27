@@ -2,7 +2,7 @@
 #include "Pcap.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 // static
 String^ PcapLibrary::Version::get()

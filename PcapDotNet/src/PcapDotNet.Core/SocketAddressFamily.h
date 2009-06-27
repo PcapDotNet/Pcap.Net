@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public enum class SocketAddressFamily : System::UInt16
     {
@@ -39,4 +39,4 @@ namespace PcapDotNet
         ICLFXBM     = 31,
         BTH         = 32               // Bluetooth RFCOMM/L2CAP protocols
     };
-}
+}}

@@ -3,7 +3,7 @@
 #include "SocketAddress.h"
 #include "PcapDeclarations.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapAddress
     {
@@ -38,4 +38,4 @@ namespace PcapDotNet
         SocketAddress^ _broadcast;
         SocketAddress^ _destination;
     };
-}
+}}
