@@ -4,7 +4,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class Timestamp
+    private ref class Timestamp
     {
     public:
         static void PcapTimestampToDateTime(const timeval& pcapTimestamp, [System::Runtime::InteropServices::Out] System::DateTime% dateTime);
