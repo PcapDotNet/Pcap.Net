@@ -1,6 +1,6 @@
 #include "PcapTotalStatistics.h"
 
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 PcapTotalStatistics::PcapTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured)
 {

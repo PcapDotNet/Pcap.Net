@@ -3,7 +3,7 @@
 #include "SocketAddress.h"
 #include "PcapDeclarations.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class IpV4SocketAddress : SocketAddress
     {
@@ -25,4 +25,4 @@ namespace PcapDotNet
     private:
         unsigned int _address;
     };
-}
+}}

@@ -2,7 +2,7 @@
 #include "Pcap.h"
 #include "Timestamp.h"
 
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 // static
 void PacketHeader::GetPcapHeader(pcap_pkthdr &header, BPacket::Packet^ packet)

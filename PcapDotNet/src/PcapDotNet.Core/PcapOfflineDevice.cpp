@@ -8,7 +8,7 @@
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 PcapOfflineDevice::PcapOfflineDevice(System::String^ filename)
 {

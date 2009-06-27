@@ -1,7 +1,7 @@
 #include "PcapSampleStatistics.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 PcapSampleStatistics::PcapSampleStatistics(DateTime timestamp, unsigned long acceptedPackets, unsigned long acceptedBytes)
 {

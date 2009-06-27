@@ -2,7 +2,7 @@
 
 #include "PcapDevice.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapLiveDevice : PcapDevice
     {
@@ -49,4 +49,4 @@ namespace PcapDotNet
         DeviceFlags^ _flags;
         System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ _addresses;
     };
-}
+}}

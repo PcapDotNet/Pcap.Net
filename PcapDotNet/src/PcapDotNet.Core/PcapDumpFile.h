@@ -2,7 +2,7 @@
 
 #include "PcapDeclarations.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapDumpFile : System::IDisposable
     {
@@ -24,4 +24,4 @@ namespace PcapDotNet
         pcap_dumper_t* _pcapDumper;
         System::String^ _filename;
     };
-}
+}}

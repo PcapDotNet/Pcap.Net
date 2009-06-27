@@ -2,7 +2,7 @@
 #include "Pcap.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 // static
 void Timestamp::PcapTimestampToDateTime(const timeval& pcapTimestamp, [System::Runtime::InteropServices::Out] System::DateTime% dateTime)

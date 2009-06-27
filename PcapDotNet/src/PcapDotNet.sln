@@ -7,9 +7,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Console", "PcapD
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\WinPCapDotNet.Core.vcproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Core.Test", "PcapDotNet.Core.Test\PcapDotNet.Core.Test.csproj", "{045A6460-C260-4CDA-8030-FD19A0086C95}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D5DCCC5-A509-4B4E-90B0-92390C6EA06F}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		PcapDotNet.vsmdi = PcapDotNet.vsmdi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -22,6 +30,12 @@ Global
 		SccProjectUniqueName3 = PcapDotNet.Console\\PcapDotNet.Console.csproj
 		SccProjectName3 = PcapDotNet.Console
 		SccLocalPath3 = PcapDotNet.Console
+		SccProjectUniqueName4 = PcapDotNet.Core.Test\\PcapDotNet.Core.Test.csproj
+		SccProjectName4 = PcapDotNet.Core.Test
+		SccLocalPath4 = PcapDotNet.Core.Test
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = PcapDotNet.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +76,16 @@ Global
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Win32.ActiveCfg = Release|Win32
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Win32.Build.0 = Release|Win32
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

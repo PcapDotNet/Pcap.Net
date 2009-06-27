@@ -2,7 +2,7 @@
 
 #include "SocketAddressFamily.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class SocketAddress
     {
@@ -19,4 +19,4 @@ namespace PcapDotNet
     private:
         SocketAddressFamily^ _family;
     };
-}
+}}

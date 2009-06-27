@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using PcapDotNet;
 using BPacket;
+using PcapDotNet.Core;
 
 namespace WinPcapDotNet.Console
 {

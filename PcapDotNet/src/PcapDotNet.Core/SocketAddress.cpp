@@ -1,7 +1,7 @@
 #include "SocketAddress.h"
 
 using namespace System;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 SocketAddress::SocketAddress(unsigned short family)
 {

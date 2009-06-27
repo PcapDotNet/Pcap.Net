@@ -2,7 +2,7 @@
 
 #include "IPcapDevice.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapDevice abstract : IPcapDevice
     {
@@ -33,4 +33,4 @@ namespace PcapDotNet
 
         virtual PcapDeviceHandler^ Open();
     };
-}
+}}

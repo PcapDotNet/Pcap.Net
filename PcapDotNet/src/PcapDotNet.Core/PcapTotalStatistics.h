@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public ref class PcapTotalStatistics
     {
@@ -33,4 +33,4 @@ namespace PcapDotNet
         unsigned int _packetsDroppedByInterface;
         unsigned int _packetsCaptured;
     };
-}
+}}

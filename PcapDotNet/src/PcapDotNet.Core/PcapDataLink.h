@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public value class PcapDataLink 
     {
@@ -28,4 +28,4 @@ namespace PcapDotNet
     private:
         int _value;
     };
-}
+}}

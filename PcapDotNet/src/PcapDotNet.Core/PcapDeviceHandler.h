@@ -8,7 +8,7 @@
 #include "PcapTotalStatistics.h"
 #include "PcapDataLink.h"
 
-namespace PcapDotNet 
+namespace PcapDotNet { namespace Core 
 {
     public enum class DeviceHandlerResult : int
     {
@@ -153,4 +153,4 @@ namespace PcapDotNet
         IpV4SocketAddress^ _ipV4Netmask;
         DeviceHandlerMode _mode;
     };
-}
+}}

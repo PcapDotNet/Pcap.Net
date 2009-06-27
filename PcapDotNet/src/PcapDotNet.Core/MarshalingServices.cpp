@@ -3,7 +3,7 @@
 using namespace System;
 using namespace System::Text;
 using namespace System::Runtime::InteropServices;
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 // static 
 std::string MarshalingServices::ManagedToUnmanagedString(System::String^ managedString)

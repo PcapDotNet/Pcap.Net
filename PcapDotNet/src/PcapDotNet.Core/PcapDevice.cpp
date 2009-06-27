@@ -1,6 +1,6 @@
 #include "PcapDevice.h"
 
-using namespace PcapDotNet;
+using namespace PcapDotNet::Core;
 
 PcapDeviceHandler^ PcapDevice::Open()
 {
