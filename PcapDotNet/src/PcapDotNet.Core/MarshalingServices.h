@@ -4,7 +4,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class MarshalingServices
+    private ref class MarshalingServices
     {
     public:
         static std::string ManagedToUnmanagedString(System::String^ managedString);

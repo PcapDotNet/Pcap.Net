@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test
@@ -10,9 +11,9 @@ namespace PcapDotNet.Core.Test
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class UnitTest1
+    public class PcapLibTests
     {
-        public UnitTest1()
+        public PcapLibTests()
         {
             //
             // TODO: Add constructor logic here
@@ -60,11 +61,12 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void VersionTest()
         {
-            //
-            // TODO: Add test logic	here
-            //
+            const string VersionNumberRegex = @"[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?";
+            const string VersionRegex = "^WinPcap version " + VersionNumberRegex + @" \(packet\.dll version " + VersionNumberRegex + @"\), based on libpcap version " + VersionNumberRegex + "$";
+            string version = PcapLibrary.Version;
+            Assert.IsTrue(Regex.IsMatch(version, VersionRegex), "Version " + version + " doesn't match regex " + VersionRegex);
         }
     }
 }
