@@ -29,3 +29,19 @@ unsigned int PcapTotalStatistics::PacketsCaptured::get()
 {
     return _packetsCaptured;
 }
+
+bool PcapTotalStatistics::Equals(PcapTotalStatistics^ other)
+{
+    if (other == nullptr)
+        return false;
+
+    return (PacketsReceived == other->PacketsReceived &&
+            PacketsDroppedByDriver == other->PacketsDroppedByDriver &&
+            PacketsDroppedByInterface == other->PacketsDroppedByInterface &&
+            PacketsCaptured == other->PacketsCaptured);
+}
+
+bool PcapTotalStatistics::Equals(Object^ other)
+{
+    return Equals(dynamic_cast<PcapTotalStatistics^>(other));
+}

@@ -218,6 +218,12 @@ void PcapDeviceHandler::SendPacket(Packet^ packet)
         throw BuildInvalidOperation("Failed writing to device");
 }
 
+
+void PcapDeviceHandler::Transmit(PcapSendQueue^ sendQueue, bool isSync)
+{
+    sendQueue->Transmit(_pcapDescriptor, isSync);
+}
+
 BpfFilter^ PcapDeviceHandler::CreateFilter(String^ filterString)
 {
     return gcnew BpfFilter(_pcapDescriptor, filterString, _ipV4Netmask);
@@ -249,11 +255,6 @@ PcapDumpFile^ PcapDeviceHandler::OpenDump(System::String^ filename)
 PcapDeviceHandler::~PcapDeviceHandler()
 {
     pcap_close(_pcapDescriptor);
-}
-
-pcap_t* PcapDeviceHandler::Descriptor::get()
-{
-    return _pcapDescriptor;
 }
 
 // static

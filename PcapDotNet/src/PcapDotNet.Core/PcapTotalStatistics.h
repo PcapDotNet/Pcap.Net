@@ -26,6 +26,9 @@ namespace PcapDotNet { namespace Core
         {
             unsigned int get();
         }
+        
+        bool Equals(PcapTotalStatistics^ other);
+        virtual bool Equals(System::Object^ other) override;
 
     private:
         unsigned int _packetsReceived;
