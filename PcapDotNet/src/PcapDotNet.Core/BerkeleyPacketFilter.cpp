@@ -1,4 +1,4 @@
-#include "BpfFilter.h"
+#include "BerkeleyPacketFilter.h"
 #include "Pcap.h"
 #include "MarshalingServices.h"
 #include "PcapError.h"
@@ -6,7 +6,7 @@
 using namespace System;
 using namespace PcapDotNet::Core;
 
-BpfFilter::BpfFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
+BerkeleyPacketFilter::BerkeleyPacketFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
 {
     std::string unmanagedFilterString = MarshalingServices::ManagedToUnmanagedString(filterString);
 
@@ -30,14 +30,14 @@ BpfFilter::BpfFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAdd
     }
 }
 
-void BpfFilter::SetFilter(pcap_t* pcapDescriptor)
+void BerkeleyPacketFilter::SetFilter(pcap_t* pcapDescriptor)
 {
     if (pcap_setfilter(pcapDescriptor, _bpf) != 0)
         throw PcapError::BuildInvalidOperation("Failed setting bpf filter", pcapDescriptor);
 }
 
 
-BpfFilter::~BpfFilter()
+BerkeleyPacketFilter::~BerkeleyPacketFilter()
 {
     pcap_freecode(_bpf);
     delete _bpf;

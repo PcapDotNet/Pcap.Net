@@ -1,4 +1,4 @@
-#include "PcapDumpFile.h"
+#include "PacketDumpFile.h"
 #include "Timestamp.h"
 #include "PacketHeader.h"
 #include "MarshalingServices.h"
@@ -9,7 +9,7 @@ using namespace System;
 using namespace PcapDotNet::Core;
 using namespace BPacket;
 
-void PcapDumpFile::Dump(Packet^ packet)
+void PacketDumpFile::Dump(Packet^ packet)
 {
     pcap_pkthdr header;
     PacketHeader::GetPcapHeader(header, packet);
@@ -19,13 +19,13 @@ void PcapDumpFile::Dump(Packet^ packet)
     pcap_dump(reinterpret_cast<unsigned char*>(_pcapDumper), &header, unamangedPacketBytes);
 }
 
-void PcapDumpFile::Flush()
+void PacketDumpFile::Flush()
 {
     if (pcap_dump_flush(_pcapDumper) != 0)
         throw gcnew InvalidOperationException("Failed flusing to file " + _filename);
 }
 
-long PcapDumpFile::Position::get()
+long PacketDumpFile::Position::get()
 {
     long position = pcap_dump_ftell(_pcapDumper);
     if (position == -1)
@@ -33,14 +33,14 @@ long PcapDumpFile::Position::get()
     return position;
 }
 
-PcapDumpFile::~PcapDumpFile()
+PacketDumpFile::~PacketDumpFile()
 {
     pcap_dump_close(_pcapDumper);
 }
 
 // internal
 
-PcapDumpFile::PcapDumpFile(pcap_t* pcapDescriptor, System::String^ filename)
+PacketDumpFile::PacketDumpFile(pcap_t* pcapDescriptor, System::String^ filename)
 {
     _filename = filename;
     std::string unmanagedString = MarshalingServices::ManagedToUnmanagedString(_filename);

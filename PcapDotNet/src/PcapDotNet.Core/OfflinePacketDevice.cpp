@@ -1,4 +1,4 @@
-#include "PcapOfflineDevice.h"
+#include "OfflinePacketDevice.h"
 
 #include <string>
 
@@ -10,32 +10,32 @@ using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace PcapDotNet::Core;
 
-PcapOfflineDevice::PcapOfflineDevice(System::String^ filename)
+OfflinePacketDevice::OfflinePacketDevice(System::String^ filename)
 {
     _filename = filename;
 }
 
-String^ PcapOfflineDevice::Name::get()
+String^ OfflinePacketDevice::Name::get()
 {
     return _filename;
 }
 
-String^ PcapOfflineDevice::Description::get()
+String^ OfflinePacketDevice::Description::get()
 {
     return String::Empty;
 }
 
-DeviceFlags^ PcapOfflineDevice::Flags::get()
+DeviceFlags^ OfflinePacketDevice::Flags::get()
 {
     return DeviceFlags::None;
 }
 
-ReadOnlyCollection<PcapAddress^>^ PcapOfflineDevice::Addresses::get()
+ReadOnlyCollection<DeviceAddress^>^ OfflinePacketDevice::Addresses::get()
 {
-    return gcnew ReadOnlyCollection<PcapAddress^>(gcnew List<PcapAddress^>());
+    return gcnew ReadOnlyCollection<DeviceAddress^>(gcnew List<DeviceAddress^>());
 }
 
-PcapDeviceHandler^ PcapOfflineDevice::Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout)
+PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout)
 {
     std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(_filename);
 
@@ -53,5 +53,5 @@ PcapDeviceHandler^ PcapOfflineDevice::Open(int snapshotLength, PcapDeviceOpenFla
         throw gcnew InvalidOperationException("Error creating a source string from filename " + _filename + " Error: " + gcnew String(errbuf));
     }
 
-    return gcnew PcapDeviceHandler(source, snapshotLength, flags, readTimeout, NULL, nullptr);
+    return gcnew PacketCommunicator(source, snapshotLength, flags, readTimeout, NULL, nullptr);
 }

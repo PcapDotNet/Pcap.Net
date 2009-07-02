@@ -1,8 +1,8 @@
-#include "PcapTotalStatistics.h"
+#include "PacketTotalStatistics.h"
 
 using namespace PcapDotNet::Core;
 
-PcapTotalStatistics::PcapTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured)
+PacketTotalStatistics::PacketTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured)
 {
     _packetsReceived = packetsReceived;
     _packetsDroppedByDriver = packetsDroppedByDriver;
@@ -10,27 +10,27 @@ PcapTotalStatistics::PcapTotalStatistics(unsigned int packetsReceived, unsigned 
     _packetsCaptured = packetsCaptured;
 }
 
-unsigned int PcapTotalStatistics::PacketsReceived::get()
+unsigned int PacketTotalStatistics::PacketsReceived::get()
 {
     return _packetsReceived;
 }
 
-unsigned int PcapTotalStatistics::PacketsDroppedByDriver::get()
+unsigned int PacketTotalStatistics::PacketsDroppedByDriver::get()
 {
     return _packetsDroppedByDriver;
 }
 
-unsigned int PcapTotalStatistics::PacketsDroppedByInterface::get()
+unsigned int PacketTotalStatistics::PacketsDroppedByInterface::get()
 {
     return _packetsDroppedByInterface;
 }
 
-unsigned int PcapTotalStatistics::PacketsCaptured::get()
+unsigned int PacketTotalStatistics::PacketsCaptured::get()
 {
     return _packetsCaptured;
 }
 
-bool PcapTotalStatistics::Equals(PcapTotalStatistics^ other)
+bool PacketTotalStatistics::Equals(PacketTotalStatistics^ other)
 {
     if (other == nullptr)
         return false;
@@ -41,7 +41,7 @@ bool PcapTotalStatistics::Equals(PcapTotalStatistics^ other)
             PacketsCaptured == other->PacketsCaptured);
 }
 
-bool PcapTotalStatistics::Equals(Object^ other)
+bool PacketTotalStatistics::Equals(Object^ other)
 {
-    return Equals(dynamic_cast<PcapTotalStatistics^>(other));
+    return Equals(dynamic_cast<PacketTotalStatistics^>(other));
 }

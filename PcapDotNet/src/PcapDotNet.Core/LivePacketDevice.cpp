@@ -1,4 +1,4 @@
-#include "PcapLiveDevice.h"
+#include "LivePacketDevice.h"
 
 #include <string>
 
@@ -11,7 +11,7 @@ using namespace System::Collections::ObjectModel;
 using namespace BPacket;
 using namespace PcapDotNet::Core;
 
-ReadOnlyCollection<PcapLiveDevice^>^ PcapLiveDevice::AllLocalMachine::get()
+ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
 {
     pcap_if_t *alldevs;
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -26,23 +26,23 @@ ReadOnlyCollection<PcapLiveDevice^>^ PcapLiveDevice::AllLocalMachine::get()
     
     try
     {
-        List<PcapLiveDevice^>^ result = gcnew List<PcapLiveDevice^>();
+        List<LivePacketDevice^>^ result = gcnew List<LivePacketDevice^>();
         for (pcap_if_t *d = alldevs; d != NULL; d = d->next)
         {
             // IP addresses
-            List<PcapAddress^>^ addresses = gcnew List<PcapAddress^>();
+            List<DeviceAddress^>^ addresses = gcnew List<DeviceAddress^>();
             for (pcap_addr_t *a = d->addresses; a; a = a->next) 
             {
-                PcapAddress^ deviceAddress = gcnew PcapAddress(a);
+                DeviceAddress^ deviceAddress = gcnew DeviceAddress(a);
                 addresses->Add(deviceAddress);
             }
 
-            result->Add(gcnew PcapLiveDevice(gcnew String(d->name), 
+            result->Add(gcnew LivePacketDevice(gcnew String(d->name), 
                                      gcnew String(d->description), 
                                      safe_cast<DeviceFlags>(d->flags),
-                                     gcnew ReadOnlyCollection<PcapAddress^>(addresses)));
+                                     gcnew ReadOnlyCollection<DeviceAddress^>(addresses)));
         }
-        return gcnew ReadOnlyCollection<PcapLiveDevice^>(result);
+        return gcnew ReadOnlyCollection<LivePacketDevice^>(result);
     }
     finally
     {
@@ -51,27 +51,27 @@ ReadOnlyCollection<PcapLiveDevice^>^ PcapLiveDevice::AllLocalMachine::get()
     }
 }
 
-String^ PcapLiveDevice::Name::get()
+String^ LivePacketDevice::Name::get()
 { 
     return _name;
 }
 
-String^ PcapLiveDevice::Description::get()
+String^ LivePacketDevice::Description::get()
 { 
     return _description; 
 }
 
-DeviceFlags^ PcapLiveDevice::Flags::get()
+DeviceFlags^ LivePacketDevice::Flags::get()
 {
     return _flags;
 }
 
-ReadOnlyCollection<PcapAddress^>^ PcapLiveDevice::Addresses::get()
+ReadOnlyCollection<DeviceAddress^>^ LivePacketDevice::Addresses::get()
 {
-    return gcnew ReadOnlyCollection<PcapAddress^>(_addresses);
+    return gcnew ReadOnlyCollection<DeviceAddress^>(_addresses);
 }
 
-PcapDeviceHandler^ PcapLiveDevice::Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout)
+PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout)
 {
     std::string deviceName = MarshalingServices::ManagedToUnmanagedString(Name);
 
@@ -81,12 +81,12 @@ PcapDeviceHandler^ PcapLiveDevice::Open(int snapshotLength, PcapDeviceOpenFlags 
         netmask = Addresses[0]->Netmask;
 
     // Open the device
-    return gcnew PcapDeviceHandler(deviceName.c_str(), snapshotLength, flags, readTimeout, NULL, netmask);
+    return gcnew PacketCommunicator(deviceName.c_str(), snapshotLength, flags, readTimeout, NULL, netmask);
 }
 
 // Private Methods
 
-PcapLiveDevice::PcapLiveDevice(String^ name, String^ description, DeviceFlags^ flags, ReadOnlyCollection<PcapAddress^>^ addresses)
+LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceFlags^ flags, ReadOnlyCollection<DeviceAddress^>^ addresses)
 {
     _name = name;
     _description = description;

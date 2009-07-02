@@ -3,7 +3,7 @@
 namespace PcapDotNet { namespace Core 
 {
     [System::Flags]
-    public enum class PcapDeviceOpenFlags : System::Int32
+    public enum class PacketDeviceOpenFlags : System::Int32
     {
         None                    = 0,
         Promiscuous             = 1, // Defines if the adapter has to go in promiscuous mode.
