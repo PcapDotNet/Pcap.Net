@@ -3,7 +3,7 @@
   <Description>This is a default test run configuration for a local test run.</Description>
   <CodeCoverage enabled="true">
     <Regular>
-      <CodeCoverageItem binaryFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\BPacket.dll" pdbFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\BPacket.pdb" instrumentInPlace="true" />
+      <CodeCoverageItem binaryFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\Packets.dll" pdbFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\Packets.pdb" instrumentInPlace="true" />
       <CodeCoverageItem binaryFile="c:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.dll" pdbFile="c:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.pdb" instrumentInPlace="true" />
     </Regular>
   </CodeCoverage>

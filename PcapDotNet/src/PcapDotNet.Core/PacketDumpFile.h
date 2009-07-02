@@ -7,7 +7,7 @@ namespace PcapDotNet { namespace Core
     public ref class PacketDumpFile : System::IDisposable
     {
     public:
-        void Dump(BPacket::Packet^ packet);
+        void Dump(Packets::Packet^ packet);
 
         void Flush();
 

@@ -9,7 +9,7 @@ namespace PcapDotNet { namespace Core
     public:
         PacketSendQueue(unsigned int capacity);
 
-        void Enqueue(BPacket::Packet^ packet);
+        void Enqueue(Packets::Packet^ packet);
 
         ~PacketSendQueue();
 

@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 
-namespace BPacket
+namespace Packets
 {
     public enum Endianity : byte
     {

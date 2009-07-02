@@ -81,15 +81,15 @@ namespace PcapDotNet { namespace Core
             void set(bool value);
         }
 
-        delegate void HandlePacket(BPacket::Packet^ packet);
-        DeviceHandlerResult GetPacket([System::Runtime::InteropServices::Out] BPacket::Packet^% packet);
+        delegate void HandlePacket(Packets::Packet^ packet);
+        DeviceHandlerResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
         DeviceHandlerResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
         DeviceHandlerResult GetPackets(int numPackets, HandlePacket^ callBack);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
         DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
 
-        void SendPacket(BPacket::Packet^ packet);
+        void SendPacket(Packets::Packet^ packet);
         void Transmit(PacketSendQueue^ sendQueue, bool isSync);
 
         BerkeleyPacketFilter^ CreateFilter(System::String^ filterString);
@@ -101,7 +101,7 @@ namespace PcapDotNet { namespace Core
         ~PacketCommunicator();
 
     private:
-        static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, BPacket::IDataLink^ dataLink);
+        static Packets::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, Packets::IDataLink^ dataLink);
         static PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
         DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
