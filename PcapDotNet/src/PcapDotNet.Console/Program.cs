@@ -90,19 +90,19 @@ namespace WinPcapDotNet.Console
             using (PacketCommunicator deviceHandler = device.Open())
             {
                 deviceHandler.SetFilter(filter);
-                deviceHandler.Mode = DeviceHandlerMode.Statistics;
+                deviceHandler.Mode = PacketCommunicatorMode.Statistics;
 
                 for (int i = 0; i != 10; ++i)
                 {
                     PacketSampleStatistics statistics;
-                    DeviceHandlerResult result = deviceHandler.GetNextStatistics(out statistics);
+                    PacketCommunicatorReceiveResult result = deviceHandler.GetNextStatistics(out statistics);
                     switch (result)
                     {
-                        case DeviceHandlerResult.Ok:
+                        case PacketCommunicatorReceiveResult.Ok:
                             break;
-                        case DeviceHandlerResult.Timeout:
+                        case PacketCommunicatorReceiveResult.Timeout:
                             continue;
-                        case DeviceHandlerResult.Eof:
+                        case PacketCommunicatorReceiveResult.Eof:
                             continue;
                     }
 
@@ -121,14 +121,14 @@ namespace WinPcapDotNet.Console
                     for (int i = 0; i != 100; ++i)
                     {
                         Packet packet;
-                        DeviceHandlerResult result = offlineHandler.GetPacket(out packet);
+                        PacketCommunicatorReceiveResult result = offlineHandler.GetPacket(out packet);
                         switch (result)
                         {
-                            case DeviceHandlerResult.Ok:
+                            case PacketCommunicatorReceiveResult.Ok:
                                 break;
-                            case DeviceHandlerResult.Timeout:
+                            case PacketCommunicatorReceiveResult.Timeout:
                                 continue;
-                            case DeviceHandlerResult.Eof:
+                            case PacketCommunicatorReceiveResult.Eof:
                                 continue;
                         }
 
@@ -153,14 +153,14 @@ namespace WinPcapDotNet.Console
                     for (int i = 0; i != 100; ++i)
                     {
                         Packet packet;
-                        DeviceHandlerResult result = offlineHandler.GetPacket(out packet);
+                        PacketCommunicatorReceiveResult result = offlineHandler.GetPacket(out packet);
                         switch (result)
                         {
-                            case DeviceHandlerResult.Ok:
+                            case PacketCommunicatorReceiveResult.Ok:
                                 break;
-                            case DeviceHandlerResult.Timeout:
+                            case PacketCommunicatorReceiveResult.Timeout:
                                 continue;
-                            case DeviceHandlerResult.Eof:
+                            case PacketCommunicatorReceiveResult.Eof:
                                 continue;
                         }
 
@@ -179,14 +179,14 @@ namespace WinPcapDotNet.Console
                 for (int i = 0; i != 100; ++i)
                 {
                     Packet packet;
-                    DeviceHandlerResult result = liveHandler.GetPacket(out packet);
+                    PacketCommunicatorReceiveResult result = liveHandler.GetPacket(out packet);
                     switch (result)
                     {
-                        case DeviceHandlerResult.Ok:
+                        case PacketCommunicatorReceiveResult.Ok:
                             break;
-                        case DeviceHandlerResult.Timeout:
+                        case PacketCommunicatorReceiveResult.Timeout:
                             continue;
-                        case DeviceHandlerResult.Eof:
+                        case PacketCommunicatorReceiveResult.Eof:
                             continue;
                     }
 

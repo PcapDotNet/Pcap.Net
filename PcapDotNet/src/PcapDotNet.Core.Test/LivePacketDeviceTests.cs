@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,9 +67,9 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPacketsToSend = 10;
 
-            using (PacketCommunicator deviceHandler = OpenLiveDevice())
+            using (PacketCommunicator communicator = OpenLiveDevice())
             {
-                deviceHandler.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
                 Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
                                                            new MacAddress(SourceMac),
@@ -79,17 +80,91 @@ namespace PcapDotNet.Core.Test
                 DateTime startSendingTime = DateTime.Now;
 
                 for (int i = 0; i != NumPacketsToSend; ++i)
-                    deviceHandler.SendPacket(sentPacket);
+                    communicator.SendPacket(sentPacket);
 
                 DateTime endSendingTime = DateTime.Now;
 
                 Packet packet;
-                DeviceHandlerResult result = deviceHandler.GetPacket(out packet);
+                PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
 
-                Assert.AreEqual(DeviceHandlerResult.Ok, result);
-                Assert.AreEqual<uint>(NumPacketsToSend, deviceHandler.TotalStatistics.PacketsCaptured);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                Assert.AreEqual<uint>(NumPacketsToSend, communicator.TotalStatistics.PacketsCaptured);
                 Assert.AreEqual(sentPacket.Length, packet.Length);
                 MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
+            }
+        }
+
+        [TestMethod]
+        public void DumpPacketsTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            string dumpFilename = Path.GetTempPath() + @"dump.pcap";
+
+            Packet expectedPacket = PacketBuilder.Ethernet(DateTime.Now,
+                                                   new MacAddress(SourceMac),
+                                                   new MacAddress(DestinationMac),
+                                                   EthernetType.IpV4,
+                                                   new Datagram(new byte[10], 0, 10));
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                using (PacketDumpFile dumpFile = communicator.OpenDump(dumpFilename))
+                {
+                    dumpFile.Dump(expectedPacket);
+                }
+            }
+
+            using (PacketCommunicator communicator = new OfflinePacketDevice(dumpFilename).Open())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet actualPacket;
+                communicator.GetPacket(out actualPacket);
+                Assert.AreEqual(expectedPacket, actualPacket);
+                MoreAssert.IsInRange(expectedPacket.Timestamp.AddSeconds(-1), expectedPacket.Timestamp.AddSeconds(1),
+                                     actualPacket.Timestamp);
+            }
+        }
+
+        [TestMethod]
+        public void ReceiveManyPacketsTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int NumPacketsToSend = 100;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
+                                                           new MacAddress(SourceMac),
+                                                           new MacAddress(DestinationMac),
+                                                           EthernetType.IpV4,
+                                                           new Datagram(new byte[10], 0, 10));
+
+                PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
+                int numPacketsGot = 0;
+                Thread thread = new Thread(delegate()
+                                               {
+                                                   result = communicator.GetPackets(NumPacketsToSend,
+                                                                                    delegate(Packet packet)
+                                                                                        {
+                                                                                            Assert.AreEqual(sentPacket, packet);
+                                                                                            ++numPacketsGot;
+                                                                                        });
+                                               });
+                thread.Start();
+                
+                for (int i = 0; i != NumPacketsToSend; ++i)
+                    communicator.SendPacket(sentPacket);
+
+                if (!thread.Join(TimeSpan.FromSeconds(5)))
+                    thread.Abort();
+
+                Assert.AreEqual(NumPacketsToSend, numPacketsGot);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
             }
         }
 
@@ -103,22 +178,22 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(1, device.Addresses.Count);
             DeviceAddress address = device.Addresses[0];
             Assert.AreEqual("Address: INET 10.0.0.2 Netmask: INET 255.0.0.0 Broadcast: INET 255.255.255.255", address.ToString());
-            PacketCommunicator deviceHandler = device.Open();
+            PacketCommunicator communicator = device.Open();
             try
             {
-                Assert.AreEqual(DataLinkKind.Ethernet, deviceHandler.DataLink.Kind);
-                Assert.AreEqual("EN10MB (Ethernet)", deviceHandler.DataLink.ToString());
-                Assert.AreEqual(deviceHandler.DataLink, new PcapDataLink(deviceHandler.DataLink.Name));
-                Assert.IsTrue(deviceHandler.IsFileSystemByteOrder);
-                Assert.AreEqual(DeviceHandlerMode.Capture, deviceHandler.Mode);
-                Assert.IsFalse(deviceHandler.NonBlocking);
-                Assert.AreEqual(PacketDevice.DefaultSnapshotLength, deviceHandler.SnapshotLength);
-                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), deviceHandler.TotalStatistics);
-                return deviceHandler;
+                Assert.AreEqual(DataLinkKind.Ethernet, communicator.DataLink.Kind);
+                Assert.AreEqual("EN10MB (Ethernet)", communicator.DataLink.ToString());
+                Assert.AreEqual(communicator.DataLink, new PcapDataLink(communicator.DataLink.Name));
+                Assert.IsTrue(communicator.IsFileSystemByteOrder);
+                Assert.AreEqual(PacketCommunicatorMode.Capture, communicator.Mode);
+                Assert.IsFalse(communicator.NonBlocking);
+                Assert.AreEqual(PacketDevice.DefaultSnapshotLength, communicator.SnapshotLength);
+                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), communicator.TotalStatistics);
+                return communicator;
             }
             catch (Exception)
             {
-                deviceHandler.Dispose();
+                communicator.Dispose();
                 throw;
             }
         }

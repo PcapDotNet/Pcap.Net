@@ -1,5 +1,7 @@
 #include "PacketTotalStatistics.h"
 
+using namespace System;
+using namespace System::Text;
 using namespace PcapDotNet::Core;
 
 PacketTotalStatistics::PacketTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured)
@@ -44,4 +46,18 @@ bool PacketTotalStatistics::Equals(PacketTotalStatistics^ other)
 bool PacketTotalStatistics::Equals(Object^ other)
 {
     return Equals(dynamic_cast<PacketTotalStatistics^>(other));
+}
+
+String^ PacketTotalStatistics::ToString()
+{
+    StringBuilder^ stringBuilder = gcnew StringBuilder();
+    stringBuilder->Append("Packets Received: ");
+    stringBuilder->Append(PacketsReceived);
+    stringBuilder->Append("Packets Dropped By Driver: ");
+    stringBuilder->Append(PacketsDroppedByDriver);
+    stringBuilder->Append("Packets Dropped By Interface: ");
+    stringBuilder->Append(PacketsDroppedByInterface);
+    stringBuilder->Append("Packets Captured: ");
+    stringBuilder->Append(PacketsCaptured);
+    return stringBuilder->ToString();
 }

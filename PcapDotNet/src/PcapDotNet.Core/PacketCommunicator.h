@@ -11,15 +11,16 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public enum class DeviceHandlerResult : int
+    public enum class PacketCommunicatorReceiveResult : int
     {
-        Ok,       // if the packet has been read without problems
-        Timeout,  // if the timeout set with Open() has elapsed.
-        Eof,      // if EOF was reached reading from an offline capture
-        BreakLoop // 
+        Ok,        // if the packet has been read without problems
+        Timeout,   // if the timeout set with Open() has elapsed.
+        Eof,       // if EOF was reached reading from an offline capture
+        BreakLoop, // 
+        None
     };
 
-    public enum class DeviceHandlerMode : int
+    public enum class PacketCommunicatorMode : int
     {
         Capture         = 0x0, // Capture working mode.  
         Statistics      = 0x1, // Statistical working mode. 
@@ -69,10 +70,10 @@ namespace PcapDotNet { namespace Core
             PacketTotalStatistics^ get();
         }
 
-        property DeviceHandlerMode Mode
+        property PacketCommunicatorMode Mode
         {
-            DeviceHandlerMode get();
-            void set(DeviceHandlerMode value);
+            PacketCommunicatorMode get();
+            void set(PacketCommunicatorMode value);
         }
 
         property bool NonBlocking
@@ -82,12 +83,12 @@ namespace PcapDotNet { namespace Core
         }
 
         delegate void HandlePacket(Packets::Packet^ packet);
-        DeviceHandlerResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
-        DeviceHandlerResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
-        DeviceHandlerResult GetPackets(int numPackets, HandlePacket^ callBack);
+        PacketCommunicatorReceiveResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
+        PacketCommunicatorReceiveResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
+        PacketCommunicatorReceiveResult GetPackets(int numPackets, HandlePacket^ callBack);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
-        DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
+        PacketCommunicatorReceiveResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
 
         void SendPacket(Packets::Packet^ packet);
         void Transmit(PacketSendQueue^ sendQueue, bool isSync);
@@ -104,12 +105,12 @@ namespace PcapDotNet { namespace Core
         static Packets::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, Packets::IDataLink^ dataLink);
         static PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
-        DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
+        PacketCommunicatorReceiveResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
 
         [System::Runtime::InteropServices::UnmanagedFunctionPointer(System::Runtime::InteropServices::CallingConvention::Cdecl)]
         delegate void HandlerDelegate(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
-        void AssertMode(DeviceHandlerMode mode);
+        void AssertMode(PacketCommunicatorMode mode);
 
         property System::String^ ErrorMessage
         {
@@ -149,6 +150,6 @@ namespace PcapDotNet { namespace Core
     private:
         pcap_t* _pcapDescriptor;
         IpV4SocketAddress^ _ipV4Netmask;
-        DeviceHandlerMode _mode;
+        PacketCommunicatorMode _mode;
     };
 }}

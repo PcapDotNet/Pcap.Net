@@ -108,12 +108,12 @@ PacketTotalStatistics^ PacketCommunicator::TotalStatistics::get()
 }
 
 
-DeviceHandlerMode PacketCommunicator::Mode::get()
+PacketCommunicatorMode PacketCommunicator::Mode::get()
 {
     return _mode;
 }
 
-void PacketCommunicator::Mode::set(DeviceHandlerMode value)
+void PacketCommunicator::Mode::set(PacketCommunicatorMode value)
 {
     if (pcap_setmode(_pcapDescriptor, safe_cast<int>(value)) < 0)
         throw BuildInvalidOperation("Error setting mode " + value.ToString());
@@ -136,15 +136,15 @@ void PacketCommunicator::NonBlocking::set(bool value)
         throw gcnew InvalidOperationException("Error setting NonBlocking to " + value.ToString());
 }
 
-DeviceHandlerResult PacketCommunicator::GetPacket([Out] Packet^% packet)
+PacketCommunicatorReceiveResult PacketCommunicator::GetPacket([Out] Packet^% packet)
 {
-    AssertMode(DeviceHandlerMode::Capture);
+    AssertMode(PacketCommunicatorMode::Capture);
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
-    DeviceHandlerResult result = RunPcapNextEx(&packetHeader, &packetData);
+    PacketCommunicatorReceiveResult result = RunPcapNextEx(&packetHeader, &packetData);
 
-    if (result != DeviceHandlerResult::Ok)
+    if (result != PacketCommunicatorReceiveResult::Ok)
     {
         packet = nullptr;
         return result;
@@ -154,9 +154,9 @@ DeviceHandlerResult PacketCommunicator::GetPacket([Out] Packet^% packet)
     return result;
 }
 
-DeviceHandlerResult PacketCommunicator::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
+PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
 {
-    AssertMode(DeviceHandlerMode::Capture);
+    AssertMode(PacketCommunicatorMode::Capture);
 
     PacketHandler^ packetHandler = gcnew PacketHandler(callBack, DataLink);
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
@@ -170,13 +170,13 @@ DeviceHandlerResult PacketCommunicator::GetSomePackets(int maxPackets, HandlePac
     if (numPacketsGot == -1)
         throw BuildInvalidOperation("Failed reading from device");
     if (numPacketsGot == -2)
-        return DeviceHandlerResult::BreakLoop;
-    return DeviceHandlerResult::Ok;
+        return PacketCommunicatorReceiveResult::BreakLoop;
+    return PacketCommunicatorReceiveResult::Ok;
 }
 
-DeviceHandlerResult PacketCommunicator::GetPackets(int numPackets, HandlePacket^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::GetPackets(int numPackets, HandlePacket^ callBack)
 {
-    AssertMode(DeviceHandlerMode::Capture);
+    AssertMode(PacketCommunicatorMode::Capture);
 
     PacketHandler^ packetHandler = gcnew PacketHandler(callBack, DataLink);
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
@@ -186,19 +186,19 @@ DeviceHandlerResult PacketCommunicator::GetPackets(int numPackets, HandlePacket^
     if (result == -1)
         throw BuildInvalidOperation("Failed reading from device");
     if (result == -2)
-        return DeviceHandlerResult::BreakLoop;
-    return DeviceHandlerResult::Ok;
+        return PacketCommunicatorReceiveResult::BreakLoop;
+    return PacketCommunicatorReceiveResult::Ok;
 }
 
-DeviceHandlerResult PacketCommunicator::GetNextStatistics([Out] PacketSampleStatistics^% statistics)
+PacketCommunicatorReceiveResult PacketCommunicator::GetNextStatistics([Out] PacketSampleStatistics^% statistics)
 {
-    AssertMode(DeviceHandlerMode::Statistics);
+    AssertMode(PacketCommunicatorMode::Statistics);
 
     pcap_pkthdr* packetHeader;
     const unsigned char* packetData;
-    DeviceHandlerResult result = RunPcapNextEx(&packetHeader, &packetData);
+    PacketCommunicatorReceiveResult result = RunPcapNextEx(&packetHeader, &packetData);
 
-    if (result != DeviceHandlerResult::Ok)
+    if (result != PacketCommunicatorReceiveResult::Ok)
     {
         statistics = nullptr;
         return result;
@@ -279,25 +279,25 @@ PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& 
     return gcnew PacketSampleStatistics(timestamp, acceptedPackets, acceptedBytes);
 }
 
-DeviceHandlerResult PacketCommunicator::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
+PacketCommunicatorReceiveResult PacketCommunicator::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
 {
     int result = pcap_next_ex(_pcapDescriptor, packetHeader, packetData);
     switch (result)
     {
     case -2: 
-        return DeviceHandlerResult::Eof;
+        return PacketCommunicatorReceiveResult::Eof;
     case -1: 
         throw PcapError::BuildInvalidOperation("Failed reading from device", _pcapDescriptor);
     case 0: 
-        return DeviceHandlerResult::Timeout;
+        return PacketCommunicatorReceiveResult::Timeout;
     case 1: 
-        return DeviceHandlerResult::Ok;
+        return PacketCommunicatorReceiveResult::Ok;
     default: 
         throw gcnew InvalidOperationException("Result value " + result.ToString() + " is undefined");
     }
 }
 
-void PacketCommunicator::AssertMode(DeviceHandlerMode mode)
+void PacketCommunicator::AssertMode(PacketCommunicatorMode mode)
 {
     if (Mode != mode)
         throw gcnew InvalidOperationException("Wrong Mode. Must be in mode " + mode.ToString() + " and not in mode " + Mode.ToString());
