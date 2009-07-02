@@ -48,9 +48,9 @@
     <Compile Include="PcapLibTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BPacket\BPacket.csproj">
+    <ProjectReference Include="..\BPacket\Packets.csproj">
       <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
-      <Name>BPacket</Name>
+      <Name>Packets</Name>
     </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Core\WinPCapDotNet.Core.vcproj">
       <Project>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</Project>
