@@ -4,14 +4,14 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PcapSendQueue : System::IDisposable
+    public ref class PacketSendQueue : System::IDisposable
     {
     public:
-        PcapSendQueue(unsigned int capacity);
+        PacketSendQueue(unsigned int capacity);
 
         void Enqueue(BPacket::Packet^ packet);
 
-        ~PcapSendQueue();
+        ~PacketSendQueue();
 
     internal:
         void Transmit(pcap_t* pcapDescriptor, bool isSync);

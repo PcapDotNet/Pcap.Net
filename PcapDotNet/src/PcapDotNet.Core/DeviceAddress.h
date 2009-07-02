@@ -5,10 +5,10 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PcapAddress
+    public ref class DeviceAddress
     {
     public:
-        PcapAddress(pcap_addr_t *pcapAddress);
+        DeviceAddress(pcap_addr_t *pcapAddress);
 
         property SocketAddress^ Address
         {

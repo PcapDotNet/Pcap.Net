@@ -1,7 +1,7 @@
-#include "PcapDeviceHandler.h"
+#include "PacketCommunicator.h"
 
 #include "MarshalingServices.h"
-#include "PcapDumpFile.h"
+#include "PacketDumpFile.h"
 #include "Timestamp.h"
 #include "PcapError.h"
 #include "Pcap.h"
@@ -15,7 +15,7 @@ using namespace PcapDotNet::Core;
 
 void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
 
-PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
+PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -36,18 +36,18 @@ PcapDeviceHandler::PcapDeviceHandler(const char* source, int snapshotLength, Pca
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
 }
 
-PcapDataLink PcapDeviceHandler::DataLink::get()
+PcapDataLink PacketCommunicator::DataLink::get()
 {
     return PcapDataLink(pcap_datalink(_pcapDescriptor));
 }
 
-void PcapDeviceHandler::DataLink::set(PcapDataLink value)
+void PacketCommunicator::DataLink::set(PcapDataLink value)
 {
     if (pcap_set_datalink(_pcapDescriptor, value.Value) == -1)
         throw BuildInvalidOperation("Failed setting datalink " + value.ToString());
 }
 
-ReadOnlyCollection<PcapDataLink>^ PcapDeviceHandler::SupportedDataLinks::get()
+ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
     throw gcnew NotSupportedException("Supported DataLinks is unsupported to avoid winpcap memory leak");
 
@@ -71,27 +71,27 @@ ReadOnlyCollection<PcapDataLink>^ PcapDeviceHandler::SupportedDataLinks::get()
     }
 }
 
-int PcapDeviceHandler::SnapshotLength::get()
+int PacketCommunicator::SnapshotLength::get()
 {
     return pcap_snapshot(_pcapDescriptor);
 }
 
-bool PcapDeviceHandler::IsFileSystemByteOrder::get()
+bool PacketCommunicator::IsFileSystemByteOrder::get()
 {
     return (pcap_is_swapped(_pcapDescriptor) == 0);
 }
  
-int PcapDeviceHandler::FileMajorVersion::get()
+int PacketCommunicator::FileMajorVersion::get()
 {
     return pcap_major_version(_pcapDescriptor);
 }
 
-int PcapDeviceHandler::FileMinorVersion::get()
+int PacketCommunicator::FileMinorVersion::get()
 {
     return pcap_minor_version(_pcapDescriptor);
 }
 
-PcapTotalStatistics^ PcapDeviceHandler::TotalStatistics::get()
+PacketTotalStatistics^ PacketCommunicator::TotalStatistics::get()
 {
     int statisticsSize;
     pcap_stat* statistics = pcap_stats_ex(_pcapDescriptor, &statisticsSize);
@@ -104,23 +104,23 @@ PcapTotalStatistics^ PcapDeviceHandler::TotalStatistics::get()
     unsigned int packetsCaptured = (statisticsSize >= 16 
                                         ? *(reinterpret_cast<int*>(statistics) + 3)
                                         : 0);
-    return gcnew PcapTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
+    return gcnew PacketTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
 }
 
 
-DeviceHandlerMode PcapDeviceHandler::Mode::get()
+DeviceHandlerMode PacketCommunicator::Mode::get()
 {
     return _mode;
 }
 
-void PcapDeviceHandler::Mode::set(DeviceHandlerMode value)
+void PacketCommunicator::Mode::set(DeviceHandlerMode value)
 {
     if (pcap_setmode(_pcapDescriptor, safe_cast<int>(value)) < 0)
         throw BuildInvalidOperation("Error setting mode " + value.ToString());
     _mode = value;
 }
 
-bool PcapDeviceHandler::NonBlocking::get()
+bool PacketCommunicator::NonBlocking::get()
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     int nonBlockValue = pcap_getnonblock(_pcapDescriptor, errbuf);
@@ -129,14 +129,14 @@ bool PcapDeviceHandler::NonBlocking::get()
     return nonBlockValue != 0;
 }
 
-void PcapDeviceHandler::NonBlocking::set(bool value)
+void PacketCommunicator::NonBlocking::set(bool value)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     if (pcap_setnonblock(_pcapDescriptor, value, errbuf) != 0)
         throw gcnew InvalidOperationException("Error setting NonBlocking to " + value.ToString());
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetPacket([Out] Packet^% packet)
+DeviceHandlerResult PacketCommunicator::GetPacket([Out] Packet^% packet)
 {
     AssertMode(DeviceHandlerMode::Capture);
 
@@ -154,7 +154,7 @@ DeviceHandlerResult PcapDeviceHandler::GetPacket([Out] Packet^% packet)
     return result;
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
+DeviceHandlerResult PacketCommunicator::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
 {
     AssertMode(DeviceHandlerMode::Capture);
 
@@ -174,7 +174,7 @@ DeviceHandlerResult PcapDeviceHandler::GetSomePackets(int maxPackets, HandlePack
     return DeviceHandlerResult::Ok;
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetPackets(int numPackets, HandlePacket^ callBack)
+DeviceHandlerResult PacketCommunicator::GetPackets(int numPackets, HandlePacket^ callBack)
 {
     AssertMode(DeviceHandlerMode::Capture);
 
@@ -190,7 +190,7 @@ DeviceHandlerResult PcapDeviceHandler::GetPackets(int numPackets, HandlePacket^ 
     return DeviceHandlerResult::Ok;
 }
 
-DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapSampleStatistics^% statistics)
+DeviceHandlerResult PacketCommunicator::GetNextStatistics([Out] PacketSampleStatistics^% statistics)
 {
     AssertMode(DeviceHandlerMode::Statistics);
 
@@ -209,7 +209,7 @@ DeviceHandlerResult PcapDeviceHandler::GetNextStatistics([Out] PcapSampleStatist
     return result;
 }
 
-void PcapDeviceHandler::SendPacket(Packet^ packet)
+void PacketCommunicator::SendPacket(Packet^ packet)
 {
     pin_ptr<Byte> unamangedPacketBytes;
     if (packet->Length != 0)
@@ -219,46 +219,46 @@ void PcapDeviceHandler::SendPacket(Packet^ packet)
 }
 
 
-void PcapDeviceHandler::Transmit(PcapSendQueue^ sendQueue, bool isSync)
+void PacketCommunicator::Transmit(PacketSendQueue^ sendQueue, bool isSync)
 {
     sendQueue->Transmit(_pcapDescriptor, isSync);
 }
 
-BpfFilter^ PcapDeviceHandler::CreateFilter(String^ filterString)
+BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterString)
 {
-    return gcnew BpfFilter(_pcapDescriptor, filterString, _ipV4Netmask);
+    return gcnew BerkeleyPacketFilter(_pcapDescriptor, filterString, _ipV4Netmask);
 }
 
-void PcapDeviceHandler::SetFilter(BpfFilter^ filter)
+void PacketCommunicator::SetFilter(BerkeleyPacketFilter^ filter)
 {
     filter->SetFilter(_pcapDescriptor);
 }
 
-void PcapDeviceHandler::SetFilter(String^ filterString)
+void PacketCommunicator::SetFilter(String^ filterString)
 {
-    BpfFilter^ filter = CreateFilter(filterString);
+    BerkeleyPacketFilter^ filter = CreateFilter(filterString);
     try
     {
         SetFilter(filter);
     }
     finally
     {
-        filter->~BpfFilter();
+        filter->~BerkeleyPacketFilter();
     }
 }
 
-PcapDumpFile^ PcapDeviceHandler::OpenDump(System::String^ filename)
+PacketDumpFile^ PacketCommunicator::OpenDump(System::String^ filename)
 {
-    return gcnew PcapDumpFile(_pcapDescriptor, filename);
+    return gcnew PacketDumpFile(_pcapDescriptor, filename);
 }
 
-PcapDeviceHandler::~PcapDeviceHandler()
+PacketCommunicator::~PacketCommunicator()
 {
     pcap_close(_pcapDescriptor);
 }
 
 // static
-Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, IDataLink^ dataLink)
+Packet^ PacketCommunicator::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, IDataLink^ dataLink)
 {
     DateTime timestamp;
     Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
@@ -268,7 +268,7 @@ Packet^ PcapDeviceHandler::CreatePacket(const pcap_pkthdr& packetHeader, const u
 }
 
 // static
-PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
+PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
 {
     DateTime timestamp;
     Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
@@ -276,10 +276,10 @@ PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& pac
     unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
     unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
 
-    return gcnew PcapSampleStatistics(timestamp, acceptedPackets, acceptedBytes);
+    return gcnew PacketSampleStatistics(timestamp, acceptedPackets, acceptedBytes);
 }
 
-DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
+DeviceHandlerResult PacketCommunicator::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
 {
     int result = pcap_next_ex(_pcapDescriptor, packetHeader, packetData);
     switch (result)
@@ -297,28 +297,28 @@ DeviceHandlerResult PcapDeviceHandler::RunPcapNextEx(pcap_pkthdr** packetHeader,
     }
 }
 
-void PcapDeviceHandler::AssertMode(DeviceHandlerMode mode)
+void PacketCommunicator::AssertMode(DeviceHandlerMode mode)
 {
     if (Mode != mode)
         throw gcnew InvalidOperationException("Wrong Mode. Must be in mode " + mode.ToString() + " and not in mode " + Mode.ToString());
 }
 
-String^ PcapDeviceHandler::ErrorMessage::get()
+String^ PacketCommunicator::ErrorMessage::get()
 {
     return PcapError::GetErrorMessage(_pcapDescriptor);
 }
 
-InvalidOperationException^ PcapDeviceHandler::BuildInvalidOperation(System::String^ errorMessage)
+InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::String^ errorMessage)
 {
     return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
 }
 
-void PcapDeviceHandler::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+void PacketCommunicator::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     _callBack->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
 }
 
-void PcapDeviceHandler::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+void PacketCommunicator::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     _callBack->Invoke(CreateStatistics(*packetHeader, packetData));
 }

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "PcapAddress.h"
-#include "BpfFilter.h"
-#include "PcapDumpFile.h"
-#include "PcapDeviceOpenFlags.h"
-#include "PcapSampleStatistics.h"
-#include "PcapTotalStatistics.h"
+#include "DeviceAddress.h"
+#include "BerkeleyPacketFilter.h"
+#include "PacketDumpFile.h"
+#include "PacketDeviceOpenFlags.h"
+#include "PacketSampleStatistics.h"
+#include "PacketTotalStatistics.h"
 #include "PcapDataLink.h"
-#include "PcapSendQueue.h"
+#include "PacketSendQueue.h"
 
 namespace PcapDotNet { namespace Core 
 {
@@ -27,10 +27,10 @@ namespace PcapDotNet { namespace Core
         KernelDump      = 0x10 // Kernel dump working mode. 
     };
 
-    public ref class PcapDeviceHandler : System::IDisposable
+    public ref class PacketCommunicator : System::IDisposable
     {
     public:
-        PcapDeviceHandler(const char* source, int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, 
+        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, 
                           SocketAddress^ netmask);
 
         property PcapDataLink DataLink
@@ -64,9 +64,9 @@ namespace PcapDotNet { namespace Core
             int get();
         }
 
-        property PcapTotalStatistics^ TotalStatistics
+        property PacketTotalStatistics^ TotalStatistics
         {
-            PcapTotalStatistics^ get();
+            PacketTotalStatistics^ get();
         }
 
         property DeviceHandlerMode Mode
@@ -86,23 +86,23 @@ namespace PcapDotNet { namespace Core
         DeviceHandlerResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
         DeviceHandlerResult GetPackets(int numPackets, HandlePacket^ callBack);
         
-        delegate void HandleStatistics(PcapSampleStatistics^ statistics);
-        DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PcapSampleStatistics^% statistics);
+        delegate void HandleStatistics(PacketSampleStatistics^ statistics);
+        DeviceHandlerResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
 
         void SendPacket(BPacket::Packet^ packet);
-        void Transmit(PcapSendQueue^ sendQueue, bool isSync);
+        void Transmit(PacketSendQueue^ sendQueue, bool isSync);
 
-        BpfFilter^ CreateFilter(System::String^ filterString);
-        void SetFilter(BpfFilter^ filter);
+        BerkeleyPacketFilter^ CreateFilter(System::String^ filterString);
+        void SetFilter(BerkeleyPacketFilter^ filter);
         void SetFilter(System::String^ filterString);
 
-        PcapDumpFile^ OpenDump(System::String^ filename);
+        PacketDumpFile^ OpenDump(System::String^ filename);
 
-        ~PcapDeviceHandler();
+        ~PacketCommunicator();
 
     private:
         static BPacket::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, BPacket::IDataLink^ dataLink);
-        static PcapSampleStatistics^ PcapDeviceHandler::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
+        static PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
 
         DeviceHandlerResult RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData);
 

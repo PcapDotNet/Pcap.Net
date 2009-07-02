@@ -4,7 +4,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PcapDumpFile : System::IDisposable
+    public ref class PacketDumpFile : System::IDisposable
     {
     public:
         void Dump(BPacket::Packet^ packet);
@@ -16,10 +16,10 @@ namespace PcapDotNet { namespace Core
             long get();
         }
 
-        ~PcapDumpFile();
+        ~PacketDumpFile();
 
     internal:
-        PcapDumpFile(pcap_t* pcapDescriptor, System::String^ filename);
+        PacketDumpFile(pcap_t* pcapDescriptor, System::String^ filename);
 
     private:
         pcap_dumper_t* _pcapDumper;

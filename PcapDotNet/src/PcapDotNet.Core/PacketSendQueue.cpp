@@ -1,4 +1,4 @@
-#include "PcapSendQueue.h"
+#include "PacketSendQueue.h"
 #include "PacketHeader.h"
 #include "PcapError.h"
 #include "Pcap.h"
@@ -7,12 +7,12 @@ using namespace System;
 using namespace PcapDotNet::Core;
 using namespace BPacket;
 
-PcapSendQueue::PcapSendQueue(unsigned int capacity)
+PacketSendQueue::PacketSendQueue(unsigned int capacity)
 {
     _pcapSendQueue = pcap_sendqueue_alloc(capacity);
 }
 
-void PcapSendQueue::Enqueue(Packet^ packet)
+void PacketSendQueue::Enqueue(Packet^ packet)
 {
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
@@ -21,12 +21,12 @@ void PcapSendQueue::Enqueue(Packet^ packet)
         throw gcnew InvalidOperationException("Failed enqueueing to SendQueue");
 }
 
-PcapSendQueue::~PcapSendQueue()
+PacketSendQueue::~PacketSendQueue()
 {
     pcap_sendqueue_destroy(_pcapSendQueue);
 }
 
-void PcapSendQueue::Transmit(pcap_t* pcapDescriptor, bool isSync)
+void PacketSendQueue::Transmit(pcap_t* pcapDescriptor, bool isSync)
 {
     unsigned int numBytesTransmitted = pcap_sendqueue_transmit(pcapDescriptor, _pcapSendQueue, isSync);
     if (numBytesTransmitted < _pcapSendQueue->len)

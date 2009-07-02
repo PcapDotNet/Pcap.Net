@@ -1,4 +1,4 @@
-#include "PcapAddress.h"
+#include "DeviceAddress.h"
 #include "IpV4SocketAddress.h"
 #include "Pcap.h"
 
@@ -6,7 +6,7 @@ using namespace System;
 using namespace System::Text;
 using namespace PcapDotNet::Core;
 
-PcapAddress::PcapAddress(pcap_addr_t* pcapAddress)
+DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
 {
     SocketAddressFamily family = safe_cast<SocketAddressFamily>(pcapAddress->addr->sa_family);
 
@@ -53,27 +53,27 @@ PcapAddress::PcapAddress(pcap_addr_t* pcapAddress)
     }
 }
 
-SocketAddress^ PcapAddress::Address::get()
+SocketAddress^ DeviceAddress::Address::get()
 {
     return _address;
 }
 
-SocketAddress^ PcapAddress::Netmask::get()
+SocketAddress^ DeviceAddress::Netmask::get()
 {
     return _netmask;
 }
 
-SocketAddress^ PcapAddress::Broadcast::get()
+SocketAddress^ DeviceAddress::Broadcast::get()
 {
     return _broadcast;
 }
 
-SocketAddress^ PcapAddress::Destination::get()
+SocketAddress^ DeviceAddress::Destination::get()
 {
     return _destination;
 }
 
-String^ PcapAddress::ToString()
+String^ DeviceAddress::ToString()
 {
     StringBuilder^ result = gcnew StringBuilder();
 
@@ -86,7 +86,7 @@ String^ PcapAddress::ToString()
 }
 
 // static
-void PcapAddress::AppendSocketAddressString(StringBuilder^ stringBuilder, SocketAddress^ socketAddress, String^ title)
+void DeviceAddress::AppendSocketAddressString(StringBuilder^ stringBuilder, SocketAddress^ socketAddress, String^ title)
 {
     if (socketAddress != nullptr)
     {

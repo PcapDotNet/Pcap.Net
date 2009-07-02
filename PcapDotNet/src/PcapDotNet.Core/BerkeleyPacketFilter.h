@@ -5,14 +5,14 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class BpfFilter : System::IDisposable
+    public ref class BerkeleyPacketFilter : System::IDisposable
     {
     public:
-        BpfFilter(pcap_t* pcapDescriptor, System::String^ filterString, IpV4SocketAddress^ netmask);
+        BerkeleyPacketFilter(pcap_t* pcapDescriptor, System::String^ filterString, IpV4SocketAddress^ netmask);
 
         void SetFilter(pcap_t* pcapDescriptor);
 
-        ~BpfFilter(); // IDisposable
+        ~BerkeleyPacketFilter(); // IDisposable
 
     private:
         bpf_program* _bpf;

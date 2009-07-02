@@ -66,7 +66,7 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPacketsToSend = 10;
 
-            using (PcapDeviceHandler deviceHandler = OpenLiveDevice())
+            using (PacketCommunicator deviceHandler = OpenLiveDevice())
             {
                 deviceHandler.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
@@ -93,17 +93,17 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static PcapDeviceHandler OpenLiveDevice()
+        private static PacketCommunicator OpenLiveDevice()
         {
-            IList<PcapLiveDevice> devices = PcapLiveDevice.AllLocalMachine;
+            IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
             MoreAssert.IsBiggerOrEqual(1, devices.Count);
-            PcapLiveDevice device = devices[0];
+            LivePacketDevice device = devices[0];
             Assert.AreEqual("Network adapter 'Atheros AR8121/AR8113 PCI-E Ethernet Controller (Microsoft's Packet Scheduler) ' on local host", device.Description);
             Assert.AreEqual(DeviceFlags.None, device.Flags);
             Assert.AreEqual(1, device.Addresses.Count);
-            PcapAddress address = device.Addresses[0];
+            DeviceAddress address = device.Addresses[0];
             Assert.AreEqual("Address: INET 10.0.0.2 Netmask: INET 255.0.0.0 Broadcast: INET 255.255.255.255", address.ToString());
-            PcapDeviceHandler deviceHandler = device.Open();
+            PacketCommunicator deviceHandler = device.Open();
             try
             {
                 Assert.AreEqual(DataLinkKind.Ethernet, deviceHandler.DataLink.Kind);
@@ -112,8 +112,8 @@ namespace PcapDotNet.Core.Test
                 Assert.IsTrue(deviceHandler.IsFileSystemByteOrder);
                 Assert.AreEqual(DeviceHandlerMode.Capture, deviceHandler.Mode);
                 Assert.IsFalse(deviceHandler.NonBlocking);
-                Assert.AreEqual(PcapDevice.DefaultSnapshotLength, deviceHandler.SnapshotLength);
-                Assert.AreEqual(new PcapTotalStatistics(0, 0, 0, 0), deviceHandler.TotalStatistics);
+                Assert.AreEqual(PacketDevice.DefaultSnapshotLength, deviceHandler.SnapshotLength);
+                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), deviceHandler.TotalStatistics);
                 return deviceHandler;
             }
             catch (Exception)

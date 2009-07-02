@@ -200,15 +200,23 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\BpfFilter.cpp"
+			RelativePath=".\BerkeleyPacketFilter.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\BpfFilter.h"
+			RelativePath=".\BerkeleyPacketFilter.h"
 			>
 		</File>
 		<File
-			RelativePath=".\IPcapDevice.h"
+			RelativePath=".\DeviceAddress.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\DeviceAddress.h"
+			>
+		</File>
+		<File
+			RelativePath=".\IPacketDevice.h"
 			>
 		</File>
 		<File
@@ -220,11 +228,55 @@
 			>
 		</File>
 		<File
+			RelativePath=".\LivePacketDevice.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\LivePacketDevice.h"
+			>
+		</File>
+		<File
 			RelativePath=".\MarshalingServices.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\MarshalingServices.h"
+			>
+		</File>
+		<File
+			RelativePath=".\OfflinePacketDevice.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\OfflinePacketDevice.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketCommunicator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketCommunicator.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketDevice.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketDevice.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketDeviceOpenFlags.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketDumpFile.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketDumpFile.h"
 			>
 		</File>
 		<File
@@ -236,15 +288,31 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PacketSampleStatistics.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketSampleStatistics.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketSendQueue.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketSendQueue.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketTotalStatistics.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PacketTotalStatistics.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Pcap.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapAddress.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapAddress.h"
 			>
 		</File>
 		<File
@@ -264,34 +332,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\PcapDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDeviceHandler.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDeviceHandler.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDeviceOpenFlags.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDumpFile.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDumpFile.h"
-			>
-		</File>
-		<File
 			RelativePath=".\PcapError.cpp"
 			>
 		</File>
@@ -305,46 +345,6 @@
 		</File>
 		<File
 			RelativePath=".\PcapLibrary.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapLiveDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapLiveDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapOfflineDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapOfflineDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapSampleStatistics.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapSampleStatistics.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapSendQueue.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapSendQueue.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapTotalStatistics.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapTotalStatistics.h"
 			>
 		</File>
 		<File

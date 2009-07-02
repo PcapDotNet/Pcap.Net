@@ -18,13 +18,13 @@ namespace WinPcapDotNet.Console
         static void Main(string[] args)
         {
             System.Console.WriteLine("Start");
-            IList<PcapLiveDevice> devices = PcapLiveDevice.AllLocalMachine;
+            IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
             if (devices.Count == 0)
                 return;
 
             for (int i = 0; i != devices.Count; ++i)
             {
-                PcapLiveDevice device = devices[i];
+                LivePacketDevice device = devices[i];
                 System.Console.WriteLine(i+1 + ". " + device.Name);
             }
             int index;
@@ -38,7 +38,7 @@ namespace WinPcapDotNet.Console
             const string filename = @"c:\tmp.pcap";
             const string filter = "port 80";
 
-            IPcapDevice chosenDevice = devices[index];
+            IPacketDevice chosenDevice = devices[index];
 
             System.Console.WriteLine("Start GetNextPackets");
             GetNextPackets(chosenDevice, filter);
@@ -65,9 +65,9 @@ namespace WinPcapDotNet.Console
             System.Console.WriteLine("Finished Transmitting packets");
         }
 
-        private static void GetNextPackets(IPcapDevice device, string filter)
+        private static void GetNextPackets(IPacketDevice device, string filter)
         {
-            using (PcapDeviceHandler deviceHandler = device.Open(PcapDevice.DefaultSnapshotLength, PcapDeviceOpenFlags.Promiscuous, 10 * 1000))
+            using (PacketCommunicator deviceHandler = device.Open(PacketDevice.DefaultSnapshotLength, PacketDeviceOpenFlags.Promiscuous, 10 * 1000))
             {
                 System.Console.WriteLine("datalink = " + deviceHandler.DataLink.Name + " description = " + deviceHandler.DataLink.Description);
                 //foreach (PcapDataLink datalink in deviceHandler.SupportedDataLinks)
@@ -80,21 +80,21 @@ namespace WinPcapDotNet.Console
                                                                       " timestamp and " + packet.Length + " size"),
                                              out numPacketsGot);
 
-                PcapTotalStatistics statistics = deviceHandler.TotalStatistics;
+                PacketTotalStatistics statistics = deviceHandler.TotalStatistics;
                 System.Console.WriteLine(statistics.ToString());
             }
         }
 
-        private static void StatisticsMode(IPcapDevice device, string filter)
+        private static void StatisticsMode(IPacketDevice device, string filter)
         {
-            using (PcapDeviceHandler deviceHandler = device.Open())
+            using (PacketCommunicator deviceHandler = device.Open())
             {
                 deviceHandler.SetFilter(filter);
                 deviceHandler.Mode = DeviceHandlerMode.Statistics;
 
                 for (int i = 0; i != 10; ++i)
                 {
-                    PcapSampleStatistics statistics;
+                    PacketSampleStatistics statistics;
                     DeviceHandlerResult result = deviceHandler.GetNextStatistics(out statistics);
                     switch (result)
                     {
@@ -111,12 +111,12 @@ namespace WinPcapDotNet.Console
             }
         }
 
-        private static void TransmitPacketsFromFile(string filename, IPcapDevice liveDevice)
+        private static void TransmitPacketsFromFile(string filename, IPacketDevice liveDevice)
         {
-            IPcapDevice offlineDevice = new PcapOfflineDevice(filename);
-            using (PcapSendQueue sendQueue = new PcapSendQueue(1024 * 1024))
+            IPacketDevice offlineDevice = new OfflinePacketDevice(filename);
+            using (PacketSendQueue sendQueue = new PacketSendQueue(1024 * 1024))
             {
-                using (PcapDeviceHandler offlineHandler = offlineDevice.Open())
+                using (PacketCommunicator offlineHandler = offlineDevice.Open())
                 {
                     for (int i = 0; i != 100; ++i)
                     {
@@ -136,19 +136,19 @@ namespace WinPcapDotNet.Console
                     }
                 }
 
-                using (PcapDeviceHandler liveHandler = liveDevice.Open())
+                using (PacketCommunicator liveHandler = liveDevice.Open())
                 {
                     sendQueue.Transmit(liveHandler, true);
                 }
             }
         }
 
-        private static void SendPacketsFromFile(string filename, IPcapDevice liveDevice)
+        private static void SendPacketsFromFile(string filename, IPacketDevice liveDevice)
         {
-            IPcapDevice offlineDevice = new PcapOfflineDevice(filename);
-            using (PcapDeviceHandler liveHandler = liveDevice.Open())
+            IPacketDevice offlineDevice = new OfflinePacketDevice(filename);
+            using (PacketCommunicator liveHandler = liveDevice.Open())
             {
-                using (PcapDeviceHandler offlineHandler = offlineDevice.Open())
+                using (PacketCommunicator offlineHandler = offlineDevice.Open())
                 {
                     for (int i = 0; i != 100; ++i)
                     {
@@ -170,12 +170,12 @@ namespace WinPcapDotNet.Console
             }
         }
 
-        private static void CapturePacketsToFile(IPcapDevice device, string filter, string filename)
+        private static void CapturePacketsToFile(IPacketDevice device, string filter, string filename)
         {
-            using (PcapDeviceHandler liveHandler = device.Open())
+            using (PacketCommunicator liveHandler = device.Open())
             {
                 liveHandler.SetFilter(filter);
-                PcapDumpFile dumpFile = liveHandler.OpenDump(filename);
+                PacketDumpFile dumpFile = liveHandler.OpenDump(filename);
                 for (int i = 0; i != 100; ++i)
                 {
                     Packet packet;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "PcapDevice.h"
+#include "PacketDevice.h"
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PcapOfflineDevice : PcapDevice
+    public ref class OfflinePacketDevice : PacketDevice
     {
     public:
-        PcapOfflineDevice(System::String^ filename);
+        OfflinePacketDevice(System::String^ filename);
 
                 virtual property System::String^ Name
         {
@@ -24,12 +24,12 @@ namespace PcapDotNet { namespace Core
             DeviceFlags^ get() override;
         }
 
-        virtual property System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ Addresses
+        virtual property System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ Addresses
         {
-            System::Collections::ObjectModel::ReadOnlyCollection<PcapAddress^>^ get() override;
+            System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ get() override;
         }
 
-        virtual PcapDeviceHandler^ Open(int snapshotLength, PcapDeviceOpenFlags flags, int readTimeout) override;
+        virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout) override;
 
     private:
         System::String^ _filename;
