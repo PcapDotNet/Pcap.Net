@@ -6,7 +6,7 @@
 #include "Pcap.h"
 
 using namespace System;
-using namespace BPacket;
+using namespace Packets;
 using namespace PcapDotNet::Core;
 
 PcapDataLink::PcapDataLink(int value)

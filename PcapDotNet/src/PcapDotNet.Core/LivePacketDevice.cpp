@@ -8,7 +8,7 @@
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
-using namespace BPacket;
+using namespace Packets;
 using namespace PcapDotNet::Core;
 
 ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()

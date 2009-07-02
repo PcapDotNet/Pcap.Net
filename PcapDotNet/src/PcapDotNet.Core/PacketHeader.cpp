@@ -5,7 +5,7 @@
 using namespace PcapDotNet::Core;
 
 // static
-void PacketHeader::GetPcapHeader(pcap_pkthdr &header, BPacket::Packet^ packet)
+void PacketHeader::GetPcapHeader(pcap_pkthdr &header, Packets::Packet^ packet)
 {
     Timestamp::DateTimeToPcapTimestamp(packet->Timestamp, header.ts);
     header.len = packet->Length;

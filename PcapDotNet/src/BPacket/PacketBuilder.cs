@@ -1,6 +1,6 @@
 using System;
 
-namespace BPacket
+namespace Packets
 {
     public static class PacketBuilder
     {

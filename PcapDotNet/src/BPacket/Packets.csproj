@@ -8,8 +8,8 @@
     <ProjectGuid>{8A184AF5-E46C-482C-81A3-76D8CE290104}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BPacket</RootNamespace>
-    <AssemblyName>BPacket</AssemblyName>
+    <RootNamespace>Packets</RootNamespace>
+    <AssemblyName>Packets</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>

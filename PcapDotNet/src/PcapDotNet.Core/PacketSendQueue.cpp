@@ -5,7 +5,7 @@
 
 using namespace System;
 using namespace PcapDotNet::Core;
-using namespace BPacket;
+using namespace Packets;
 
 PacketSendQueue::PacketSendQueue(unsigned int capacity)
 {

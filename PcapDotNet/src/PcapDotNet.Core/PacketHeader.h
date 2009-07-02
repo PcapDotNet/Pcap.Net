@@ -7,6 +7,6 @@ namespace PcapDotNet { namespace Core
     private ref class PacketHeader
     {
     public:
-        static void GetPcapHeader(pcap_pkthdr &header, BPacket::Packet^ packet);
+        static void GetPcapHeader(pcap_pkthdr &header, Packets::Packet^ packet);
     };
 }}

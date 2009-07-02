@@ -1,4 +1,4 @@
-namespace BPacket
+namespace Packets
 {
     public interface IDataLink
     {
