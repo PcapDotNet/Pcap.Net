@@ -10,9 +10,9 @@ namespace PcapDotNet.Core.Test
     /// Summary description for PcapLibTests
     /// </summary>
     [TestClass]
-    public class PcapLiveDeviceTests
+    public class LivePacketDeviceTests
     {
-        public PcapLiveDeviceTests()
+        public LivePacketDeviceTests()
         {
             //
             // TODO: Add constructor logic here
