@@ -2,7 +2,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PacketTotalStatistics
+    public ref class PacketTotalStatistics : System::IEquatable<PacketTotalStatistics^>
     {
     public:
         PacketTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured);
@@ -27,8 +27,10 @@ namespace PcapDotNet { namespace Core
             unsigned int get();
         }
         
-        bool Equals(PacketTotalStatistics^ other);
+        virtual bool Equals(PacketTotalStatistics^ other);
         virtual bool Equals(System::Object^ other) override;
+
+        virtual System::String^ ToString() override;
 
     private:
         unsigned int _packetsReceived;
