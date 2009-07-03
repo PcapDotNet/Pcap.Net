@@ -2,6 +2,11 @@ namespace Packets
 {
     public class Datagram
     {
+        public Datagram(byte[] buffer)
+            : this(buffer, 0, buffer.Length)
+        {
+        }
+
         public Datagram(byte[] buffer, int offset, int length)
         {
             _buffer = buffer;

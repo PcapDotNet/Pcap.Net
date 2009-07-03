@@ -18,7 +18,7 @@ namespace Packets
             public const int EtherTypeLength = 12;
         }
 
-        internal const int HeaderLength = 14;
+        public const int HeaderLength = 14;
 
         public EthernetDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
