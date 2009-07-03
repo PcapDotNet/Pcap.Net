@@ -170,7 +170,10 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets([Out] int% nu
     if (numPacketsGot == -1)
         throw BuildInvalidOperation("Failed reading from device");
     if (numPacketsGot == -2)
+    {
+        numPacketsGot = 0;
         return PacketCommunicatorReceiveResult::BreakLoop;
+    }
     return PacketCommunicatorReceiveResult::Ok;
 }
 
@@ -223,6 +226,11 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetStatistics(int numStatist
     if (result == -2)
         return PacketCommunicatorReceiveResult::BreakLoop;
     return PacketCommunicatorReceiveResult::Ok;
+}
+
+void PacketCommunicator::Break()
+{
+    pcap_breakloop(_pcapDescriptor);
 }
 
 void PacketCommunicator::SendPacket(Packet^ packet)
