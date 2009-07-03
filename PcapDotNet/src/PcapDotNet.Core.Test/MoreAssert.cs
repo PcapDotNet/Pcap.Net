@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test
 {
-    public static class MoreAssert
+    internal static class MoreAssert
     {
         public static void IsBiggerOrEqual<T>(T expectedMinimum, T actual) where T : IComparable<T>
         {
