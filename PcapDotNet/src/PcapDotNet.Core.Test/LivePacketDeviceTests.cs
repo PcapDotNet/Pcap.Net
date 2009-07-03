@@ -80,11 +80,7 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
                 MoreAssert.IsInRange(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1.02), finishedWaiting - startWaiting);
 
-                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                           new MacAddress(SourceMac),
-                                                           new MacAddress(DestinationMac),
-                                                           EthernetType.IpV4,
-                                                           GetRandomDatagram(10));
+                Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
 
                 DateTime startSendingTime = DateTime.Now;
 
@@ -159,11 +155,7 @@ namespace PcapDotNet.Core.Test
             string dumpFilename = Path.GetTempPath() + @"dump.pcap";
             const int NumPackets = 10;
 
-            Packet expectedPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                           new MacAddress(SourceMac),
-                                                           new MacAddress(DestinationMac),
-                                                           EthernetType.IpV4,
-                                                           GetRandomDatagram(10));
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
@@ -211,11 +203,7 @@ namespace PcapDotNet.Core.Test
                 communicator.Mode = PacketCommunicatorMode.Statistics;
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                           new MacAddress(SourceMac),
-                                                           new MacAddress(DestinationMac),
-                                                           EthernetType.IpV4,
-                                                           GetRandomDatagram(PacketSize - EthernetDatagram.HeaderLength));
+                Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, PacketSize);
 
                 PacketSampleStatistics statistics;
                 PacketCommunicatorReceiveResult result = communicator.GetNextStatistics(out statistics);
@@ -277,11 +265,7 @@ namespace PcapDotNet.Core.Test
 
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
 
-                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                           new MacAddress(sourceMac),
-                                                           new MacAddress(destinationMac),
-                                                           EthernetType.IpV4,
-                                                           GetRandomDatagram(packetSize - EthernetDatagram.HeaderLength));
+                Packet sentPacket = MoreRandom.BuildRandomPacket(sourceMac, destinationMac, packetSize);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 int numStatisticsGot = 0;
@@ -320,19 +304,15 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private void TestGetSomePackets(string sourceMac, string destinationMac, int numPacketsToSend, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
-    PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
+        private static void TestGetSomePackets(string sourceMac, string destinationMac, int numPacketsToSend, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
+                                        PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
-            Packet packetToSend = PacketBuilder.Ethernet(DateTime.Now,
-                                                         new MacAddress(sourceMac),
-                                                         new MacAddress(destinationMac),
-                                                         EthernetType.IpV4,
-                                                         GetRandomDatagram(packetSize - EthernetDatagram.HeaderLength));
-
+            Packet packetToSend = MoreRandom.BuildRandomPacket(sourceMac, destinationMac, packetSize);
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.NonBlocking = nonBlocking;
+                Assert.AreEqual(nonBlocking, communicator.NonBlocking);
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
 
                 int numPacketsGot;
@@ -369,11 +349,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
 
-                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                           new MacAddress(sourceMac),
-                                                           new MacAddress(destinationMac),
-                                                           EthernetType.IpV4,
-                                                           GetRandomDatagram(packetSize - EthernetDatagram.HeaderLength));
+                Packet sentPacket = MoreRandom.BuildRandomPacket(sourceMac, destinationMac, packetSize);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 int numPacketsHandled = 0;
@@ -408,7 +384,7 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static PacketCommunicator OpenLiveDevice()
+        public static PacketCommunicator OpenLiveDevice()
         {
             IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
             MoreAssert.IsBiggerOrEqual(1, devices.Count);
@@ -437,14 +413,5 @@ namespace PcapDotNet.Core.Test
                 throw;
             }
         }
-
-        private Datagram GetRandomDatagram(int length)
-        {
-            byte[] buffer = new byte[length];
-            _random.NextBytes(buffer);
-            return new Datagram(buffer);
-        }
-
-        private Random _random = new Random();
     }
 }
