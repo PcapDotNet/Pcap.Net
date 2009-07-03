@@ -91,6 +91,8 @@ namespace PcapDotNet { namespace Core
         PacketCommunicatorReceiveResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
         PacketCommunicatorReceiveResult GetStatistics(int numStatistics, HandleStatistics^ callBack);
 
+        void Break();
+
         void SendPacket(Packets::Packet^ packet);
         void Transmit(PacketSendQueue^ sendQueue, bool isSync);
 
