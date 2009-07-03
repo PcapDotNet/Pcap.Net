@@ -23,11 +23,23 @@ namespace PcapDotNet.Core.Test
             return BuildRandomPacket(DateTime.Now, sourceMac, destinationMac, packetSize);
         }
 
+        public static Packet BuildRandomPacket(int packetSize)
+        {
+            return BuildRandomPacket(DateTime.Now, GetRandomMacAddress().ToString(), GetRandomMacAddress().ToString(), packetSize);
+        }
+
         private static Datagram GetRandomDatagram(int length)
         {
             byte[] buffer = new byte[length];
             _random.NextBytes(buffer);
             return new Datagram(buffer);
+        }
+
+        private static MacAddress GetRandomMacAddress()
+        {
+            byte[] buffer = new byte[6];
+            _random.NextBytes(buffer);
+            return new MacAddress(buffer, 0);
         }
 
         private static readonly Random _random = new Random();

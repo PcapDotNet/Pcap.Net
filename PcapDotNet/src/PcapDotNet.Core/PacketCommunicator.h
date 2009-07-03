@@ -28,12 +28,9 @@ namespace PcapDotNet { namespace Core
         KernelDump      = 0x10 // Kernel dump working mode. 
     };
 
-    public ref class PacketCommunicator : System::IDisposable
+    public ref class PacketCommunicator abstract : System::IDisposable
     {
     public:
-        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, 
-                          SocketAddress^ netmask);
-
         property PcapDataLink DataLink
         {
             PcapDataLink get();
@@ -65,9 +62,9 @@ namespace PcapDotNet { namespace Core
             int get();
         }
 
-        property PacketTotalStatistics^ TotalStatistics
+        virtual property PacketTotalStatistics^ TotalStatistics
         {
-            PacketTotalStatistics^ get();
+            PacketTotalStatistics^ get() = 0;
         }
 
         property PacketCommunicatorMode Mode
@@ -104,6 +101,13 @@ namespace PcapDotNet { namespace Core
 
         ~PacketCommunicator();
 
+    internal:
+        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, 
+                           SocketAddress^ netmask);
+
+    protected:
+        System::InvalidOperationException^ BuildInvalidOperation(System::String^ errorMessage);
+
     private:
         static Packets::Packet^ CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, Packets::IDataLink^ dataLink);
         static PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData);
@@ -119,8 +123,6 @@ namespace PcapDotNet { namespace Core
         {
             System::String^ get();
         }
-
-        System::InvalidOperationException^ BuildInvalidOperation(System::String^ errorMessage);
 
         ref class PacketHandler
         {
@@ -150,8 +152,10 @@ namespace PcapDotNet { namespace Core
             HandleStatistics^ _callBack;
         };
 
-    private:
+    protected:
         pcap_t* _pcapDescriptor;
+
+    private:
         IpV4SocketAddress^ _ipV4Netmask;
         PacketCommunicatorMode _mode;
     };

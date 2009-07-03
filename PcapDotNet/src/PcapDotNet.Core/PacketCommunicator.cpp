@@ -13,8 +13,6 @@ using namespace System::Collections::Generic;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
-void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
-
 PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
@@ -90,23 +88,6 @@ int PacketCommunicator::FileMinorVersion::get()
 {
     return pcap_minor_version(_pcapDescriptor);
 }
-
-PacketTotalStatistics^ PacketCommunicator::TotalStatistics::get()
-{
-    int statisticsSize;
-    pcap_stat* statistics = pcap_stats_ex(_pcapDescriptor, &statisticsSize);
-    if (statistics == NULL)
-        throw BuildInvalidOperation("Failed getting total statistics");
-
-    unsigned int packetsReceived = statistics->ps_recv;
-    unsigned int packetsDroppedByDriver = statistics->ps_drop;
-    unsigned int packetsDroppedByInterface = statistics->ps_ifdrop;
-    unsigned int packetsCaptured = (statisticsSize >= 16 
-                                        ? *(reinterpret_cast<int*>(statistics) + 3)
-                                        : 0);
-    return gcnew PacketTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
-}
-
 
 PacketCommunicatorMode PacketCommunicator::Mode::get()
 {

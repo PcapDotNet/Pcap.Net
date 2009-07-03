@@ -4,6 +4,7 @@
 
 #include "Pcap.h"
 #include "MarshalingServices.h"
+#include "OfflinePacketCommunicator.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -53,5 +54,5 @@ PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOp
         throw gcnew InvalidOperationException("Error creating a source string from filename " + _filename + " Error: " + gcnew String(errbuf));
     }
 
-    return gcnew PacketCommunicator(source, snapshotLength, flags, readTimeout, NULL, nullptr);
+    return gcnew OfflinePacketCommunicator(source, snapshotLength, flags, readTimeout, NULL);
 }
