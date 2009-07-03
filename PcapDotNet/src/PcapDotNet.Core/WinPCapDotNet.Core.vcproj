@@ -187,7 +187,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{8A184AF5-E46C-482C-81A3-76D8CE290104}"
-			RelativePathToProject=".\BPacket\BPacket.csproj"
+			RelativePathToProject=".\BPacket\Packets.csproj"
 		/>
 	</References>
 	<Files>
@@ -244,11 +244,27 @@
 			>
 		</File>
 		<File
+			RelativePath=".\OfflinePacketCommunicator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\OfflinePacketCommunicator.h"
+			>
+		</File>
+		<File
 			RelativePath=".\OfflinePacketDevice.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\OfflinePacketDevice.h"
+			>
+		</File>
+		<File
+			RelativePath=".\OnlinePacketCommunicator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\OnlinePacketCommunicator.h"
 			>
 		</File>
 		<File

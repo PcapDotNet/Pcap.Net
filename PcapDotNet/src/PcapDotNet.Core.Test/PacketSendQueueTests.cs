@@ -6,7 +6,7 @@ using Packets;
 namespace PcapDotNet.Core.Test
 {
     /// <summary>
-    /// Summary description for PcapLibTests
+    /// Summary description for PacketSendQueueTests
     /// </summary>
     [TestClass]
     public class PacketSendQueueTests

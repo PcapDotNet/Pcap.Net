@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace PcapDotNet.Core.Test
 {
     /// <summary>
-    /// Summary description for PcapLibTests
+    /// Summary description for LivePacketDeviceTests
     /// </summary>
     [TestClass]
     public class LivePacketDeviceTests
@@ -148,49 +148,6 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        public void DumpPacketsTest()
-        {
-            const string SourceMac = "11:22:33:44:55:66";
-            const string DestinationMac = "77:88:99:AA:BB:CC";
-            string dumpFilename = Path.GetTempPath() + @"dump.pcap";
-            const int NumPackets = 10;
-
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
-
-            using (PacketCommunicator communicator = OpenLiveDevice())
-            {
-                using (PacketDumpFile dumpFile = communicator.OpenDump(dumpFilename))
-                {
-                    for (int i = 0; i != NumPackets; ++i)
-                    {
-                        dumpFile.Dump(expectedPacket);
-                        dumpFile.Flush();
-                    }
-                }
-            }
-
-            using (PacketCommunicator communicator = new OfflinePacketDevice(dumpFilename).Open())
-            {
-                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-
-                PacketCommunicatorReceiveResult result;
-                Packet actualPacket;
-                for (int i = 0; i != NumPackets; ++i)
-                {
-                    result = communicator.GetPacket(out actualPacket);
-                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-                    Assert.AreEqual(expectedPacket, actualPacket);
-                    MoreAssert.IsInRange(expectedPacket.Timestamp.AddSeconds(-0.05), expectedPacket.Timestamp.AddSeconds(0.05),
-                                         actualPacket.Timestamp);
-                }
-
-                result = communicator.GetPacket(out actualPacket);
-                Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
-                Assert.IsNull(actualPacket);
-            }
-        }
-
-        [TestMethod]
         public void GetNextStatisticsTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
@@ -254,6 +211,39 @@ namespace PcapDotNet.Core.Test
                               PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0, 0.02);
             TestGetStatistics(SourceMac, DestinationMac, NumPacketsToSend, NumStatisticsToGather, NumStatisticsToGather / 2, 5, PacketSize,
                               PacketCommunicatorReceiveResult.BreakLoop, NumStatisticsToGather / 2, NumPacketsToSend, NumStatisticsToGather / 2, NumStatisticsToGather / 2 + 0.02);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void GetStatisticsOnCaptureModeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                PacketSampleStatistics statistics;
+                communicator.GetNextStatistics(out statistics);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void GetPacketOnStatisticsModeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+                Packet packet;
+                communicator.GetPacket(out packet);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetInvalidModeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = (PacketCommunicatorMode)(-99);
+            }
         }
 
         private void TestGetStatistics(string sourceMac, string destinationMac, int numPacketsToSend, int numStatisticsToGather, int numStatisticsToBreakLoop, double secondsToWait, int packetSize,
