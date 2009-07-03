@@ -199,6 +199,142 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="PacketDevice"
+			>
+			<File
+				RelativePath=".\DeviceAddress.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeviceAddress.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IPacketDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IpV4SocketAddress.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IpV4SocketAddress.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LivePacketDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LivePacketDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OfflinePacketDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OfflinePacketDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketDeviceOpenFlags.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SocketAddress.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SocketAddress.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SocketAddressFamily.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="PacketCommunicator"
+			>
+			<File
+				RelativePath=".\OfflinePacketCommunicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OfflinePacketCommunicator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OnlinePacketCommunicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OnlinePacketCommunicator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketCommunicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketCommunicator.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Marshaling"
+			>
+			<File
+				RelativePath=".\MarshalingServices.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MarshalingServices.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketHeader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketHeader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Timestamp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Timestamp.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Pcap"
+			>
+			<File
+				RelativePath=".\Pcap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PcapDeclarations.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PcapDeclarations.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\BerkeleyPacketFilter.cpp"
 			>
@@ -208,99 +344,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\DeviceAddress.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\DeviceAddress.h"
-			>
-		</File>
-		<File
-			RelativePath=".\IPacketDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\IpV4SocketAddress.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\IpV4SocketAddress.h"
-			>
-		</File>
-		<File
-			RelativePath=".\LivePacketDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\LivePacketDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\MarshalingServices.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\MarshalingServices.h"
-			>
-		</File>
-		<File
-			RelativePath=".\OfflinePacketCommunicator.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OfflinePacketCommunicator.h"
-			>
-		</File>
-		<File
-			RelativePath=".\OfflinePacketDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OfflinePacketDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\OnlinePacketCommunicator.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OnlinePacketCommunicator.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketCommunicator.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketCommunicator.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketDevice.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketDevice.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketDeviceOpenFlags.h"
-			>
-		</File>
-		<File
 			RelativePath=".\PacketDumpFile.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\PacketDumpFile.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketHeader.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PacketHeader.h"
 			>
 		</File>
 		<File
@@ -328,23 +376,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Pcap.h"
-			>
-		</File>
-		<File
 			RelativePath=".\PcapDataLink.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\PcapDataLink.h"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDeclarations.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PcapDeclarations.h"
 			>
 		</File>
 		<File
@@ -361,26 +397,6 @@
 		</File>
 		<File
 			RelativePath=".\PcapLibrary.h"
-			>
-		</File>
-		<File
-			RelativePath=".\SocketAddress.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\SocketAddress.h"
-			>
-		</File>
-		<File
-			RelativePath=".\SocketAddressFamily.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Timestamp.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Timestamp.h"
 			>
 		</File>
 	</Files>
