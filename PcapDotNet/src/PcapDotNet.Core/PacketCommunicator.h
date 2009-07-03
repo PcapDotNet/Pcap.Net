@@ -84,11 +84,12 @@ namespace PcapDotNet { namespace Core
 
         delegate void HandlePacket(Packets::Packet^ packet);
         PacketCommunicatorReceiveResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
-        PacketCommunicatorReceiveResult GetSomePackets(int maxPackets, HandlePacket^ callBack, [System::Runtime::InteropServices::Out] int% numPacketsGot);
+        PacketCommunicatorReceiveResult GetSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack);
         PacketCommunicatorReceiveResult GetPackets(int numPackets, HandlePacket^ callBack);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
         PacketCommunicatorReceiveResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
+        PacketCommunicatorReceiveResult GetStatistics(int numStatistics, HandleStatistics^ callBack);
 
         void SendPacket(Packets::Packet^ packet);
         void Transmit(PacketSendQueue^ sendQueue, bool isSync);

@@ -71,11 +71,20 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
+                Packet packet;
+                DateTime startWaiting = DateTime.Now;
+                PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                DateTime finishedWaiting = DateTime.Now;
+
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
+                Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
+                MoreAssert.IsInRange(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1.02), finishedWaiting - startWaiting);
+
                 Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
                                                            new MacAddress(SourceMac),
                                                            new MacAddress(DestinationMac),
                                                            EthernetType.IpV4,
-                                                           new Datagram(new byte[10], 0, 10));
+                                                           GetRandomDatagram(10));
 
                 DateTime startSendingTime = DateTime.Now;
 
@@ -84,13 +93,62 @@ namespace PcapDotNet.Core.Test
 
                 DateTime endSendingTime = DateTime.Now;
 
-                Packet packet;
-                PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                result = communicator.GetPacket(out packet);
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 Assert.AreEqual<uint>(NumPacketsToSend, communicator.TotalStatistics.PacketsCaptured);
                 Assert.AreEqual(sentPacket.Length, packet.Length);
                 MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
+            }
+        }
+
+        [TestMethod]
+        public void GetSomePacketsTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int NumPacketsToSend = 100;
+            const int PacketSize = 100;
+
+            TestGetSomePackets(SourceMac, DestinationMac, 0, PacketSize, false, PacketCommunicatorReceiveResult.Ok, 0, 1, 1.02);
+            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(SourceMac, DestinationMac, 0, PacketSize, true, PacketCommunicatorReceiveResult.Ok, 0, 0, 0.02);
+            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, PacketSize, true, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+        }
+
+        private void TestGetSomePackets(string sourceMac, string destinationMac, int numPacketsToSend, int packetSize, bool nonBlocking, 
+            PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
+        {
+            Packet packetToSend = PacketBuilder.Ethernet(DateTime.Now,
+                                                         new MacAddress(sourceMac),
+                                                         new MacAddress(destinationMac),
+                                                         EthernetType.IpV4,
+                                                         GetRandomDatagram(packetSize - EthernetDatagram.HeaderLength));
+
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.NonBlocking = nonBlocking;
+                communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
+
+                int numPacketsGot;
+                for (int i = 0; i != numPacketsToSend; ++i)
+                    communicator.SendPacket(packetToSend);
+
+                int numPacketsHandled = 0;
+                DateTime startWaiting = DateTime.Now;
+                PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToSend,
+                                                                                     delegate(Packet packet)
+                                                                                         {
+                                                                                            Assert.AreEqual(packetToSend, packet);
+                                                                                             ++numPacketsHandled;
+                                                                                         });
+                DateTime finishedWaiting = DateTime.Now;
+
+                Assert.AreEqual(expectedResult, result);
+                Assert.AreEqual(expectedNumPackets, numPacketsGot);
+                Assert.AreEqual(expectedNumPackets, numPacketsHandled);
+                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }
         }
 
@@ -105,7 +163,7 @@ namespace PcapDotNet.Core.Test
                                                    new MacAddress(SourceMac),
                                                    new MacAddress(DestinationMac),
                                                    EthernetType.IpV4,
-                                                   new Datagram(new byte[10], 0, 10));
+                                                   GetRandomDatagram(10));
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
@@ -128,7 +186,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        public void ReceiveManyPacketsTest()
+        public void GetPacketsTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
@@ -142,7 +200,7 @@ namespace PcapDotNet.Core.Test
                                                            new MacAddress(SourceMac),
                                                            new MacAddress(DestinationMac),
                                                            EthernetType.IpV4,
-                                                           new Datagram(new byte[10], 0, 10));
+                                                           GetRandomDatagram(10));
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 int numPacketsGot = 0;
@@ -165,6 +223,99 @@ namespace PcapDotNet.Core.Test
 
                 Assert.AreEqual(NumPacketsToSend, numPacketsGot);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+            }
+        }
+
+        [TestMethod]
+        public void GetNextStatisticsTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int NumPacketsToSend = 100;
+            const int PacketSize = 100;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
+                                                           new MacAddress(SourceMac),
+                                                           new MacAddress(DestinationMac),
+                                                           EthernetType.IpV4,
+                                                           GetRandomDatagram(PacketSize - EthernetDatagram.HeaderLength));
+
+                PacketSampleStatistics statistics;
+                PacketCommunicatorReceiveResult result = communicator.GetNextStatistics(out statistics);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
+                Assert.AreEqual<uint>(0, statistics.AcceptedPackets);
+                Assert.AreEqual<uint>(0, statistics.AcceptedBytes);
+
+                for (int i = 0; i != NumPacketsToSend; ++i)
+                    communicator.SendPacket(sentPacket);
+
+                result = communicator.GetNextStatistics(out statistics);
+
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
+                Assert.AreEqual<uint>(NumPacketsToSend, statistics.AcceptedPackets, "AcceptedPackets");
+                // Todo check byte statistics
+//                Assert.AreEqual<uint>((uint)(sentPacket.Length * NumPacketsToSend), statistics.AcceptedBytes,
+//                                      "AcceptedBytes. Diff Per Packet: " +
+//                                      (statistics.AcceptedBytes - sentPacket.Length * NumPacketsToSend) /
+//                                      ((double)NumPacketsToSend));
+            }
+        }
+
+        [TestMethod]
+        public void GetStatisticsTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int NumPacketsToSend = 100;
+            const int NumStatisticsToGather = 3;
+            const int PacketSize = 100;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet sentPacket = PacketBuilder.Ethernet(DateTime.Now,
+                                                           new MacAddress(SourceMac),
+                                                           new MacAddress(DestinationMac),
+                                                           EthernetType.IpV4,
+                                                           GetRandomDatagram(PacketSize - EthernetDatagram.HeaderLength));
+
+                PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
+                int numStatisticsGot = 0;
+                ulong totalPackets = 0;
+                ulong totalBytes = 0;
+                Thread thread = new Thread(delegate()
+                {
+                    result = communicator.GetStatistics(NumStatisticsToGather,
+                                                     delegate(PacketSampleStatistics statistics)
+                                                     {
+                                                         totalPackets += statistics.AcceptedPackets;
+                                                         totalBytes += statistics.AcceptedBytes;
+                                                         ++numStatisticsGot;
+                                                     });
+                });
+                thread.Start();
+
+                for (int i = 0; i != NumPacketsToSend; ++i)
+                    communicator.SendPacket(sentPacket);
+
+                if (!thread.Join(TimeSpan.FromSeconds(5)))
+                    thread.Abort();
+
+                Assert.AreEqual(NumStatisticsToGather, numStatisticsGot, "NumStatistics");
+                Assert.AreEqual<ulong>(NumPacketsToSend, totalPackets, "NumPackets");
+                // Todo check bytes statistics
+//                Assert.AreEqual<ulong>((ulong)(NumPacketsToSend * sentPacket.Length), totalBytes, "NumBytes");
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result, "Result");
             }
         }
 
@@ -197,5 +348,14 @@ namespace PcapDotNet.Core.Test
                 throw;
             }
         }
+
+        private Datagram GetRandomDatagram(int length)
+        {
+            byte[] buffer = new byte[length];
+            _random.NextBytes(buffer);
+            return new Datagram(buffer);
+        }
+
+        private Random _random = new Random();
     }
 }

@@ -154,7 +154,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetPacket([Out] Packet^% pac
     return result;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets(int maxPackets, HandlePacket^ callBack, [Out] int% numPacketsGot)
+PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets([Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
@@ -207,6 +207,22 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetNextStatistics([Out] Pack
     statistics = CreateStatistics(*packetHeader, packetData);
 
     return result;
+}
+
+PacketCommunicatorReceiveResult PacketCommunicator::GetStatistics(int numStatistics, HandleStatistics^ callBack)
+{
+    AssertMode(PacketCommunicatorMode::Statistics);
+
+    StatisticsHandler^ statisticsHandler = gcnew StatisticsHandler(callBack);
+    HandlerDelegate^ statisticsHandlerDelegate = gcnew HandlerDelegate(statisticsHandler, &StatisticsHandler::Handle);
+    pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(statisticsHandlerDelegate).ToPointer();
+
+    int result = pcap_loop(_pcapDescriptor, numStatistics, functionPointer, NULL);
+    if (result == -1)
+        throw BuildInvalidOperation("Failed reading from device");
+    if (result == -2)
+        return PacketCommunicatorReceiveResult::BreakLoop;
+    return PacketCommunicatorReceiveResult::Ok;
 }
 
 void PacketCommunicator::SendPacket(Packet^ packet)
