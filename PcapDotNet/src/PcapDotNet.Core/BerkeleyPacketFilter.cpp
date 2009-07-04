@@ -2,11 +2,54 @@
 #include "Pcap.h"
 #include "MarshalingServices.h"
 #include "PcapError.h"
+#include "PcapDataLink.h"
 
 using namespace System;
 using namespace PcapDotNet::Core;
+using namespace Packets;
+
+BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterString, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
+{
+    Initialize(filterString, snapshotLength, kind, netmask);
+}
+
+BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterString, int snapshotLength, DataLinkKind kind)
+{
+    Initialize(filterString, snapshotLength, kind, nullptr);
+}
 
 BerkeleyPacketFilter::BerkeleyPacketFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
+{
+    Initialize(pcapDescriptor, filterString, netmask);
+}
+
+void BerkeleyPacketFilter::SetFilter(pcap_t* pcapDescriptor)
+{
+    if (pcap_setfilter(pcapDescriptor, _bpf) != 0)
+        throw PcapError::BuildInvalidOperation("Failed setting bpf filter", pcapDescriptor);
+}
+
+BerkeleyPacketFilter::~BerkeleyPacketFilter()
+{
+    pcap_freecode(_bpf);
+    delete _bpf;
+}
+
+void BerkeleyPacketFilter::Initialize(String^ filterString, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
+{
+    PcapDataLink dataLink = PcapDataLink(kind);
+    pcap_t* pcapDescriptor = pcap_open_dead(dataLink.Value, snapshotLength);
+    try
+    {
+        Initialize(pcapDescriptor, filterString, netmask);
+    }
+    finally
+    {
+        pcap_close(pcapDescriptor);
+    }
+}
+
+void BerkeleyPacketFilter::Initialize(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
 {
     std::string unmanagedFilterString = MarshalingServices::ManagedToUnmanagedString(filterString);
 
@@ -28,17 +71,4 @@ BerkeleyPacketFilter::BerkeleyPacketFilter(pcap_t* pcapDescriptor, String^ filte
         delete _bpf;
         throw;
     }
-}
-
-void BerkeleyPacketFilter::SetFilter(pcap_t* pcapDescriptor)
-{
-    if (pcap_setfilter(pcapDescriptor, _bpf) != 0)
-        throw PcapError::BuildInvalidOperation("Failed setting bpf filter", pcapDescriptor);
-}
-
-
-BerkeleyPacketFilter::~BerkeleyPacketFilter()
-{
-    pcap_freecode(_bpf);
-    delete _bpf;
 }
