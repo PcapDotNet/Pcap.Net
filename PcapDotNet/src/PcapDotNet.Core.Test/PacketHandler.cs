@@ -21,6 +21,11 @@ namespace PcapDotNet.Core.Test
         {
         }
 
+        public PacketHandler(Packet expectedPacklet, PacketCommunicator communicator, int numPacketsToBreakLoop)
+            : this(expectedPacklet, DateTime.MinValue, DateTime.MaxValue, communicator, numPacketsToBreakLoop)
+        {
+        }
+
         public void Handle(Packet packet)
         {
             Assert.AreEqual(_expectedPacket, packet);

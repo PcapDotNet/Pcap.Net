@@ -293,6 +293,10 @@ namespace PcapDotNet.Core.Test
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
+            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
+                                     ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". PacketSize=" + packetSize +
+                                     ". NonBlocking=" + nonBlocking;
+
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
@@ -308,23 +312,18 @@ namespace PcapDotNet.Core.Test
                 for (int i = 0; i != numPacketsToSend; ++i)
                     communicator.SendPacket(packetToSend);
 
-                int numPacketsHandled = 0;
                 if (numPacketsToBreakLoop == 0)
                     communicator.Break();
+
+                PacketHandler handler = new PacketHandler(packetToSend, communicator, numPacketsToBreakLoop);
                 DateTime startWaiting = DateTime.Now;
                 PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToGet,
-                                                                                     delegate(Packet packet)
-                                                                                     {
-                                                                                         Assert.AreEqual(packetToSend, packet);
-                                                                                         ++numPacketsHandled;
-                                                                                         if (numPacketsHandled >= numPacketsToBreakLoop)
-                                                                                             communicator.Break();
-                                                                                     });
+                                                                                     handler.Handle);
                 DateTime finishedWaiting = DateTime.Now;
 
                 Assert.AreEqual(expectedResult, result);
-                Assert.AreEqual(expectedNumPackets, numPacketsGot);
-                Assert.AreEqual(expectedNumPackets, numPacketsHandled);
+                Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + TestDescription);
+                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + TestDescription);
                 MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }
         }
@@ -348,23 +347,17 @@ namespace PcapDotNet.Core.Test
                 Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, packetSize);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
-                int numPacketsHandled = 0;
 
                 for (int i = 0; i != numPacketsToSend; ++i)
                     communicator.SendPacket(sentPacket);
+
+                PacketHandler handler = new PacketHandler(sentPacket, communicator, numPacketsToBreakLoop);
 
                 Thread thread = new Thread(delegate()
                 {
                     if (numPacketsToBreakLoop == 0)
                         communicator.Break();
-                    result = communicator.GetPackets(numPacketsToWait,
-                                                     delegate(Packet packet)
-                                                     {
-                                                         Assert.AreEqual(sentPacket, packet);
-                                                         ++numPacketsHandled;
-                                                         if (numPacketsHandled >= numPacketsToBreakLoop)
-                                                             communicator.Break();
-                                                     });
+                    result = communicator.GetPackets(numPacketsToWait, handler.Handle);
                 });
 
                 DateTime startWaiting = DateTime.Now;
@@ -375,7 +368,7 @@ namespace PcapDotNet.Core.Test
                 DateTime finishedWaiting = DateTime.Now;
 
                 Assert.AreEqual(expectedResult, result, TestDescription);
-                Assert.AreEqual(expectedNumPackets, numPacketsHandled);
+                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled);
                 MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }
         }
