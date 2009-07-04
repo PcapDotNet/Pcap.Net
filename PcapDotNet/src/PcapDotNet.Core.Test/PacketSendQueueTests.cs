@@ -59,33 +59,41 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void TransmitQueueTest()
+        public void TransmitQueueToLiveTest()
         {
-            TestTransmitQueue(0, 100, 0.5, false);
-            TestTransmitQueue(10, 60, 0.5, false);
-            TestTransmitQueue(10, 600, 0.5, false);
-            TestTransmitQueue(10, 1500, 0.5, false);
-            TestTransmitQueue(10, 60, 0.5, true);
+            TestTransmitQueueToLive(0, 100, 0.5, false);
+            TestTransmitQueueToLive(10, 60, 0.5, false);
+            TestTransmitQueueToLive(10, 600, 0.5, false);
+            TestTransmitQueueToLive(10, 1500, 0.5, false);
+            TestTransmitQueueToLive(10, 60, 0.5, true);
         }
 
-        private static void TestTransmitQueue(int numPacketsToSend, int packetSize, double secondsBetweenTimestamps, bool isSynced)
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TransmitQueueToOfflineTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
-            int rawPacketSize = packetSize + 16; // I don't know why 16
 
-            using (PacketSendQueue queue = new PacketSendQueue((uint)(numPacketsToSend * rawPacketSize)))
+            List<Packet> packetsToSend;
+            using (PacketSendQueue queue = BuildQueue(out packetsToSend, 100, 100, SourceMac, DestinationMac, 0.5))
             {
-                DateTime timestamp = DateTime.Now.AddSeconds(-100);
-                List<Packet> packetsToSend = new List<Packet>(numPacketsToSend);
-                for (int i = 0; i != numPacketsToSend; ++i)
+                using (PacketCommunicator communicator = OfflinePacketDeviceTests.OpenOfflineDevice())
                 {
-                    Packet packetToSend = MoreRandom.BuildRandomPacket(timestamp, SourceMac, DestinationMac, packetSize);
-                    queue.Enqueue(packetToSend);
-                    packetsToSend.Add(packetToSend);
-                    timestamp = timestamp.AddSeconds(secondsBetweenTimestamps);
+                    communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                    communicator.Transmit(queue, false);
                 }
+            }
+        }
 
+        private static void TestTransmitQueueToLive(int numPacketsToSend, int packetSize, double secondsBetweenTimestamps, bool isSynced)
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            List<Packet> packetsToSend;
+            using (PacketSendQueue queue = BuildQueue(out packetsToSend, numPacketsToSend, packetSize, SourceMac, DestinationMac, secondsBetweenTimestamps))
+            {
                 using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
                 {
                     communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
@@ -124,6 +132,32 @@ namespace PcapDotNet.Core.Test
                     Assert.AreEqual(numPacketsToSend, numPacketsHandled);
                 }
             }
+        }
+
+        private static PacketSendQueue BuildQueue(out List<Packet> packetsToSend, int numPackets, int packetSize, string sourceMac, string destinationMac, double secondsBetweenTimestamps)
+        {
+            int rawPacketSize = packetSize + 16; // I don't know why 16
+
+            PacketSendQueue queue = new PacketSendQueue((uint)(numPackets * rawPacketSize));
+            try
+            {
+                DateTime timestamp = DateTime.Now.AddSeconds(-100);
+                packetsToSend = new List<Packet>(numPackets);
+                for (int i = 0; i != numPackets; ++i)
+                {
+                    Packet packetToSend = MoreRandom.BuildRandomPacket(timestamp, sourceMac, destinationMac, packetSize);
+                    queue.Enqueue(packetToSend);
+                    packetsToSend.Add(packetToSend);
+                    timestamp = timestamp.AddSeconds(secondsBetweenTimestamps);
+                }
+            }
+            catch (Exception)
+            {
+                queue.Dispose();
+                throw;
+            }
+
+            return queue;
         }
     }
 }

@@ -76,7 +76,7 @@ namespace PcapDotNet { namespace Core
         void Break();
 
         void SendPacket(Packets::Packet^ packet);
-        void Transmit(PacketSendQueue^ sendQueue, bool isSync);
+        virtual void Transmit(PacketSendQueue^ sendQueue, bool isSync) = 0;
 
         BerkeleyPacketFilter^ CreateFilter(System::String^ filterString);
         void SetFilter(BerkeleyPacketFilter^ filter);
