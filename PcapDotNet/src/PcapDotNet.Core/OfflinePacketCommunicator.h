@@ -13,6 +13,8 @@ namespace PcapDotNet { namespace Core
             PacketTotalStatistics^ get() override;
         }
 
+        virtual void Transmit(PacketSendQueue^ sendQueue, bool isSync) override;
+
     internal:
         OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth);
     };

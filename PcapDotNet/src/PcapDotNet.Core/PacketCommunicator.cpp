@@ -239,11 +239,6 @@ void PacketCommunicator::SendPacket(Packet^ packet)
 }
 
 
-void PacketCommunicator::Transmit(PacketSendQueue^ sendQueue, bool isSync)
-{
-    sendQueue->Transmit(_pcapDescriptor, isSync);
-}
-
 BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterString)
 {
     return gcnew BerkeleyPacketFilter(_pcapDescriptor, filterString, _ipV4Netmask);

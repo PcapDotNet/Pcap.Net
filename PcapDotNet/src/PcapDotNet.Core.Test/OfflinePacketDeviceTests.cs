@@ -129,6 +129,16 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void StatisticsModeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenOfflineDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+            }
+        }
+
+        [TestMethod]
         public void SetNonBlockTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -162,7 +172,7 @@ namespace PcapDotNet.Core.Test
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void SendPacketTest()
+        public void SendPacketErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
             {
@@ -235,12 +245,12 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static PacketCommunicator OpenOfflineDevice()
+        public static PacketCommunicator OpenOfflineDevice()
         {
             return OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100));
         }
 
-        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet)
+        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet)
         {
             string dumpFilename = Path.GetTempPath() + @"dump.pcap";
 

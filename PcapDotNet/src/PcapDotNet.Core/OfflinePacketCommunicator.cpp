@@ -13,3 +13,7 @@ OfflinePacketCommunicator::OfflinePacketCommunicator(const char* source, int sna
 {
 }
 
+void OfflinePacketCommunicator::Transmit(PacketSendQueue^ sendQueue, bool isSync)
+{
+    throw gcnew InvalidOperationException("Can't transmit queue to an offline device");
+}

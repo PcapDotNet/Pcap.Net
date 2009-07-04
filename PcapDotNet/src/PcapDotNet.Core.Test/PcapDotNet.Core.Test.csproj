@@ -49,6 +49,8 @@
     <Compile Include="PacketHandler.cs" />
     <Compile Include="PacketSendQueueTests.cs" />
     <Compile Include="OfflinePacketDeviceTests.cs" />
+    <Compile Include="PacketTotalStatisticsTests.cs" />
+    <Compile Include="PcapDataLinkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PcapLibTests.cs" />
   </ItemGroup>
