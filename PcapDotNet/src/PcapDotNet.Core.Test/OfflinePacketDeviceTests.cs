@@ -159,6 +159,8 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual(PacketCommunicatorMode.Capture, communicator.Mode);
                 Assert.IsFalse(communicator.NonBlocking);
                 Assert.AreEqual(PacketDevice.DefaultSnapshotLength, communicator.SnapshotLength);
+                Assert.AreEqual(2, communicator.FileMajorVersion);
+                Assert.AreEqual(4, communicator.FileMinorVersion);
                 return communicator;
             }
             catch (Exception)

@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BerkeleyPacketFilterTests.cs" />
     <Compile Include="MoreAssert.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MoreRandom.cs" />
