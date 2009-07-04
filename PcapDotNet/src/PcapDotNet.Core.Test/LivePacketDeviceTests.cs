@@ -242,8 +242,8 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private void TestGetStatistics(string sourceMac, string destinationMac, int numPacketsToSend, int numStatisticsToGather, int numStatisticsToBreakLoop, double secondsToWait, int packetSize,
-                                       PacketCommunicatorReceiveResult expectedResult, int expectedNumStatistics, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
+        private static void TestGetStatistics(string sourceMac, string destinationMac, int numPacketsToSend, int numStatisticsToGather, int numStatisticsToBreakLoop, double secondsToWait, int packetSize,
+                                              PacketCommunicatorReceiveResult expectedResult, int expectedNumStatistics, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
@@ -267,6 +267,7 @@ namespace PcapDotNet.Core.Test
                     result = communicator.GetStatistics(numStatisticsToGather,
                                                      delegate(PacketSampleStatistics statistics)
                                                      {
+                                                         Assert.IsNotNull(statistics.ToString());
                                                          totalPackets += statistics.AcceptedPackets;
                                                          totalBytes += statistics.AcceptedBytes;
                                                          ++numStatisticsGot;
