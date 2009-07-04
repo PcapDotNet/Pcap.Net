@@ -9,6 +9,11 @@ using namespace System;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
+PcapDataLink::PcapDataLink(DataLinkKind kind)
+{
+    _value = KindToValue(kind);
+}
+
 PcapDataLink::PcapDataLink(int value)
 {
     _value = value;
@@ -63,4 +68,16 @@ String^ PcapDataLink::Description::get()
 String^ PcapDataLink::ToString()
 {
     return Name + " (" + Description + ")";
+}
+
+// static
+int PcapDataLink::KindToValue(DataLinkKind kind)
+{
+    switch (kind)
+    {
+    case DataLinkKind::Ethernet:
+        return 1;
+    default:
+        throw gcnew NotSupportedException("PcapDataLink kind " + kind.ToString() + " is unsupported");
+    }
 }
