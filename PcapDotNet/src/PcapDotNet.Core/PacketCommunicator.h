@@ -115,8 +115,15 @@ namespace PcapDotNet { namespace Core
 
             void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
+            property int PacketCounter
+            {
+                int get();
+            }
+
+        private:
             HandlePacket^ _callBack;
             PcapDataLink _dataLink;
+            int _packetCounter;
         };
 
         ref class StatisticsHandler
@@ -129,6 +136,7 @@ namespace PcapDotNet { namespace Core
 
             void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
+        private:
             HandleStatistics^ _callBack;
         };
 

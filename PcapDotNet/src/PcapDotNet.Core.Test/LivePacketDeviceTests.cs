@@ -101,50 +101,46 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void GetSomePacketsTest()
         {
-            const string SourceMac = "11:22:33:44:55:66";
-            const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPacketsToSend = 100;
             const int PacketSize = 100;
 
             // Test normal mode
-            TestGetSomePackets(SourceMac, DestinationMac, 0, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, 0, 1, 1.02);
-            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(0, 0, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, 0, 1, 1.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, 0, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, -1, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
 
             // Test non blocking
-            TestGetSomePackets(SourceMac, DestinationMac, 0, int.MaxValue, PacketSize, true, PacketCommunicatorReceiveResult.Ok, 0, 0, 0.02);
-            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, int.MaxValue, PacketSize, true, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetSomePackets(0, 0, int.MaxValue, PacketSize, true, PacketCommunicatorReceiveResult.Ok, 0, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, PacketSize, true, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
 
             // Test break loop
-            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend / 2, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
-            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend / 2, PacketSize, true, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
-            TestGetSomePackets(SourceMac, DestinationMac, NumPacketsToSend, 0, PacketSize, false, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, PacketSize, false, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, PacketSize, true, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
+            TestGetSomePackets(NumPacketsToSend, NumPacketsToSend, 0, PacketSize, false, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
         }
 
         [TestMethod]
         public void GetPacketsTest()
-        {
-            const string SourceMac = "11:22:33:44:55:66";
-            const string DestinationMac = "77:88:99:AA:BB:CC";
+        {        
             const int NumPacketsToSend = 100;
             const int PacketSize = 100;
 
             // Normal
-            TestGetPackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize,
-                           PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestGetPackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
 
             // Wait for less packets
-            TestGetPackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize,
-                           PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
+            TestGetPackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
 
             // Wait for more packets
-            TestGetPackets(SourceMac, DestinationMac, NumPacketsToSend, 0, int.MaxValue, 2, PacketSize,
-                           PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestGetPackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestGetPackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestGetPackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
 
             // Break loop
-            TestGetPackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize,
-                           PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
-            TestGetPackets(SourceMac, DestinationMac, NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize,
-                           PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
+            TestGetPackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
+            TestGetPackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
         }
 
         [TestMethod]
@@ -294,16 +290,19 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static void TestGetSomePackets(string sourceMac, string destinationMac, int numPacketsToSend, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
-                                        PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
+        private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
+                                               PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
-            Packet packetToSend = MoreRandom.BuildRandomPacket(sourceMac, destinationMac, packetSize);
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            Packet packetToSend = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, packetSize);
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.NonBlocking = nonBlocking;
                 Assert.AreEqual(nonBlocking, communicator.NonBlocking);
-                communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
                 int numPacketsGot;
                 for (int i = 0; i != numPacketsToSend; ++i)
@@ -313,7 +312,7 @@ namespace PcapDotNet.Core.Test
                 if (numPacketsToBreakLoop == 0)
                     communicator.Break();
                 DateTime startWaiting = DateTime.Now;
-                PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToSend,
+                PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToGet,
                                                                                      delegate(Packet packet)
                                                                                      {
                                                                                          Assert.AreEqual(packetToSend, packet);
@@ -330,16 +329,23 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private void TestGetPackets(string sourceMac, string destinationMac, int numPacketsToSend,
-                            int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
-                            PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
-                            double expectedMinSeconds, double expectedMaxSeconds)
+        private void TestGetPackets(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
+                                    PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
+                                    double expectedMinSeconds, double expectedMaxSeconds)
         {
+            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
+                                     ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". SecondsToWait=" +
+                                     secondsToWait + ". PacketSize=" + packetSize;
+
+
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
-                communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = MoreRandom.BuildRandomPacket(sourceMac, destinationMac, packetSize);
+                Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, packetSize);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 int numPacketsHandled = 0;
@@ -368,7 +374,7 @@ namespace PcapDotNet.Core.Test
                     thread.Abort();
                 DateTime finishedWaiting = DateTime.Now;
 
-                Assert.AreEqual(expectedResult, result);
+                Assert.AreEqual(expectedResult, result, TestDescription);
                 Assert.AreEqual(expectedNumPackets, numPacketsHandled);
                 MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }

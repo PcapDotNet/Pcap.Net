@@ -4,7 +4,7 @@
 
 #include "MarshalingServices.h"
 #include "Pcap.h"
-#include "OnlinePacketCommunicator.h"
+#include "LivePacketCommunicator.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -82,7 +82,7 @@ PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenF
         netmask = Addresses[0]->Netmask;
 
     // Open the device
-    return gcnew OnlinePacketCommunicator(deviceName.c_str(), snapshotLength, flags, readTimeout, NULL, netmask);
+    return gcnew LivePacketCommunicator(deviceName.c_str(), snapshotLength, flags, readTimeout, NULL, netmask);
 }
 
 // Private Methods

@@ -4,7 +4,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class OnlinePacketCommunicator : PacketCommunicator
+    public ref class LivePacketCommunicator : PacketCommunicator
     {
     public:
         virtual property PacketTotalStatistics^ TotalStatistics
@@ -13,8 +13,8 @@ namespace PcapDotNet { namespace Core
         }
 
     internal:
-        OnlinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, 
-                                 SocketAddress^ netmask);
+        LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, 
+                               SocketAddress^ netmask);
 
     };
 }}
