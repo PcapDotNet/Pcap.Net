@@ -267,19 +267,19 @@
 			Name="PacketCommunicator"
 			>
 			<File
+				RelativePath=".\LivePacketCommunicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LivePacketCommunicator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OfflinePacketCommunicator.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OfflinePacketCommunicator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OnlinePacketCommunicator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OnlinePacketCommunicator.h"
 				>
 			</File>
 			<File

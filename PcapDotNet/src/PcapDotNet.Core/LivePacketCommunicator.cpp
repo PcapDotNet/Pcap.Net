@@ -1,15 +1,15 @@
-#include "OnlinePacketCommunicator.h"
+#include "LivePacketCommunicator.h"
 
 #include "Pcap.h"
 
 using namespace PcapDotNet::Core;
 
-OnlinePacketCommunicator::OnlinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, SocketAddress^ netmask)
+LivePacketCommunicator::LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, SocketAddress^ netmask)
 : PacketCommunicator(source, snapshotLength, flags, readTimeout, auth, netmask)
 {
 }
 
-PacketTotalStatistics^ OnlinePacketCommunicator::TotalStatistics::get()
+PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
 {
     int statisticsSize;
     pcap_stat* statistics = pcap_stats_ex(_pcapDescriptor, &statisticsSize);

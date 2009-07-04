@@ -148,13 +148,21 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets([Out] int% nu
                                   functionPointer,
                                   NULL);
 
-    if (numPacketsGot == -1)
-        throw BuildInvalidOperation("Failed reading from device");
-    if (numPacketsGot == -2)
+    switch (numPacketsGot)
     {
+    case -2:
         numPacketsGot = 0;
         return PacketCommunicatorReceiveResult::BreakLoop;
+    case -1:
+        throw BuildInvalidOperation("Failed reading from device");
+    case 0:
+        if (packetHandler->PacketCounter != 0)
+        {
+            numPacketsGot = packetHandler->PacketCounter;
+            return PacketCommunicatorReceiveResult::Eof;
+        }
     }
+
     return PacketCommunicatorReceiveResult::Ok;
 }
 
@@ -167,10 +175,17 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetPackets(int numPackets, H
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
     int result = pcap_loop(_pcapDescriptor, numPackets, functionPointer, NULL);
-    if (result == -1)
-        throw BuildInvalidOperation("Failed reading from device");
-    if (result == -2)
+    switch (result)
+    {
+    case -2:
         return PacketCommunicatorReceiveResult::BreakLoop;
+    case -1:
+        throw BuildInvalidOperation("Failed reading from device");
+    case 0:
+        if (packetHandler->PacketCounter != numPackets)
+            return PacketCommunicatorReceiveResult::Eof;
+    }
+
     return PacketCommunicatorReceiveResult::Ok;
 }
 
@@ -315,7 +330,13 @@ InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::Str
 
 void PacketCommunicator::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
+    ++_packetCounter;
     _callBack->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
+}
+
+int PacketCommunicator::PacketHandler::PacketCounter::get()
+{
+    return _packetCounter;
 }
 
 void PacketCommunicator::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)

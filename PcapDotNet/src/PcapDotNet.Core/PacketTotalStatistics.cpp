@@ -53,11 +53,15 @@ String^ PacketTotalStatistics::ToString()
     StringBuilder^ stringBuilder = gcnew StringBuilder();
     stringBuilder->Append("Packets Received: ");
     stringBuilder->Append(PacketsReceived);
+    stringBuilder->Append(". ");
     stringBuilder->Append("Packets Dropped By Driver: ");
     stringBuilder->Append(PacketsDroppedByDriver);
+    stringBuilder->Append(". ");
     stringBuilder->Append("Packets Dropped By Interface: ");
     stringBuilder->Append(PacketsDroppedByInterface);
+    stringBuilder->Append(". ");
     stringBuilder->Append("Packets Captured: ");
     stringBuilder->Append(PacketsCaptured);
+    stringBuilder->Append(".");
     return stringBuilder->ToString();
 }
