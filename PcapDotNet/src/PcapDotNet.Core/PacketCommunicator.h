@@ -64,6 +64,8 @@ namespace PcapDotNet { namespace Core
             void set(bool value);
         }
 
+        void SetKernelBufferSize(int size);
+
         delegate void HandlePacket(Packets::Packet^ packet);
         PacketCommunicatorReceiveResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
         PacketCommunicatorReceiveResult GetSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack);

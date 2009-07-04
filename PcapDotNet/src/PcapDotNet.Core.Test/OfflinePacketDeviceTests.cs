@@ -180,6 +180,16 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetKernelBufferSizeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenOfflineDevice())
+            {
+                communicator.SetKernelBufferSize(1024 * 1024);
+            }
+        }
+
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)

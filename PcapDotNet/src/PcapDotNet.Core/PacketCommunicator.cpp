@@ -48,7 +48,7 @@ void PacketCommunicator::DataLink::set(PcapDataLink value)
 ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
     throw gcnew NotSupportedException("Supported DataLinks is unsupported to avoid winpcap memory leak");
-
+/*
     int* dataLinks;
     int numDatalinks = pcap_list_datalinks(_pcapDescriptor, &dataLinks);
     if (numDatalinks == -1)
@@ -67,6 +67,7 @@ ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
         // todo look for pcap_free_datalinks()
         // free(dataLinks);
     }
+    */
 }
 
 int PacketCommunicator::SnapshotLength::get()
@@ -106,7 +107,7 @@ bool PacketCommunicator::NonBlocking::get()
     char errbuf[PCAP_ERRBUF_SIZE];
     int nonBlockValue = pcap_getnonblock(_pcapDescriptor, errbuf);
     if (nonBlockValue == -1)
-        throw gcnew InvalidOperationException("Error getting NonBlocking value");
+        throw BuildInvalidOperation("Error getting NonBlocking value");
     return nonBlockValue != 0;
 }
 
@@ -114,7 +115,13 @@ void PacketCommunicator::NonBlocking::set(bool value)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     if (pcap_setnonblock(_pcapDescriptor, value, errbuf) != 0)
-        throw gcnew InvalidOperationException("Error setting NonBlocking to " + value.ToString());
+        throw BuildInvalidOperation("Error setting NonBlocking to " + value.ToString());
+}
+
+void PacketCommunicator::SetKernelBufferSize(int size)
+{
+    if (pcap_setbuff(_pcapDescriptor, size) != 0)
+        throw BuildInvalidOperation("Error setting kernel buffer size to " + size.ToString());
 }
 
 PacketCommunicatorReceiveResult PacketCommunicator::GetPacket([Out] Packet^% packet)
