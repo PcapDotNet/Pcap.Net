@@ -3,8 +3,10 @@
 #include "MarshalingServices.h"
 #include "PcapError.h"
 #include "PcapDataLink.h"
+#include "PacketHeader.h"
 
 using namespace System;
+using namespace System::Runtime::InteropServices;
 using namespace PcapDotNet::Core;
 using namespace Packets;
 
@@ -18,6 +20,30 @@ BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterString, int snapshotLen
     Initialize(filterString, snapshotLength, kind, nullptr);
 }
 
+bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packets::Packet^ packet)
+{
+    pcap_pkthdr pcapHeader;
+    PacketHeader::GetPcapHeader(pcapHeader, packet);
+    pin_ptr<Byte> unmanagedPacketBytes = &packet->Buffer[0];
+
+    snapshotLength = pcap_offline_filter(_bpf, &pcapHeader, unmanagedPacketBytes);
+    return (snapshotLength != 0);
+}
+
+bool BerkeleyPacketFilter::Test(Packets::Packet^ packet)
+{
+    int snapshotLength;
+    return Test(snapshotLength, packet);
+}
+
+BerkeleyPacketFilter::~BerkeleyPacketFilter()
+{
+    pcap_freecode(_bpf);
+    delete _bpf;
+}
+
+// Internal
+
 BerkeleyPacketFilter::BerkeleyPacketFilter(pcap_t* pcapDescriptor, String^ filterString, IpV4SocketAddress^ netmask)
 {
     Initialize(pcapDescriptor, filterString, netmask);
@@ -29,11 +55,7 @@ void BerkeleyPacketFilter::SetFilter(pcap_t* pcapDescriptor)
         throw PcapError::BuildInvalidOperation("Failed setting bpf filter", pcapDescriptor);
 }
 
-BerkeleyPacketFilter::~BerkeleyPacketFilter()
-{
-    pcap_freecode(_bpf);
-    delete _bpf;
-}
+// Private
 
 void BerkeleyPacketFilter::Initialize(String^ filterString, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
 {

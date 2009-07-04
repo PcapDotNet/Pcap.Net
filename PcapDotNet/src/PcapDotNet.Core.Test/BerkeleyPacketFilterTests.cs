@@ -73,10 +73,10 @@ namespace PcapDotNet.Core.Test
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
-            Packet unexpectedPacket = MoreRandom.BuildRandomPacket(DestinationMac, SourceMac, 100);
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 1000);
+            Packet unexpectedPacket = MoreRandom.BuildRandomPacket(DestinationMac, SourceMac, 1000);
 
-            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, 100, DataLinkKind.Ethernet))
+            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, 1000, DataLinkKind.Ethernet))
             {
                 using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
                 {
@@ -100,6 +100,30 @@ namespace PcapDotNet.Core.Test
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                     Assert.IsNull(packet);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void TestTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int snapshotLength = 500;
+
+
+            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, snapshotLength, DataLinkKind.Ethernet))
+            {
+                Assert.IsTrue(filter.Test(MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength / 2)));
+                Assert.IsTrue(filter.Test(MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength - 1)));
+                Assert.IsTrue(filter.Test(MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength)));
+                Assert.IsTrue(filter.Test(MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength + 1)));
+                Assert.IsTrue(filter.Test(MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength / 2)));
+
+                Assert.IsFalse(filter.Test(MoreRandom.BuildRandomPacket(DestinationMac, SourceMac, snapshotLength / 2)));
+
+                int actualSnapshotLength;
+                Assert.IsTrue(filter.Test(out actualSnapshotLength, MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength / 2)));
+                Assert.AreEqual(snapshotLength, actualSnapshotLength);
             }
         }
     }

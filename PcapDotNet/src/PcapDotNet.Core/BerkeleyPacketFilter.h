@@ -11,12 +11,14 @@ namespace PcapDotNet { namespace Core
         BerkeleyPacketFilter(System::String^ filterString, int snapshotLength, Packets::DataLinkKind kind, IpV4SocketAddress^ netmask);
         BerkeleyPacketFilter(System::String^ filterString, int snapshotLength, Packets::DataLinkKind kind);
 
-        void SetFilter(pcap_t* pcapDescriptor);
+        bool Test([System::Runtime::InteropServices::Out] int% snapshotLength, Packets::Packet^ packet);
+        bool Test(Packets::Packet^ packet);
 
         ~BerkeleyPacketFilter(); // IDisposable
 
     internal:
         BerkeleyPacketFilter(pcap_t* pcapDescriptor, System::String^ filterString, IpV4SocketAddress^ netmask);
+        void SetFilter(pcap_t* pcapDescriptor);
 
     private:
         void Initialize(System::String^ filterString, int snapshotLength, Packets::DataLinkKind kind, IpV4SocketAddress^ netmask);
