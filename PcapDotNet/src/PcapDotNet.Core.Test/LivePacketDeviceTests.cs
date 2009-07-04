@@ -242,6 +242,110 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetBigKernelBufferSizeErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetKernelBufferSize(1024 * 1024 * 1024);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetSmallKernelBufferSizeGetPacketErrorTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetKernelBufferSize(50);
+                Packet packet = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+                communicator.SendPacket(packet);
+                communicator.GetPacket(out packet);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetSmallKernelBufferSizeGetSomePacketsErrorTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetKernelBufferSize(50);
+                Packet packet = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+                communicator.SendPacket(packet);
+                int numPacketsGot;
+                communicator.GetSomePackets(out numPacketsGot, 1, delegate { });
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetSmallKernelBufferSizeGetPacketsErrorTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetKernelBufferSize(50);
+                Packet packet = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+                communicator.SendPacket(packet);
+                Exception exception = null;
+                Thread thread = new Thread(delegate()
+                                           {
+                                               try
+                                               {
+                                                   communicator.GetPackets(1, delegate { });
+                                               }
+                                               catch (Exception e)
+                                               {
+                                                   exception = e;
+                                               }
+                                           });
+                thread.Start();
+                if (!thread.Join(TimeSpan.FromSeconds(5)))
+                    thread.Abort();
+
+                if (exception != null)
+                    throw exception;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetSmallKernelBufferSizeGetNextStatisticsErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+                communicator.SetKernelBufferSize(50);
+                PacketSampleStatistics statistics;
+                communicator.GetNextStatistics(out statistics);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetSmallKernelBufferSizeGetStatisticsErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+                communicator.SetKernelBufferSize(50);
+                communicator.GetStatistics(1, delegate { });
+            }
+        }
+
         private static void TestGetStatistics(string sourceMac, string destinationMac, int numPacketsToSend, int numStatisticsToGather, int numStatisticsToBreakLoop, double secondsToWait, int packetSize,
                                               PacketCommunicatorReceiveResult expectedResult, int expectedNumStatistics, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
@@ -329,9 +433,9 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private void TestGetPackets(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
-                                    PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
-                                    double expectedMinSeconds, double expectedMaxSeconds)
+        private static void TestGetPackets(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
+                                           PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
+                                           double expectedMinSeconds, double expectedMaxSeconds)
         {
             string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
                                      ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". SecondsToWait=" +
@@ -387,7 +491,9 @@ namespace PcapDotNet.Core.Test
             PacketCommunicator communicator = device.Open();
             try
             {
+                communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
                 Assert.AreEqual(DataLinkKind.Ethernet, communicator.DataLink.Kind);
+                communicator.DataLink = communicator.DataLink;
                 Assert.AreEqual("EN10MB (Ethernet)", communicator.DataLink.ToString());
                 Assert.AreEqual(communicator.DataLink, new PcapDataLink(communicator.DataLink.Name));
                 Assert.IsTrue(communicator.IsFileSystemByteOrder);
