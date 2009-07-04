@@ -16,8 +16,8 @@ void PacketSendQueue::Enqueue(Packet^ packet)
 {
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
-    pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
-    if (pcap_sendqueue_queue(_pcapSendQueue, &pcapHeader, unamangedPacketBytes) != 0)
+    pin_ptr<Byte> unmanagedPacketBytes = &packet->Buffer[0];
+    if (pcap_sendqueue_queue(_pcapSendQueue, &pcapHeader, unmanagedPacketBytes) != 0)
         throw gcnew InvalidOperationException("Failed enqueueing to SendQueue");
 }
 
