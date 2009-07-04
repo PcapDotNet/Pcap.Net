@@ -270,7 +270,12 @@ namespace PcapDotNet.Core.Test
                 }
             }
 
-            communicator = new OfflinePacketDevice(dumpFilename).Open();
+            IPacketDevice device = new OfflinePacketDevice(dumpFilename);
+            Assert.AreEqual(0, device.Addresses.Count);
+            Assert.AreEqual(string.Empty, device.Description);
+            Assert.AreEqual(DeviceFlags.None, device.Flags);
+            Assert.AreEqual(dumpFilename, device.Name);
+            communicator = device.Open();
             try
             {
                 Assert.AreEqual(DataLinkKind.Ethernet, communicator.DataLink.Kind);
