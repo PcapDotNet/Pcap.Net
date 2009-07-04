@@ -119,11 +119,6 @@ namespace PcapDotNet { namespace Core
 
         void AssertMode(PacketCommunicatorMode mode);
 
-        property System::String^ ErrorMessage
-        {
-            System::String^ get();
-        }
-
         ref class PacketHandler
         {
         public:

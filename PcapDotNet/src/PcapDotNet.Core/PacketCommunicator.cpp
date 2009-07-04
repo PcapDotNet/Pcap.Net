@@ -308,11 +308,6 @@ void PacketCommunicator::AssertMode(PacketCommunicatorMode mode)
         throw gcnew InvalidOperationException("Wrong Mode. Must be in mode " + mode.ToString() + " and not in mode " + Mode.ToString());
 }
 
-String^ PacketCommunicator::ErrorMessage::get()
-{
-    return PcapError::GetErrorMessage(_pcapDescriptor);
-}
-
 InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::String^ errorMessage)
 {
     return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
