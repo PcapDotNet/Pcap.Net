@@ -290,6 +290,14 @@
 				RelativePath=".\PacketCommunicator.h"
 				>
 			</File>
+			<File
+				RelativePath=".\PacketCommunicatorMode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PacketCommunicatorReceiveResult.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Marshaling"

@@ -8,26 +8,11 @@
 #include "PacketTotalStatistics.h"
 #include "PcapDataLink.h"
 #include "PacketSendQueue.h"
+#include "PacketCommunicatorMode.h"
+#include "PacketCommunicatorReceiveResult.h"
 
 namespace PcapDotNet { namespace Core 
 {
-    public enum class PacketCommunicatorReceiveResult : int
-    {
-        Ok,        // if the packet has been read without problems
-        Timeout,   // if the timeout set with Open() has elapsed.
-        Eof,       // if EOF was reached reading from an offline capture
-        BreakLoop, // 
-        None
-    };
-
-    public enum class PacketCommunicatorMode : int
-    {
-        Capture         = 0x0, // Capture working mode.  
-        Statistics      = 0x1, // Statistical working mode. 
-        KernelMonitor   = 0x2, // Kernel monitoring mode. 
-        KernelDump      = 0x10 // Kernel dump working mode. 
-    };
-
     public ref class PacketCommunicator abstract : System::IDisposable
     {
     public:
