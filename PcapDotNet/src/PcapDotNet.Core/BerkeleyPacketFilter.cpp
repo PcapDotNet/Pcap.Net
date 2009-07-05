@@ -85,7 +85,7 @@ void BerkeleyPacketFilter::Initialize(pcap_t* pcapDescriptor, String^ filterStri
     {
         if (pcap_compile(pcapDescriptor, _bpf, const_cast<char*>(unmanagedFilterString.c_str()), 1, netmaskValue) < 0)
         {
-            gcnew ArgumentException("An error has occured when compiling the filter: " + PcapError::GetErrorMessage(pcapDescriptor));
+            throw gcnew ArgumentException("An error has occured when compiling the filter <" + filterString + ">: " + PcapError::GetErrorMessage(pcapDescriptor));
         }
     }
     catch(...)
