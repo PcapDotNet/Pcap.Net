@@ -190,6 +190,63 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetlKernelMinimumBytesToCopyErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenOfflineDevice())
+            {
+                communicator.SetKernelMinimumBytesToCopy(1024);
+            }
+        }
+
+        [TestMethod]
+        public void SetSamplingMethodOneEveryNTest()
+        {
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(100);
+            using (PacketCommunicator communicator = OpenOfflineDevice(101, expectedPacket))
+            {
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(10));
+                PacketCommunicatorReceiveResult result;
+                Packet packet;
+                for (int i = 0; i != 10; ++i)
+                {
+                    result = communicator.GetPacket(out packet);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(expectedPacket, packet);
+                }
+                result = communicator.GetPacket(out packet);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
+                Assert.IsNull(packet);
+            }
+        }
+
+        [TestMethod]
+        public void SetSamplingMethodFirstAfterIntervalTest()
+        {
+            const int NumPackets = 10;
+            
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(100);
+            using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket, TimeSpan.FromSeconds(1)))
+            {
+                communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(2)));
+
+                PacketCommunicatorReceiveResult result;
+                Packet packet;
+                for (int i = 0; i != 5; ++i)
+                {
+                    result = communicator.GetPacket(out packet);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(expectedPacket, packet);
+                    DateTime expectedTimestamp = expectedPacket.Timestamp.AddSeconds(i * 2);
+                    MoreAssert.IsInRange(expectedTimestamp.AddSeconds(-0.01), expectedTimestamp.AddSeconds(0.01), packet.Timestamp);
+                }
+                result = communicator.GetPacket(out packet);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
+                Assert.IsNull(packet);
+            }
+        }
+
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)
@@ -260,7 +317,13 @@ namespace PcapDotNet.Core.Test
             return OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100));
         }
 
+
         public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet)
+        {
+            return OpenOfflineDevice(numPackets, packet, TimeSpan.Zero);
+        }
+
+        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets)
         {
             string dumpFilename = Path.GetTempPath() + @"dump.pcap";
 
@@ -272,6 +335,13 @@ namespace PcapDotNet.Core.Test
                     int lastPosition = 0;
                     for (int i = 0; i != numPackets; ++i)
                     {
+                        if (intervalBetweenPackets != TimeSpan.Zero && i != 0)
+                        {
+//                            Thread.Sleep(intervalBetweenPackets);
+                            DateTime timestamp = packet.Timestamp;
+                            timestamp = timestamp.Add(intervalBetweenPackets);
+                            packet = new Packet(packet.Buffer, timestamp, packet.DataLink);
+                        }
                         dumpFile.Dump(packet);
                         MoreAssert.IsBigger(lastPosition, dumpFile.Position);
                         lastPosition = dumpFile.Position;

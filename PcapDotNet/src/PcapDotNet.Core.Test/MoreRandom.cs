@@ -8,7 +8,7 @@ namespace PcapDotNet.Core.Test
         public static Packet BuildRandomPacket(DateTime timestamp, string sourceMac, string destinationMac, int packetSize)
         {
             if (packetSize < EthernetDatagram.HeaderLength)
-                throw new ArgumentException("Packet size (" + packetSize + ") must be at least the ethernet header length", "packetSize");
+                throw new ArgumentOutOfRangeException("packetSize", packetSize, "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLength + ")");
 
             return PacketBuilder.Ethernet(timestamp,
                                           new MacAddress(sourceMac),
