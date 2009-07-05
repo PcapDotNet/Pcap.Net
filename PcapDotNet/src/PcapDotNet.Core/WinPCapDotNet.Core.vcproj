@@ -298,6 +298,34 @@
 				RelativePath=".\PacketCommunicatorReceiveResult.h"
 				>
 			</File>
+			<File
+				RelativePath=".\SamplingMethod.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodFirstAfterInterval.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodFirstAfterInterval.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodNone.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodNone.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodOneEveryN.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SamplingMethodOneEveryN.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Marshaling"
