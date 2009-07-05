@@ -346,6 +346,160 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        public void SetBigKernelMinimumBytesToCopyTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetKernelMinimumBytesToCopy(1024 * 1024);
+                Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+                for (int i = 0; i != 5; ++i)
+                {
+                    communicator.SendPacket(expectedPacket);
+                    Packet packet;
+                    DateTime start = DateTime.Now;
+                    PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                    DateTime end = DateTime.Now;
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(expectedPacket, packet);
+                    MoreAssert.IsBigger(TimeSpan.FromSeconds(0.9), end - start);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void SetSmallKernelMinimumBytesToCopyTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetKernelMinimumBytesToCopy(1);
+                Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+                for (int i = 0; i != 100; ++i)
+                {
+                    communicator.SendPacket(expectedPacket);
+                    Packet packet;
+                    DateTime start = DateTime.Now;
+                    PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                    DateTime end = DateTime.Now;
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(expectedPacket, packet);
+                    MoreAssert.IsSmallerOrEqual(TimeSpan.FromSeconds(0.02), end - start);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void SetSamplingMethodOneEveryNTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(5));
+                for (int i = 0; i != 20; ++i)
+                {
+                    Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 60 * (i + 1));
+                    communicator.SendPacket(expectedPacket);
+                }
+
+                Packet packet;
+                PacketCommunicatorReceiveResult result;
+                for (int i = 0; i != 4; ++i)
+                {
+                    result = communicator.GetPacket(out packet);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(60 * 5 * (i + 1), packet.Length);
+                }
+                result = communicator.GetPacket(out packet);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
+                Assert.IsNull(packet);
+            }
+        }
+
+        [TestMethod]
+        public void SetSamplingMethodFirstAfterIntervalTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
+                Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 60);
+                communicator.SendPacket(expectedPacket);
+                Thread.Sleep(TimeSpan.FromSeconds(0.75));
+                for (int i = 0; i != 10; ++i)
+                {
+                    expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 60 * (i + 2));
+                    communicator.SendPacket(expectedPacket);
+                    Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                }
+
+                Packet packet;
+                PacketCommunicatorReceiveResult result;
+                for (int i = 0; i != 6; ++i)
+                {
+                    result = communicator.GetPacket(out packet);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(60 * (i * 2 + 1), packet.Length);
+                }
+                result = communicator.GetPacket(out packet);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
+                Assert.IsNull(packet);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SetSamplingMethodOneEveryNErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(0));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SetSamplingMethodFirstAfterIntervalNegativeMsErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(-1));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SetSamplingMethodFirstAfterIntervalNegativeTimespanErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(-1)));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SetSamplingMethodFirstAfterIntervalBigTimespanErrorTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromDays(25)));
+            }
+        }
+
         private static void TestGetStatistics(string sourceMac, string destinationMac, int numPacketsToSend, int numStatisticsToGather, int numStatisticsToBreakLoop, double secondsToWait, int packetSize,
                                               PacketCommunicatorReceiveResult expectedResult, int expectedNumStatistics, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
@@ -492,6 +646,8 @@ namespace PcapDotNet.Core.Test
             try
             {
                 communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
+                communicator.SetKernelMinimumBytesToCopy(10); // 10 bytes minimum to copy
+                communicator.SetSamplingMethod(new SamplingMethodNone());
                 Assert.AreEqual(DataLinkKind.Ethernet, communicator.DataLink.Kind);
                 communicator.DataLink = communicator.DataLink;
                 Assert.AreEqual("EN10MB (Ethernet)", communicator.DataLink.ToString());
