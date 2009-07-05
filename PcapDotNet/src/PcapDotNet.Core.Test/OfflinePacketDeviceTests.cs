@@ -77,14 +77,14 @@ namespace PcapDotNet.Core.Test
                 Packet actualPacket;
                 for (int i = 0; i != NumPackets; ++i)
                 {
-                    result = communicator.GetPacket(out actualPacket);
+                    result = communicator.ReceivePacket(out actualPacket);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, actualPacket);
                     MoreAssert.IsInRange(expectedPacket.Timestamp.AddSeconds(-0.05), expectedPacket.Timestamp.AddSeconds(0.05),
                                          actualPacket.Timestamp);
                 }
 
-                result = communicator.GetPacket(out actualPacket);
+                result = communicator.ReceivePacket(out actualPacket);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
                 Assert.IsNull(actualPacket);
             }
@@ -211,11 +211,11 @@ namespace PcapDotNet.Core.Test
                 Packet packet;
                 for (int i = 0; i != 10; ++i)
                 {
-                    result = communicator.GetPacket(out packet);
+                    result = communicator.ReceivePacket(out packet);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, packet);
                 }
-                result = communicator.GetPacket(out packet);
+                result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
                 Assert.IsNull(packet);
             }
@@ -235,13 +235,13 @@ namespace PcapDotNet.Core.Test
                 Packet packet;
                 for (int i = 0; i != 5; ++i)
                 {
-                    result = communicator.GetPacket(out packet);
+                    result = communicator.ReceivePacket(out packet);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, packet);
                     DateTime expectedTimestamp = expectedPacket.Timestamp.AddSeconds(i * 2);
                     MoreAssert.IsInRange(expectedTimestamp.AddSeconds(-0.01), expectedTimestamp.AddSeconds(0.01), packet.Timestamp);
                 }
-                result = communicator.GetPacket(out packet);
+                result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
                 Assert.IsNull(packet);
             }
@@ -268,7 +268,7 @@ namespace PcapDotNet.Core.Test
                 PacketHandler handler = new PacketHandler(expectedPacket, expectedMinSeconds, expectedMaxSeconds, communicator, numPacketsToBreakLoop);
 
                 int numPacketsGot;
-                PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToGet, handler.Handle);
+                PacketCommunicatorReceiveResult result = communicator.ReceiveSomePackets(out numPacketsGot, numPacketsToGet, handler.Handle);
                 Assert.AreEqual(expectedResult, result);
                 Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + TestDescription);
                 Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + TestDescription);
@@ -298,7 +298,7 @@ namespace PcapDotNet.Core.Test
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 Thread thread = new Thread(delegate()
                 {
-                    result = communicator.GetPackets(numPacketsToGet, handler.Handle);
+                    result = communicator.ReceivePackets(numPacketsToGet, handler.Handle);
                 });
                 thread.Start();
 

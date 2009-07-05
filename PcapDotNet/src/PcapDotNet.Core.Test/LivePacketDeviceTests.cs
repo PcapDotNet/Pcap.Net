@@ -73,7 +73,7 @@ namespace PcapDotNet.Core.Test
 
                 Packet packet;
                 DateTime startWaiting = DateTime.Now;
-                PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                 DateTime finishedWaiting = DateTime.Now;
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
@@ -89,7 +89,7 @@ namespace PcapDotNet.Core.Test
 
                 DateTime endSendingTime = DateTime.Now;
 
-                result = communicator.GetPacket(out packet);
+                result = communicator.ReceivePacket(out packet);
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 Assert.AreEqual<uint>(NumPacketsToSend, communicator.TotalStatistics.PacketsCaptured);
@@ -159,7 +159,7 @@ namespace PcapDotNet.Core.Test
                 Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, PacketSize);
 
                 PacketSampleStatistics statistics;
-                PacketCommunicatorReceiveResult result = communicator.GetNextStatistics(out statistics);
+                PacketCommunicatorReceiveResult result = communicator.ReceiveStatistics(out statistics);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
                 Assert.AreEqual<uint>(0, statistics.AcceptedPackets);
@@ -168,7 +168,7 @@ namespace PcapDotNet.Core.Test
                 for (int i = 0; i != NumPacketsToSend; ++i)
                     communicator.SendPacket(sentPacket);
 
-                result = communicator.GetNextStatistics(out statistics);
+                result = communicator.ReceiveStatistics(out statistics);
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
@@ -216,7 +216,7 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 PacketSampleStatistics statistics;
-                communicator.GetNextStatistics(out statistics);
+                communicator.ReceiveStatistics(out statistics);
             }
         }
 
@@ -228,7 +228,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.Mode = PacketCommunicatorMode.Statistics;
                 Packet packet;
-                communicator.GetPacket(out packet);
+                communicator.ReceivePacket(out packet);
             }
         }
 
@@ -265,7 +265,7 @@ namespace PcapDotNet.Core.Test
                 communicator.SetKernelBufferSize(50);
                 Packet packet = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
                 communicator.SendPacket(packet);
-                communicator.GetPacket(out packet);
+                communicator.ReceivePacket(out packet);
             }
         }
 
@@ -283,7 +283,7 @@ namespace PcapDotNet.Core.Test
                 Packet packet = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
                 communicator.SendPacket(packet);
                 int numPacketsGot;
-                communicator.GetSomePackets(out numPacketsGot, 1, delegate { });
+                communicator.ReceiveSomePackets(out numPacketsGot, 1, delegate { });
             }
         }
 
@@ -305,7 +305,7 @@ namespace PcapDotNet.Core.Test
                                            {
                                                try
                                                {
-                                                   communicator.GetPackets(1, delegate { });
+                                                   communicator.ReceivePackets(1, delegate { });
                                                }
                                                catch (Exception e)
                                                {
@@ -330,7 +330,7 @@ namespace PcapDotNet.Core.Test
                 communicator.Mode = PacketCommunicatorMode.Statistics;
                 communicator.SetKernelBufferSize(50);
                 PacketSampleStatistics statistics;
-                communicator.GetNextStatistics(out statistics);
+                communicator.ReceiveStatistics(out statistics);
             }
         }
 
@@ -342,7 +342,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.Mode = PacketCommunicatorMode.Statistics;
                 communicator.SetKernelBufferSize(50);
-                communicator.GetStatistics(1, delegate { });
+                communicator.ReceiveStatistics(1, delegate { });
             }
         }
 
@@ -362,7 +362,7 @@ namespace PcapDotNet.Core.Test
                     communicator.SendPacket(expectedPacket);
                     Packet packet;
                     DateTime start = DateTime.Now;
-                    PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                    PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                     DateTime end = DateTime.Now;
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, packet);
@@ -387,7 +387,7 @@ namespace PcapDotNet.Core.Test
                     communicator.SendPacket(expectedPacket);
                     Packet packet;
                     DateTime start = DateTime.Now;
-                    PacketCommunicatorReceiveResult result = communicator.GetPacket(out packet);
+                    PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                     DateTime end = DateTime.Now;
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, packet);
@@ -416,11 +416,11 @@ namespace PcapDotNet.Core.Test
                 PacketCommunicatorReceiveResult result;
                 for (int i = 0; i != 4; ++i)
                 {
-                    result = communicator.GetPacket(out packet);
+                    result = communicator.ReceivePacket(out packet);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(60 * 5 * (i + 1), packet.Length);
                 }
-                result = communicator.GetPacket(out packet);
+                result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.IsNull(packet);
             }
@@ -450,11 +450,11 @@ namespace PcapDotNet.Core.Test
                 PacketCommunicatorReceiveResult result;
                 for (int i = 0; i != 6; ++i)
                 {
-                    result = communicator.GetPacket(out packet);
+                    result = communicator.ReceivePacket(out packet);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(60 * (i * 2 + 1), packet.Length);
                 }
-                result = communicator.GetPacket(out packet);
+                result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.IsNull(packet);
             }
@@ -522,7 +522,7 @@ namespace PcapDotNet.Core.Test
                     communicator.Break();
                 Thread thread = new Thread(delegate()
                 {
-                    result = communicator.GetStatistics(numStatisticsToGather,
+                    result = communicator.ReceiveStatistics(numStatisticsToGather,
                                                      delegate(PacketSampleStatistics statistics)
                                                      {
                                                          Assert.IsNotNull(statistics.ToString());
@@ -576,7 +576,7 @@ namespace PcapDotNet.Core.Test
 
                 PacketHandler handler = new PacketHandler(packetToSend, communicator, numPacketsToBreakLoop);
                 DateTime startWaiting = DateTime.Now;
-                PacketCommunicatorReceiveResult result = communicator.GetSomePackets(out numPacketsGot, numPacketsToGet,
+                PacketCommunicatorReceiveResult result = communicator.ReceiveSomePackets(out numPacketsGot, numPacketsToGet,
                                                                                      handler.Handle);
                 DateTime finishedWaiting = DateTime.Now;
 
@@ -616,7 +616,7 @@ namespace PcapDotNet.Core.Test
                 {
                     if (numPacketsToBreakLoop == 0)
                         communicator.Break();
-                    result = communicator.GetPackets(numPacketsToWait, handler.Handle);
+                    result = communicator.ReceivePackets(numPacketsToWait, handler.Handle);
                 });
 
                 DateTime startWaiting = DateTime.Now;

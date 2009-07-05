@@ -91,12 +91,12 @@ namespace PcapDotNet.Core.Test
                     PacketCommunicatorReceiveResult result;
                     for (int i = 0; i != 5; ++i)
                     {
-                        result = communicator.GetPacket(out packet);
+                        result = communicator.ReceivePacket(out packet);
                         Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                         Assert.AreEqual(expectedPacket, packet);
                     }
 
-                    result = communicator.GetPacket(out packet);
+                    result = communicator.ReceivePacket(out packet);
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                     Assert.IsNull(packet);
                 }

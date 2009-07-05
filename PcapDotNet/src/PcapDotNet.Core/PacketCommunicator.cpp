@@ -137,7 +137,7 @@ void PacketCommunicator::SetSamplingMethod(SamplingMethod^ method)
     pcapSamplingMethod->value = method->Value;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetPacket([Out] Packet^% packet)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceivePacket([Out] Packet^% packet)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
@@ -155,7 +155,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetPacket([Out] Packet^% pac
     return result;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets([Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
@@ -186,7 +186,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetSomePackets([Out] int% nu
     return PacketCommunicatorReceiveResult::Ok;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetPackets(int numPackets, HandlePacket^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceivePackets(int numPackets, HandlePacket^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
@@ -209,7 +209,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetPackets(int numPackets, H
     return PacketCommunicatorReceiveResult::Ok;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetNextStatistics([Out] PacketSampleStatistics^% statistics)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics([Out] PacketSampleStatistics^% statistics)
 {
     AssertMode(PacketCommunicatorMode::Statistics);
 
@@ -228,7 +228,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::GetNextStatistics([Out] Pack
     return result;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::GetStatistics(int numStatistics, HandleStatistics^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics(int numStatistics, HandleStatistics^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Statistics);
 
