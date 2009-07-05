@@ -72,13 +72,13 @@ namespace PcapDotNet { namespace Core
         void SetSamplingMethod(SamplingMethod^ method);
 
         delegate void HandlePacket(Packets::Packet^ packet);
-        PacketCommunicatorReceiveResult GetPacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
-        PacketCommunicatorReceiveResult GetSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack);
-        PacketCommunicatorReceiveResult GetPackets(int numPackets, HandlePacket^ callBack);
+        PacketCommunicatorReceiveResult ReceivePacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
+        PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack);
+        PacketCommunicatorReceiveResult ReceivePackets(int numPackets, HandlePacket^ callBack);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
-        PacketCommunicatorReceiveResult GetNextStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
-        PacketCommunicatorReceiveResult GetStatistics(int numStatistics, HandleStatistics^ callBack);
+        PacketCommunicatorReceiveResult ReceiveStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
+        PacketCommunicatorReceiveResult ReceiveStatistics(int numStatistics, HandleStatistics^ callBack);
 
         void Break();
 

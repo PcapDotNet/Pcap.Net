@@ -103,7 +103,7 @@ namespace PcapDotNet.Core.Test
                     int numPacketsHandled = 0;
                     int numPacketsGot;
                     PacketCommunicatorReceiveResult result =
-                        communicator.GetSomePackets(out numPacketsGot, numPacketsToSend,
+                        communicator.ReceiveSomePackets(out numPacketsGot, numPacketsToSend,
                                                     delegate(Packet packet)
                                                         {
                                                             Assert.AreEqual(packetsToSend[numPacketsHandled], packet);
