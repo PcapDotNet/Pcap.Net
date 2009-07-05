@@ -13,61 +13,6 @@ using namespace System::Collections::Generic;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
-int SamplingMethodNone::Method::get()
-{
-    return PCAP_SAMP_NOSAMP;
-}
-
-int SamplingMethodNone::Value::get()
-{
-    return 0;
-}
-
-SamplingMethodOneEveryN::SamplingMethodOneEveryN(int n)
-{
-    if (n <= 0)
-        throw gcnew ArgumentOutOfRangeException("n", n, "Must be positive");
-    _n = n;
-}
-
-int SamplingMethodOneEveryN::Method::get()
-{
-    return PCAP_SAMP_1_EVERY_N;
-}
-
-int SamplingMethodOneEveryN::Value::get()
-{
-    return _n;
-}
-
-SamplingMethodFirstAfterInterval::SamplingMethodFirstAfterInterval(int intervalInMs)
-{
-    if (intervalInMs < 0)
-        throw gcnew ArgumentOutOfRangeException("intervalInMs", intervalInMs, "Must be non negative");
-    _intervalInMs = intervalInMs;
-}
-
-SamplingMethodFirstAfterInterval::SamplingMethodFirstAfterInterval(TimeSpan interval)
-{
-    double intervalInMs = interval.TotalMilliseconds;
-    if (intervalInMs > Int32::MaxValue)
-        throw gcnew ArgumentOutOfRangeException("interval", interval, "Must be smaller than " + TimeSpan::FromMilliseconds(Int32::MaxValue).ToString());
-    if (intervalInMs < 0)
-        throw gcnew ArgumentOutOfRangeException("interval", interval, "Must be non negative");
-
-    _intervalInMs = (int)intervalInMs;
-}
-    
-int SamplingMethodFirstAfterInterval::Method::get()
-{
-    return PCAP_SAMP_FIRST_AFTER_N_MS;
-}
-
-int SamplingMethodFirstAfterInterval::Value::get()
-{
-    return _intervalInMs;
-}
-
 PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device

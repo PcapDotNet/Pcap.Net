@@ -10,78 +10,10 @@
 #include "PacketSendQueue.h"
 #include "PacketCommunicatorMode.h"
 #include "PacketCommunicatorReceiveResult.h"
+#include "SamplingMethod.h"
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class SamplingMethod abstract
-    {
-    internal:
-        virtual property int Method
-        {
-            int get() = 0;
-        }
-
-        virtual property int Value
-        {
-            int get() = 0;
-        }
-    };
-
-    public ref class SamplingMethodNone : SamplingMethod
-    {
-    internal:
-        virtual property int Method
-        {
-            int get() override;
-        }
-
-        virtual property int Value
-        {
-            int get() override;
-        }
-    };
-
-    public ref class SamplingMethodOneEveryN : SamplingMethod
-    {
-    public:
-        SamplingMethodOneEveryN(int n);
-
-    internal:
-        virtual property int Method
-        {
-            int get() override;
-        }
-
-        virtual property int Value
-        {
-            int get() override;
-        }
-
-    private:
-        int _n;
-    };
-
-    public ref class SamplingMethodFirstAfterInterval : SamplingMethod
-    {
-    public:
-        SamplingMethodFirstAfterInterval(int intervalInMs);
-        SamplingMethodFirstAfterInterval(System::TimeSpan interval);
-
-    internal:
-        virtual property int Method
-        {
-            int get() override;
-        }
-
-        virtual property int Value
-        {
-            int get() override;
-        }
-
-    private:
-        int _intervalInMs;
-    };
-
     public ref class PacketCommunicator abstract : System::IDisposable
     {
     public:
