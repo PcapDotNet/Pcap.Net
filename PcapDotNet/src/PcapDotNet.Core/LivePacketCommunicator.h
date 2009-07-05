@@ -4,6 +4,9 @@
 
 namespace PcapDotNet { namespace Core 
 {
+    /// <summary>
+    /// A network device packet communicator.
+    /// </summary>
     public ref class LivePacketCommunicator : PacketCommunicator
     {
     public:

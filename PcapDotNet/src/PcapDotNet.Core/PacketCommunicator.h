@@ -14,6 +14,9 @@
 
 namespace PcapDotNet { namespace Core 
 {
+    /// <summary>
+    /// Used to receive and send packets accross the network or to read and write packets to a pcap file.
+    /// </summary>
     public ref class PacketCommunicator abstract : System::IDisposable
     {
     public:

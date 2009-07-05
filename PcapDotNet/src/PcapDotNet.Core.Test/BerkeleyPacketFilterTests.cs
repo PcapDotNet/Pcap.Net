@@ -58,7 +58,7 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void BadFilterErrorTest()
         {
             using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
