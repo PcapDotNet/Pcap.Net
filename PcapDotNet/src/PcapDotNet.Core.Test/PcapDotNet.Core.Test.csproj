@@ -55,7 +55,7 @@
     <Compile Include="PcapLibTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BPacket\Packets.csproj">
+    <ProjectReference Include="..\Packets\Packets.csproj">
       <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
       <Name>Packets</Name>
     </ProjectReference>

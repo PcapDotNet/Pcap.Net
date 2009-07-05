@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "BPacket\Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Console", "PcapDotNet.Console\PcapDotNet.Console.csproj", "{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\WinPCapDotNet.Core.vcproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
@@ -14,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		PcapDotNet.vsmdi = PcapDotNet.vsmdi
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "Packets\Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -30,9 +30,9 @@ Global
 		SccProjectUniqueName3 = PcapDotNet.Core.Test\\PcapDotNet.Core.Test.csproj
 		SccProjectName3 = PcapDotNet.Core.Test
 		SccLocalPath3 = PcapDotNet.Core.Test
-		SccProjectUniqueName4 = BPacket\\Packets.csproj
-		SccProjectName4 = BPacket
-		SccLocalPath4 = BPacket
+		SccProjectUniqueName4 = Packets\\Packets.csproj
+		SccProjectName4 = Packets
+		SccLocalPath4 = Packets
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi
@@ -46,16 +46,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Win32.ActiveCfg = Release|Any CPU
 		{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B4E80EB-DED5-4F20-871A-D9567F3F79DD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -84,6 +74,16 @@ Global
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
