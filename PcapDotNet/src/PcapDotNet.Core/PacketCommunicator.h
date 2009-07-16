@@ -76,23 +76,23 @@ namespace PcapDotNet { namespace Core
 
         delegate void HandlePacket(Packets::Packet^ packet);
         PacketCommunicatorReceiveResult ReceivePacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
-        PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack);
-        PacketCommunicatorReceiveResult ReceivePackets(int numPackets, HandlePacket^ callBack);
+        PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callback);
+        PacketCommunicatorReceiveResult ReceivePackets(int count, HandlePacket^ callback);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
         PacketCommunicatorReceiveResult ReceiveStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
-        PacketCommunicatorReceiveResult ReceiveStatistics(int numStatistics, HandleStatistics^ callBack);
+        PacketCommunicatorReceiveResult ReceiveStatistics(int count, HandleStatistics^ callback);
 
         void Break();
 
         void SendPacket(Packets::Packet^ packet);
         virtual void Transmit(PacketSendQueue^ sendQueue, bool isSync) = 0;
 
-        BerkeleyPacketFilter^ CreateFilter(System::String^ filterString);
+        BerkeleyPacketFilter^ CreateFilter(System::String^ filterValue);
         void SetFilter(BerkeleyPacketFilter^ filter);
-        void SetFilter(System::String^ filterString);
+        void SetFilter(System::String^ filterValue);
 
-        PacketDumpFile^ OpenDump(System::String^ filename);
+        PacketDumpFile^ OpenDump(System::String^ fileName);
 
         ~PacketCommunicator();
 
@@ -101,6 +101,11 @@ namespace PcapDotNet { namespace Core
                            SocketAddress^ netmask);
 
     protected:
+        property pcap_t* PcapDescriptor
+        {
+            pcap_t* get();
+        }
+
         System::InvalidOperationException^ BuildInvalidOperation(System::String^ errorMessage);
 
     private:
@@ -117,9 +122,9 @@ namespace PcapDotNet { namespace Core
         ref class PacketHandler
         {
         public:
-            PacketHandler(HandlePacket^ callBack, PcapDataLink dataLink)
+            PacketHandler(HandlePacket^ callback, PcapDataLink dataLink)
             {
-                _callBack = callBack;
+                _callback = callback;
                 _dataLink = dataLink;
             }
 
@@ -131,7 +136,7 @@ namespace PcapDotNet { namespace Core
             }
 
         private:
-            HandlePacket^ _callBack;
+            HandlePacket^ _callback;
             PcapDataLink _dataLink;
             int _packetCounter;
         };
@@ -139,21 +144,19 @@ namespace PcapDotNet { namespace Core
         ref class StatisticsHandler
         {
         public:
-            StatisticsHandler(HandleStatistics^ callBack)
+            StatisticsHandler(HandleStatistics^ callback)
             {
-                _callBack = callBack;
+                _callback = callback;
             }
 
             void Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData);
 
         private:
-            HandleStatistics^ _callBack;
+            HandleStatistics^ _callback;
         };
 
-    protected:
-        pcap_t* _pcapDescriptor;
-
     private:
+        pcap_t* _pcapDescriptor;
         IpV4SocketAddress^ _ipV4Netmask;
         PacketCommunicatorMode _mode;
     };

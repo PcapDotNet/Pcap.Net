@@ -10,14 +10,14 @@ using namespace System::Runtime::InteropServices;
 using namespace PcapDotNet::Core;
 using namespace Packets;
 
-BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterString, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
+BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterValue, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
 {
-    Initialize(filterString, snapshotLength, kind, netmask);
+    Initialize(filterValue, snapshotLength, kind, netmask);
 }
 
-BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterString, int snapshotLength, DataLinkKind kind)
+BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterValue, int snapshotLength, DataLinkKind kind)
 {
-    Initialize(filterString, snapshotLength, kind, nullptr);
+    Initialize(filterValue, snapshotLength, kind, nullptr);
 }
 
 bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packets::Packet^ packet)

@@ -9,6 +9,7 @@
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
+using namespace System::Globalization;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
@@ -22,7 +23,7 @@ ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
         &alldevs, errbuf) == -1)
     {
         String^ errorString = gcnew String(errbuf);
-        throw gcnew InvalidOperationException(String::Format("Failed getting devices. Error: %s", errorString));
+        throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. Error: %s", errorString));
     }
     
     try

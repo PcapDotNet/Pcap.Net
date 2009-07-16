@@ -8,8 +8,8 @@ namespace PcapDotNet { namespace Core
     public ref class BerkeleyPacketFilter : System::IDisposable
     {
     public:
-        BerkeleyPacketFilter(System::String^ filterString, int snapshotLength, Packets::DataLinkKind kind, IpV4SocketAddress^ netmask);
-        BerkeleyPacketFilter(System::String^ filterString, int snapshotLength, Packets::DataLinkKind kind);
+        BerkeleyPacketFilter(System::String^ filterValue, int snapshotLength, Packets::DataLinkKind kind, IpV4SocketAddress^ netmask);
+        BerkeleyPacketFilter(System::String^ filterValue, int snapshotLength, Packets::DataLinkKind kind);
 
         bool Test([System::Runtime::InteropServices::Out] int% snapshotLength, Packets::Packet^ packet);
         bool Test(Packets::Packet^ packet);

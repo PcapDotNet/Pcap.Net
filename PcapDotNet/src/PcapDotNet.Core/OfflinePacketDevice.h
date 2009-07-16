@@ -7,9 +7,9 @@ namespace PcapDotNet { namespace Core
     public ref class OfflinePacketDevice : PacketDevice
     {
     public:
-        OfflinePacketDevice(System::String^ filename);
+        OfflinePacketDevice(System::String^ fileName);
 
-                virtual property System::String^ Name
+        virtual property System::String^ Name
         {
             System::String^ get() override;
         }
@@ -32,6 +32,6 @@ namespace PcapDotNet { namespace Core
         virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout) override;
 
     private:
-        System::String^ _filename;
+        System::String^ _fileName;
     };
 }}

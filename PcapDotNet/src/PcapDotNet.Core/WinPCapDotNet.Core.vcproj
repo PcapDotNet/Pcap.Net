@@ -30,6 +30,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Create Public/Private Key Pair"
+				CommandLine="if not exist &quot;$(ProjectDir)$(ProjectName).snk&quot; (&quot;%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe&quot; -k &quot;$(ProjectDir)$(ProjectName).snk&quot;)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -47,12 +49,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\3rdParty\WpdPack\Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;CODE_ANALYSIS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				GenerateXMLDocumentationFiles="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				EnablePREfast="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -72,6 +75,7 @@
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
+				KeyFile="&quot;$(ProjectDir)$(ProjectName).snk&quot;"
 				Profile="true"
 			/>
 			<Tool
@@ -88,6 +92,8 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+				EnableFxCop="true"
+				Dictionaries="CodeAnalysisDictionary.xml"
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
@@ -107,6 +113,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Create Public/Private Key Pair"
+				CommandLine="if not exist &quot;$(ProjectDir)$(ProjectName).snk&quot; (&quot;%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe&quot; -k &quot;$(ProjectDir)$(ProjectName).snk&quot;)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -146,6 +154,7 @@
 				AddModuleNamesToAssembly=""
 				GenerateDebugInformation="true"
 				TargetMachine="1"
+				KeyFile="&quot;$(ProjectDir)$(ProjectName).snk&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -188,7 +197,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{8A184AF5-E46C-482C-81A3-76D8CE290104}"
-			RelativePathToProject=".\BPacket\Packets.csproj"
+			RelativePathToProject=".\Packets\Packets.csproj"
 		/>
 	</References>
 	<Files>
@@ -378,6 +387,10 @@
 		</File>
 		<File
 			RelativePath=".\BerkeleyPacketFilter.h"
+			>
+		</File>
+		<File
+			RelativePath=".\CodeAnalysisDictionary.xml"
 			>
 		</File>
 		<File

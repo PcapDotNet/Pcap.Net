@@ -11,14 +11,14 @@ using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace PcapDotNet::Core;
 
-OfflinePacketDevice::OfflinePacketDevice(System::String^ filename)
+OfflinePacketDevice::OfflinePacketDevice(System::String^ fileName)
 {
-    _filename = filename;
+    _fileName = fileName;
 }
 
 String^ OfflinePacketDevice::Name::get()
 {
-    return _filename;
+    return _fileName;
 }
 
 String^ OfflinePacketDevice::Description::get()
@@ -38,7 +38,7 @@ ReadOnlyCollection<DeviceAddress^>^ OfflinePacketDevice::Addresses::get()
 
 PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout)
 {
-    std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(_filename);
+    std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(_fileName);
 
     // Create the source string according to the new WinPcap syntax
     char source[PCAP_BUF_SIZE];
@@ -51,7 +51,7 @@ PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOp
                           errbuf          // error buffer
                           ) != 0)
     {
-        throw gcnew InvalidOperationException("Error creating a source string from filename " + _filename + " Error: " + gcnew String(errbuf));
+        throw gcnew InvalidOperationException("Error creating a source string from filename " + _fileName + " Error: " + gcnew String(errbuf));
     }
 
     return gcnew OfflinePacketCommunicator(source, snapshotLength, flags, readTimeout, NULL);

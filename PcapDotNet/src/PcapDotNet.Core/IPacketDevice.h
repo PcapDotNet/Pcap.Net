@@ -6,10 +6,10 @@
 namespace PcapDotNet { namespace Core 
 {
     [System::Flags]
-    public enum class DeviceFlags : System::UInt32
+    public enum class DeviceFlags : System::Int32
     {
         None     = 0x00000000,
-        LoopBack = 0x00000001
+        Loopback = 0x00000001
     };
 
     public interface class IPacketDevice
