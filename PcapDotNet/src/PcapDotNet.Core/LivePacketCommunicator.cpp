@@ -12,7 +12,7 @@ LivePacketCommunicator::LivePacketCommunicator(const char* source, int snapshotL
 PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
 {
     int statisticsSize;
-    pcap_stat* statistics = pcap_stats_ex(_pcapDescriptor, &statisticsSize);
+    pcap_stat* statistics = pcap_stats_ex(PcapDescriptor, &statisticsSize);
     if (statistics == NULL)
         throw BuildInvalidOperation("Failed getting total statistics");
 
@@ -27,5 +27,5 @@ PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
 
 void LivePacketCommunicator::Transmit(PacketSendQueue^ sendQueue, bool isSync)
 {
-    sendQueue->Transmit(_pcapDescriptor, isSync);
+    sendQueue->Transmit(PcapDescriptor, isSync);
 }

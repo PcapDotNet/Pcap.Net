@@ -7,6 +7,7 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace System::Globalization;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Generic;
@@ -27,7 +28,7 @@ PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, P
 
     if (pcapDescriptor == NULL)
     {
-        throw gcnew InvalidOperationException(String::Format("Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
+        throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
     }
 
     _pcapDescriptor = pcapDescriptor;
@@ -186,15 +187,15 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int
     return PacketCommunicatorReceiveResult::Ok;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::ReceivePackets(int numPackets, HandlePacket^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceivePackets(int count, HandlePacket^ callback)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
-    PacketHandler^ packetHandler = gcnew PacketHandler(callBack, DataLink);
+    PacketHandler^ packetHandler = gcnew PacketHandler(callback, DataLink);
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
-    int result = pcap_loop(_pcapDescriptor, numPackets, functionPointer, NULL);
+    int result = pcap_loop(_pcapDescriptor, count, functionPointer, NULL);
     switch (result)
     {
     case -2:
@@ -202,7 +203,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceivePackets(int numPacket
     case -1:
         throw BuildInvalidOperation("Failed reading from device");
     case 0:
-        if (packetHandler->PacketCounter != numPackets)
+        if (packetHandler->PacketCounter != count)
             return PacketCommunicatorReceiveResult::Eof;
     }
 
@@ -228,7 +229,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics([Out] Pack
     return result;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics(int numStatistics, HandleStatistics^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics(int count, HandleStatistics^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Statistics);
 
@@ -236,7 +237,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics(int numSta
     HandlerDelegate^ statisticsHandlerDelegate = gcnew HandlerDelegate(statisticsHandler, &StatisticsHandler::Handle);
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(statisticsHandlerDelegate).ToPointer();
 
-    int result = pcap_loop(_pcapDescriptor, numStatistics, functionPointer, NULL);
+    int result = pcap_loop(_pcapDescriptor, count, functionPointer, NULL);
     if (result == -1)
         throw BuildInvalidOperation("Failed reading from device");
     if (result == -2)
@@ -259,9 +260,9 @@ void PacketCommunicator::SendPacket(Packet^ packet)
 }
 
 
-BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterString)
+BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterValue)
 {
-    return gcnew BerkeleyPacketFilter(_pcapDescriptor, filterString, _ipV4Netmask);
+    return gcnew BerkeleyPacketFilter(_pcapDescriptor, filterValue, _ipV4Netmask);
 }
 
 void PacketCommunicator::SetFilter(BerkeleyPacketFilter^ filter)
@@ -269,9 +270,9 @@ void PacketCommunicator::SetFilter(BerkeleyPacketFilter^ filter)
     filter->SetFilter(_pcapDescriptor);
 }
 
-void PacketCommunicator::SetFilter(String^ filterString)
+void PacketCommunicator::SetFilter(String^ filterValue)
 {
-    BerkeleyPacketFilter^ filter = CreateFilter(filterString);
+    BerkeleyPacketFilter^ filter = CreateFilter(filterValue);
     try
     {
         SetFilter(filter);
@@ -282,9 +283,9 @@ void PacketCommunicator::SetFilter(String^ filterString)
     }
 }
 
-PacketDumpFile^ PacketCommunicator::OpenDump(System::String^ filename)
+PacketDumpFile^ PacketCommunicator::OpenDump(System::String^ fileName)
 {
-    return gcnew PacketDumpFile(_pcapDescriptor, filename);
+    return gcnew PacketDumpFile(_pcapDescriptor, fileName);
 }
 
 PacketCommunicator::~PacketCommunicator()
@@ -328,7 +329,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::RunPcapNextEx(pcap_pkthdr** 
     case 1: 
         return PacketCommunicatorReceiveResult::Ok;
     default: 
-        throw gcnew InvalidOperationException("Result value " + result.ToString() + " is undefined");
+        throw gcnew InvalidOperationException("Result value " + result.ToString(CultureInfo::InvariantCulture) + " is undefined");
     }
 }
 
@@ -343,10 +344,15 @@ InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::Str
     return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
 }
 
+pcap_t* PacketCommunicator::PcapDescriptor::get()
+{
+    return _pcapDescriptor;
+}
+
 void PacketCommunicator::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     ++_packetCounter;
-    _callBack->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
+    _callback->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
 }
 
 int PacketCommunicator::PacketHandler::PacketCounter::get()
@@ -356,5 +362,5 @@ int PacketCommunicator::PacketHandler::PacketCounter::get()
 
 void PacketCommunicator::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
-    _callBack->Invoke(CreateStatistics(*packetHeader, packetData));
+    _callback->Invoke(CreateStatistics(*packetHeader, packetData));
 }
