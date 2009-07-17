@@ -28,7 +28,9 @@ namespace PcapDotNet { namespace Core
         }
         
         virtual bool Equals(PacketTotalStatistics^ other);
-        virtual bool Equals(System::Object^ other) override;
+        virtual bool Equals(System::Object^ obj) override;
+
+        virtual int GetHashCode() override;
 
         virtual System::String^ ToString() override;
 

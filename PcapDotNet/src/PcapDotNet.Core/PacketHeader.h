@@ -8,5 +8,8 @@ namespace PcapDotNet { namespace Core
     {
     public:
         static void GetPcapHeader(pcap_pkthdr &header, Packets::Packet^ packet);
+
+    private:
+        PacketHeader(){}
     };
 }}

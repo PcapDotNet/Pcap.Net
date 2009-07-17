@@ -16,7 +16,8 @@ namespace PcapDotNet { namespace Core
         OSI         = ISO,             // OSI is ISO
         ECMA        = 8,               // european computer manufacturers
         DATAKIT     = 9,               // datakit protocols
-        CCITT       = 10,              // CCITT protocols, X.25 etc
+        CCITT       = 10,         
+        // CCITT protocols, X.25 etc
         SNA         = 11,              // IBM SNA
         DECnet      = 12,              // DECnet
         DLI         = 13,              // Direct data link interface

@@ -14,5 +14,8 @@ namespace PcapDotNet { namespace Core
         {
             int get() = 0;
         }
+
+    protected:
+        SamplingMethod(){}
     };
 }}

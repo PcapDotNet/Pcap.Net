@@ -57,6 +57,19 @@ namespace Packets
             return Equals(obj as Packet);
         }
 
+        public override int GetHashCode()
+        {
+            int hashCode = 0;
+            int offset = 0;
+            for (; offset < _data.Length - 3; offset += 4)
+                hashCode ^= _data.ReadInt(offset, Endianity.Small);
+            if (offset < _data.Length - 1)
+                hashCode ^= _data.ReadShort(offset, Endianity.Small);
+            if (offset < _data.Length)
+                hashCode ^= _data[offset] >> 2;
+            return hashCode;
+        }
+
         private readonly byte[] _data;
         private readonly DateTime _timestamp;
         private readonly IDataLink _dataLink;

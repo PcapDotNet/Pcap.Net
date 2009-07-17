@@ -122,13 +122,13 @@ void PacketCommunicator::NonBlocking::set(bool value)
 void PacketCommunicator::SetKernelBufferSize(int size)
 {
     if (pcap_setbuff(_pcapDescriptor, size) != 0)
-        throw BuildInvalidOperation("Error setting kernel buffer size to " + size.ToString());
+        throw BuildInvalidOperation("Error setting kernel buffer size to " + size.ToString(CultureInfo::InvariantCulture));
 }
 
 void PacketCommunicator::SetKernelMinimumBytesToCopy(int size)
 {
     if (pcap_setmintocopy(_pcapDescriptor, size) != 0)
-        throw BuildInvalidOperation("Error setting kernel minimum bytes to copy to " + size.ToString());
+        throw BuildInvalidOperation("Error setting kernel minimum bytes to copy to " + size.ToString(CultureInfo::InvariantCulture));
 }
 
 void PacketCommunicator::SetSamplingMethod(SamplingMethod^ method)
@@ -156,7 +156,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceivePacket([Out] Packet^%
     return result;
 }
 
-PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int% numPacketsGot, int maxPackets, HandlePacket^ callBack)
+PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int% countGot, int maxPackets, HandlePacket^ callBack)
 {
     AssertMode(PacketCommunicatorMode::Capture);
 
@@ -164,22 +164,22 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int
     HandlerDelegate^ packetHandlerDelegate = gcnew HandlerDelegate(packetHandler, &PacketHandler::Handle);
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
-    numPacketsGot = pcap_dispatch(_pcapDescriptor, 
-                                  maxPackets, 
-                                  functionPointer,
-                                  NULL);
+    countGot = pcap_dispatch(_pcapDescriptor, 
+                             maxPackets, 
+                             functionPointer,
+                             NULL);
 
-    switch (numPacketsGot)
+    switch (countGot)
     {
     case -2:
-        numPacketsGot = 0;
+        countGot = 0;
         return PacketCommunicatorReceiveResult::BreakLoop;
     case -1:
         throw BuildInvalidOperation("Failed reading from device");
     case 0:
         if (packetHandler->PacketCounter != 0)
         {
-            numPacketsGot = packetHandler->PacketCounter;
+            countGot = packetHandler->PacketCounter;
             return PacketCommunicatorReceiveResult::Eof;
         }
     }

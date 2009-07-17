@@ -76,7 +76,7 @@ namespace PcapDotNet { namespace Core
 
         delegate void HandlePacket(Packets::Packet^ packet);
         PacketCommunicatorReceiveResult ReceivePacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
-        PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% numPacketsGot, int maxPackets, HandlePacket^ callback);
+        PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% countGot, int maxPackets, HandlePacket^ callback);
         PacketCommunicatorReceiveResult ReceivePackets(int count, HandlePacket^ callback);
         
         delegate void HandleStatistics(PacketSampleStatistics^ statistics);
@@ -86,7 +86,7 @@ namespace PcapDotNet { namespace Core
         void Break();
 
         void SendPacket(Packets::Packet^ packet);
-        virtual void Transmit(PacketSendQueue^ sendQueue, bool isSync) = 0;
+        virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) = 0;
 
         BerkeleyPacketFilter^ CreateFilter(System::String^ filterValue);
         void SetFilter(BerkeleyPacketFilter^ filter);

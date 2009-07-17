@@ -15,7 +15,7 @@ namespace PcapDotNet { namespace Core
             PacketTotalStatistics^ get() override;
         }
 
-        virtual void Transmit(PacketSendQueue^ sendQueue, bool isSync) override;
+        virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) override;
 
     internal:
         LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, 
