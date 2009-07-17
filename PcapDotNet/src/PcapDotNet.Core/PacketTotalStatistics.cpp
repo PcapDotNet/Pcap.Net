@@ -43,9 +43,18 @@ bool PacketTotalStatistics::Equals(PacketTotalStatistics^ other)
             PacketsCaptured == other->PacketsCaptured);
 }
 
-bool PacketTotalStatistics::Equals(Object^ other)
+bool PacketTotalStatistics::Equals(Object^ obj)
 {
-    return Equals(dynamic_cast<PacketTotalStatistics^>(other));
+    return Equals(dynamic_cast<PacketTotalStatistics^>(obj));
+}
+
+int PacketTotalStatistics::GetHashCode()
+{
+    return 
+        _packetsReceived ^ 
+        _packetsDroppedByDriver ^ 
+        _packetsDroppedByInterface ^ 
+        _packetsCaptured;
 }
 
 String^ PacketTotalStatistics::ToString()

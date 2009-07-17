@@ -7,12 +7,12 @@ using namespace System;
 using namespace PcapDotNet::Core;
 using namespace Packets;
 
-PacketSendQueue::PacketSendQueue(unsigned int capacity)
+PacketSendBuffer::PacketSendBuffer(unsigned int capacity)
 {
     _pcapSendQueue = pcap_sendqueue_alloc(capacity);
 }
 
-void PacketSendQueue::Enqueue(Packet^ packet)
+void PacketSendBuffer::Enqueue(Packet^ packet)
 {
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
@@ -21,12 +21,12 @@ void PacketSendQueue::Enqueue(Packet^ packet)
         throw gcnew InvalidOperationException("Failed enqueueing to SendQueue");
 }
 
-PacketSendQueue::~PacketSendQueue()
+PacketSendBuffer::~PacketSendBuffer()
 {
     pcap_sendqueue_destroy(_pcapSendQueue);
 }
 
-void PacketSendQueue::Transmit(pcap_t* pcapDescriptor, bool isSync)
+void PacketSendBuffer::Transmit(pcap_t* pcapDescriptor, bool isSync)
 {
     unsigned int numBytesTransmitted = pcap_sendqueue_transmit(pcapDescriptor, _pcapSendQueue, isSync);
     if (numBytesTransmitted < _pcapSendQueue->len)

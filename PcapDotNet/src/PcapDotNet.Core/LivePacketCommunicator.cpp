@@ -25,7 +25,7 @@ PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
     return gcnew PacketTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
 }
 
-void LivePacketCommunicator::Transmit(PacketSendQueue^ sendQueue, bool isSync)
+void LivePacketCommunicator::Transmit(PacketSendBuffer^ sendBuffer, bool isSync)
 {
-    sendQueue->Transmit(PcapDescriptor, isSync);
+    sendBuffer->Transmit(PcapDescriptor, isSync);
 }

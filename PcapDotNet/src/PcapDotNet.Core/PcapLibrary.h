@@ -2,12 +2,15 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class PcapLibrary
+    public ref class PcapLibrary sealed
     {
     public:
         static property System::String^ Version
         {
             System::String^ get();
         }
+
+    private:
+        PcapLibrary(){}
     };
 }}

@@ -9,5 +9,8 @@ namespace PcapDotNet { namespace Core
     public:
         static void PcapTimestampToDateTime(const timeval& pcapTimestamp, [System::Runtime::InteropServices::Out] System::DateTime% dateTime);
         static void DateTimeToPcapTimestamp(System::DateTime dateTime, timeval& pcapTimestamp);
+
+    private:
+        Timestamp(){}
     };
 }}

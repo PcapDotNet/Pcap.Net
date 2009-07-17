@@ -76,7 +76,7 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
             List<Packet> packetsToSend;
-            using (PacketSendQueue queue = BuildQueue(out packetsToSend, 100, 100, SourceMac, DestinationMac, 0.5))
+            using (PacketSendBuffer queue = BuildQueue(out packetsToSend, 100, 100, SourceMac, DestinationMac, 0.5))
             {
                 using (PacketCommunicator communicator = OfflinePacketDeviceTests.OpenOfflineDevice())
                 {
@@ -92,7 +92,7 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
             List<Packet> packetsToSend;
-            using (PacketSendQueue queue = BuildQueue(out packetsToSend, numPacketsToSend, packetSize, SourceMac, DestinationMac, secondsBetweenTimestamps))
+            using (PacketSendBuffer queue = BuildQueue(out packetsToSend, numPacketsToSend, packetSize, SourceMac, DestinationMac, secondsBetweenTimestamps))
             {
                 using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
                 {
@@ -137,11 +137,11 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static PacketSendQueue BuildQueue(out List<Packet> packetsToSend, int numPackets, int packetSize, string sourceMac, string destinationMac, double secondsBetweenTimestamps)
+        private static PacketSendBuffer BuildQueue(out List<Packet> packetsToSend, int numPackets, int packetSize, string sourceMac, string destinationMac, double secondsBetweenTimestamps)
         {
             int rawPacketSize = packetSize + 16; // I don't know why 16
 
-            PacketSendQueue queue = new PacketSendQueue((uint)(numPackets * rawPacketSize));
+            PacketSendBuffer queue = new PacketSendBuffer((uint)(numPackets * rawPacketSize));
             try
             {
                 DateTime timestamp = DateTime.Now.AddSeconds(-100);

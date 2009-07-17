@@ -32,5 +32,8 @@ namespace PcapDotNet { namespace Core
         virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout) = 0;
 
         virtual PacketCommunicator^ Open();
+
+    protected:
+        PacketDevice(){}
     };
 }}

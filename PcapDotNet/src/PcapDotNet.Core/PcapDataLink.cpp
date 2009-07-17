@@ -6,6 +6,7 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace System::Globalization;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
@@ -36,7 +37,7 @@ DataLinkKind PcapDataLink::Kind::get()
     case 1:
         return DataLinkKind::Ethernet;
     default:
-        throw gcnew NotSupportedException("PcapDataLink " + Value.ToString() + " - " + ToString() + " is unsupported");
+        throw gcnew NotSupportedException("PcapDataLink " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
     }
 }
 
@@ -50,7 +51,7 @@ String^ PcapDataLink::Name::get()
 {
     const char* name = pcap_datalink_val_to_name(Value);
     if (name == NULL)
-        throw gcnew ArgumentException("datalink " + Value.ToString() + " has no name", "Value");
+        throw gcnew InvalidOperationException("datalink " + Value.ToString(CultureInfo::InvariantCulture) + " has no name");
 
     return gcnew String(name);
 }
@@ -59,18 +60,49 @@ String^ PcapDataLink::Description::get()
 {
     const char* description = pcap_datalink_val_to_description(Value);
     if (description == NULL)
-        throw gcnew ArgumentException("datalink " + Value.ToString() + " has no description", "Value");
+        throw gcnew InvalidOperationException("datalink " + Value.ToString(CultureInfo::InvariantCulture) + " has no description");
 
     return gcnew String(description);
 }
-
 
 String^ PcapDataLink::ToString()
 {
     return Name + " (" + Description + ")";
 }
 
+bool PcapDataLink::Equals(PcapDataLink other)
+{
+    return _value == other._value;
+}
+
+bool PcapDataLink::Equals(System::Object^ obj)
+{
+    PcapDataLink^ other = dynamic_cast<PcapDataLink^>(obj);
+    if (other == nullptr)
+        return false;
+
+    return Equals((PcapDataLink)other);
+}
+
+int PcapDataLink::GetHashCode()
+{
+    return Value.GetHashCode();
+}
+
 // static
+bool PcapDataLink::operator ==(PcapDataLink dataLink1, PcapDataLink dataLink2)
+{
+    return dataLink1.Equals(dataLink2);
+}
+
+// static
+bool PcapDataLink::operator !=(PcapDataLink dataLink1, PcapDataLink dataLink2)
+{
+    return !dataLink1.Equals(dataLink2);
+}
+
+// private
+
 int PcapDataLink::KindToValue(DataLinkKind kind)
 {
     switch (kind)

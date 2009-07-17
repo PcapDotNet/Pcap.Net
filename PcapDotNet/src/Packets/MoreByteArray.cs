@@ -24,6 +24,19 @@ namespace Packets
             return (ushort)ReadShort(buffer, offset, endianity);
         }
 
+        public static uint ReadUInt(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return (uint)ReadInt(buffer, offset, endianity);
+        }
+
+        public static int ReadInt(this byte[] buffer, int offset, Endianity endianity)
+        {
+            int value = ReadInt(buffer, offset);
+            if (IsWrongEndianity(endianity))
+                value = IPAddress.HostToNetworkOrder(value);
+            return value;
+        }
+
         public static void Write(this byte[] buffer, int offset, short value, Endianity endianity)
         {
             if (IsWrongEndianity(endianity))
@@ -48,6 +61,17 @@ namespace Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     return *((short*)ptr);
+                }
+            }
+        }
+
+        private static int ReadInt(byte[] buffer, int offset)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    return *((int*)ptr);
                 }
             }
         }
