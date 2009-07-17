@@ -26,9 +26,9 @@ String^ OfflinePacketDevice::Description::get()
     return String::Empty;
 }
 
-DeviceFlags^ OfflinePacketDevice::Flags::get()
+DeviceAttributes^ OfflinePacketDevice::Attributes::get()
 {
-    return DeviceFlags::None;
+    return DeviceAttributes::None;
 }
 
 ReadOnlyCollection<DeviceAddress^>^ OfflinePacketDevice::Addresses::get()
@@ -36,7 +36,7 @@ ReadOnlyCollection<DeviceAddress^>^ OfflinePacketDevice::Addresses::get()
     return gcnew ReadOnlyCollection<DeviceAddress^>(gcnew List<DeviceAddress^>());
 }
 
-PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout)
+PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout)
 {
     std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(_fileName);
 
@@ -54,5 +54,5 @@ PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOp
         throw gcnew InvalidOperationException("Error creating a source string from filename " + _fileName + " Error: " + gcnew String(errbuf));
     }
 
-    return gcnew OfflinePacketCommunicator(source, snapshotLength, flags, readTimeout, NULL);
+    return gcnew OfflinePacketCommunicator(source, snapshotLength, attributes, readTimeout, NULL);
 }

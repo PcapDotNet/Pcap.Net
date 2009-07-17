@@ -8,6 +8,14 @@
       <Word>pcap</Word>
       <Word>eof</Word>
       <Word>netmask</Word>
+      <Word>firefox</Word>
+      <Word>sna</Word>
+      <Word>ipx</Word>
+      <Word>osi</Word>
+      <Word>tcn</Word>
+      <Word>datakit</Word>
+      <Word>ccitt</Word>
+      <Word>iclfxbm</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->

@@ -19,9 +19,9 @@ namespace PcapDotNet { namespace Core
             System::String^ get() override;
         }
 
-        virtual property DeviceFlags^ Flags
+        virtual property DeviceAttributes^ Attributes
         {
-            DeviceFlags^ get() override;
+            DeviceAttributes^ get() override;
         }
 
         virtual property System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ Addresses
@@ -29,7 +29,7 @@ namespace PcapDotNet { namespace Core
             System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ get() override;
         }
 
-        virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout) override;
+        virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout) override;
 
     private:
         System::String^ _fileName;

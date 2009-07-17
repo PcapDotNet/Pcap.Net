@@ -206,7 +206,7 @@ namespace PcapDotNet.Core.Test
             Packet expectedPacket = MoreRandom.BuildRandomPacket(100);
             using (PacketCommunicator communicator = OpenOfflineDevice(101, expectedPacket))
             {
-                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(10));
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryCount(10));
                 PacketCommunicatorReceiveResult result;
                 Packet packet;
                 for (int i = 0; i != 10; ++i)
@@ -353,7 +353,7 @@ namespace PcapDotNet.Core.Test
             IPacketDevice device = new OfflinePacketDevice(dumpFilename);
             Assert.AreEqual(0, device.Addresses.Count);
             Assert.AreEqual(string.Empty, device.Description);
-            Assert.AreEqual(DeviceFlags.None, device.Flags);
+            Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreEqual(dumpFilename, device.Name);
             communicator = device.Open();
             try

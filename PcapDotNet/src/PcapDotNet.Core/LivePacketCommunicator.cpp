@@ -4,8 +4,8 @@
 
 using namespace PcapDotNet::Core;
 
-LivePacketCommunicator::LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, SocketAddress^ netmask)
-: PacketCommunicator(source, snapshotLength, flags, readTimeout, auth, netmask)
+LivePacketCommunicator::LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth, SocketAddress^ netmask)
+: PacketCommunicator(source, snapshotLength, attributes, readTimeout, auth, netmask)
 {
 }
 

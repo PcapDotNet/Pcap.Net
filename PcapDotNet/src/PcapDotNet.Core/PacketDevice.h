@@ -7,7 +7,7 @@ namespace PcapDotNet { namespace Core
     public ref class PacketDevice abstract : IPacketDevice
     {
     public:
-        static const int DefaultSnapshotLength = 65536;
+        literal int DefaultSnapshotLength = 65536;
 
         virtual property System::String^ Name
         {
@@ -19,9 +19,9 @@ namespace PcapDotNet { namespace Core
             System::String^ get() = 0;
         }
 
-        virtual property DeviceFlags^ Flags
+        virtual property DeviceAttributes^ Attributes
         {
-            DeviceFlags^ get() = 0;
+            DeviceAttributes^ get() = 0;
         }
 
         virtual property System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ Addresses
@@ -29,7 +29,7 @@ namespace PcapDotNet { namespace Core
             System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ get() = 0;
         }
 
-        virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout) = 0;
+        virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout) = 0;
 
         virtual PacketCommunicator^ Open();
 

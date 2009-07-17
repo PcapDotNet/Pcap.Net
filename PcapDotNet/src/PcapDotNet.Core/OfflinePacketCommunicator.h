@@ -16,6 +16,6 @@ namespace PcapDotNet { namespace Core
         virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) override;
 
     internal:
-        OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth);
+        OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth);
     };
 }}
