@@ -41,7 +41,7 @@ ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
 
             result->Add(gcnew LivePacketDevice(gcnew String(d->name), 
                                      gcnew String(d->description), 
-                                     safe_cast<DeviceFlags>(d->flags),
+                                     safe_cast<DeviceAttributes>(d->flags),
                                      gcnew ReadOnlyCollection<DeviceAddress^>(addresses)));
         }
         return gcnew ReadOnlyCollection<LivePacketDevice^>(result);
@@ -63,9 +63,9 @@ String^ LivePacketDevice::Description::get()
     return _description; 
 }
 
-DeviceFlags^ LivePacketDevice::Flags::get()
+DeviceAttributes^ LivePacketDevice::Attributes::get()
 {
-    return _flags;
+    return _attributes;
 }
 
 ReadOnlyCollection<DeviceAddress^>^ LivePacketDevice::Addresses::get()
@@ -73,7 +73,7 @@ ReadOnlyCollection<DeviceAddress^>^ LivePacketDevice::Addresses::get()
     return gcnew ReadOnlyCollection<DeviceAddress^>(_addresses);
 }
 
-PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout)
+PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout)
 {
     std::string deviceName = MarshalingServices::ManagedToUnmanagedString(Name);
 
@@ -83,15 +83,15 @@ PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenF
         netmask = Addresses[0]->Netmask;
 
     // Open the device
-    return gcnew LivePacketCommunicator(deviceName.c_str(), snapshotLength, flags, readTimeout, NULL, netmask);
+    return gcnew LivePacketCommunicator(deviceName.c_str(), snapshotLength, attributes, readTimeout, NULL, netmask);
 }
 
 // Private Methods
 
-LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceFlags^ flags, ReadOnlyCollection<DeviceAddress^>^ addresses)
+LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceAttributes^ attributes, ReadOnlyCollection<DeviceAddress^>^ addresses)
 {
     _name = name;
     _description = description;
-    _flags = flags;
+    _attributes = attributes;
     _addresses = addresses;
 }

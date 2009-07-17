@@ -4,40 +4,40 @@ namespace PcapDotNet { namespace Core
 {
     public enum class SocketAddressFamily : System::UInt16
     {
-        UNSPEC      = 0,               // unspecified
-        UNIX        = 1,               // local to host (pipes, portals)
-        INET        = 2,               // internetwork: UDP, TCP, etc.
-        IMPLINK     = 3,               // arpanet imp addresses
-        PUP         = 4,               // pup protocols: e.g. BSP
-        CHAOS       = 5,               // mit CHAOS protocols
+        Unspecified = 0,               // unspecified
+        Unix        = 1,               // local to host (pipes, portals)
+        Internet    = 2,               // internetwork: UDP, TCP, etc.
+        ImpLink     = 3,               // arpanet imp addresses
+        Pup         = 4,               // pup protocols: e.g. BSP
+        Chaos       = 5,               // mit CHAOS protocols
         NS          = 6,               // XEROX NS protocols
-        IPX         = NS,              // IPX protocols: IPX, SPX, etc.
-        ISO         = 7,               // ISO protocols
-        OSI         = ISO,             // OSI is ISO
-        ECMA        = 8,               // european computer manufacturers
-        DATAKIT     = 9,               // datakit protocols
-        CCITT       = 10,         
+        Ipx         = NS,              // IPX protocols: IPX, SPX, etc.
+        Iso         = 7,               // ISO protocols
+        Osi         = Iso,             // OSI is ISO
+        EuropeanComputerManufactures = 8,               // european computer manufacturers
+        Datakit     = 9,               // datakit protocols
+        Ccitt       = 10,         
         // CCITT protocols, X.25 etc
-        SNA         = 11,              // IBM SNA
+        Sna         = 11,              // IBM SNA
         DECnet      = 12,              // DECnet
-        DLI         = 13,              // Direct data link interface
-        LAT         = 14,              // LAT
-        HYLINK      = 15,              // NSC Hyperchannel
-        APPLETALK   = 16,              // AppleTalk
-        NETBIOS     = 17,              // NetBios-style addresses
-        VOICEVIEW   = 18,              // VoiceView
-        FIREFOX     = 19,              // Protocols from Firefox
-        UNKNOWN1    = 20,              // Somebody is using this!
-        BAN         = 21,              // Banyan
-        ATM         = 22,              // Native ATM Services
-        INET6       = 23,              // Internetwork Version 6
-        CLUSTER     = 24,              // Microsoft Wolfpack
-        IEEE12844   = 25,              // IEEE 1284.4 WG AF
-        IRDA        = 26,              // IrDA
-        NETDES      = 28,              // Network Designers OSI & gateway
-        TCNPROCESS  = 29,
-        TCNMESSAGE  = 30,
-        ICLFXBM     = 31,
-        BTH         = 32               // Bluetooth RFCOMM/L2CAP protocols
+        DirectDataLinkInterface = 13,              // Direct data link interface
+        Lat         = 14,              // LAT
+        HyperChannel = 15,             // NSC Hyperchannel
+        AppleTalk   = 16,              // AppleTalk
+        NetBios     = 17,              // NetBios-style addresses
+        VoiceView   = 18,              // VoiceView
+        Firefox     = 19,              // Protocols from Firefox
+        Unknown1    = 20,              // Somebody is using this!
+        Ban         = 21,              // Banyan
+        Atm         = 22,              // Native ATM Services
+        Internet6   = 23,              // Internetwork Version 6
+        Cluster     = 24,              // Microsoft Wolfpack
+        Ieee12844   = 25,              // IEEE 1284.4 WG AF
+        Irda        = 26,              // IrDA
+        NetworkDesigners = 28,              // Network Designers OSI & gateway
+        TcnProcess  = 29,
+        TcnMessage  = 30,
+        Iclfxbm     = 31,
+        Bluetooth   = 32               // Bluetooth RFCOMM/L2CAP protocols
     };
 }}

@@ -4,19 +4,19 @@
 using namespace System;
 using namespace PcapDotNet::Core;
 
-SamplingMethodOneEveryN::SamplingMethodOneEveryN(int n)
+SamplingMethodOneEveryCount::SamplingMethodOneEveryCount(int count)
 {
-    if (n <= 0)
-        throw gcnew ArgumentOutOfRangeException("n", n, "Must be positive");
-    _n = n;
+    if (count <= 0)
+        throw gcnew ArgumentOutOfRangeException("count", count, "Must be positive");
+    _count = count;
 }
 
-int SamplingMethodOneEveryN::Method::get()
+int SamplingMethodOneEveryCount::Method::get()
 {
     return PCAP_SAMP_1_EVERY_N;
 }
 
-int SamplingMethodOneEveryN::Value::get()
+int SamplingMethodOneEveryCount::Value::get()
 {
-    return _n;
+    return _count;
 }

@@ -14,14 +14,14 @@ using namespace System::Collections::Generic;
 using namespace Packets;
 using namespace PcapDotNet::Core;
 
-PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
+PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
                                        snapshotLength,               // portion of the packet to capture
                                                               // 65536 guarantees that the whole packet will be captured on all the link layers
-                                       safe_cast<int>(flags),
+                                       safe_cast<int>(attributes),
                                        readTimeout,           // read timeout
                                        auth,                  // authentication on the remote machine
                                        errbuf);               // error buffer

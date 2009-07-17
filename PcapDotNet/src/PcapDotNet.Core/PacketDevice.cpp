@@ -4,5 +4,5 @@ using namespace PcapDotNet::Core;
 
 PacketCommunicator^ PacketDevice::Open()
 {
-    return Open(DefaultSnapshotLength, PacketDeviceOpenFlags::Promiscuous, 1000);
+    return Open(DefaultSnapshotLength, PacketDeviceOpenAttributes::Promiscuous, 1000);
 }

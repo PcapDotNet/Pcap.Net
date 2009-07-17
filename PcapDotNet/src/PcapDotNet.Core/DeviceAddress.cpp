@@ -12,7 +12,7 @@ DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
 
     switch (family)
     {
-    case SocketAddressFamily::INET:
+    case SocketAddressFamily::Internet:
         if (pcapAddress->addr)
             _address = gcnew IpV4SocketAddress(pcapAddress->addr);
         if (pcapAddress->netmask)

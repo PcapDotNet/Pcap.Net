@@ -405,7 +405,7 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(5));
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryCount(5));
                 for (int i = 0; i != 20; ++i)
                 {
                     Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 60 * (i + 1));
@@ -466,7 +466,7 @@ namespace PcapDotNet.Core.Test
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
-                communicator.SetSamplingMethod(new SamplingMethodOneEveryN(0));
+                communicator.SetSamplingMethod(new SamplingMethodOneEveryCount(0));
             }
         }
 
@@ -638,7 +638,7 @@ namespace PcapDotNet.Core.Test
             MoreAssert.IsBiggerOrEqual(1, devices.Count);
             LivePacketDevice device = devices[0];
             Assert.AreEqual("Network adapter 'Atheros AR8121/AR8113 PCI-E Ethernet Controller (Microsoft's Packet Scheduler) ' on local host", device.Description);
-            Assert.AreEqual(DeviceFlags.None, device.Flags);
+            Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreEqual(1, device.Addresses.Count);
             DeviceAddress address = device.Addresses[0];
             Assert.AreEqual("Address: INET 10.0.0.2 Netmask: INET 255.0.0.0 Broadcast: INET 255.255.255.255", address.ToString());

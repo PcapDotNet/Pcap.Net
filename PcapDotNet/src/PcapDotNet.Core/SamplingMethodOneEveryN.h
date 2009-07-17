@@ -4,10 +4,10 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class SamplingMethodOneEveryN : SamplingMethod
+    public ref class SamplingMethodOneEveryCount : SamplingMethod
     {
     public:
-        SamplingMethodOneEveryN(int n);
+        SamplingMethodOneEveryCount(int count);
 
     internal:
         virtual property int Method
@@ -21,6 +21,6 @@ namespace PcapDotNet { namespace Core
         }
 
     private:
-        int _n;
+        int _count;
     };
 }}

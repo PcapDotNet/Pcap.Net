@@ -14,6 +14,9 @@
 
 namespace PcapDotNet { namespace Core 
 {
+    public delegate void HandlePacket(Packets::Packet^ packet);
+    public delegate void HandleStatistics(PacketSampleStatistics^ statistics);
+
     /// <summary>
     /// Used to receive and send packets accross the network or to read and write packets to a pcap file.
     /// </summary>
@@ -74,12 +77,10 @@ namespace PcapDotNet { namespace Core
 
         void SetSamplingMethod(SamplingMethod^ method);
 
-        delegate void HandlePacket(Packets::Packet^ packet);
         PacketCommunicatorReceiveResult ReceivePacket([System::Runtime::InteropServices::Out] Packets::Packet^% packet);
         PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% countGot, int maxPackets, HandlePacket^ callback);
         PacketCommunicatorReceiveResult ReceivePackets(int count, HandlePacket^ callback);
         
-        delegate void HandleStatistics(PacketSampleStatistics^ statistics);
         PacketCommunicatorReceiveResult ReceiveStatistics([System::Runtime::InteropServices::Out] PacketSampleStatistics^% statistics);
         PacketCommunicatorReceiveResult ReceiveStatistics(int count, HandleStatistics^ callback);
 
@@ -97,7 +98,7 @@ namespace PcapDotNet { namespace Core
         ~PacketCommunicator();
 
     internal:
-        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth, 
+        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth, 
                            SocketAddress^ netmask);
 
     protected:

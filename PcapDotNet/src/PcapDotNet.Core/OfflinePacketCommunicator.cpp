@@ -8,8 +8,8 @@ PacketTotalStatistics^ OfflinePacketCommunicator::TotalStatistics::get()
     throw gcnew InvalidOperationException("Can't get TotalStatistics for offline devices");
 }
 
-OfflinePacketCommunicator::OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenFlags flags, int readTimeout, pcap_rmtauth* auth)
-: PacketCommunicator(source, snapshotLength, flags, readTimeout, auth, nullptr)
+OfflinePacketCommunicator::OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth)
+: PacketCommunicator(source, snapshotLength, attributes, readTimeout, auth, nullptr)
 {
 }
 
