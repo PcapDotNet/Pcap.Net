@@ -330,11 +330,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SamplingMethodOneEveryN.cpp"
+				RelativePath=".\SamplingMethodOneEveryCount.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SamplingMethodOneEveryN.h"
+				RelativePath=".\SamplingMethodOneEveryCount.h"
 				>
 			</File>
 		</Filter>

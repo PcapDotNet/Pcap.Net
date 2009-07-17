@@ -1,4 +1,4 @@
-#include "SamplingMethodOneEveryN.h"
+#include "SamplingMethodOneEveryCount.h"
 #include "Pcap.h"
 
 using namespace System;
