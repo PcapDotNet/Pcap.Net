@@ -641,7 +641,7 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreEqual(1, device.Addresses.Count);
             DeviceAddress address = device.Addresses[0];
-            Assert.AreEqual("Address: INET 10.0.0.2 Netmask: INET 255.0.0.0 Broadcast: INET 255.255.255.255", address.ToString());
+            Assert.AreEqual("Address: " + SocketAddressFamily.Internet + " 10.0.0.2 Netmask: " + SocketAddressFamily.Internet + " 255.0.0.0 Broadcast: " + SocketAddressFamily.Internet + " 255.255.255.255", address.ToString());
             PacketCommunicator communicator = device.Open();
             try
             {
