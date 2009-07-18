@@ -219,10 +219,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics([Out] Pack
     PacketCommunicatorReceiveResult result = RunPcapNextEx(&packetHeader, &packetData);
 
     if (result != PacketCommunicatorReceiveResult::Ok)
-    {
-        statistics = nullptr;
-        return result;
-    }
+        throw gcnew InvalidOperationException("Got result " + result.ToString() + " in statistics mode");
 
     statistics = CreateStatistics(*packetHeader, packetData);
 
