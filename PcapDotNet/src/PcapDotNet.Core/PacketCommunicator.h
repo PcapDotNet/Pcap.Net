@@ -3,7 +3,7 @@
 #include "DeviceAddress.h"
 #include "BerkeleyPacketFilter.h"
 #include "PacketDumpFile.h"
-#include "PacketDeviceOpenFlags.h"
+#include "PacketDeviceOpenAttributes.h"
 #include "PacketSampleStatistics.h"
 #include "PacketTotalStatistics.h"
 #include "PcapDataLink.h"

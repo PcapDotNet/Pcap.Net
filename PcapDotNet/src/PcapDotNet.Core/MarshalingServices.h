@@ -12,6 +12,7 @@ namespace PcapDotNet { namespace Core
         static array<System::Byte>^ UnamangedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count);
 
     private:
+        [System::Diagnostics::DebuggerNonUserCode]
         MarshalingServices(){}
     };
 }}

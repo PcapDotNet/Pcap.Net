@@ -11,6 +11,7 @@ namespace PcapDotNet { namespace Core
         }
 
     private:
+        [System::Diagnostics::DebuggerNonUserCode]
         PcapLibrary(){}
     };
 }}

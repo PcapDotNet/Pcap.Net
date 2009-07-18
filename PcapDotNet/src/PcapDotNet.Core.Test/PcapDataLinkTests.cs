@@ -57,7 +57,7 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void ConstructorsTest()
+        public void TestValidDataLinks()
         {
             PcapDataLink dataLink = new PcapDataLink();
             Assert.AreEqual(new PcapDataLink("NULL"), dataLink);
@@ -76,8 +76,11 @@ namespace PcapDotNet.Core.Test
                 }
 
                 Assert.AreEqual(new PcapDataLink(dataLinkName), dataLink);
+                Assert.IsTrue(new PcapDataLink(dataLinkName) == dataLink);
+                Assert.IsFalse(new PcapDataLink(dataLinkName) != dataLink);
                 Assert.IsNotNull(dataLink.Description);
                 Assert.AreEqual(i, dataLink.Value);
+                Assert.AreEqual(dataLink.Value.GetHashCode(), dataLink.GetHashCode());
             }
         }
 

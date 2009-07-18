@@ -645,6 +645,7 @@ namespace PcapDotNet.Core.Test
             PacketCommunicator communicator = device.Open();
             try
             {
+                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), communicator.TotalStatistics);
                 communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
                 communicator.SetKernelMinimumBytesToCopy(10); // 10 bytes minimum to copy
                 communicator.SetSamplingMethod(new SamplingMethodNone());
@@ -656,7 +657,6 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual(PacketCommunicatorMode.Capture, communicator.Mode);
                 Assert.IsFalse(communicator.NonBlocking);
                 Assert.AreEqual(PacketDevice.DefaultSnapshotLength, communicator.SnapshotLength);
-                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), communicator.TotalStatistics);
                 return communicator;
             }
             catch (Exception)

@@ -10,6 +10,7 @@ namespace PcapDotNet { namespace Core
         static void GetPcapHeader(pcap_pkthdr &header, Packets::Packet^ packet);
 
     private:
+        [System::Diagnostics::DebuggerNonUserCode]
         PacketHeader(){}
     };
 }}
