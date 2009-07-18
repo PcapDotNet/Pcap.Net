@@ -258,7 +258,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PacketDeviceOpenFlags.h"
+				RelativePath=".\PacketDeviceOpenAttributes.h"
 				>
 			</File>
 			<File
