@@ -69,7 +69,7 @@ namespace PcapDotNet.Core.Test
                 {
                     dataLinkName = dataLink.Name;
                 }
-                catch (ArgumentException)
+                catch (InvalidOperationException)
                 {
                     // Ignore invalid values
                     continue;
@@ -90,7 +90,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void NoDescriptionErrorTest()
         {
             PcapDataLink dataLink = GetInvalidDataLink();

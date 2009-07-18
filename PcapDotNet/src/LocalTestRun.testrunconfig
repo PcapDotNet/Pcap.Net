@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TestRunConfiguration name="Local Test Run" id="be17286c-6d1c-43dd-b068-e83867abf9c5" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
   <Description>This is a default test run configuration for a local test run.</Description>
-  <CodeCoverage enabled="true">
+  <CodeCoverage enabled="true" keyFile="PcapDotNet.Core\PcapDotNet.Core.snk">
     <Regular>
-      <CodeCoverageItem binaryFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\Packets.dll" pdbFile="C:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\Packets.pdb" instrumentInPlace="true" />
       <CodeCoverageItem binaryFile="c:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.dll" pdbFile="c:\Documents and Settings\Boaz\My Documents\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.pdb" instrumentInPlace="true" />
     </Regular>
   </CodeCoverage>
