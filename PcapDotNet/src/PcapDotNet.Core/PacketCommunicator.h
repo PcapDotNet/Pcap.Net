@@ -76,7 +76,7 @@ namespace PcapDotNet { namespace Core
         }
 
         /// <summary>
-        /// Return statistics on current capture.
+        /// Statistics on current capture.
         /// The values represent packet statistics from the start of the run to the time of the call. 
         /// Supported only on live captures, not on offline. No statistics are stored in offline, so no statistics are available when reading from an offline device.
         /// </summary>
@@ -297,7 +297,7 @@ namespace PcapDotNet { namespace Core
         /// </summary>
         /// <param name="sendBuffer">Contains the packets to send.</param>
         /// <param name="isSync">Determines if the send operation must be synchronized: if it is true, the packets are sent respecting the timestamps, otherwise they are sent as fast as possible.</param>
-        /// <exception cref="System::InvalidOperationException">An error occurred during the send. The error can be caused by a driver/adapter problem or by an inconsistent/bogus send buffer..</exception>
+        /// <exception cref="System::InvalidOperationException">Trying to transmit to an offline device or an error occurred during the send. The error can be caused by a driver/adapter problem or by an inconsistent/bogus send buffer.</exception>
         /// <remarks>
         ///   <list type="bullet">
         ///     <item>Using this function is more efficient than issuing a series of SendPacket(), because the packets are buffered in the kernel driver, so the number of context switches is reduced. Therefore, expect a better throughput when using Transmit().</item>
