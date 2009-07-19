@@ -411,11 +411,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\PacketSendQueue.cpp"
+			RelativePath=".\PacketSendBuffer.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\PacketSendQueue.h"
+			RelativePath=".\PacketSendBuffer.h"
 			>
 		</File>
 		<File

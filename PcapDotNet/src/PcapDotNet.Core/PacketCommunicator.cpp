@@ -256,7 +256,6 @@ void PacketCommunicator::SendPacket(Packet^ packet)
         throw BuildInvalidOperation("Failed writing to device");
 }
 
-
 BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterValue)
 {
     return gcnew BerkeleyPacketFilter(_pcapDescriptor, filterValue, _ipV4Netmask);

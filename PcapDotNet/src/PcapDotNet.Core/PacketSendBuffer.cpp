@@ -1,4 +1,4 @@
-#include "PacketSendQueue.h"
+#include "PacketSendBuffer.h"
 #include "PacketHeader.h"
 #include "PcapError.h"
 #include "Pcap.h"
