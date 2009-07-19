@@ -7,7 +7,7 @@
 #include "PacketSampleStatistics.h"
 #include "PacketTotalStatistics.h"
 #include "PcapDataLink.h"
-#include "PacketSendQueue.h"
+#include "PacketSendBuffer.h"
 #include "PacketCommunicatorMode.h"
 #include "PacketCommunicatorReceiveResult.h"
 #include "SamplingMethod.h"
@@ -170,6 +170,7 @@ namespace PcapDotNet { namespace Core
         /// Used to collect and process packets. 
         /// <seealso cref="ReceivePacket"/>
         /// <seealso cref="ReceivePackets"/>
+        /// <seealso cref="Break"/>
         /// </summary>
         /// <param name="maxPackets">
         ///   <para>
@@ -206,6 +207,7 @@ namespace PcapDotNet { namespace Core
         /// Similar to ReceiveSomePackets() except it keeps reading packets until conut packets are processed or an error occurs. It does not return when live read timeouts occur.
         /// <seealso cref="ReceivePacket"/>
         /// <seealso cref="ReceiveSomePackets"/>
+        /// <seealso cref="Break"/>
         /// </summary>
         /// <param name="count">Number of packets to process. A negative count causes ReceivePackets() to loop forever (or at least until an error occurs).</param>
         /// <param name="callback">Specifies a routine to be called with one argument: the packet received.</param>
@@ -223,7 +225,7 @@ namespace PcapDotNet { namespace Core
         /// <exception cref="System::InvalidOperationException">Thrown if the mode is not Capture or an error occurred.</exception>
         PacketCommunicatorReceiveResult ReceivePackets(int count, HandlePacket^ callback);
         
-        /// <summary cref="PcapDotNet">
+        /// <summary>
         /// Receives a single statistics data on packets from an interface instead of receiving the packets.
         /// The statistics can be received in the resolution set by readTimeout when calling LivePacketDevice.Open().
         /// </summary>
@@ -242,6 +244,7 @@ namespace PcapDotNet { namespace Core
 
         /// <summary>
         /// Collect a group of statistics every readTimeout given in LivePacketDevice.Open().
+        /// <seealso cref="Break"/>
         /// </summary>
         /// <param name="count">Number of statistics to process. A negative count causes ReceiveStatistics() to loop forever (or at least until an error occurs).</param>
         /// <param name="callback">Specifies a routine to be called with one argument: the statistics received.</param>
@@ -258,17 +261,103 @@ namespace PcapDotNet { namespace Core
         /// <exception cref="System::InvalidOperationException">Thrown if the mode is not Statistics or an error occurred.</exception>
         PacketCommunicatorReceiveResult ReceiveStatistics(int count, HandleStatistics^ callback);
 
+        /// <summary>
+        /// Set a flag that will force ReceiveSomePackets(), ReceivePackets() or ReceiveStatistics() to return rather than looping.
+        /// They will return the number of packets/statistics that have been processed so far, with return value BreakLoop.
+        /// <seealso cref="ReceiveSomePackets"/>
+        /// <seealso cref="ReceivePackets"/>
+        /// <seealso cref="ReceiveStatistics(int, HandleStatistics)"/>
+        /// </summary>
+        /// <remarks>
+        ///   <list type="bullet">
+        ///     <item>This routine is safe to use inside a signal handler on UNIX or a console control handler on Windows, as it merely sets a flag that is checked within the loop.</item>
+        ///     <item>The flag is checked in loops reading packets from the OS - a signal by itself will not necessarily terminate those loops - as well as in loops processing a set of packets/statistics returned by the OS.</item>
+        ///     <item>Note that if you are catching signals on UNIX systems that support restarting system calls after a signal, and calling Break() in the signal handler, you must specify, when catching those signals, that system calls should NOT be restarted by that signal. Otherwise, if the signal interrupted a call reading packets in a live capture, when your signal handler returns after calling Break(), the call will be restarted, and the loop will not terminate until more packets arrive and the call completes.</item>
+        ///     <item>ReceivePacket() will, on some platforms, loop reading packets from the OS; that loop will not necessarily be terminated by a signal, so Break() should be used to terminate packet processing even if ReceivePacket() is being used.</item>
+        ///     <item>Break() does not guarantee that no further packets/statistics will be processed by ReceiveSomePackets(), ReceivePackets() or ReceiveStatistics() after it is called; at most one more packet might be processed.</item>
+        ///     <item>If BreakLoop is returned from ReceiveSomePackets(), ReceivePackets() or ReceiveStatistics(), the flag is cleared, so a subsequent call will resume reading packets. If a different return value is returned, the flag is not cleared, so a subsequent call will return BreakLoop and clear the flag.</item>
+        ///   </list>
+        /// </remarks>
         void Break();
 
+        /// <summary>
+        /// Send a raw packet.
+        /// This function allows to send a raw packet to the network.
+        /// <seealso cref="Transmit"/>
+        /// </summary>
+        /// <param name="packet">The packet to send (including the various protocol headers). The MAC CRC doesn't need to be included, because it is transparently calculated and added by the network interface driver.</param>
+        /// <exception cref="System::InvalidOperationException">The packet wasn't successfully sent.</exception>
         void SendPacket(Packets::Packet^ packet);
+
+        /// <summary>
+        /// Send a buffer of packets to the network.
+        /// This function transmits the content of a queue to the wire.
+        /// <seealso cref="SendPacket"/>
+        /// <seealso cref="PacketSendBuffer"/>
+        /// </summary>
+        /// <param name="sendBuffer">Contains the packets to send.</param>
+        /// <param name="isSync">Determines if the send operation must be synchronized: if it is true, the packets are sent respecting the timestamps, otherwise they are sent as fast as possible.</param>
+        /// <exception cref="System::InvalidOperationException">An error occurred during the send. The error can be caused by a driver/adapter problem or by an inconsistent/bogus send buffer..</exception>
+        /// <remarks>
+        ///   <list type="bullet">
+        ///     <item>Using this function is more efficient than issuing a series of SendPacket(), because the packets are buffered in the kernel driver, so the number of context switches is reduced. Therefore, expect a better throughput when using Transmit().</item>
+        ///     <item>When isSync is true, the packets are synchronized in the kernel with a high precision timestamp. This requires a non-negligible amount of CPU, but allows normally to send the packets with a precision of some microseconds (depending on the accuracy of the performance counter of the machine). Such a precision cannot be reached sending the packets with SendPacket().</item>
+        ///   </list>
+        /// </remarks>
         virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) = 0;
 
+        /// <summary>
+        /// Compile a packet filter according to the communicator IPv4 netmask.
+        /// <seealso cref="SetFilter(BerkeleyPacketFilter^)"/>
+        /// <!--seealso cref="SetFilter(String^)"/--> todo bug in documentation
+        /// <seealso cref="BerkeleyPacketFilter"/>
+        /// </summary>
+        /// <param name="filterValue">A high level filtering expression (see <see href="http://www.winpcap.org/docs/docs_40_2/html/group__language.html">WinPcap Filtering expression syntax</see>)</param>
+        /// <returns>
+        /// The compiled filter that can be applied on the communicator.
+        /// </returns>
+        /// <exception cref="System::InvalidOperationException">An error occurred.</exception>
+        /// <remarks>
+        /// The created filter should be disposed by the user.
+        /// </remarks>
         BerkeleyPacketFilter^ CreateFilter(System::String^ filterValue);
+
+        /// <summary>
+        /// Associate a filter to a capture.
+        /// <seealso cref="CreateFilter"/>
+        /// <seealso cref="BerkeleyPacketFilter"/>
+        /// </summary>
+        /// <param name="filter">The filter to associate. Usually the result of a call to CreateFilter().</param>
+        /// <exception cref="System::InvalidOperationException">Thrown on failure.</exception>
         void SetFilter(BerkeleyPacketFilter^ filter);
+
+        /// <summary>
+        /// Compile and associate a filter to a capture.
+        /// This method actually wraps a call to CreateFilter(), SetFilter() and Dispose().
+        /// <seealso cref="CreateFilter"/>
+        /// <seealso cref="BerkeleyPacketFilter"/>
+        /// </summary>
+        /// <param name="filterValue">A high level filtering expression (see <see href="http://www.winpcap.org/docs/docs_40_2/html/group__language.html">WinPcap Filtering expression syntax</see>).</param>
+        /// <exception cref="System::InvalidOperationException">Thrown on failure.</exception>
         void SetFilter(System::String^ filterValue);
 
+        /// <summary>
+        /// Open a file to write packets.
+        /// Called to open an offline capture for writing. The name "-" in a synonym for stdout. 
+        /// </summary>
+        /// <param name="fileName">Specifies the name of the file to open.</param>
+        /// <returns>
+        /// A dump file to dump packets capture by the communicator.
+        /// </returns>
+        /// <exception cref="System::InvalidOperationException">Thrown on failure.</exception>
+        /// <remarks>
+        /// The created dump file should be disposed by the user.
+        /// </remarks>
         PacketDumpFile^ OpenDump(System::String^ fileName);
 
+        /// <summary>
+        /// Close the files associated with the capture and deallocates resources. 
+        /// </summary>
         ~PacketCommunicator();
 
     internal:
