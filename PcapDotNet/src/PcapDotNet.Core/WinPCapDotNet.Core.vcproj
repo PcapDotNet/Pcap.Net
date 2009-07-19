@@ -222,6 +222,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DeviceAttributes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IPacketDevice.h"
 				>
 			</File>

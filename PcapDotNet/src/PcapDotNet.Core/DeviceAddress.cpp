@@ -6,6 +6,40 @@ using namespace System;
 using namespace System::Text;
 using namespace PcapDotNet::Core;
 
+SocketAddress^ DeviceAddress::Address::get()
+{
+    return _address;
+}
+
+SocketAddress^ DeviceAddress::Netmask::get()
+{
+    return _netmask;
+}
+
+SocketAddress^ DeviceAddress::Broadcast::get()
+{
+    return _broadcast;
+}
+
+SocketAddress^ DeviceAddress::Destination::get()
+{
+    return _destination;
+}
+
+String^ DeviceAddress::ToString()
+{
+    StringBuilder^ result = gcnew StringBuilder();
+
+    AppendSocketAddressString(result, Address, "Address");
+    AppendSocketAddressString(result, Netmask, "Netmask");
+    AppendSocketAddressString(result, Broadcast, "Broadcast");
+    AppendSocketAddressString(result, Destination, "Destination");
+
+    return result->ToString();
+}
+
+// Internal
+
 DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
 {
     SocketAddressFamily family = safe_cast<SocketAddressFamily>(pcapAddress->addr->sa_family);
@@ -53,37 +87,8 @@ DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
     }
 }
 
-SocketAddress^ DeviceAddress::Address::get()
-{
-    return _address;
-}
 
-SocketAddress^ DeviceAddress::Netmask::get()
-{
-    return _netmask;
-}
-
-SocketAddress^ DeviceAddress::Broadcast::get()
-{
-    return _broadcast;
-}
-
-SocketAddress^ DeviceAddress::Destination::get()
-{
-    return _destination;
-}
-
-String^ DeviceAddress::ToString()
-{
-    StringBuilder^ result = gcnew StringBuilder();
-
-    AppendSocketAddressString(result, Address, "Address");
-    AppendSocketAddressString(result, Netmask, "Netmask");
-    AppendSocketAddressString(result, Broadcast, "Broadcast");
-    AppendSocketAddressString(result, Destination, "Destination");
-
-    return result->ToString();
-}
+// Private
 
 // static
 void DeviceAddress::AppendSocketAddressString(StringBuilder^ stringBuilder, SocketAddress^ socketAddress, String^ title)
