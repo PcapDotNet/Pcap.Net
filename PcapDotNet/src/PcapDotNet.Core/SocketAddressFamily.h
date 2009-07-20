@@ -2,42 +2,170 @@
 
 namespace PcapDotNet { namespace Core 
 {
+	/// <summary>
+	/// The type of socket address for a device address.
+	/// </summary>
     public enum class SocketAddressFamily : System::UInt16
     {
-        Unspecified = 0,               // unspecified
-        Unix        = 1,               // local to host (pipes, portals)
-        Internet    = 2,               // internetwork: UDP, TCP, etc.
-        ImpLink     = 3,               // arpanet imp addresses
-        Pup         = 4,               // pup protocols: e.g. BSP
-        Chaos       = 5,               // mit CHAOS protocols
-        NS          = 6,               // XEROX NS protocols
-        Ipx         = NS,              // IPX protocols: IPX, SPX, etc.
-        Iso         = 7,               // ISO protocols
-        Osi         = Iso,             // OSI is ISO
-        EuropeanComputerManufactures = 8,               // european computer manufacturers
-        Datakit     = 9,               // datakit protocols
-        Ccitt       = 10,         
-        // CCITT protocols, X.25 etc
-        Sna         = 11,              // IBM SNA
-        DECnet      = 12,              // DECnet
-        DirectDataLinkInterface = 13,              // Direct data link interface
-        Lat         = 14,              // LAT
-        HyperChannel = 15,             // NSC Hyperchannel
-        AppleTalk   = 16,              // AppleTalk
-        NetBios     = 17,              // NetBios-style addresses
-        VoiceView   = 18,              // VoiceView
-        Firefox     = 19,              // Protocols from Firefox
-        Unknown1    = 20,              // Somebody is using this!
-        Ban         = 21,              // Banyan
-        Atm         = 22,              // Native ATM Services
-        Internet6   = 23,              // Internetwork Version 6
-        Cluster     = 24,              // Microsoft Wolfpack
-        Ieee12844   = 25,              // IEEE 1284.4 WG AF
-        Irda        = 26,              // IrDA
-        NetworkDesigners = 28,              // Network Designers OSI & gateway
-        TcnProcess  = 29,
-        TcnMessage  = 30,
-        Iclfxbm     = 31,
-        Bluetooth   = 32               // Bluetooth RFCOMM/L2CAP protocols
+		/// <summary>
+		/// unspecified
+		/// </summary>
+        Unspecified                  = 0,
+
+		/// <summary>
+		/// local to host (pipes, portals)
+		/// </summary>
+		Unix                         = 1,
+
+		/// <summary>
+		/// internetwork: UDP, TCP, etc.
+		/// </summary>
+        Internet                     = 2,
+
+		/// <summary>
+		/// arpanet imp addresses
+		/// </summary>
+        ImpLink                      = 3,
+
+		/// <summary>
+		/// pup protocols: e.g. BSP
+		/// </summary>
+        Pup                          = 4,
+
+		/// <summary>
+		/// mit CHAOS protocols
+		/// </summary>
+        Chaos                        = 5,
+
+		/// <summary>
+		/// XEROX NS protocols
+		/// </summary>
+        NS                           = 6,
+
+		/// <summary>
+		/// IPX protocols: IPX, SPX, etc.
+		/// </summary>
+        Ipx                          = NS,
+
+		/// <summary>
+		/// ISO protocols
+		/// </summary>
+        Iso                          = 7,
+
+		/// <summary>
+		/// OSI is ISO
+		/// </summary>
+        Osi                          = Iso,
+
+		/// <summary>
+		/// european computer manufacturers
+		/// </summary>
+        EuropeanComputerManufactures = 8,
+
+		/// <summary>
+		/// datakit protocols
+		/// </summary>
+        Datakit                      = 9,
+
+		/// <summary>
+		/// CCITT protocols, X.25 etc
+		/// </summary>
+        Ccitt                        = 10,         
+
+		/// <summary>
+		/// IBM SNA
+		/// </summary>
+        Sna                          = 11,
+
+		/// <summary>
+		/// DECnet
+		/// </summary>
+        DECnet                       = 12,
+
+		/// <summary>
+		/// Direct data link interface
+		/// </summary>
+        DirectDataLinkInterface      = 13,
+
+		/// <summary>
+		/// LAT
+		/// </summary>
+        Lat                          = 14,
+
+		/// <summary>
+		/// NSC Hyperchannel
+		/// </summary>
+        HyperChannel                 = 15,
+
+		/// <summary>
+		/// AppleTalk
+		/// </summary>
+        AppleTalk                    = 16,
+
+		/// <summary>
+		/// NetBios-style addresses
+		/// </summary>
+        NetBios                      = 17,
+
+		/// <summary>
+		/// VoiceView
+		/// </summary>
+        VoiceView                    = 18,
+
+		/// <summary>
+		/// Protocols from Firefox
+		/// </summary>
+        Firefox                      = 19,
+
+		/// <summary>
+		/// Somebody is using this!
+		/// </summary>
+        Unknown1                     = 20,
+
+		/// <summary>
+		/// Banyan
+		/// </summary>
+        Ban                          = 21,
+
+		/// <summary>
+		/// Native ATM Services
+		/// </summary>
+        Atm                          = 22,
+
+		/// <summary>
+		/// Internetwork Version 6
+		/// </summary>
+        Internet6                    = 23,
+
+		/// <summary>
+		/// Microsoft Wolfpack
+		/// </summary>
+        Cluster                      = 24,
+
+		/// <summary>
+		/// IEEE 1284.4 WG AF
+		/// </summary>
+        Ieee12844                    = 25,
+
+		/// <summary>
+		/// IrDA
+		/// </summary>
+        Irda                         = 26,
+
+		/// <summary>
+		/// Network Designers OSI &amp; gateway
+		/// </summary>
+        NetworkDesigners             = 28,
+
+        TcnProcess                   = 29,
+
+		TcnMessage                   = 30,
+
+		Iclfxbm                      = 31,
+
+		/// <summary>
+		/// Bluetooth RFCOMM/L2CAP protocols
+		/// </summary>
+        Bluetooth                    = 32
     };
 }}
