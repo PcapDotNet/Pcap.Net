@@ -4,11 +4,16 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class SocketAddress
+	/// <summary>
+	/// The base of all device addresses.
+	/// Contains the family (type) of the address.
+	/// </summary>
+    public ref class SocketAddress abstract
     {
-    public:
-        SocketAddress(unsigned short family);
-
+	public:
+		/// <summary>
+		/// Family (type) of the socket address.
+		/// </summary>
         property SocketAddressFamily^ Family
         {
             SocketAddressFamily^ get();
@@ -16,7 +21,10 @@ namespace PcapDotNet { namespace Core
 
         virtual System::String^ ToString() override;
 
-    private:
+    protected:
+        SocketAddress(unsigned short family);
+
+	private:
         SocketAddressFamily^ _family;
     };
 }}
