@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test
@@ -37,6 +38,11 @@ namespace PcapDotNet.Core.Test
         {
             IsBiggerOrEqual(expectedMinimum, actual);
             IsSmallerOrEqual(expectedMaximum, actual);
+        }
+
+        public static void IsMatch(string expectedPattern, string actualValue)
+        {
+            Assert.IsTrue(Regex.IsMatch(actualValue, expectedPattern), "Expected pattern: <" + expectedPattern + ">. Actual value: <" + actualValue + ">.");
         }
     }
 }

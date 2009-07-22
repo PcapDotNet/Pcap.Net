@@ -1,18 +1,18 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace PcapDotNet.Core.Test
+namespace Packets.Test
 {
     /// <summary>
-    /// Summary description for PcapLibTests
+    /// Summary description for IpV4AddressTests
     /// </summary>
     [TestClass]
-    public class PcapLibTests
+    public class IpV4AddressTests
     {
-        public PcapLibTests()
+        public IpV4AddressTests()
         {
             //
             // TODO: Add constructor logic here
@@ -60,12 +60,18 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void VersionTest()
+        public void IpV4AddressTest()
         {
-            const string VersionNumberRegex = @"[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?";
-            const string VersionRegex = "^WinPcap version " + VersionNumberRegex + @" \(packet\.dll version " + VersionNumberRegex + @"\), based on libpcap version " + VersionNumberRegex + "$";
-            string version = PcapLibrary.Version;
-            MoreAssert.IsMatch(VersionRegex, version);
+            Assert.AreEqual("0.0.0.0", new IpV4Address(0).ToString());
+            Assert.AreEqual("0.0.0.1", new IpV4Address(1).ToString());
+            Assert.AreEqual("0.0.0.255", new IpV4Address(255).ToString());
+            Assert.AreEqual("0.0.1.0", new IpV4Address(256).ToString());
+            Assert.AreEqual("0.0.255.0", new IpV4Address(255 * 256).ToString());
+            Assert.AreEqual("0.1.0.0", new IpV4Address(256 * 256).ToString());
+            Assert.AreEqual("0.255.0.0", new IpV4Address(255 * 256 * 256).ToString());
+            Assert.AreEqual("1.0.0.0", new IpV4Address(256 * 256 * 256).ToString());
+            Assert.AreEqual("255.0.0.0", new IpV4Address((uint)255 * 256 * 256 * 256).ToString());
+            Assert.AreEqual("255.254.253.252", new IpV4Address((uint)255 * 256 * 256 * 256 + 254 * 256 * 256 + 253 * 256 + 252).ToString());
         }
     }
 }

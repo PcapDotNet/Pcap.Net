@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -637,11 +639,14 @@ namespace PcapDotNet.Core.Test
             IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
             MoreAssert.IsBiggerOrEqual(1, devices.Count);
             LivePacketDevice device = devices[0];
-            Assert.AreEqual("Network adapter 'Atheros AR8121/AR8113 PCI-E Ethernet Controller (Microsoft's Packet Scheduler) ' on local host", device.Description);
+            MoreAssert.IsMatch(@"Network adapter '.* \(Microsoft's Packet Scheduler\) ' on local host", device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreEqual(1, device.Addresses.Count);
             DeviceAddress address = device.Addresses[0];
-            Assert.AreEqual("Address: " + SocketAddressFamily.Internet + " 10.0.0.2 Netmask: " + SocketAddressFamily.Internet + " 255.0.0.0 Broadcast: " + SocketAddressFamily.Internet + " 255.255.255.255", address.ToString());
+            MoreAssert.IsMatch("Address: " + SocketAddressFamily.Internet + @" [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ " +
+                               "Netmask: " + SocketAddressFamily.Internet + @" 255\.[0-9]+\.[0-9]+\.[0-9]+ " +
+                               "Broadcast: " + SocketAddressFamily.Internet + @" 255.255.255.255",
+                               address.ToString());
             PacketCommunicator communicator = device.Open();
             try
             {
