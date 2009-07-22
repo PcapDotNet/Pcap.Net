@@ -77,7 +77,7 @@ void BerkeleyPacketFilter::Initialize(pcap_t* pcapDescriptor, String^ filterStri
 
     unsigned int netmaskValue = 0;
     if (netmask != nullptr)
-        netmaskValue = netmask->Address;
+        netmaskValue = netmask->Address.ToUInt();
 
     _bpf = new bpf_program();
 

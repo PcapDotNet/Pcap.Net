@@ -7,12 +7,10 @@ namespace PcapDotNet { namespace Core
 {
     public ref class IpV4SocketAddress : SocketAddress
     {
-    public:
-        IpV4SocketAddress(sockaddr *address);
-
-        property unsigned int Address
+	public:
+		property Packets::IpV4Address Address
         {
-            unsigned int get();
+            Packets::IpV4Address get();
         }
 
         property System::String^ AddressString
@@ -22,7 +20,10 @@ namespace PcapDotNet { namespace Core
 
         virtual System::String^ ToString() override;
 
+	internal:
+        IpV4SocketAddress(sockaddr *address);
+
     private:
-        unsigned int _address;
+		Packets::IpV4Address _address;
     };
 }}
