@@ -7,7 +7,7 @@
 namespace PcapDotNet { namespace Core 
 {
     /// <summary>
-    /// Represents an a live or offline interface.
+    /// Represents a live or offline interface.
     /// </summary>
     public interface class IPacketDevice
     {
@@ -22,7 +22,7 @@ namespace PcapDotNet { namespace Core
         property System::String^ Description { System::String^ get(); };
 
         /// <summary>
-        /// interface flags. Currently the only possible flag is Loopback, that is set if the interface is a loopback interface. 
+        /// Interface flags. Currently the only possible flag is Loopback, that is set if the interface is a loopback interface. 
         /// </summary>
         property DeviceAttributes^ Attributes { DeviceAttributes^ get(); };
 
@@ -37,9 +37,9 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// Open a generic source in order to capture / send (WinPcap only) traffic. 
         /// </summary>
-        /// <param name="snapshotLength">length of the packet that has to be retained. For each packet received by the filter, only the first 'snapshotLength' bytes are stored in the buffer and passed to the user application. For instance, snaplen equal to 100 means that only the first 100 bytes of each packet are stored.</param>
-        /// <param name="attributes">keeps several flags that can be needed for capturing packets.</param>
-        /// <param name="readTimeout">read timeout in milliseconds. The read timeout is used to arrange that the read not necessarily return immediately when a packet is seen, but that it waits for some amount of time to allow more packets to arrive and to read multiple packets from the OS kernel in one operation. Not all platforms support a read timeout; on platforms that don't, the read timeout is ignored.</param>
+        /// <param name="snapshotLength">Length of the packet that has to be retained. For each packet received by the filter, only the first 'snapshotLength' bytes are stored in the buffer and passed to the user application. For instance, snaplen equal to 100 means that only the first 100 bytes of each packet are stored.</param>
+        /// <param name="attributes">Keeps several flags that can be needed for capturing packets.</param>
+        /// <param name="readTimeout">Read timeout in milliseconds. The read timeout is used to arrange that the read not necessarily return immediately when a packet is seen, but that it waits for some amount of time to allow more packets to arrive and to read multiple packets from the OS kernel in one operation. Not all platforms support a read timeout; on platforms that don't, the read timeout is ignored.</param>
         /// <exception cref="System::InvalidOperationException">Thrown on failure.</exception>
         PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout);
 
