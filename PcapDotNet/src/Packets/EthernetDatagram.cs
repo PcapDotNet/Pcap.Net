@@ -11,7 +11,7 @@ namespace Packets
     /// </summary>
     public class EthernetDatagram : Datagram
     {
-        private class Offset
+        private static class Offset
         {
             public const int Destination = 0;
             public const int Source = 6;
