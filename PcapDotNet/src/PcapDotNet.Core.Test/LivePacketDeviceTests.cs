@@ -650,7 +650,13 @@ namespace PcapDotNet.Core.Test
             PacketCommunicator communicator = device.Open();
             try
             {
-                Assert.AreEqual(new PacketTotalStatistics(0, 0, 0, 0), communicator.TotalStatistics);
+                PacketTotalStatistics totalStatistics = communicator.TotalStatistics;
+                Assert.AreEqual(totalStatistics, totalStatistics);
+                Assert.AreNotEqual(null, totalStatistics);
+                Assert.AreEqual(0, totalStatistics.PacketsCaptured);
+                Assert.AreEqual(0, totalStatistics.PacketsDroppedByDriver);
+                Assert.AreEqual(0, totalStatistics.PacketsDroppedByInterface);
+                Assert.AreEqual(0, totalStatistics.PacketsReceived);
                 communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
                 communicator.SetKernelMinimumBytesToCopy(10); // 10 bytes minimum to copy
                 communicator.SetSamplingMethod(new SamplingMethodNone());

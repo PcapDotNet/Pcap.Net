@@ -1,16 +1,9 @@
 #include "PacketTotalStatistics.h"
+#include "Pcap.h"
 
 using namespace System;
 using namespace System::Text;
 using namespace PcapDotNet::Core;
-
-PacketTotalStatistics::PacketTotalStatistics(unsigned int packetsReceived, unsigned int packetsDroppedByDriver, unsigned int packetsDroppedByInterface, unsigned int packetsCaptured)
-{
-    _packetsReceived = packetsReceived;
-    _packetsDroppedByDriver = packetsDroppedByDriver;
-    _packetsDroppedByInterface = packetsDroppedByInterface;
-    _packetsCaptured = packetsCaptured;
-}
 
 unsigned int PacketTotalStatistics::PacketsReceived::get()
 {
@@ -73,4 +66,15 @@ String^ PacketTotalStatistics::ToString()
     stringBuilder->Append(PacketsCaptured);
     stringBuilder->Append(".");
     return stringBuilder->ToString();
+}
+
+// Internal
+PacketTotalStatistics::PacketTotalStatistics(const pcap_stat& statistics, int statisticsSize)
+{    
+    _packetsReceived = statistics.ps_recv;
+    _packetsDroppedByDriver = statistics.ps_drop;
+    _packetsDroppedByInterface = statistics.ps_ifdrop;
+    _packetsCaptured = (statisticsSize >= 16 
+                        ? *(reinterpret_cast<const int*>(&statistics) + 3)
+                        : 0);
 }

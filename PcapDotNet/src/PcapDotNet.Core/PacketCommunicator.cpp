@@ -221,7 +221,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics([Out] Pack
     if (result != PacketCommunicatorReceiveResult::Ok)
         throw gcnew InvalidOperationException("Got result " + result.ToString() + " in statistics mode");
 
-    statistics = CreateStatistics(*packetHeader, packetData);
+    statistics = gcnew PacketSampleStatistics(*packetHeader, packetData);
 
     return result;
 }
@@ -299,18 +299,6 @@ Packet^ PacketCommunicator::CreatePacket(const pcap_pkthdr& packetHeader, const 
     return gcnew Packet(managedPacketData, timestamp, dataLink);
 }
 
-// static
-PacketSampleStatistics^ PacketCommunicator::CreateStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
-{
-    DateTime timestamp;
-    Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
-
-    unsigned long acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
-    unsigned long acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
-
-    return gcnew PacketSampleStatistics(timestamp, acceptedPackets, acceptedBytes);
-}
-
 PacketCommunicatorReceiveResult PacketCommunicator::RunPcapNextEx(pcap_pkthdr** packetHeader, const unsigned char** packetData)
 {
     int result = pcap_next_ex(_pcapDescriptor, packetHeader, packetData);
@@ -358,5 +346,5 @@ int PacketCommunicator::PacketHandler::PacketCounter::get()
 
 void PacketCommunicator::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
-    _callback->Invoke(CreateStatistics(*packetHeader, packetData));
+    _callback->Invoke(gcnew PacketSampleStatistics(*packetHeader, packetData));
 }

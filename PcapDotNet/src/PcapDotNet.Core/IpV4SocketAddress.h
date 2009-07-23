@@ -5,17 +5,18 @@
 
 namespace PcapDotNet { namespace Core 
 {
+    /// <summary>
+    /// An internet protocol version 4 address for a device.
+    /// </summary>
     public ref class IpV4SocketAddress : SocketAddress
     {
 	public:
+        /// <summary>
+        /// The ip version 4 address.
+        /// </summary>
 		property Packets::IpV4Address Address
         {
             Packets::IpV4Address get();
-        }
-
-        property System::String^ AddressString
-        {
-            System::String^ get();
         }
 
         virtual System::String^ ToString() override;

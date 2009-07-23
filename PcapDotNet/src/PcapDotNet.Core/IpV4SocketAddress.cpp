@@ -11,17 +11,12 @@ IpV4Address IpV4SocketAddress::Address::get()
     return _address;
 }
 
-String^ IpV4SocketAddress::AddressString::get()
-{
-	return Address.ToString();
-}
-
 String^ IpV4SocketAddress::ToString()
 {
     StringBuilder^ result = gcnew StringBuilder();
     result->Append(SocketAddress::ToString());
     result->Append(" ");
-    result->Append(AddressString);
+    result->Append(Address);
     return result->ToString();
 }
 

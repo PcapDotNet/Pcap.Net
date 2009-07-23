@@ -16,13 +16,7 @@ PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
     if (statistics == NULL)
         throw BuildInvalidOperation("Failed getting total statistics");
 
-    unsigned int packetsReceived = statistics->ps_recv;
-    unsigned int packetsDroppedByDriver = statistics->ps_drop;
-    unsigned int packetsDroppedByInterface = statistics->ps_ifdrop;
-    unsigned int packetsCaptured = (statisticsSize >= 16 
-                                        ? *(reinterpret_cast<int*>(statistics) + 3)
-                                        : 0);
-    return gcnew PacketTotalStatistics(packetsReceived, packetsDroppedByDriver, packetsDroppedByInterface, packetsCaptured);
+    return gcnew PacketTotalStatistics(*statistics, statisticsSize);
 }
 
 void LivePacketCommunicator::Transmit(PacketSendBuffer^ sendBuffer, bool isSync)
