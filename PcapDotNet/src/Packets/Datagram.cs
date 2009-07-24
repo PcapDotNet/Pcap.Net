@@ -40,6 +40,7 @@ namespace Packets
             get { return _startOffset; }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ushort")]
         protected ushort ReadUShort(int offset, Endianity endianity)
         {
             return _buffer.ReadUShort(StartOffset + offset, endianity);
