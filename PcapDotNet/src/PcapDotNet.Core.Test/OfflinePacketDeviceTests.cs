@@ -247,6 +247,13 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DumpToBadFileTest()
+        {
+            OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100), TimeSpan.Zero, "??");
+        }
+
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)
@@ -325,8 +332,11 @@ namespace PcapDotNet.Core.Test
 
         public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets)
         {
-            string dumpFilename = Path.GetTempPath() + @"dump.pcap";
+            return OpenOfflineDevice(numPackets, packet, intervalBetweenPackets, Path.GetTempPath() + @"dump.pcap");
+        }
 
+        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename)
+        {
             PacketCommunicator communicator;
             using (communicator = LivePacketDeviceTests.OpenLiveDevice())
             {
@@ -337,7 +347,6 @@ namespace PcapDotNet.Core.Test
                     {
                         if (intervalBetweenPackets != TimeSpan.Zero && i != 0)
                         {
-//                            Thread.Sleep(intervalBetweenPackets);
                             DateTime timestamp = packet.Timestamp;
                             timestamp = timestamp.Add(intervalBetweenPackets);
                             packet = new Packet(packet.Buffer, timestamp, packet.DataLink);

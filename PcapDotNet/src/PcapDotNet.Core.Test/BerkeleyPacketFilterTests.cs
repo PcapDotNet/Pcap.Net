@@ -80,25 +80,25 @@ namespace PcapDotNet.Core.Test
             {
                 using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
                 {
-                    communicator.SetFilter(filter);
-                    for (int i = 0; i != 5; ++i)
-                    {
-                        communicator.SendPacket(expectedPacket);
-                        communicator.SendPacket(unexpectedPacket);
-                    }
+                    TestFilter(communicator, filter, expectedPacket, unexpectedPacket);
+                }
+            }
+        }
 
-                    Packet packet;
-                    PacketCommunicatorReceiveResult result;
-                    for (int i = 0; i != 5; ++i)
-                    {
-                        result = communicator.ReceivePacket(out packet);
-                        Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-                        Assert.AreEqual(expectedPacket, packet);
-                    }
+        [TestMethod]
+        public void NoCommunicatorConstructorWithNetmaskTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
 
-                    result = communicator.ReceivePacket(out packet);
-                    Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
-                    Assert.IsNull(packet);
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 1000);
+            Packet unexpectedPacket = MoreRandom.BuildRandomPacket(DestinationMac, SourceMac, 1000);
+
+            using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
+            {
+                using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, 1000, DataLinkKind.Ethernet, communicator.IpV4Netmask))
+                {
+                    TestFilter(communicator, filter, expectedPacket, unexpectedPacket);
                 }
             }
         }
@@ -125,6 +125,29 @@ namespace PcapDotNet.Core.Test
                 Assert.IsTrue(filter.Test(out actualSnapshotLength, MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, snapshotLength / 2)));
                 Assert.AreEqual(snapshotLength, actualSnapshotLength);
             }
+        }
+
+        private static void TestFilter(PacketCommunicator communicator, BerkeleyPacketFilter filter, Packet expectedPacket, Packet unexpectedPacket)
+        {
+            communicator.SetFilter(filter);
+            for (int i = 0; i != 5; ++i)
+            {
+                communicator.SendPacket(expectedPacket);
+                communicator.SendPacket(unexpectedPacket);
+            }
+
+            Packet packet;
+            PacketCommunicatorReceiveResult result;
+            for (int i = 0; i != 5; ++i)
+            {
+                result = communicator.ReceivePacket(out packet);
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                Assert.AreEqual(expectedPacket, packet);
+            }
+
+            result = communicator.ReceivePacket(out packet);
+            Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
+            Assert.IsNull(packet);
         }
     }
 }
