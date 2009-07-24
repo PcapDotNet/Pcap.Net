@@ -26,7 +26,7 @@ String^ OfflinePacketDevice::Description::get()
     return String::Empty;
 }
 
-DeviceAttributes^ OfflinePacketDevice::Attributes::get()
+DeviceAttributes OfflinePacketDevice::Attributes::get()
 {
     return DeviceAttributes::None;
 }

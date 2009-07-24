@@ -63,7 +63,7 @@ String^ LivePacketDevice::Description::get()
     return _description; 
 }
 
-DeviceAttributes^ LivePacketDevice::Attributes::get()
+DeviceAttributes LivePacketDevice::Attributes::get()
 {
     return _attributes;
 }
@@ -88,7 +88,7 @@ PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenA
 
 // Private Methods
 
-LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceAttributes^ attributes, ReadOnlyCollection<DeviceAddress^>^ addresses)
+LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceAttributes attributes, ReadOnlyCollection<DeviceAddress^>^ addresses)
 {
     _name = name;
     _description = description;
