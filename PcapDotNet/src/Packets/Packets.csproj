@@ -41,6 +41,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1028</CodeAnalysisRules>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

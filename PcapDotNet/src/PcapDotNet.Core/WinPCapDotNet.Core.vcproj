@@ -171,7 +171,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027"
 				EnableFxCop="true"
+				Dictionaries="CodeAnalysisDictionary.xml"
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
