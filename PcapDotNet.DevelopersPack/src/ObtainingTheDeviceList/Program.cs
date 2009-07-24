@@ -21,7 +21,7 @@ namespace ObtainingTheDeviceList
             for (int i = 0; i != allDevices.Count; ++i)
             {
                 LivePacketDevice device = allDevices[i];
-                Console.Write(i + ". " + device.Name);
+                Console.Write((i + 1) + ". " + device.Name);
                 if (device.Description != null)
                     Console.WriteLine(" (" + device.Description + ")");
                 else
