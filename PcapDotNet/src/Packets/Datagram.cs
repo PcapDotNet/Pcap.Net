@@ -29,6 +29,7 @@ namespace Packets
             System.Buffer.BlockCopy(_buffer, StartOffset, buffer, offset, Length);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
         protected byte[] Buffer
         {
             get { return _buffer; }
