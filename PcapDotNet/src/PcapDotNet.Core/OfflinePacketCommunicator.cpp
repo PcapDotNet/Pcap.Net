@@ -8,7 +8,7 @@ PacketTotalStatistics^ OfflinePacketCommunicator::TotalStatistics::get()
     throw gcnew InvalidOperationException("Can't get TotalStatistics for offline devices");
 }
 
-void OfflinePacketCommunicator::Transmit(PacketSendBuffer^ sendBuffer, bool isSync)
+void OfflinePacketCommunicator::Transmit(PacketSendBuffer^, bool)
 {
     throw gcnew InvalidOperationException("Can't transmit queue to an offline device");
 }

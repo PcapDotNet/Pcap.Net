@@ -254,9 +254,9 @@ void PacketCommunicator::Break()
 
 void PacketCommunicator::SendPacket(Packet^ packet)
 {
-    pin_ptr<Byte> unamangedPacketBytes;
-    if (packet->Length != 0)
-        unamangedPacketBytes = &packet->Buffer[0];
+    if (packet->Length == 0)
+        return;
+    pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
     if (pcap_sendpacket(_pcapDescriptor, unamangedPacketBytes, packet->Length) != 0)
         throw BuildInvalidOperation("Failed writing to device");
 }
@@ -338,7 +338,7 @@ pcap_t* PacketCommunicator::PcapDescriptor::get()
     return _pcapDescriptor;
 }
 
-void PacketCommunicator::PacketHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+void PacketCommunicator::PacketHandler::Handle(unsigned char *, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     ++_packetCounter;
     _callback->Invoke(CreatePacket(*packetHeader, packetData, _dataLink));
@@ -349,7 +349,7 @@ int PacketCommunicator::PacketHandler::PacketCounter::get()
     return _packetCounter;
 }
 
-void PacketCommunicator::StatisticsHandler::Handle(unsigned char *user, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
+void PacketCommunicator::StatisticsHandler::Handle(unsigned char *, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)
 {
     _callback->Invoke(gcnew PacketSampleStatistics(*packetHeader, packetData));
 }
