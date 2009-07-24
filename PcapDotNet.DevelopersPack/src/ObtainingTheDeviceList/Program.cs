@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using PcapDotNet.Core;
 
 namespace ObtainingTheDeviceList
 {
@@ -28,7 +27,6 @@ namespace ObtainingTheDeviceList
                 else
                     Console.WriteLine(" (No description available)");
             }
-
         }
     }
 }
