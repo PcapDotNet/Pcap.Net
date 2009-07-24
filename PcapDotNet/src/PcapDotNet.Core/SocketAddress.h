@@ -14,9 +14,9 @@ namespace PcapDotNet { namespace Core
 		/// <summary>
 		/// Family (type) of the socket address.
 		/// </summary>
-        property SocketAddressFamily^ Family
+        property SocketAddressFamily Family
         {
-            SocketAddressFamily^ get();
+            SocketAddressFamily get();
         }
 
         virtual System::String^ ToString() override;
@@ -25,6 +25,6 @@ namespace PcapDotNet { namespace Core
         SocketAddress(unsigned short family);
 
 	private:
-        SocketAddressFamily^ _family;
+        SocketAddressFamily _family;
     };
 }}

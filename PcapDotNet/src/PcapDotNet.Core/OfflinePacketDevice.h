@@ -36,9 +36,9 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// Interface flags. Currently the only possible flag is Loopback, that is set if the interface is a loopback interface. 
         /// </summary>
-        virtual property DeviceAttributes^ Attributes
+        virtual property DeviceAttributes Attributes
         {
-            DeviceAttributes^ get() override;
+            DeviceAttributes get() override;
         }
 
         /// <summary>
