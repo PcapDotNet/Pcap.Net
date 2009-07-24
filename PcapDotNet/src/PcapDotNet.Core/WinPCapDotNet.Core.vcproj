@@ -136,6 +136,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;CODE_ANALYSIS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
+				GenerateXMLDocumentationFiles="true"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 				ForcedIncludeFiles="CodeAnalysis\SourceAnnotations.h"
