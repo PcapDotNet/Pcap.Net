@@ -62,6 +62,7 @@ namespace PcapDotNet.Core.Test
         {
             PcapDataLink dataLink = new PcapDataLink();
             Assert.AreEqual(new PcapDataLink("NULL"), dataLink);
+            string previousDataLinkName = null;
             for (int i = 0; i != 1000; ++i)
             {
                 dataLink = new PcapDataLink(i);
@@ -77,11 +78,15 @@ namespace PcapDotNet.Core.Test
                 }
 
                 Assert.AreEqual(new PcapDataLink(dataLinkName), dataLink);
+                Assert.IsFalse(dataLink.Equals(null));
                 Assert.IsTrue(new PcapDataLink(dataLinkName) == dataLink);
                 Assert.IsFalse(new PcapDataLink(dataLinkName) != dataLink);
+                Assert.IsTrue(previousDataLinkName == null || new PcapDataLink(previousDataLinkName) != dataLink);
                 Assert.IsNotNull(dataLink.Description);
                 Assert.AreEqual(i, dataLink.Value);
                 Assert.AreEqual(dataLink.Value.GetHashCode(), dataLink.GetHashCode());
+
+                previousDataLinkName = dataLinkName;
             }
         }
 

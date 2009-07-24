@@ -52,6 +52,14 @@ namespace PcapDotNet { namespace Core
         }
 
         /// <summary>
+        /// The IPv4 netmask of the network on which packets are being captured; useful for filters when checking for IPv4 broadcast addresses in the filter program. If the netmask of the network on which packets are being captured isn't known to the program, or if packets are being captured on the Linux "any" pseudo-interface that can capture on more than one network, the value will be null and a filter that tests for IPv4 broadcast addreses won't be done correctly, but all other tests in the filter program will be OK.
+        /// </summary>
+        property IpV4SocketAddress^ IpV4Netmask
+        {
+            IpV4SocketAddress^ get();
+        }
+
+        /// <summary>
         /// True if the current file uses a different byte order than the current system. 
         /// </summary>
         property bool IsFileSystemByteOrder

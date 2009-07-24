@@ -132,7 +132,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\..\3rdParty\WpdPack\Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG"
+				PreprocessorDefinitions="WIN32;NDEBUG;CODE_ANALYSIS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -171,6 +171,7 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+				EnableFxCop="true"
 			/>
 			<Tool
 				Name="VCAppVerifierTool"

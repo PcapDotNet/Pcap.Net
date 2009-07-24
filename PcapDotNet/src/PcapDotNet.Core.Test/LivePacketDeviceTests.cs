@@ -652,11 +652,14 @@ namespace PcapDotNet.Core.Test
             {
                 PacketTotalStatistics totalStatistics = communicator.TotalStatistics;
                 Assert.AreEqual(totalStatistics, totalStatistics);
+                Assert.AreEqual(totalStatistics.GetHashCode(), totalStatistics.GetHashCode());
+                Assert.IsTrue(totalStatistics.Equals(totalStatistics));
                 Assert.AreNotEqual(null, totalStatistics);
-                Assert.AreEqual(0, totalStatistics.PacketsCaptured);
-                Assert.AreEqual(0, totalStatistics.PacketsDroppedByDriver);
-                Assert.AreEqual(0, totalStatistics.PacketsDroppedByInterface);
-                Assert.AreEqual(0, totalStatistics.PacketsReceived);
+                Assert.AreEqual<uint>(0, totalStatistics.PacketsCaptured, "PacketsCaptured");
+                Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByDriver, "PacketsDroppedByDriver");
+                Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByInterface, "PacketsDroppedByInterface");
+                Assert.AreEqual<uint>(0, totalStatistics.PacketsReceived, "PacketsReceived");
+                Assert.IsNotNull(totalStatistics.ToString());
                 communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
                 communicator.SetKernelMinimumBytesToCopy(10); // 10 bytes minimum to copy
                 communicator.SetSamplingMethod(new SamplingMethodNone());

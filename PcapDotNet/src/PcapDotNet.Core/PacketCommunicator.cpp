@@ -28,7 +28,7 @@ PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, P
 
     if (pcapDescriptor == NULL)
     {
-        throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Unable to open the adapter. %s is not supported by WinPcap", gcnew String(source)));
+        throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
     }
 
     _pcapDescriptor = pcapDescriptor;
@@ -74,6 +74,11 @@ ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 int PacketCommunicator::SnapshotLength::get()
 {
     return pcap_snapshot(_pcapDescriptor);
+}
+
+IpV4SocketAddress^ PacketCommunicator::IpV4Netmask::get()
+{
+    return _ipV4Netmask;
 }
 
 bool PacketCommunicator::IsFileSystemByteOrder::get()
