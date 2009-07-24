@@ -1,12 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObtainingTheDeviceList", "ObtainingTheDeviceList\ObtainingTheDeviceList.csproj", "{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 1
+		SccNumberOfProjects = 2
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
+		SccProjectUniqueName1 = ObtainingTheDeviceList\\ObtainingTheDeviceList.csproj
+		SccProjectName1 = ObtainingTheDeviceList
+		SccLocalPath1 = ObtainingTheDeviceList
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
