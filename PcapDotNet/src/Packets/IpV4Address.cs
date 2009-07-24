@@ -9,7 +9,7 @@ namespace Packets
             _value = value;
         }
 
-        public uint ToUInt()
+        public uint ToValue()
         {
             return _value;
         }
@@ -25,7 +25,7 @@ namespace Packets
 
         public bool Equals(IpV4Address other)
         {
-            return ToUInt() == other.ToUInt();
+            return ToValue() == other.ToValue();
         }
 
         public override bool Equals(object obj)

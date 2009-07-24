@@ -11,6 +11,7 @@ namespace Packets
 
     public static class MoreByteArray
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "short")]
         public static short ReadShort(this byte[] buffer, int offset, Endianity endianity)
         {
             short value = ReadShort(buffer, offset);
@@ -19,16 +20,19 @@ namespace Packets
             return value;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ushort")]
         public static ushort ReadUShort(this byte[] buffer, int offset, Endianity endianity)
         {
             return (ushort)ReadShort(buffer, offset, endianity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
         public static uint ReadUInt(this byte[] buffer, int offset, Endianity endianity)
         {
             return (uint)ReadInt(buffer, offset, endianity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
         public static int ReadInt(this byte[] buffer, int offset, Endianity endianity)
         {
             int value = ReadInt(buffer, offset);

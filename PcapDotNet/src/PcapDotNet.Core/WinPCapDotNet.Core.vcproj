@@ -69,7 +69,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wpcap.lib $(NOINHERIT)"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\3rdParty\WpdPack\Lib"
 				AddModuleNamesToAssembly=""
 				GenerateDebugInformation="true"
