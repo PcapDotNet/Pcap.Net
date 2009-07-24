@@ -33,6 +33,7 @@ namespace Packets
             get { return _dataLink; }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
         public byte[] Buffer
         {
             get { return _data; }
