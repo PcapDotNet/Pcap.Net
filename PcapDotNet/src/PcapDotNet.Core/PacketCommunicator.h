@@ -205,7 +205,7 @@ namespace PcapDotNet { namespace Core
         /// </returns>
         /// <exception cref="System::InvalidOperationException">Thrown if the mode is not Capture or an error occurred.</exception>
         /// <remarks>
-        ///   <para>Only the first bytes of data from the packet might be in the received packet (which won't necessarily be the entire packet; to capture the entire packet, you will have to provide a value for snapshortLength in your call to PacketDevice.Open() that is sufficiently large to get all of the packet's data - a value of 65535 should be sufficient on most if not all networks).</para>
+        ///   <para>Only the first bytes of data from the packet might be in the received packet (which won't necessarily be the entire packet; to capture the entire packet, you will have to provide a value for snapshortLength in your call to PacketDevice.Open() that is sufficiently large to get all of the packet's data - a value of 65536 should be sufficient on most if not all networks).</para>
         ///   <para>When reading a live capture, ReceiveSomePackets() will not necessarily return when the read times out; on some platforms, the read timeout isn't supported, and, on other platforms, the timer doesn't start until at least one packet arrives. This means that the read timeout should NOT be used in, for example, an interactive application, to allow the packet capture loop to ``poll'' for user input periodically, as there's no guarantee that ReceiveSomePackets() will return after the timeout expires.</para>
         /// </remarks>
         PacketCommunicatorReceiveResult ReceiveSomePackets([System::Runtime::InteropServices::Out] int% countGot, int maxPackets, HandlePacket^ callback);
