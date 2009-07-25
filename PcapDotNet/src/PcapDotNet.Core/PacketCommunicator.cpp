@@ -173,6 +173,7 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveSomePackets([Out] int
                              maxPackets, 
                              functionPointer,
                              NULL);
+    GC::KeepAlive(packetHandlerDelegate);
 
     switch (countGot)
     {
@@ -201,6 +202,8 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceivePackets(int count, Ha
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(packetHandlerDelegate).ToPointer();
 
     int result = pcap_loop(_pcapDescriptor, count, functionPointer, NULL);
+    GC::KeepAlive(packetHandlerDelegate);
+
     switch (result)
     {
     case -2:
@@ -240,6 +243,8 @@ PacketCommunicatorReceiveResult PacketCommunicator::ReceiveStatistics(int count,
     pcap_handler functionPointer = (pcap_handler)Marshal::GetFunctionPointerForDelegate(statisticsHandlerDelegate).ToPointer();
 
     int result = pcap_loop(_pcapDescriptor, count, functionPointer, NULL);
+    GC::KeepAlive(statisticsHandlerDelegate);
+
     if (result == -1)
         throw BuildInvalidOperation("Failed reading from device");
     if (result == -2)
