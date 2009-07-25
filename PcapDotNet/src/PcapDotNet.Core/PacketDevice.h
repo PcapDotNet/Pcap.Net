@@ -13,7 +13,7 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// This snapshort length value should be sufficient, on most if not all networks, to capture all the data available from the packet.
         /// </summary>
-        literal int DefaultSnapshotLength = 65535;
+        literal int DefaultSnapshotLength = 65536;
 
         /// <summary>
         /// A string giving a name for the device.
