@@ -115,17 +115,17 @@ namespace PcapDotNet.Core.Test
             const int NumPacketsToSend = 100;
 
             // Normal
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0.05, 0.05);
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0.05, 0.05);
 
             // Eof
-            TestGetPackets(NumPacketsToSend, 0, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
-            TestGetPackets(NumPacketsToSend, -1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
 
             // Break loop
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0.05, 0.05);
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, 0, PacketCommunicatorReceiveResult.BreakLoop, 0, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0.05, 0.05);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, 0, PacketCommunicatorReceiveResult.BreakLoop, 0, 0.05, 0.05);
         }
 
         [TestMethod]
@@ -282,9 +282,9 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static void TestGetPackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
-                                           PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
-                                           double expectedMinSeconds, double expectedMaxSeconds)
+        private static void TestReceivePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
+                                               PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
+                                               double expectedMinSeconds, double expectedMaxSeconds)
         {
             string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
                          ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop;
@@ -316,6 +316,26 @@ namespace PcapDotNet.Core.Test
 
                 Assert.AreEqual(expectedResult, result, TestDescription);
                 Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled);
+            }
+        }
+
+        [TestMethod]
+        public void ReceivePacketsAndPrintTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
+
+            using (PacketCommunicator communicator = OpenOfflineDevice(1000, expectedPacket))
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                PacketCommunicatorReceiveResult result = communicator.ReceivePackets(1000, delegate(Packet p)
+                                                                                           {
+                                                                                               for (int i = 0; i != 100; ++i)
+                                                                                                   Console.Write(0);
+                                                                                           });
             }
         }
 

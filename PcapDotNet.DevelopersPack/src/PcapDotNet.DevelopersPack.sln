@@ -9,9 +9,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpeningAnAdapterAndCapturin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapturingThePacketsWithoutTheCallback", "CapturingThePacketsWithoutTheCallback\CapturingThePacketsWithoutTheCallback.csproj", "{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpretingThePackets", "InterpretingThePackets\InterpretingThePackets.csproj", "{C98B950D-E0DE-4250-9B14-4146FCBAEBAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingPacketsToADumpFile", "SavingPacketsToADumpFile\SavingPacketsToADumpFile.csproj", "{17FAC756-D60D-46E5-A996-876B05BDFE69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadingPacketsFromADumpFile", "ReadingPacketsFromADumpFile\ReadingPacketsFromADumpFile.csproj", "{E94AA408-15EE-426B-8478-1453EA5A515A}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -27,6 +33,15 @@ Global
 		SccProjectUniqueName4 = CapturingThePacketsWithoutTheCallback\\CapturingThePacketsWithoutTheCallback.csproj
 		SccProjectName4 = CapturingThePacketsWithoutTheCallback
 		SccLocalPath4 = CapturingThePacketsWithoutTheCallback
+		SccProjectUniqueName5 = InterpretingThePackets\\InterpretingThePackets.csproj
+		SccProjectName5 = InterpretingThePackets
+		SccLocalPath5 = InterpretingThePackets
+		SccProjectUniqueName6 = SavingPacketsToADumpFile\\SavingPacketsToADumpFile.csproj
+		SccProjectName6 = SavingPacketsToADumpFile
+		SccLocalPath6 = SavingPacketsToADumpFile
+		SccProjectUniqueName7 = ReadingPacketsFromADumpFile\\ReadingPacketsFromADumpFile.csproj
+		SccProjectName7 = ReadingPacketsFromADumpFile
+		SccLocalPath7 = ReadingPacketsFromADumpFile
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +64,18 @@ Global
 		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C98B950D-E0DE-4250-9B14-4146FCBAEBAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C98B950D-E0DE-4250-9B14-4146FCBAEBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C98B950D-E0DE-4250-9B14-4146FCBAEBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C98B950D-E0DE-4250-9B14-4146FCBAEBAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17FAC756-D60D-46E5-A996-876B05BDFE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17FAC756-D60D-46E5-A996-876B05BDFE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17FAC756-D60D-46E5-A996-876B05BDFE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17FAC756-D60D-46E5-A996-876B05BDFE69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E94AA408-15EE-426B-8478-1453EA5A515A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E94AA408-15EE-426B-8478-1453EA5A515A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E94AA408-15EE-426B-8478-1453EA5A515A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E94AA408-15EE-426B-8478-1453EA5A515A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
