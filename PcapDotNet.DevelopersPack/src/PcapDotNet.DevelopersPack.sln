@@ -5,9 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObtainingTheDeviceList", "O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObtainingAdvancedInformationAboutInstalledDevices", "ObtainingAdvancedInformationAboutInstalledDevices\ObtainingAdvancedInformationAboutInstalledDevices.csproj", "{BF87FF20-7F17-44E2-BE2B-9F96755F1468}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpeningAnAdapterAndCapturingThePackets", "OpeningAnAdapterAndCapturingThePackets\OpeningAnAdapterAndCapturingThePackets.csproj", "{1AE948ED-4A9B-4B9E-A504-415EAB4C75BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapturingThePacketsWithoutTheCallback", "CapturingThePacketsWithoutTheCallback\CapturingThePacketsWithoutTheCallback.csproj", "{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -17,6 +21,12 @@ Global
 		SccProjectUniqueName2 = ObtainingAdvancedInformationAboutInstalledDevices\\ObtainingAdvancedInformationAboutInstalledDevices.csproj
 		SccProjectName2 = ObtainingAdvancedInformationAboutInstalledDevices
 		SccLocalPath2 = ObtainingAdvancedInformationAboutInstalledDevices
+		SccProjectUniqueName3 = OpeningAnAdapterAndCapturingThePackets\\OpeningAnAdapterAndCapturingThePackets.csproj
+		SccProjectName3 = OpeningAnAdapterAndCapturingThePackets
+		SccLocalPath3 = OpeningAnAdapterAndCapturingThePackets
+		SccProjectUniqueName4 = CapturingThePacketsWithoutTheCallback\\CapturingThePacketsWithoutTheCallback.csproj
+		SccProjectName4 = CapturingThePacketsWithoutTheCallback
+		SccLocalPath4 = CapturingThePacketsWithoutTheCallback
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +41,14 @@ Global
 		{BF87FF20-7F17-44E2-BE2B-9F96755F1468}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF87FF20-7F17-44E2-BE2B-9F96755F1468}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF87FF20-7F17-44E2-BE2B-9F96755F1468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AE948ED-4A9B-4B9E-A504-415EAB4C75BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE948ED-4A9B-4B9E-A504-415EAB4C75BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AE948ED-4A9B-4B9E-A504-415EAB4C75BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE948ED-4A9B-4B9E-A504-415EAB4C75BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E8AD04-50A1-409D-9E0F-5D10E36DF9F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
