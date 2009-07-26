@@ -319,26 +319,6 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        [TestMethod]
-        public void ReceivePacketsAndPrintTest()
-        {
-            const string SourceMac = "11:22:33:44:55:66";
-            const string DestinationMac = "77:88:99:AA:BB:CC";
-
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
-
-            using (PacketCommunicator communicator = OpenOfflineDevice(1000, expectedPacket))
-            {
-                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-
-                PacketCommunicatorReceiveResult result = communicator.ReceivePackets(1000, delegate(Packet p)
-                                                                                           {
-                                                                                               for (int i = 0; i != 100; ++i)
-                                                                                                   Console.Write(0);
-                                                                                           });
-            }
-        }
-
         public static PacketCommunicator OpenOfflineDevice()
         {
             return OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100));
