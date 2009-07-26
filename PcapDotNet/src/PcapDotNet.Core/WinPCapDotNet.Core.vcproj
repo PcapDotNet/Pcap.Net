@@ -102,6 +102,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Build Release Files"
+				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml"
 			/>
 		</Configuration>
 		<Configuration
@@ -183,6 +185,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Build Release Files"
+				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml"
 			/>
 		</Configuration>
 	</Configurations>
