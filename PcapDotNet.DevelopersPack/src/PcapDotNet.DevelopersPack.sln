@@ -19,9 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingASinglePacketWithSen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingPacketsUsingSendBuffer", "SendingPacketsUsingSendBuffer\SendingPacketsUsingSendBuffer.csproj", "{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatheringStatisticsOnTheNetworkTraffic", "GatheringStatisticsOnTheNetworkTraffic\GatheringStatisticsOnTheNetworkTraffic.csproj", "{76C60DD0-9E5C-40E5-9EE5-B820978824A5}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 10
+		SccNumberOfProjects = 11
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -52,6 +54,9 @@ Global
 		SccProjectUniqueName9 = SendingPacketsUsingSendBuffer\\SendingPacketsUsingSendBuffer.csproj
 		SccProjectName9 = SendingPacketsUsingSendBuffer
 		SccLocalPath9 = SendingPacketsUsingSendBuffer
+		SccProjectUniqueName10 = GatheringStatisticsOnTheNetworkTraffic\\GatheringStatisticsOnTheNetworkTraffic.csproj
+		SccProjectName10 = GatheringStatisticsOnTheNetworkTraffic
+		SccLocalPath10 = GatheringStatisticsOnTheNetworkTraffic
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +99,10 @@ Global
 		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76C60DD0-9E5C-40E5-9EE5-B820978824A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76C60DD0-9E5C-40E5-9EE5-B820978824A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76C60DD0-9E5C-40E5-9EE5-B820978824A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76C60DD0-9E5C-40E5-9EE5-B820978824A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
