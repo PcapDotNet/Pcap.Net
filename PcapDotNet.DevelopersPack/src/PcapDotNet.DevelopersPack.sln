@@ -15,9 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingPacketsToADumpFile", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadingPacketsFromADumpFile", "ReadingPacketsFromADumpFile\ReadingPacketsFromADumpFile.csproj", "{E94AA408-15EE-426B-8478-1453EA5A515A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingASinglePacketWithSendPacket", "SendingASinglePacketWithSendPacket\SendingASinglePacketWithSendPacket.csproj", "{0E24449E-879B-43C6-9121-5AE50E95D87E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingPacketsUsingSendBuffer", "SendingPacketsUsingSendBuffer\SendingPacketsUsingSendBuffer.csproj", "{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -42,6 +46,12 @@ Global
 		SccProjectUniqueName7 = ReadingPacketsFromADumpFile\\ReadingPacketsFromADumpFile.csproj
 		SccProjectName7 = ReadingPacketsFromADumpFile
 		SccLocalPath7 = ReadingPacketsFromADumpFile
+		SccProjectUniqueName8 = SendingASinglePacketWithSendPacket\\SendingASinglePacketWithSendPacket.csproj
+		SccProjectName8 = SendingASinglePacketWithSendPacket
+		SccLocalPath8 = SendingASinglePacketWithSendPacket
+		SccProjectUniqueName9 = SendingPacketsUsingSendBuffer\\SendingPacketsUsingSendBuffer.csproj
+		SccProjectName9 = SendingPacketsUsingSendBuffer
+		SccLocalPath9 = SendingPacketsUsingSendBuffer
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +86,14 @@ Global
 		{E94AA408-15EE-426B-8478-1453EA5A515A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E94AA408-15EE-426B-8478-1453EA5A515A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E94AA408-15EE-426B-8478-1453EA5A515A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E24449E-879B-43C6-9121-5AE50E95D87E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E24449E-879B-43C6-9121-5AE50E95D87E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E24449E-879B-43C6-9121-5AE50E95D87E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E24449E-879B-43C6-9121-5AE50E95D87E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BEDD1BC-579B-4C1B-AAAE-1CD4BDF14EC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

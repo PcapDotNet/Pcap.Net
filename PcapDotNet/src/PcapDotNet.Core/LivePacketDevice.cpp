@@ -31,18 +31,7 @@ ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
         List<LivePacketDevice^>^ result = gcnew List<LivePacketDevice^>();
         for (pcap_if_t *d = alldevs; d != NULL; d = d->next)
         {
-            // IP addresses
-            List<DeviceAddress^>^ addresses = gcnew List<DeviceAddress^>();
-            for (pcap_addr_t *a = d->addresses; a; a = a->next) 
-            {
-                DeviceAddress^ deviceAddress = gcnew DeviceAddress(a);
-                addresses->Add(deviceAddress);
-            }
-
-            result->Add(gcnew LivePacketDevice(gcnew String(d->name), 
-                                     gcnew String(d->description), 
-                                     safe_cast<DeviceAttributes>(d->flags),
-                                     gcnew ReadOnlyCollection<DeviceAddress^>(addresses)));
+            result->Add(gcnew LivePacketDevice(*d));
         }
         return gcnew ReadOnlyCollection<LivePacketDevice^>(result);
     }
@@ -88,10 +77,18 @@ PacketCommunicator^ LivePacketDevice::Open(int snapshotLength, PacketDeviceOpenA
 
 // Private Methods
 
-LivePacketDevice::LivePacketDevice(String^ name, String^ description, DeviceAttributes attributes, ReadOnlyCollection<DeviceAddress^>^ addresses)
+LivePacketDevice::LivePacketDevice(const pcap_if_t& device)
 {
-    _name = name;
-    _description = description;
-    _attributes = attributes;
-    _addresses = addresses;
+    // IP addresses
+    List<DeviceAddress^>^ addresses = gcnew List<DeviceAddress^>();
+    for (pcap_addr_t *a = device.addresses; a; a = a->next) 
+    {
+        DeviceAddress^ deviceAddress = gcnew DeviceAddress(a);
+        addresses->Add(deviceAddress);
+    }
+
+    _name = gcnew String(device.name);
+    _description = gcnew String(device.description);
+    _attributes = safe_cast<DeviceAttributes>(device.flags);
+    _addresses = gcnew ReadOnlyCollection<DeviceAddress^>(addresses);
 }
