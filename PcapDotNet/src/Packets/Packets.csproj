@@ -87,5 +87,7 @@
   -->
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(SolutionDir)$(SolutionName).snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</PreBuildEvent>
+    <PostBuildEvent>cd $(OutDir)
+zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml</PostBuildEvent>
   </PropertyGroup>
 </Project>
