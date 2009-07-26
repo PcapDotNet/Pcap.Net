@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PacketDevice.h"
+#include "PcapDeclarations.h"
 
 namespace PcapDotNet { namespace Core 
 {
@@ -77,7 +78,7 @@ namespace PcapDotNet { namespace Core
         virtual PacketCommunicator^ Open(int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout) override;
 
      private:
-        LivePacketDevice(System::String^ name, System::String^ description, DeviceAttributes attributes, System::Collections::ObjectModel::ReadOnlyCollection<DeviceAddress^>^ addresses);
+        LivePacketDevice(const pcap_if_t& device);
 
     private:
         System::String^ _name;
