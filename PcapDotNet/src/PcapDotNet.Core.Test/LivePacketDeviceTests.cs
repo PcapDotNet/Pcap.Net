@@ -124,29 +124,103 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        public void GetPacketsTest()
+        public void ReceivePacketsTest()
         {        
             const int NumPacketsToSend = 100;
             const int PacketSize = 100;
 
             // Normal
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.02);
 
             // Wait for less packets
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
 
             // Wait for more packets
-            TestGetPackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
-            TestGetPackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
 
             // Break loop
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
-            TestGetPackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
         }
 
         [TestMethod]
-        public void GetNextStatisticsTest()
+        public void ReceivePacketsGcCollectTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            const int NumPackets = 2;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+
+                for (int i = 0; i != NumPackets; ++i)
+                    communicator.SendPacket(sentPacket);
+
+                PacketCommunicatorReceiveResult result = communicator.ReceivePackets(NumPackets, delegate
+                                                                                                 {
+                                                                                                     GC.Collect();
+                                                                                                 });
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+            }
+        }
+
+        [TestMethod]
+        public void ReceiveSomePacketsGcCollectTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            const int NumPackets = 2;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+
+                Packet sentPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+
+                for (int i = 0; i != NumPackets; ++i)
+                    communicator.SendPacket(sentPacket);
+
+                int numGot;
+                PacketCommunicatorReceiveResult result = communicator.ReceiveSomePackets(out numGot, NumPackets,
+                                                                                         delegate 
+                                                                                         {
+                                                                                             GC.Collect();
+                                                                                         });
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                Assert.AreEqual(NumPackets, numGot);
+            }
+        }
+
+        [TestMethod]
+        public void ReceiveStatisticsGcCollectTest()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+
+            const int NumStatistics = 2;
+
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.Mode = PacketCommunicatorMode.Statistics;
+
+                PacketCommunicatorReceiveResult result = communicator.ReceiveStatistics(NumStatistics, delegate
+                                                                                                       {
+                                                                                                           GC.Collect();
+                                                                                                       });
+                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+            }
+        }
+
+        [TestMethod]
+        public void ReceiveStatisticsTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
@@ -589,7 +663,7 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static void TestGetPackets(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
+        private static void TestReceivePackets(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait, int packetSize,
                                            PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                            double expectedMinSeconds, double expectedMaxSeconds)
         {

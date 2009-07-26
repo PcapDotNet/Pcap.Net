@@ -174,7 +174,7 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027"
+				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Reliability#CA2004"
 				EnableFxCop="true"
 				Dictionaries="CodeAnalysisDictionary.xml"
 			/>
