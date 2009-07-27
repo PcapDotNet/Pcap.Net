@@ -70,8 +70,42 @@ namespace Packets
             return hashCode;
         }
 
+        public bool IsValid
+        {
+            get
+            {
+                if (_isValid == null)
+                    _isValid = CalculateIsValid();
+                return _isValid.Value;
+            }
+        }
+
+        public EthernetDatagram Ethernet
+        {
+            get
+            {
+                if (_ethernet == null)
+                    _ethernet = new EthernetDatagram(Buffer, 0, Length);
+                return _ethernet;
+            }
+        }
+
+        private bool CalculateIsValid()
+        {
+            switch (DataLink.Kind)
+            {
+                case DataLinkKind.Ethernet:
+                    return Ethernet.IsValid;
+                default:
+                    return false;
+            }
+        }
+
         private readonly byte[] _data;
         private readonly DateTime _timestamp;
         private readonly IDataLink _dataLink;
+        private bool? _isValid;
+
+        private EthernetDatagram _ethernet;
     }
 }

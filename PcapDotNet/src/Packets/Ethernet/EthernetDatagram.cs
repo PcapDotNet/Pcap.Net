@@ -20,7 +20,7 @@ namespace Packets
 
         public const int HeaderLength = 14;
 
-        public EthernetDatagram(byte[] buffer, int offset, int length)
+        internal EthernetDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
@@ -46,6 +46,24 @@ namespace Packets
             get
             {
                 return (EthernetType)ReadUShort(Offset.EtherTypeLength, Endianity.Big);
+            }
+        }
+
+        public override bool CalculateIsValid()
+        {
+            if (Length < HeaderLength)
+                return false;
+
+            switch (EtherType)
+            {
+                case EthernetType.Arp:
+                case EthernetType.Ieee8021Q:
+                case EthernetType.IpV4:
+                case EthernetType.IpV6:
+                    return true;
+
+                default:
+                    return false;
             }
         }
 
