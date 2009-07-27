@@ -61,6 +61,9 @@
     <Compile Include="Datagram.cs" />
     <Compile Include="DataLink.cs" />
     <Compile Include="DataLinkKind.cs" />
+    <Compile Include="Ethernet\EthernetDatagram.cs" />
+    <Compile Include="Ethernet\EthernetType.cs" />
+    <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
     <Compile Include="IpV4Address.cs" />
     <Compile Include="MoreByteArray.cs" />
