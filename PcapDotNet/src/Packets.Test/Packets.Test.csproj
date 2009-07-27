@@ -42,6 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EthernetDatagramTests.cs" />
+    <Compile Include="IpV4DatagramTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IpV4AddressTests.cs" />
   </ItemGroup>

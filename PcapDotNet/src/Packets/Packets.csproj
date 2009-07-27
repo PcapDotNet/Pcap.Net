@@ -66,6 +66,7 @@
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
     <Compile Include="IpV4Address.cs" />
+    <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="MoreByteArray.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
