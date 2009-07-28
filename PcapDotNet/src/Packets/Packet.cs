@@ -6,6 +6,11 @@ namespace Packets
 {
     public class Packet : IEquatable<Packet>
     {
+        public Packet(byte[] data, DateTime timestamp, DataLinkKind dataLink)
+            :this(data, timestamp, new DataLink(dataLink))
+        {
+        }
+
         public Packet(byte[] data, DateTime timestamp, IDataLink dataLink)
         {
             _data = data;

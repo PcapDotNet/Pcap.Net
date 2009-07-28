@@ -16,7 +16,7 @@ namespace Packets
 
         public static Packet IpV4(DateTime timestamp,
                                   MacAddress ethernetSource, MacAddress ethernetDestination, EthernetType ethernetType,
-                                  IpV4TypeOfService ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                  byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
                                   byte ipV4Ttl, IpV4Protocol ipV4Protocol,
                                   IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
                                   IpV4Options ipV4Options,
@@ -29,7 +29,7 @@ namespace Packets
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
                                      ipV4Ttl, ipV4Protocol,
                                      ipV4SourceAddress, ipV4DestinationAddress,
-                                     ipV4Options);
+                                     ipV4Options, ipV4Payload.Length);
             ipV4Payload.Write(buffer, EthernetDatagram.HeaderLength + ipHeaderLength);
             return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
         }
