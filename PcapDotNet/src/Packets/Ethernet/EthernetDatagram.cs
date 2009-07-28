@@ -1,3 +1,5 @@
+using System;
+
 namespace Packets
 {
     /// <summary>
@@ -20,9 +22,9 @@ namespace Packets
 
         public const int HeaderLength = 14;
 
-        internal EthernetDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        public int PayloadLength
         {
+            get { return Math.Max(0, Length - HeaderLength); }
         }
 
         public MacAddress Source
@@ -58,13 +60,30 @@ namespace Packets
             {
                 case EthernetType.Arp:
                 case EthernetType.Ieee8021Q:
+                    return true;
                 case EthernetType.IpV4:
+                    return IpV4.IsValid;
                 case EthernetType.IpV6:
                     return true;
 
                 default:
                     return false;
             }
+        }
+
+        public IpV4Datagram IpV4
+        {
+            get
+            {
+                if (_ipV4 == null && Length >= HeaderLength)
+                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                return _ipV4;
+            }
+        }
+
+        internal EthernetDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         internal static void WriteHeader(byte[] buffer, int offset, MacAddress ethernetSource, MacAddress ethernetDestination, EthernetType ethernetType)
@@ -74,5 +93,7 @@ namespace Packets
             ethernetDestination.Write(buffer, offset + Offset.Destination);
             buffer.Write(offset + Offset.EtherTypeLength, (ushort)ethernetType, Endianity.Big);
         }
+
+        private IpV4Datagram _ipV4;
     }
 }

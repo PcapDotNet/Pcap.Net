@@ -9,6 +9,15 @@ namespace Packets
             _value = value;
         }
 
+        public IpV4Address(string value)
+        {
+            string[] values = value.Split('.');
+            _value = (uint)((byte.Parse(values[0]) << 24) +
+                            (byte.Parse(values[1]) << 16) +
+                            (byte.Parse(values[2]) << 8) +
+                            (byte.Parse(values[3])));
+        }
+
         public uint ToValue()
         {
             return _value;

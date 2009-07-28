@@ -87,6 +87,11 @@ namespace Packets
             return _buffer.ReadUShort(StartOffset + offset, endianity);
         }
 
+        protected uint ReadUInt(int offset, Endianity endianity)
+        {
+            return _buffer.ReadUInt(StartOffset + offset, endianity);
+        }
+
         private static readonly Datagram _empty = new Datagram(new byte[0], 0, 0);
         private readonly byte[] _buffer;
         private readonly int _startOffset;
