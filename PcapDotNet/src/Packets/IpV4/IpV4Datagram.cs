@@ -85,7 +85,12 @@ namespace Packets
 
         public bool IsHeaderChecksumCorrect
         {
-            get { throw new NotImplementedException(); }
+            get 
+            { 
+                if (_isHeaderChecksumCorrect == null)
+                    _isHeaderChecksumCorrect = (CalculateHeaderChecksum() == HeaderChecksum);
+                return _isHeaderChecksumCorrect.Value;
+            }
         }
 
         public IpV4Address Source
@@ -100,7 +105,7 @@ namespace Packets
 
         public IpV4Options Options
         {
-            get { return new IpV4Options(Buffer, StartOffset + Offset.Options); }
+            get { return new IpV4Options(Buffer, StartOffset + Offset.Options, HeaderLength - HeaderMinimumLength); }
         }
 
         internal IpV4Datagram(byte[] buffer, int offset, int length)
@@ -128,6 +133,25 @@ namespace Packets
 //            buffer.Write(offset + Offset.Destination, destination, Endianity.Big);
 //            options.Write(offset + Offset.Options);
         }
+
+        private ushort CalculateHeaderChecksum()
+        {
+            // and 16 bits
+            uint sum = 0;
+            for (int offset = 0; offset < Offset.HeaderChecksum; offset += 2)
+                sum += ReadUShort(offset, Endianity.Big);
+            for (int offset = Offset.HeaderChecksum + 2; offset < HeaderLength; offset += 2)
+                sum += ReadUShort(offset, Endianity.Big);
+
+            // take only 16 bits out of the 32 bit sum and add up the carrier
+            sum = (sum & 0x0000FFFF) + (sum >> 16);
+
+            // one's complement the result
+            sum = ~sum;
+            return (ushort)sum;
+        }
+
+        private bool? _isHeaderChecksumCorrect;
     }
 
     [Flags]
@@ -185,9 +209,19 @@ namespace Packets
         {
         }
 
-        internal IpV4Options(byte[] buffer, int offset)
+        internal IpV4Options(byte[] buffer, int offset, int length)
         {
-            throw new NotImplementedException();
+            int offsetEnd = offset + length;
+            while (offset != offsetEnd)
+            {
+                IpV4Option option = IpV4Option.Read(buffer, ref offset, offsetEnd - offset);
+                if (option == null)
+                    break;
+                
+                _options.Add(option);
+                if (option is IpV4OptionEndOfOptionsList)
+                    break;
+            }
         }
 
         public int Length
@@ -195,6 +229,160 @@ namespace Packets
             get { throw new NotImplementedException(); }
         }
 
+        private List<IpV4Option> _options = new List<IpV4Option>();
         private static IpV4Options _none = new IpV4Options();
+    }
+
+    public enum IpV4OptionType : byte
+    {
+        EndOfOptionList = 0,
+        NoOperation = 1,
+        Security = 130,
+        LooseSourceRouting = 131,
+        StrictSourceRouting = 137,
+        RecordRoute = 7,
+        StreamIdentifier = 136,
+        InternetTimestamp = 68
+    }
+
+    public abstract class IpV4Option
+    {
+        protected IpV4Option(IpV4OptionType type)
+        {
+            _type = type;
+        }
+
+        internal static IpV4Option Read(byte[] buffer, ref int offset, int length)
+        {
+            int offsetEnd = offset + length;
+            if (offset == offsetEnd)
+                return null;
+
+            IpV4OptionType optionType = (IpV4OptionType)buffer[offset++];
+            switch (optionType)
+            {
+                case IpV4OptionType.EndOfOptionList:
+                    return new IpV4OptionEndOfOptionsList(optionType);
+                case IpV4OptionType.NoOperation:
+                    return new IpV4OptionNoOperation(optionType);
+                case IpV4OptionType.Security:
+                    return IpV4OptionSecurity.Read(optionType, buffer, ref offset, offsetEnd - offset);
+
+                    // Todo support more option types
+//                case IpV4OptionType.LooseSourceRouting:
+//                    return IpV4OptionLooseSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
+//                case IpV4OptionType.StrictSourceRouting:
+//                    return IpV4OptionStrictSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
+//                case IpV4OptionType.RecordRoute:
+//                    return IpV4OptionRecordRoute.Read(optionType, buffer, ref offset, offsetEnd - offset);
+//                case IpV4OptionType.StreamIdentifier:
+//                    return IpV4OptionStreamIdentifier.Read(optionType, buffer, ref offset, offsetEnd - offset);
+//                case IpV4OptionType.InternetTimestamp:
+//                    return IpV4OptionInternetTimestamp.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                default:
+                    return null;
+            }
+        }
+
+        private IpV4OptionType _type;
+    }
+
+//    public class IpV4OptionInternetTimestamp : IpV4Option
+//    {
+//        internal static IpV4OptionInternetTimestamp Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+//        {
+//        }
+//    }
+//
+//    public class IpV4OptionStreamIdentifier : IpV4Option
+//    {
+//        internal static IpV4OptionStreamIdentifier Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+//        {
+//        }
+//    }
+//
+//    public class IpV4OptionRecordRoute : IpV4Option
+//    {
+//        internal static IpV4OptionRecordRoute Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+//        {
+//        }
+//    }
+//
+//    public class IpV4OptionStrictSourceRouting : IpV4Option
+//    {
+//        internal static IpV4OptionStrictSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+//        {
+//        }
+//    }
+//
+//    public class IpV4OptionLooseSourceRouting : IpV4Option
+//    {
+//        internal static IpV4OptionLooseSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+//        {
+//        }
+//    }
+
+    public enum IpV4OptionSecurityLevel : ushort
+    {
+        Unclassified = 0x0000,
+        Confidential = 0xF135,
+        EFTO = 0x789A,
+        MMMM = 0xBC4D,
+        PROG = 0x5E26,
+        Restricted = 0xAF13,
+        Secret = 0xD788,
+        TopSecret = 0x6BC5
+    }
+
+    public class IpV4OptionSecurity : IpV4Option
+    {
+        internal static IpV4OptionSecurity Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            if (length < 12)
+                return null;
+            byte optionLength = buffer[offset++];
+            if (optionLength != 11)
+                return null;
+
+            IpV4OptionSecurityLevel level = (IpV4OptionSecurityLevel)buffer.ReadUShort(ref offset, Endianity.Big);
+            ushort compartments = buffer.ReadUShort(ref offset, Endianity.Big);
+            ushort handlingRestrictions = buffer.ReadUShort(ref offset, Endianity.Big);
+            uint transmissionControlCode = (uint)((buffer.ReadUShort(ref offset, Endianity.Big) << 8) +
+                                                  buffer[offset++]);
+
+            return new IpV4OptionSecurity(optionType, level, compartments, handlingRestrictions, transmissionControlCode);
+        }
+
+        private IpV4OptionSecurity(IpV4OptionType optionType,
+                                   IpV4OptionSecurityLevel level, ushort compartments,
+                                   ushort handlingRestrictions, uint transmissionControlCode)
+            : base(optionType)
+        {
+            _level = level;
+            _compartments = compartments;
+            _handlingRestrictions = handlingRestrictions;
+            _transmissionControlCode = transmissionControlCode;
+        }
+
+        private IpV4OptionSecurityLevel _level;
+        private ushort _compartments;
+        private ushort _handlingRestrictions;
+        private uint _transmissionControlCode; // this could actually be 24 bits
+    }
+
+    public class IpV4OptionNoOperation : IpV4Option
+    {
+        public IpV4OptionNoOperation(IpV4OptionType type)
+            : base(type)
+        {
+        }
+    }
+
+    public class IpV4OptionEndOfOptionsList : IpV4Option
+    {
+        public IpV4OptionEndOfOptionsList(IpV4OptionType type)
+            : base(type)
+        {
+        }
     }
 }
