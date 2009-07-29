@@ -26,6 +26,13 @@ namespace Packets
             return (ushort)ReadShort(buffer, offset, endianity);
         }
 
+        public static ushort ReadUShort(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            ushort result = ReadUShort(buffer, offset, endianity);
+            offset += 2;
+            return result;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
         public static uint ReadUInt(this byte[] buffer, int offset, Endianity endianity)
         {
