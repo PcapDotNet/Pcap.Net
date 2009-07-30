@@ -18,6 +18,11 @@ namespace Packets
                             (byte.Parse(values[3])));
         }
 
+        public static IpV4Address Zero
+        {
+            get { return _zero; }
+        }
+
         public uint ToValue()
         {
             return _value;
@@ -74,5 +79,6 @@ namespace Packets
         }
 
         private readonly uint _value;
+        private static readonly IpV4Address _zero = new IpV4Address(0);
     }
 }

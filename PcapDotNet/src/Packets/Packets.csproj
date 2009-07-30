@@ -67,6 +67,9 @@
     <Compile Include="IDataLink.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
+    <Compile Include="IpV4\IpV4Fragmentation.cs" />
+    <Compile Include="IpV4\IpV4FragmentationFlags.cs" />
+    <Compile Include="IpV4\IpV4Protocol.cs" />
     <Compile Include="MoreByteArray.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
