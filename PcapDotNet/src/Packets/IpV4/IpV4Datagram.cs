@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -108,6 +109,22 @@ namespace Packets
             get { return new IpV4Options(Buffer, StartOffset + Offset.Options, HeaderLength - HeaderMinimumLength); }
         }
 
+        public Datagram Payload
+        {
+            get { return Tcp; }
+        }
+
+        public Datagram Tcp
+        {
+            get
+            {
+                if (_tcp == null && Length >= HeaderLength)
+                    _tcp = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _tcp;
+            }
+        }
+
         internal IpV4Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -121,28 +138,31 @@ namespace Packets
                                          IpV4Options options, int payloadLength)
         {
             int headerLength = HeaderMinimumLength + options.Length;
-            buffer[offset + Offset.VersionAndHeaderLength] = (byte)(Version << 4 + headerLength / 4);
+            buffer[offset + Offset.VersionAndHeaderLength] = (byte)((Version << 4) + headerLength / 4);
             buffer[offset + Offset.TypeOfService] = typeOfService;
             buffer.Write(offset + Offset.TotalLength, (ushort)(headerLength + payloadLength), Endianity.Big);
             buffer.Write(offset + Offset.Identification, identification, Endianity.Big);
             fragmentation.Write(buffer, offset + Offset.Fragmentation);
             buffer[offset + Offset.Ttl] = ttl;
             buffer[offset + Offset.Protocol] = (byte)protocol;
-            // Todo Checksum
-//            buffer.Write(offset + Offset.Source, source, Endianity.Big);
-//            buffer.Write(offset + Offset.Destination, destination, Endianity.Big);
+
+            buffer.Write(offset + Offset.Source, source.ToValue(), Endianity.Big);
+            buffer.Write(offset + Offset.Destination, destination.ToValue(), Endianity.Big);
 //            options.Write(offset + Offset.Options);
+
+            buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
         }
 
         private ushort CalculateHeaderChecksum()
         {
-            // and 16 bits
-            uint sum = 0;
-            for (int offset = 0; offset < Offset.HeaderChecksum; offset += 2)
-                sum += ReadUShort(offset, Endianity.Big);
-            for (int offset = Offset.HeaderChecksum + 2; offset < HeaderLength; offset += 2)
-                sum += ReadUShort(offset, Endianity.Big);
+            uint sum = Sum16Bits(Buffer, StartOffset, Offset.HeaderChecksum) +
+                       Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, HeaderLength - Offset.HeaderChecksum - 2);
 
+            return Sum16BitsToChecksum(sum);
+        }
+
+        private static ushort Sum16BitsToChecksum(uint sum)
+        {
             // take only 16 bits out of the 32 bit sum and add up the carrier
             sum = (sum & 0x0000FFFF) + (sum >> 16);
 
@@ -151,54 +171,20 @@ namespace Packets
             return (ushort)sum;
         }
 
+        private static uint Sum16Bits(byte[] buffer, int offset, int length)
+        {
+            int endOffset = offset + length;
+            uint sum = 0;
+            while (offset < endOffset - 1)
+                sum += buffer.ReadUShort(ref offset, Endianity.Big);
+            return sum;
+        }
+
         private bool? _isHeaderChecksumCorrect;
+        private Datagram _tcp;
     }
 
-    [Flags]
-    public enum IpV4FragmentationFlags : byte
-    {
-        Reserved =      0x1,
-        DontFragment =  0x2,
-        MoreFragments = 0x4
-    }
-
-    public struct IpV4Fragmentation : IEquatable<IpV4Fragmentation>
-    {
-        public IpV4Fragmentation(IpV4FragmentationFlags flags, ushort offset)
-            : this((ushort)((byte)flags << 13 | offset))
-        {
-        }
-
-        public bool Equals(IpV4Fragmentation other)
-        {
-            return _value == other._value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return (obj is IpV4Fragmentation &&
-                    Equals((IpV4Fragmentation)obj));
-        }
-
-        internal IpV4Fragmentation(ushort value)
-        {
-            _value = value;
-        }
-
-        internal void Write(byte[] buffer, int offset)
-        {
-            buffer.Write(offset, _value, Endianity.Big);
-        }
-
-        private ushort _value;
-    }
-
-    public enum IpV4Protocol : byte
-    {
-        Tcp = 0x06
-    }
-
-    public class IpV4Options
+    public class IpV4Options : IEquatable<IpV4Options>
     {
         public static IpV4Options None
         {
@@ -211,26 +197,76 @@ namespace Packets
 
         internal IpV4Options(byte[] buffer, int offset, int length)
         {
+            _length = length;
+
             int offsetEnd = offset + length;
             while (offset != offsetEnd)
             {
                 IpV4Option option = IpV4Option.Read(buffer, ref offset, offsetEnd - offset);
                 if (option == null)
-                    break;
-                
+                    return; // Invalid
+
+                if (option.IsAppearsAtMostOnce)
+                {
+                    foreach (IpV4Option previousOption in _options)
+                    {
+                        if (option.GetType() == previousOption.GetType())
+                            return; // Invalid
+                    }
+                }
+
                 _options.Add(option);
                 if (option is IpV4OptionEndOfOptionsList)
-                    break;
+                    break; // Valid?
             }
         }
 
         public int Length
         {
-            get { throw new NotImplementedException(); }
+            get { return _length; }
+        }
+
+        public bool Equals(IpV4Options other)
+        {
+            if (other == null)
+                return false;
+
+            if (Length != other.Length)
+                return false;
+
+            return _options.EqualCollection(other._options);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IpV4Options);
         }
 
         private List<IpV4Option> _options = new List<IpV4Option>();
+        private int _length;
         private static IpV4Options _none = new IpV4Options();
+    }
+
+    public static class MoreIEnumerable
+    {
+        public static bool EqualCollection<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2)
+        {
+            IEnumerator<T> enumerator1 = collection1.GetEnumerator();
+            IEnumerator<T> enumerator2 = collection1.GetEnumerator();
+            while (enumerator1.MoveNext())
+            {
+                if (!enumerator2.MoveNext())
+                    return false;
+
+                if (!enumerator1.Current.Equals(enumerator2.Current))
+                    return false;
+            }
+
+            if (enumerator2.MoveNext())
+                return false;
+
+            return true;
+        }
     }
 
     public enum IpV4OptionType : byte
@@ -247,6 +283,11 @@ namespace Packets
 
     public abstract class IpV4Option
     {
+        public abstract bool IsAppearsAtMostOnce
+        {
+            get;
+        }
+
         protected IpV4Option(IpV4OptionType type)
         {
             _type = type;
@@ -268,17 +309,16 @@ namespace Packets
                 case IpV4OptionType.Security:
                     return IpV4OptionSecurity.Read(optionType, buffer, ref offset, offsetEnd - offset);
 
-                    // Todo support more option types
-//                case IpV4OptionType.LooseSourceRouting:
-//                    return IpV4OptionLooseSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
-//                case IpV4OptionType.StrictSourceRouting:
-//                    return IpV4OptionStrictSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
-//                case IpV4OptionType.RecordRoute:
-//                    return IpV4OptionRecordRoute.Read(optionType, buffer, ref offset, offsetEnd - offset);
-//                case IpV4OptionType.StreamIdentifier:
-//                    return IpV4OptionStreamIdentifier.Read(optionType, buffer, ref offset, offsetEnd - offset);
-//                case IpV4OptionType.InternetTimestamp:
-//                    return IpV4OptionInternetTimestamp.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                case IpV4OptionType.LooseSourceRouting:
+                    return IpV4OptionLooseSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                case IpV4OptionType.StrictSourceRouting:
+                    return IpV4OptionStrictSourceRouting.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                case IpV4OptionType.RecordRoute:
+                    return IpV4OptionRecordRoute.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                case IpV4OptionType.StreamIdentifier:
+                    return IpV4OptionStreamIdentifier.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                case IpV4OptionType.InternetTimestamp:
+                    return IpV4OptionInternetTimestamp.Read(optionType, buffer, ref offset, offsetEnd - offset);
                 default:
                     return null;
             }
@@ -287,40 +327,212 @@ namespace Packets
         private IpV4OptionType _type;
     }
 
-//    public class IpV4OptionInternetTimestamp : IpV4Option
-//    {
-//        internal static IpV4OptionInternetTimestamp Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-//        {
-//        }
-//    }
-//
-//    public class IpV4OptionStreamIdentifier : IpV4Option
-//    {
-//        internal static IpV4OptionStreamIdentifier Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-//        {
-//        }
-//    }
-//
-//    public class IpV4OptionRecordRoute : IpV4Option
-//    {
-//        internal static IpV4OptionRecordRoute Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-//        {
-//        }
-//    }
-//
-//    public class IpV4OptionStrictSourceRouting : IpV4Option
-//    {
-//        internal static IpV4OptionStrictSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-//        {
-//        }
-//    }
-//
-//    public class IpV4OptionLooseSourceRouting : IpV4Option
-//    {
-//        internal static IpV4OptionLooseSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-//        {
-//        }
-//    }
+    [Flags]
+    public enum IpV4OptionInternetTimestampType : byte
+    {
+        TimestampOnly = 0,
+        AddressAndTimestamp = 1,
+        AddressPrespecified = 3
+    }
+
+    public class IpV4OptionInternetTimestamp : IpV4Option
+    {
+        private IpV4OptionInternetTimestamp(IpV4OptionType optionType, IpV4OptionInternetTimestampType timestampType, byte overflow, KeyValuePair<IpV4Address, DateTime>[] values, int pointedIndex)
+            : base(optionType)
+        {
+            _timestampType = timestampType;
+            _overflow = overflow;
+            _values = values;
+            _pointedIndex = pointedIndex;
+        }
+
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return true; }
+        }
+
+        internal static IpV4OptionInternetTimestamp Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            if (length < 3)
+                return null;
+
+            byte optionLength = buffer[offset++];
+            if (optionLength > length + 1 || optionLength % 4 != 0)
+                return null;
+
+            byte pointer = buffer[offset++];
+            if (pointer % 4 != 1)
+                return null;
+
+            int pointedIndex = pointer / 4 - 1;
+            if (pointedIndex < 0)
+                return null;
+
+            byte overflow = buffer[offset++];
+            IpV4OptionInternetTimestampType type = (IpV4OptionInternetTimestampType)(overflow & 0x0F);
+            overflow >>= 4;
+
+            int numValues = optionLength / 4 - 1;
+
+            if (type != IpV4OptionInternetTimestampType.TimestampOnly)
+                numValues = numValues / 2 - numValues % 2;
+
+            KeyValuePair<IpV4Address, DateTime>[] values = new KeyValuePair<IpV4Address, DateTime>[numValues];
+            for (int i = 0; i < numValues; ++i)
+            {
+                switch (type)
+                {
+                    case IpV4OptionInternetTimestampType.TimestampOnly:
+                        values[i] = new KeyValuePair<IpV4Address, DateTime>(IpV4Address.Zero, ReadTimeOfDay(buffer, ref offset));
+                        break;
+                    case IpV4OptionInternetTimestampType.AddressAndTimestamp:
+                    case IpV4OptionInternetTimestampType.AddressPrespecified:
+                        IpV4Address address = new IpV4Address(buffer.ReadUInt(ref offset, Endianity.Big));
+                        values[i] = new KeyValuePair<IpV4Address, DateTime>(address, ReadTimeOfDay(buffer, ref offset));
+                        break;
+                }
+            }
+
+            return new IpV4OptionInternetTimestamp(optionType, type, overflow, values, pointedIndex);
+        }
+
+        private static DateTime ReadTimeOfDay(byte[] buffer, ref int offset)
+        {
+            return DateTime.MinValue.Date.AddMilliseconds(buffer.ReadUInt(ref offset, Endianity.Big));
+        }
+
+        private IpV4OptionInternetTimestampType _timestampType;
+        private byte _overflow;
+        private KeyValuePair<IpV4Address, DateTime>[] _values;
+        private int _pointedIndex;
+    }
+
+    public class IpV4OptionStreamIdentifier : IpV4Option
+    {
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return true; }
+        }
+
+        internal static IpV4OptionStreamIdentifier Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            if (length < 3)
+                return null;
+
+            byte optionLength = buffer[offset++];
+            if (optionLength != 4)
+                return null;
+
+            ushort identifier = buffer.ReadUShort(ref offset, Endianity.Big);
+            return new IpV4OptionStreamIdentifier(optionType, identifier);
+        }
+
+        private IpV4OptionStreamIdentifier(IpV4OptionType optionType, ushort identifier)
+            : base(optionType)
+        {
+            _identifier = identifier;
+        }
+
+        private ushort _identifier;
+    }
+
+    public class IpV4OptionRecordRoute : IpV4OptionRoute
+    {
+        internal static IpV4OptionRecordRoute Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            IpV4Address[] addresses;
+            int pointedAddressIndex;
+            if (!TryRead(out addresses, out pointedAddressIndex, buffer, ref offset, length, true))
+                return null;
+            return new IpV4OptionRecordRoute(optionType, addresses, pointedAddressIndex);
+        }
+
+        private IpV4OptionRecordRoute(IpV4OptionType optionType, IpV4Address[] addresses, int pointedAddressIndex)
+            : base(optionType, addresses, pointedAddressIndex)
+        {
+        }
+    }
+
+    public abstract class IpV4OptionRoute : IpV4Option
+    {
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return true; }
+        }
+
+        protected static bool TryRead(out IpV4Address[] addresses, out int pointedAddressIndex,
+                                      byte[] buffer, ref int offset, int length, bool readUpToPointer)
+        {
+            addresses = null;
+            pointedAddressIndex = 0;
+
+            if (length < 2)
+                return false;
+
+            byte optionLength = buffer[offset++];
+            if (optionLength > length + 1 || optionLength % 4 != 3)
+                return false;
+
+            byte pointer = buffer[offset++];
+            if (pointer % 4 != 0)
+                return false;
+
+            pointedAddressIndex = pointer / 4 - 1;
+            if (pointedAddressIndex < 0)
+                return false;
+
+            int numAddresses = readUpToPointer ? pointedAddressIndex : (optionLength - 3) / 4;
+            addresses = new IpV4Address[numAddresses];
+            for (int i = 0; i != numAddresses; ++i)
+                addresses[i] = new IpV4Address(buffer.ReadUInt(ref offset, Endianity.Big));
+
+            return true;
+        }
+
+        protected IpV4OptionRoute(IpV4OptionType optionType, IpV4Address[] addresses, int pointedAddressIndex)
+            : base(optionType)
+        {
+            _addresses = addresses;
+            _pointedAddressIndex = pointedAddressIndex;
+        }
+
+        private IpV4Address[] _addresses;
+        private int _pointedAddressIndex;
+    }
+
+    public class IpV4OptionStrictSourceRouting : IpV4OptionRoute
+    {
+        internal static IpV4OptionStrictSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            IpV4Address[] addresses;
+            int pointedAddressIndex;
+            if (!TryRead(out addresses, out pointedAddressIndex, buffer, ref offset, length, false))
+                return null;
+            return new IpV4OptionStrictSourceRouting(optionType, addresses, pointedAddressIndex);
+        }
+
+        private IpV4OptionStrictSourceRouting(IpV4OptionType optionType, IpV4Address[] addresses, int pointedAddressIndex)
+            : base(optionType, addresses, pointedAddressIndex)
+        {
+        }
+    }
+
+    public class IpV4OptionLooseSourceRouting : IpV4OptionRoute
+    {
+        internal static IpV4OptionLooseSourceRouting Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
+        {
+            IpV4Address[] addresses;
+            int pointedAddressIndex;
+            if (!TryRead(out addresses, out pointedAddressIndex, buffer, ref offset, length, false))
+                return null;
+            return new IpV4OptionLooseSourceRouting(optionType, addresses, pointedAddressIndex);
+        }
+
+        private IpV4OptionLooseSourceRouting(IpV4OptionType optionType, IpV4Address[] addresses, int pointedAddressIndex)
+            : base(optionType, addresses, pointedAddressIndex)
+        {
+        }
+    }
 
     public enum IpV4OptionSecurityLevel : ushort
     {
@@ -336,9 +548,14 @@ namespace Packets
 
     public class IpV4OptionSecurity : IpV4Option
     {
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return true; }
+        }
+
         internal static IpV4OptionSecurity Read(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
         {
-            if (length < 12)
+            if (length < 10)
                 return null;
             byte optionLength = buffer[offset++];
             if (optionLength != 11)
@@ -372,7 +589,12 @@ namespace Packets
 
     public class IpV4OptionNoOperation : IpV4Option
     {
-        public IpV4OptionNoOperation(IpV4OptionType type)
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return false; }
+        }
+
+        internal IpV4OptionNoOperation(IpV4OptionType type)
             : base(type)
         {
         }
@@ -380,7 +602,12 @@ namespace Packets
 
     public class IpV4OptionEndOfOptionsList : IpV4Option
     {
-        public IpV4OptionEndOfOptionsList(IpV4OptionType type)
+        public override bool IsAppearsAtMostOnce
+        {
+            get { return false; }
+        }
+
+        internal IpV4OptionEndOfOptionsList(IpV4OptionType type)
             : base(type)
         {
         }

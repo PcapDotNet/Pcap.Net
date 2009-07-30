@@ -81,6 +81,7 @@ namespace Packets
             }
         }
 
+
         internal EthernetDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {

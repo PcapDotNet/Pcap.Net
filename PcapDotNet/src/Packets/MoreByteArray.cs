@@ -39,6 +39,13 @@ namespace Packets
             return (uint)ReadInt(buffer, offset, endianity);
         }
 
+        public static uint ReadUInt(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            uint result = ReadUInt(buffer, offset, endianity);
+            offset += 4;
+            return result;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
         public static int ReadInt(this byte[] buffer, int offset, Endianity endianity)
         {
@@ -58,6 +65,18 @@ namespace Packets
         public static void Write(this byte[] buffer, int offset, ushort value, Endianity endianity)
         {
             Write(buffer, offset, (short)value, endianity);
+        }
+
+        public static void Write(this byte[] buffer, int offset, int value, Endianity endianity)
+        {
+            if (IsWrongEndianity(endianity))
+                value = IPAddress.HostToNetworkOrder(value);
+            Write(buffer, offset, value);
+        }
+
+        public static void Write(this byte[] buffer, int offset, uint value, Endianity endianity)
+        {
+            Write(buffer, offset, (int)value, endianity);
         }
 
         private static bool IsWrongEndianity(Endianity endianity)
@@ -94,6 +113,17 @@ namespace Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     *((short*)ptr) = value;
+                }
+            }
+        }
+
+        private static void Write(byte[] buffer, int offset, int value)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    *((int*)ptr) = value;
                 }
             }
         }
