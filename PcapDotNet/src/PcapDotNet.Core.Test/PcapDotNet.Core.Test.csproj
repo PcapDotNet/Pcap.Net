@@ -63,6 +63,14 @@
       <Project>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</Project>
       <Name>PcapDotNet.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PcapDotNet.Packets.TestUtils\PcapDotNet.Packets.TestUtils.csproj">
+      <Project>{194D3B9A-AD99-44ED-991A-73C4A7EE550F}</Project>
+      <Name>PcapDotNet.Packets.TestUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PcapDotNet.TestUtils\PcapDotNet.TestUtils.csproj">
+      <Project>{540F21A8-CD9F-4288-ADCA-DB17027FF309}</Project>
+      <Name>PcapDotNet.TestUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

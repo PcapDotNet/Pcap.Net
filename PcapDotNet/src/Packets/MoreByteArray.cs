@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using PcapDotNet.Base;
 
 namespace Packets
 {
@@ -30,6 +31,21 @@ namespace Packets
         {
             ushort result = ReadUShort(buffer, offset, endianity);
             offset += 2;
+            return result;
+        }
+
+        public static UInt24 ReadUInt24(this byte[] buffer, int offset, Endianity endianity)
+        {
+            UInt24 value = ReadUInt24(buffer, offset);
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            return value;
+        }
+
+        public static UInt24 ReadUInt24(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            UInt24 result = ReadUInt24(buffer, offset, endianity);
+            offset += 3;
             return result;
         }
 
@@ -67,6 +83,25 @@ namespace Packets
             Write(buffer, offset, (short)value, endianity);
         }
 
+        public static void Write(this byte[] buffer, ref int offset, ushort value, Endianity endianity)
+        {
+            Write(buffer, offset, value, endianity);
+            offset += 2;
+        }
+
+        public static void Write(this byte[] buffer, int offset, UInt24 value, Endianity endianity)
+        {
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            Write(buffer, offset, value);
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, UInt24 value, Endianity endianity)
+        {
+            Write(buffer, offset, value, endianity);
+            offset += 3;
+        }
+
         public static void Write(this byte[] buffer, int offset, int value, Endianity endianity)
         {
             if (IsWrongEndianity(endianity))
@@ -79,9 +114,30 @@ namespace Packets
             Write(buffer, offset, (int)value, endianity);
         }
 
+        public static void Write(this byte[] buffer, ref int offset, uint value, Endianity endianity)
+        {
+            Write(buffer, offset, value, endianity);
+            offset += 4;
+        }
+
         private static bool IsWrongEndianity(Endianity endianity)
         {
             return (BitConverter.IsLittleEndian == (endianity == Endianity.Big));
+        }
+
+        private static UInt24 HostToNetworkOrder(UInt24 value)
+        {
+            UInt24 result = value;
+            unsafe
+            {
+                UInt24* ptr = &result;
+                byte* bytePtr = (byte*)ptr;
+                byte tmp = bytePtr[0];
+                bytePtr[0] = bytePtr[2];
+                bytePtr[2] = tmp;
+            }
+
+            return result;
         }
 
         private static short ReadShort(byte[] buffer, int offset)
@@ -91,6 +147,17 @@ namespace Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     return *((short*)ptr);
+                }
+            }
+        }
+
+        private static UInt24 ReadUInt24(byte[] buffer, int offset)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    return *((UInt24*)ptr);
                 }
             }
         }
@@ -117,6 +184,17 @@ namespace Packets
             }
         }
 
+        private static void Write(byte[] buffer, int offset, UInt24 value)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    *((UInt24*)ptr) = value;
+                }
+            }
+        }
+        
         private static void Write(byte[] buffer, int offset, int value)
         {
             unsafe

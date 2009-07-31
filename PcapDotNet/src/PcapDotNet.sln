@@ -17,9 +17,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "Packets\Packets.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets.Test", "Packets.Test\Packets.Test.csproj", "{6C7326EB-F230-4934-B74B-F99F87204E44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.TestUtils", "PcapDotNet.TestUtils\PcapDotNet.TestUtils.csproj", "{540F21A8-CD9F-4288-ADCA-DB17027FF309}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets.TestUtils", "PcapDotNet.Packets.TestUtils\PcapDotNet.Packets.TestUtils.csproj", "{194D3B9A-AD99-44ED-991A-73C4A7EE550F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Base", "PcapDotNet.Base\PcapDotNet.Base.csproj", "{83E805C9-4D29-4E34-A27E-5A78690FBD2B}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -38,6 +44,15 @@ Global
 		SccProjectUniqueName5 = Packets.Test\\Packets.Test.csproj
 		SccProjectName5 = Packets.Test
 		SccLocalPath5 = Packets.Test
+		SccProjectUniqueName6 = PcapDotNet.TestUtils\\PcapDotNet.TestUtils.csproj
+		SccProjectName6 = PcapDotNet.TestUtils
+		SccLocalPath6 = PcapDotNet.TestUtils
+		SccProjectUniqueName7 = PcapDotNet.Packets.TestUtils\\PcapDotNet.Packets.TestUtils.csproj
+		SccProjectName7 = PcapDotNet.Packets.TestUtils
+		SccLocalPath7 = PcapDotNet.Packets.TestUtils
+		SccProjectUniqueName8 = PcapDotNet.Base\\PcapDotNet.Base.csproj
+		SccProjectName8 = PcapDotNet.Base
+		SccLocalPath8 = PcapDotNet.Base
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi
@@ -103,6 +118,36 @@ Global
 		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Win32.ActiveCfg = Release|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Release|Any CPU.Build.0 = Release|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Release|Win32.ActiveCfg = Release|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{194D3B9A-AD99-44ED-991A-73C4A7EE550F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
