@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Packets;
+using PcapDotNet.Packets;
 
 namespace PcapDotNet.Core.Test
 {

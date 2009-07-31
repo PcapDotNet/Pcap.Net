@@ -8,7 +8,7 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace PcapDotNet::Core;
-using namespace Packets;
+using namespace PcapDotNet::Packets;
 
 BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterValue, int snapshotLength, DataLinkKind kind, IpV4SocketAddress^ netmask)
 {
@@ -20,7 +20,7 @@ BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterValue, int snapshotLeng
     Initialize(filterValue, snapshotLength, kind, nullptr);
 }
 
-bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packets::Packet^ packet)
+bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packet^ packet)
 {
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
@@ -30,7 +30,7 @@ bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packets::Packet^ pack
     return (snapshotLength != 0);
 }
 
-bool BerkeleyPacketFilter::Test(Packets::Packet^ packet)
+bool BerkeleyPacketFilter::Test(Packet^ packet)
 {
     int snapshotLength;
     return Test(snapshotLength, packet);

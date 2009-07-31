@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Packets.Test
+namespace PcapDotNet.Packets.Test
 {
     /// <summary>
     /// Summary description for EthernetDatagramTests

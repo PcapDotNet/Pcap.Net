@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public struct MacAddress
     {

@@ -3,9 +3,10 @@
 #include "Timestamp.h"
 
 using namespace PcapDotNet::Core;
+using namespace PcapDotNet::Packets;
 
 // static
-void PacketHeader::GetPcapHeader(pcap_pkthdr &header, Packets::Packet^ packet)
+void PacketHeader::GetPcapHeader(pcap_pkthdr &header, Packet^ packet)
 {
     Timestamp::DateTimeToPcapTimestamp(packet->Timestamp, header.ts);
     header.len = packet->Length;

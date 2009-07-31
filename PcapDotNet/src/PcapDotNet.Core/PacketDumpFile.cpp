@@ -7,7 +7,7 @@
 
 using namespace System;
 using namespace PcapDotNet::Core;
-using namespace Packets;
+using namespace PcapDotNet::Packets;
 
 void PacketDumpFile::Dump(Packet^ packet)
 {

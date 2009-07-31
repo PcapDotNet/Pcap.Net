@@ -1,7 +1,7 @@
 using System;
 using PcapDotNet.Base;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class IpV4OptionSecurity : IpV4Option, IEquatable<IpV4OptionSecurity>
     {

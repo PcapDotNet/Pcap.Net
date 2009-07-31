@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Packets.Test
+namespace PcapDotNet.Packets.Test
 {
     /// <summary>
     /// Summary description for IpV4AddressTests

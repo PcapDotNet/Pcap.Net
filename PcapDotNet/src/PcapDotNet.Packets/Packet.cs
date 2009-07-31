@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class Packet : IEquatable<Packet>
     {

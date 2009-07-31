@@ -1,5 +1,5 @@
 using System;
-using Packets;
+using PcapDotNet.Packets;
 
 namespace PcapDotNet.Core.Test
 {

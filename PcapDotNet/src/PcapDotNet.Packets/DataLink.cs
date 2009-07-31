@@ -1,4 +1,4 @@
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public struct DataLink : IDataLink
     {

@@ -1,4 +1,4 @@
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public enum IpV4OptionType : byte
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public abstract class IpV4OptionRoute : IpV4Option, IEquatable<IpV4OptionRoute>
     {

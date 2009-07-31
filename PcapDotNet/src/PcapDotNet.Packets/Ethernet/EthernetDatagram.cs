@@ -1,6 +1,6 @@
 using System;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     /// <summary>
     /// +------+-----------------+------------+------------------+

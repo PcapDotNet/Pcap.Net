@@ -11,7 +11,7 @@ using namespace System::Globalization;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Generic;
-using namespace Packets;
+using namespace PcapDotNet::Packets;
 using namespace PcapDotNet::Core;
 
 PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)

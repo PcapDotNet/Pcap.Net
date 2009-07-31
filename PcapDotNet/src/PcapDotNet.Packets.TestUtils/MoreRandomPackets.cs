@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Packets;
+using PcapDotNet.Packets;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils

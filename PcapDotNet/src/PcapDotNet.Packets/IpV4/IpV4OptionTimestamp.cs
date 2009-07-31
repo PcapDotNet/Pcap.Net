@@ -1,6 +1,6 @@
 using System;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public abstract class IpV4OptionTimestamp : IpV4Option, IEquatable<IpV4OptionTimestamp>
     {

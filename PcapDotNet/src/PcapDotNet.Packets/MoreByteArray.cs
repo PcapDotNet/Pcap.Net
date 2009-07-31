@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using PcapDotNet.Base;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public enum Endianity : byte
     {
