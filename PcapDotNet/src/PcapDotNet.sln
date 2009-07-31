@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets.TestUtil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Base", "PcapDotNet.Base\PcapDotNet.Base.csproj", "{83E805C9-4D29-4E34-A27E-5A78690FBD2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "PcapDotNet.Packets\Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets", "PcapDotNet.Packets\PcapDotNet.Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets.Test", "PcapDotNet.Packets.Test\Packets.Test.csproj", "{6C7326EB-F230-4934-B74B-F99F87204E44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets.Test", "PcapDotNet.Packets.Test\PcapDotNet.Packets.Test.csproj", "{6C7326EB-F230-4934-B74B-F99F87204E44}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -47,12 +47,12 @@ Global
 		SccProjectUniqueName6 = PcapDotNet.Base\\PcapDotNet.Base.csproj
 		SccProjectName6 = PcapDotNet.Base
 		SccLocalPath6 = PcapDotNet.Base
-		SccProjectUniqueName7 = PcapDotNet.Packets\\Packets.csproj
-		SccProjectName7 = PcapDotNet.Packets
-		SccLocalPath7 = PcapDotNet.Packets
-		SccProjectUniqueName8 = PcapDotNet.Packets.Test\\Packets.Test.csproj
-		SccProjectName8 = PcapDotNet.Packets.Test
-		SccLocalPath8 = PcapDotNet.Packets.Test
+		SccProjectUniqueName7 = PcapDotNet.Packets.Test\\PcapDotNet.Packets.Test.csproj
+		SccProjectName7 = PcapDotNet.Packets.Test
+		SccLocalPath7 = PcapDotNet.Packets.Test
+		SccProjectUniqueName8 = PcapDotNet.Packets\\PcapDotNet.Packets.csproj
+		SccProjectName8 = PcapDotNet.Packets
+		SccLocalPath8 = PcapDotNet.Packets
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi
