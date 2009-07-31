@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 
-namespace Packets.Test
+namespace PcapDotNet.Packets.Test
 {
     /// <summary>
     /// Summary description for IpV4Tests

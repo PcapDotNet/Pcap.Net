@@ -7,7 +7,7 @@
 
 using namespace System;
 using namespace System::Globalization;
-using namespace Packets;
+using namespace PcapDotNet::Packets;
 using namespace PcapDotNet::Core;
 
 PcapDataLink::PcapDataLink(DataLinkKind kind)

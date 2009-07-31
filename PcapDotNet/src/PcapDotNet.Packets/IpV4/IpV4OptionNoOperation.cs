@@ -1,4 +1,4 @@
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class IpV4OptionNoOperation : IpV4Option
     {

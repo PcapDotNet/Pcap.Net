@@ -1,6 +1,6 @@
 using System;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class IpV4OptionStreamIdentifier : IpV4Option, IEquatable<IpV4OptionStreamIdentifier>
     {

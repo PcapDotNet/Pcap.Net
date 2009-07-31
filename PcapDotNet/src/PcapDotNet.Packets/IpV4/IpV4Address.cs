@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public struct IpV4Address
     {

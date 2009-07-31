@@ -1,6 +1,6 @@
 using System;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class Datagram : IEquatable<Datagram>
     {

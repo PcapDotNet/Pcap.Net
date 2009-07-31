@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Packets;
+using PcapDotNet.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test

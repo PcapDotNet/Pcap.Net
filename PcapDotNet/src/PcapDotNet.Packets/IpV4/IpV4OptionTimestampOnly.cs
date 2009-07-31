@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Packets
+namespace PcapDotNet.Packets
 {
     public class IpV4OptionTimestampOnly : IpV4OptionTimestamp
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{6C7326EB-F230-4934-B74B-F99F87204E44}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Packets.Test</RootNamespace>
-    <AssemblyName>Packets.Test</AssemblyName>
+    <RootNamespace>PcapDotNet.Packets.Test</RootNamespace>
+    <AssemblyName>PcapDotNet.Packets.Test</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
