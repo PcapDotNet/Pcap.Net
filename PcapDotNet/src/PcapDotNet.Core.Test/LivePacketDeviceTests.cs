@@ -729,7 +729,7 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual(totalStatistics.GetHashCode(), totalStatistics.GetHashCode());
                 Assert.IsTrue(totalStatistics.Equals(totalStatistics));
                 Assert.AreNotEqual(null, totalStatistics);
-                Assert.AreEqual<uint>(0, totalStatistics.PacketsCaptured, "PacketsCaptured");
+                MoreAssert.IsSmallerOrEqual<uint>(1, totalStatistics.PacketsCaptured, "PacketsCaptured");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByDriver, "PacketsDroppedByDriver");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByInterface, "PacketsDroppedByInterface");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsReceived, "PacketsReceived");

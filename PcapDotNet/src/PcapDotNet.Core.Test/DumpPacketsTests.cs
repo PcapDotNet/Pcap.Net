@@ -1,6 +1,8 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Packets;
+using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -66,33 +68,39 @@ namespace PcapDotNet.Core.Test
 
             Random random = new Random();
 
-            byte ipV4TypeOfService = (byte)random.Next(256);
-            ushort ipV4Identification = (ushort)random.Next(65536);
-            byte ipV4Ttl = (byte)random.Next(256);
-            IpV4FragmentationFlags ipV4FragmentationFlags = (IpV4FragmentationFlags)(random.Next(4) << 13);
-            ushort ipV4FragmentationOffset = (ushort)random.Next(65536);
-            IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
-            const IpV4Protocol ipV4Protocol = IpV4Protocol.Tcp;
-            IpV4Address ipV4Source = new IpV4Address((uint)random.Next());
-            IpV4Address ipV4Destination = new IpV4Address((uint)random.Next());
-            IpV4Options ipV4Options = IpV4Options.None;
-
-            byte[] ipV4PayloadBuffer = new byte[random.Next(0, 50 * 1024)];
-            random.NextBytes(ipV4PayloadBuffer);
-            Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
-
-            Packet packet = PacketBuilder.IpV4(DateTime.Now,
-                                               ethernetSource, ethernetDestination, ethernetType,
-                                               ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
-                                               ipV4Source, ipV4Destination, ipV4Options,
-                                               ipV4Payload);
-
             using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
             {
-//                using (PacketDumpFile dumpFile = communicator.OpenDump(@"c:\wow.pcap"))
-//                {
-//                    dumpFile.Dump(packet);
-//                }
+                /*
+                using (PacketDumpFile dumpFile = communicator.OpenDump(@"c:\wow.pcap"))
+                {
+                    for (int i = 0; i != 1000; ++i)
+                    {
+                        byte ipV4TypeOfService = random.NextByte();
+                        ushort ipV4Identification = random.NextUShort();
+                        byte ipV4Ttl = random.NextByte();
+                        IpV4FragmentationFlags ipV4FragmentationFlags = random.NextEnum<IpV4FragmentationFlags>();
+                        ushort ipV4FragmentationOffset = random.NextUShort();
+                        IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
+                        IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
+                        IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
+                        IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
+                        IpV4Options ipV4Options = random.NextIpV4Options();
+
+                        byte[] ipV4PayloadBuffer = new byte[random.Next(0, 50 * 1024)];
+                        random.NextBytes(ipV4PayloadBuffer);
+                        Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
+
+                        Packet packet = PacketBuilder.IpV4(DateTime.Now,
+                                                           ethernetSource, ethernetDestination, ethernetType,
+                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
+                                                           ipV4Source, ipV4Destination, ipV4Options,
+                                                           ipV4Payload);
+
+                        dumpFile.Dump(packet);
+                        dumpFile.Flush();
+                    }
+                }
+                 */ 
             }
         }
     }

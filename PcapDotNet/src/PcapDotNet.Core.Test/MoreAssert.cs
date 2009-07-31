@@ -27,11 +27,16 @@ namespace PcapDotNet.Core.Test
                                                 "> Actual: <" + actual + ">.");
         }
 
-        public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual) where T : IComparable<T>
+        public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual, string message) where T : IComparable<T>
         {
             if (expectedMaximum.CompareTo(actual) < 0)
                 throw new AssertFailedException("Assert.IsSmallerOrEqual failed. Expected maximum: <" + expectedMaximum +
-                                                "> Actual: <" + actual + ">.");
+                                                "> Actual: <" + actual + ">. " + message);
+        }
+
+        public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual) where T : IComparable<T>
+        {
+            IsSmallerOrEqual(expectedMaximum, actual, string.Empty);
         }
 
         public static void IsInRange<T>(T expectedMinimum, T expectedMaximum, T actual) where T : IComparable<T>

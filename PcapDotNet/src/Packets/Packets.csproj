@@ -69,6 +69,22 @@
     <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="IpV4\IpV4Fragmentation.cs" />
     <Compile Include="IpV4\IpV4FragmentationFlags.cs" />
+    <Compile Include="IpV4\IpV4Option.cs" />
+    <Compile Include="IpV4\IpV4OptionEndOfOptionsList.cs" />
+    <Compile Include="IpV4\IpV4OptionLooseSourceRouting.cs" />
+    <Compile Include="IpV4\IpV4OptionNoOperation.cs" />
+    <Compile Include="IpV4\IpV4OptionRecordRoute.cs" />
+    <Compile Include="IpV4\IpV4OptionRoute.cs" />
+    <Compile Include="IpV4\IpV4Options.cs" />
+    <Compile Include="IpV4\IpV4OptionSecurity.cs" />
+    <Compile Include="IpV4\IpV4OptionSecurityLevel.cs" />
+    <Compile Include="IpV4\IpV4OptionStreamIdentifier.cs" />
+    <Compile Include="IpV4\IpV4OptionStrictSourceRouting.cs" />
+    <Compile Include="IpV4\IpV4OptionTimestamp.cs" />
+    <Compile Include="IpV4\IpV4OptionTimestampAndAddress.cs" />
+    <Compile Include="IpV4\IpV4OptionTimestampOnly.cs" />
+    <Compile Include="IpV4\IpV4OptionTimestampType.cs" />
+    <Compile Include="IpV4\IpV4OptionType.cs" />
     <Compile Include="IpV4\IpV4Protocol.cs" />
     <Compile Include="MoreByteArray.cs" />
     <Compile Include="Packet.cs" />
@@ -80,6 +96,12 @@
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">
+      <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
+      <Name>PcapDotNet.Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
