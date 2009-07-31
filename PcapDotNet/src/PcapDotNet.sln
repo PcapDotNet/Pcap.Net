@@ -13,15 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		PcapDotNet.vsmdi = PcapDotNet.vsmdi
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "Packets\Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets.Test", "Packets.Test\Packets.Test.csproj", "{6C7326EB-F230-4934-B74B-F99F87204E44}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.TestUtils", "PcapDotNet.TestUtils\PcapDotNet.TestUtils.csproj", "{540F21A8-CD9F-4288-ADCA-DB17027FF309}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets.TestUtils", "PcapDotNet.Packets.TestUtils\PcapDotNet.Packets.TestUtils.csproj", "{194D3B9A-AD99-44ED-991A-73C4A7EE550F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Base", "PcapDotNet.Base\PcapDotNet.Base.csproj", "{83E805C9-4D29-4E34-A27E-5A78690FBD2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets", "PcapDotNet.Packets\Packets.csproj", "{8A184AF5-E46C-482C-81A3-76D8CE290104}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packets.Test", "PcapDotNet.Packets.Test\Packets.Test.csproj", "{6C7326EB-F230-4934-B74B-F99F87204E44}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -38,21 +38,21 @@ Global
 		SccProjectUniqueName3 = PcapDotNet.Core.Test\\PcapDotNet.Core.Test.csproj
 		SccProjectName3 = PcapDotNet.Core.Test
 		SccLocalPath3 = PcapDotNet.Core.Test
-		SccProjectUniqueName4 = Packets\\Packets.csproj
-		SccProjectName4 = Packets
-		SccLocalPath4 = Packets
-		SccProjectUniqueName5 = Packets.Test\\Packets.Test.csproj
-		SccProjectName5 = Packets.Test
-		SccLocalPath5 = Packets.Test
-		SccProjectUniqueName6 = PcapDotNet.TestUtils\\PcapDotNet.TestUtils.csproj
-		SccProjectName6 = PcapDotNet.TestUtils
-		SccLocalPath6 = PcapDotNet.TestUtils
-		SccProjectUniqueName7 = PcapDotNet.Packets.TestUtils\\PcapDotNet.Packets.TestUtils.csproj
-		SccProjectName7 = PcapDotNet.Packets.TestUtils
-		SccLocalPath7 = PcapDotNet.Packets.TestUtils
-		SccProjectUniqueName8 = PcapDotNet.Base\\PcapDotNet.Base.csproj
-		SccProjectName8 = PcapDotNet.Base
-		SccLocalPath8 = PcapDotNet.Base
+		SccProjectUniqueName4 = PcapDotNet.TestUtils\\PcapDotNet.TestUtils.csproj
+		SccProjectName4 = PcapDotNet.TestUtils
+		SccLocalPath4 = PcapDotNet.TestUtils
+		SccProjectUniqueName5 = PcapDotNet.Packets.TestUtils\\PcapDotNet.Packets.TestUtils.csproj
+		SccProjectName5 = PcapDotNet.Packets.TestUtils
+		SccLocalPath5 = PcapDotNet.Packets.TestUtils
+		SccProjectUniqueName6 = PcapDotNet.Base\\PcapDotNet.Base.csproj
+		SccProjectName6 = PcapDotNet.Base
+		SccLocalPath6 = PcapDotNet.Base
+		SccProjectUniqueName7 = PcapDotNet.Packets\\Packets.csproj
+		SccProjectName7 = PcapDotNet.Packets
+		SccLocalPath7 = PcapDotNet.Packets
+		SccProjectUniqueName8 = PcapDotNet.Packets.Test\\Packets.Test.csproj
+		SccProjectName8 = PcapDotNet.Packets.Test
+		SccLocalPath8 = PcapDotNet.Packets.Test
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi
@@ -98,26 +98,6 @@ Global
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{045A6460-C260-4CDA-8030-FD19A0086C95}.Release|Win32.ActiveCfg = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Win32.ActiveCfg = Release|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Win32.ActiveCfg = Release|Any CPU
 		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{540F21A8-CD9F-4288-ADCA-DB17027FF309}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -148,6 +128,26 @@ Global
 		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{83E805C9-4D29-4E34-A27E-5A78690FBD2B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8A184AF5-E46C-482C-81A3-76D8CE290104}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6C7326EB-F230-4934-B74B-F99F87204E44}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

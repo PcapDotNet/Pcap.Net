@@ -48,7 +48,7 @@
     <Compile Include="IpV4AddressTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Packets\Packets.csproj">
+    <ProjectReference Include="..\PcapDotNet.Packets\Packets.csproj">
       <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
       <Name>Packets</Name>
     </ProjectReference>

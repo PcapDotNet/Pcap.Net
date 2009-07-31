@@ -53,10 +53,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Packets\Packets.csproj">
-      <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
-      <Name>Packets</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">
       <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
       <Name>PcapDotNet.Base</Name>
