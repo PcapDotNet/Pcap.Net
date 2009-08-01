@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets
 {
     public class IpV4OptionStrictSourceRouting : IpV4OptionRoute
     {
-        public IpV4OptionStrictSourceRouting(IpV4Address[] addresses, byte pointedAddressIndex)
+        public IpV4OptionStrictSourceRouting(IList<IpV4Address> addresses, byte pointedAddressIndex)
             : base(IpV4OptionType.StrictSourceRouting, addresses, pointedAddressIndex)
         {
         }

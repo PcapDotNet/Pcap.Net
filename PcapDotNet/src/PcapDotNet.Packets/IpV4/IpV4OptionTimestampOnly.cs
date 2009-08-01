@@ -1,14 +1,27 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
     public class IpV4OptionTimestampOnly : IpV4OptionTimestamp
     {
-        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params uint[] timestamps)
+        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, IList<uint> timestamps)
             : base(IpV4OptionTimestampType.TimestampOnly, overflow, pointedIndex)
         {
-            _timestamps = timestamps;
+            _timestamps = timestamps.AsReadOnly();
+        }
+
+        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params uint[] timestamps)
+            : this(overflow, pointedIndex, (IList<uint>)timestamps)
+        {
+        }
+
+        public ReadOnlyCollection<uint> Timestamps
+        {
+            get { return _timestamps; }
         }
 
         public override int GetHashCode()
@@ -28,7 +41,7 @@ namespace PcapDotNet.Packets
 
         protected override int ValuesLength
         {
-            get { return _timestamps.Length * 4; }
+            get { return _timestamps.Count * 4; }
         }
 
         protected override bool EqualValues(IpV4OptionTimestamp other)
@@ -42,6 +55,6 @@ namespace PcapDotNet.Packets
                 buffer.Write(ref offset, timestamp, Endianity.Big);
         }
 
-        private readonly uint[] _timestamps;
+        private readonly ReadOnlyCollection<uint> _timestamps;
     }
 }
