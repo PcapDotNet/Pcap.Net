@@ -55,6 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MoreIEnumerable.cs" />
+    <Compile Include="Tuple.cs" />
     <Compile Include="UInt24.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

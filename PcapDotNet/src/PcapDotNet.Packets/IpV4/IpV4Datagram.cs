@@ -136,7 +136,7 @@ namespace PcapDotNet.Packets
                                          IpV4Address source, IpV4Address destination,
                                          IpV4Options options, int payloadLength)
         {
-            int headerLength = HeaderMinimumLength + options.Length;
+            int headerLength = HeaderMinimumLength + options.BytesLength;
             buffer[offset + Offset.VersionAndHeaderLength] = (byte)((Version << 4) + headerLength / 4);
             buffer[offset + Offset.TypeOfService] = typeOfService;
             buffer.Write(offset + Offset.TotalLength, (ushort)(headerLength + payloadLength), Endianity.Big);

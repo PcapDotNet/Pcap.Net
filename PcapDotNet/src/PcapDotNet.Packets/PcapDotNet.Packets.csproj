@@ -72,9 +72,9 @@
     <Compile Include="IpV4\IpV4Fragmentation.cs" />
     <Compile Include="IpV4\IpV4FragmentationOptions.cs" />
     <Compile Include="IpV4\IpV4Option.cs" />
-    <Compile Include="IpV4\IpV4OptionEndOfOptionsList.cs" />
+    <Compile Include="IpV4\IpV4OptionComplex.cs" />
     <Compile Include="IpV4\IpV4OptionLooseSourceRouting.cs" />
-    <Compile Include="IpV4\IpV4OptionNoOperation.cs" />
+    <Compile Include="IpV4\IpV4OptionSimple.cs" />
     <Compile Include="IpV4\IpV4OptionRecordRoute.cs" />
     <Compile Include="IpV4\IpV4OptionRoute.cs" />
     <Compile Include="IpV4\IpV4Options.cs" />

@@ -11,8 +11,8 @@ namespace PcapDotNet.Base
 
         private UInt24(int value)
         {
-            _mostSignificant = (byte)((value >> 16) & 0x00FF);
-            _leastSignificant = (ushort)(value & 0x0000FFFF);
+            _mostSignificant = (ushort)(value >> 8);
+            _leastSignificant = (byte)value;
         }
 
         public static explicit operator UInt24(int value)
@@ -25,15 +25,10 @@ namespace PcapDotNet.Base
             return value.ToInt();
         }
 
-        private int ToInt()
-        {
-            return _mostSignificant << 16 + _leastSignificant;
-        }
-
-
         public bool Equals(UInt24 other)
         {
-            return other._mostSignificant == _mostSignificant && other._leastSignificant == _leastSignificant;
+            return _mostSignificant == other._mostSignificant &&
+                   _leastSignificant == other._leastSignificant;
         }
 
         public override bool Equals(object obj)
@@ -57,7 +52,17 @@ namespace PcapDotNet.Base
             return this;
         }
 
-        private readonly byte _mostSignificant;
-        private readonly ushort _leastSignificant;
+        public override string ToString()
+        {
+            return ((int)this).ToString();
+        }
+
+        private int ToInt()
+        {
+            return (_mostSignificant << 8) + _leastSignificant;
+        }
+
+        private readonly ushort _mostSignificant;
+        private readonly byte _leastSignificant;
     }
 }

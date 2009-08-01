@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets
                                   IpV4Options ipV4Options,
                                   Datagram ipV4Payload)
         {
-            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.Length;
+            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
             byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + ipV4Payload.Length];
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, ethernetType);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,

@@ -7,11 +7,11 @@ namespace PcapDotNet.Packets
         {
         }
 
-        internal static IpV4OptionLooseSourceRouting ReadOptionLooseSourceRouting(byte[] buffer, ref int offset, int length)
+        internal static IpV4OptionLooseSourceRouting ReadOptionLooseSourceRouting(byte[] buffer, ref int offset, byte valueLength)
         {
             IpV4Address[] addresses;
             byte pointedAddressIndex;
-            if (!TryRead(out addresses, out pointedAddressIndex, buffer, ref offset, length))
+            if (!TryRead(out addresses, out pointedAddressIndex, buffer, ref offset, valueLength))
                 return null;
             return new IpV4OptionLooseSourceRouting(addresses, pointedAddressIndex);
         }

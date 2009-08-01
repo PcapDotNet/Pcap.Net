@@ -2,9 +2,10 @@ using System;
 
 namespace PcapDotNet.Packets
 {
-    public class IpV4OptionStreamIdentifier : IpV4Option, IEquatable<IpV4OptionStreamIdentifier>
+    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IEquatable<IpV4OptionStreamIdentifier>
     {
         public const int OptionLength = 4;
+        public const int OptionvalueLength = OptionLength - OptionHeaderLength;
 
         public IpV4OptionStreamIdentifier(ushort identifier)
             : base(IpV4OptionType.StreamIdentifier)
@@ -45,13 +46,9 @@ namespace PcapDotNet.Packets
                    Identifier.GetHashCode();
         }
 
-        internal static IpV4OptionStreamIdentifier ReadOptionStreamIdentifier(byte[] buffer, ref int offset, int length)
+        internal static IpV4OptionStreamIdentifier ReadOptionStreamIdentifier(byte[] buffer, ref int offset, byte valueLength)
         {
-            if (length < OptionLength - 1)
-                return null;
-
-            byte optionLength = buffer[offset++];
-            if (optionLength != OptionLength)
+            if (valueLength != OptionHeaderLength)
                 return null;
 
             ushort identifier = buffer.ReadUShort(ref offset, Endianity.Big);

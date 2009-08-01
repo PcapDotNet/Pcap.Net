@@ -73,6 +73,17 @@ namespace PcapDotNet.Packets
             return value;
         }
 
+
+        public static IpV4Address ReadIpV4Address(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return new IpV4Address(buffer.ReadUInt(offset, endianity));
+        }
+
+        public static IpV4Address ReadIpV4Address(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            return new IpV4Address(buffer.ReadUInt(ref offset, endianity));
+        }
+
         public static void Write(this byte[] buffer, int offset, short value, Endianity endianity)
         {
             if (IsWrongEndianity(endianity))
@@ -129,14 +140,18 @@ namespace PcapDotNet.Packets
 
         private static UInt24 HostToNetworkOrder(UInt24 value)
         {
-            UInt24 result = value;
+            UInt24 result;
+
             unsafe
             {
-                UInt24* ptr = &result;
-                byte* bytePtr = (byte*)ptr;
-                byte tmp = bytePtr[0];
-                bytePtr[0] = bytePtr[2];
-                bytePtr[2] = tmp;
+                UInt24* resultPtr = &result;
+                byte* resultBytePtr = (byte*)resultPtr;
+                UInt24* valuePtr = &value;
+
+                byte* valueBytePtr = (byte*)valuePtr;
+                resultBytePtr[0] = valueBytePtr[2];
+                resultBytePtr[1] = valueBytePtr[1];
+                resultBytePtr[2] = valueBytePtr[0];
             }
 
             return result;
