@@ -94,7 +94,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void SimplePacketTest()
+        public void RandomIpV4Test()
         {
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
@@ -114,7 +114,6 @@ namespace PcapDotNet.Packets.Test
                 IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
                 IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
                 IpV4Options ipV4Options = random.NextIpV4Options();
-//                IpV4Options ipV4Options = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 1, 2, (UInt24)123456));
 
                 byte[] ipV4PayloadBuffer = new byte[random.Next(0, 50 * 1024)];
                 random.NextBytes(ipV4PayloadBuffer);

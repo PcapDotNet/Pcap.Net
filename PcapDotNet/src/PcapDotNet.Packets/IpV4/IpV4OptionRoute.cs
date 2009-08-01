@@ -52,7 +52,7 @@ namespace PcapDotNet.Packets
             buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedAddressIndex * 4);
             for (int i = 0; i != _addresses.Length; ++i)
-                buffer.Write(ref offset, _addresses[i].ToValue(), Endianity.Big);
+                buffer.Write(ref offset, _addresses[i], Endianity.Big);
         }
 
         protected static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,

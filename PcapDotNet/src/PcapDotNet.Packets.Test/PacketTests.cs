@@ -4,12 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for EthernetDatagramTests
+    /// Summary description for PacketTests
     /// </summary>
     [TestClass]
-    public class EthernetDatagramTests
+    public class PacketTests
     {
-        public EthernetDatagramTests()
+        public PacketTests()
         {
             //
             // TODO: Add constructor logic here
@@ -57,24 +57,9 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void EthernetDatagramTest()
+        public void RandomPacketTest()
         {
-            MacAddress ethernetSource = new MacAddress("1:2:3:4:5:6");
-            MacAddress ethernetDestination = new MacAddress("7:8:9:10:11:12");
-            const EthernetType ethernetType = EthernetType.IpV4;
-            Datagram ethernetPayload = new Datagram(new byte[] {1, 2, 3, 4, 5});
-            Packet goodPacket = PacketBuilder.Ethernet(DateTime.Now,
-                                                       ethernetSource, ethernetDestination,
-                                                       ethernetType,
-                                                       ethernetPayload);
-            Packet badPacket = new Packet(new byte[]{1,2,3,4,5}, DateTime.Now, new DataLink(DataLinkKind.Ethernet));
-
-            Assert.IsTrue(goodPacket.Ethernet.IsValid);
-            Assert.AreEqual(ethernetSource, goodPacket.Ethernet.Source);
-            Assert.AreEqual(ethernetDestination, goodPacket.Ethernet.Destination);
-            Assert.AreEqual(ethernetType, goodPacket.Ethernet.EtherType);
-
-            Assert.IsFalse(badPacket.Ethernet.IsValid);
+            Random random = new Random();
         }
     }
 }

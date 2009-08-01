@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets
         {
             foreach (KeyValuePair<IpV4Address, TimeSpan> addressAndTimestamp in _addressesAndTimestamps)
             {
-                buffer.Write(ref offset, addressAndTimestamp.Key.ToValue(), Endianity.Big);
+                buffer.Write(ref offset, addressAndTimestamp.Key, Endianity.Big);
                 buffer.Write(ref offset, (uint)addressAndTimestamp.Value.TotalMilliseconds, Endianity.Big);
             }
         }

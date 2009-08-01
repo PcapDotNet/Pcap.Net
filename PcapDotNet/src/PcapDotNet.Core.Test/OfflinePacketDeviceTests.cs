@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -67,7 +68,7 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPackets = 10;
 
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+            Packet expectedPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
 
             using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket))
             {
@@ -176,7 +177,7 @@ namespace PcapDotNet.Core.Test
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
             {
-                communicator.SendPacket(MoreRandom.BuildRandomPacket(100));
+                communicator.SendPacket(_random.NextEthernet(100));
             }
         }
 
@@ -203,7 +204,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void SetSamplingMethodOneEveryNTest()
         {
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(100);
+            Packet expectedPacket = _random.NextEthernet(100);
             using (PacketCommunicator communicator = OpenOfflineDevice(101, expectedPacket))
             {
                 communicator.SetSamplingMethod(new SamplingMethodOneEveryCount(10));
@@ -226,7 +227,7 @@ namespace PcapDotNet.Core.Test
         {
             const int NumPackets = 10;
             
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(100);
+            Packet expectedPacket = _random.NextEthernet(100);
             using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket, TimeSpan.FromSeconds(1)))
             {
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(2)));
@@ -251,7 +252,7 @@ namespace PcapDotNet.Core.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void DumpToBadFileTest()
         {
-            OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100), TimeSpan.Zero, "??");
+            OpenOfflineDevice(10, _random.NextEthernet(100), TimeSpan.Zero, "??");
         }
 
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
@@ -264,7 +265,7 @@ namespace PcapDotNet.Core.Test
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 100);
+            Packet expectedPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
 
             using (PacketCommunicator communicator = OpenOfflineDevice(numPacketsToSend, expectedPacket))
             {
@@ -292,7 +293,7 @@ namespace PcapDotNet.Core.Test
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
-            Packet expectedPacket = MoreRandom.BuildRandomPacket(SourceMac, DestinationMac, 24);
+            Packet expectedPacket = _random.NextEthernet(24, SourceMac, DestinationMac);
 
             using (PacketCommunicator communicator = OpenOfflineDevice(numPacketsToSend, expectedPacket))
             {
@@ -321,7 +322,7 @@ namespace PcapDotNet.Core.Test
 
         public static PacketCommunicator OpenOfflineDevice()
         {
-            return OpenOfflineDevice(10, MoreRandom.BuildRandomPacket(100));
+            return OpenOfflineDevice(10, _random.NextEthernet(100));
         }
 
 
@@ -384,5 +385,7 @@ namespace PcapDotNet.Core.Test
                 throw;
             }
         }
+
+        private static Random _random = new Random();
     }
 }

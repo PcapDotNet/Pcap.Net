@@ -4,12 +4,6 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
-    public enum Endianity : byte
-    {
-        Small,
-        Big
-    }
-
     public static class MoreByteArray
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "short")]
@@ -31,7 +25,7 @@ namespace PcapDotNet.Packets
         public static ushort ReadUShort(this byte[] buffer, ref int offset, Endianity endianity)
         {
             ushort result = ReadUShort(buffer, offset, endianity);
-            offset += 2;
+            offset += sizeof(ushort);
             return result;
         }
 
@@ -46,21 +40,7 @@ namespace PcapDotNet.Packets
         public static UInt24 ReadUInt24(this byte[] buffer, ref int offset, Endianity endianity)
         {
             UInt24 result = ReadUInt24(buffer, offset, endianity);
-            offset += 3;
-            return result;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
-        public static uint ReadUInt(this byte[] buffer, int offset, Endianity endianity)
-        {
-            return (uint)ReadInt(buffer, offset, endianity);
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
-        public static uint ReadUInt(this byte[] buffer, ref int offset, Endianity endianity)
-        {
-            uint result = ReadUInt(buffer, offset, endianity);
-            offset += 4;
+            offset += UInt24.SizeOf;
             return result;
         }
 
@@ -73,6 +53,44 @@ namespace PcapDotNet.Packets
             return value;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
+        public static uint ReadUInt(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return (uint)ReadInt(buffer, offset, endianity);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
+        public static uint ReadUInt(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            uint result = ReadUInt(buffer, offset, endianity);
+            offset += sizeof(int);
+            return result;
+        }
+
+        public static UInt48 ReadUInt48(this byte[] buffer, int offset, Endianity endianity)
+        {
+            UInt48 value = ReadUInt48(buffer, offset);
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            return value;
+        }
+
+        public static UInt48 ReadUInt48(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            UInt48 result = buffer.ReadUInt48(offset, endianity);
+            offset += UInt48.SizeOf;
+            return result;
+        }
+
+        public static MacAddress ReadMacAddress(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return new MacAddress(buffer.ReadUInt48(offset, endianity));
+        }
+
+        public static MacAddress ReadMacAddress(this byte[] buffer, ref int offset, Endianity endianity)
+        {
+            return new MacAddress(buffer.ReadUInt48(ref offset, endianity));
+        }
 
         public static IpV4Address ReadIpV4Address(this byte[] buffer, int offset, Endianity endianity)
         {
@@ -99,7 +117,7 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, ref int offset, ushort value, Endianity endianity)
         {
             Write(buffer, offset, value, endianity);
-            offset += 2;
+            offset += sizeof(ushort);
         }
 
         public static void Write(this byte[] buffer, int offset, UInt24 value, Endianity endianity)
@@ -112,7 +130,7 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, ref int offset, UInt24 value, Endianity endianity)
         {
             Write(buffer, offset, value, endianity);
-            offset += 3;
+            offset += UInt24.SizeOf;
         }
 
         public static void Write(this byte[] buffer, int offset, int value, Endianity endianity)
@@ -130,7 +148,40 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, ref int offset, uint value, Endianity endianity)
         {
             Write(buffer, offset, value, endianity);
-            offset += 4;
+            offset += sizeof(uint);
+        }
+
+        public static void Write(this byte[] buffer, int offset, UInt48 value, Endianity endianity)
+        {
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            Write(buffer, offset, value);
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, UInt48 value, Endianity endianity)
+        {
+            Write(buffer, offset, value, endianity);
+            offset += UInt48.SizeOf;
+        }
+
+        public static void Write(this byte[] buffer, int offset, MacAddress value, Endianity endianity)
+        {
+            buffer.Write(offset, value.ToValue(), endianity);
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, MacAddress value, Endianity endianity)
+        {
+            buffer.Write(ref offset, value.ToValue(), endianity);
+        }
+
+        public static void Write(this byte[] buffer, int offset, IpV4Address value, Endianity endianity)
+        {
+            buffer.Write(offset, value.ToValue(), endianity);
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, IpV4Address value, Endianity endianity)
+        {
+            buffer.Write(ref offset, value.ToValue(), endianity);
         }
 
         private static bool IsWrongEndianity(Endianity endianity)
@@ -146,12 +197,36 @@ namespace PcapDotNet.Packets
             {
                 UInt24* resultPtr = &result;
                 byte* resultBytePtr = (byte*)resultPtr;
-                UInt24* valuePtr = &value;
 
+                UInt24* valuePtr = &value;
                 byte* valueBytePtr = (byte*)valuePtr;
+
                 resultBytePtr[0] = valueBytePtr[2];
                 resultBytePtr[1] = valueBytePtr[1];
                 resultBytePtr[2] = valueBytePtr[0];
+            }
+
+            return result;
+        }
+
+        private static UInt48 HostToNetworkOrder(UInt48 value)
+        {
+            UInt48 result;
+
+            unsafe
+            {
+                UInt48* resultPtr = &result;
+                byte* resultBytePtr = (byte*)resultPtr;
+                
+                UInt48* valuePtr = &value;
+                byte* valueBytePtr = (byte*)valuePtr;
+
+                resultBytePtr[0] = valueBytePtr[5];
+                resultBytePtr[1] = valueBytePtr[4];
+                resultBytePtr[2] = valueBytePtr[3];
+                resultBytePtr[3] = valueBytePtr[2];
+                resultBytePtr[4] = valueBytePtr[1];
+                resultBytePtr[5] = valueBytePtr[0];
             }
 
             return result;
@@ -190,6 +265,17 @@ namespace PcapDotNet.Packets
             }
         }
 
+        private static UInt48 ReadUInt48(byte[] buffer, int offset)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    return *((UInt48*)ptr);
+                }
+            }
+        }
+
         private static void Write(byte[] buffer, int offset, short value)
         {
             unsafe
@@ -219,6 +305,17 @@ namespace PcapDotNet.Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     *((int*)ptr) = value;
+                }
+            }
+        }
+
+        private static void Write(byte[] buffer, int offset, UInt48 value)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    *((UInt48*)ptr) = value;
                 }
             }
         }

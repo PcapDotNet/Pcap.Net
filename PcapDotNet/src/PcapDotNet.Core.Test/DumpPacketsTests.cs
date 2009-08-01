@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
@@ -68,9 +69,9 @@ namespace PcapDotNet.Core.Test
 
             Random random = new Random();
 
+            /*
             using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
             {
-                /*
                 using (PacketDumpFile dumpFile = communicator.OpenDump(@"c:\wow.pcap"))
                 {
                     for (int i = 0; i != 1000; ++i)
@@ -91,17 +92,17 @@ namespace PcapDotNet.Core.Test
                         Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
                         Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                           ethernetSource, ethernetDestination, ethernetType,
-                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
-                                                           ipV4Source, ipV4Destination, ipV4Options,
-                                                           ipV4Payload);
+                                                                   ethernetSource, ethernetDestination, ethernetType,
+                                                                   ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
+                                                                   ipV4Source, ipV4Destination, ipV4Options,
+                                                                   ipV4Payload);
 
                         dumpFile.Dump(packet);
                         dumpFile.Flush();
                     }
                 }
-                 */ 
             }
+            */ 
         }
     }
 }

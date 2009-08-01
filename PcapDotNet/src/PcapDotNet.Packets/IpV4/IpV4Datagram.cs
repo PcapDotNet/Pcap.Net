@@ -145,8 +145,8 @@ namespace PcapDotNet.Packets
             buffer[offset + Offset.Ttl] = ttl;
             buffer[offset + Offset.Protocol] = (byte)protocol;
 
-            buffer.Write(offset + Offset.Source, source.ToValue(), Endianity.Big);
-            buffer.Write(offset + Offset.Destination, destination.ToValue(), Endianity.Big);
+            buffer.Write(offset + Offset.Source, source, Endianity.Big);
+            buffer.Write(offset + Offset.Destination, destination, Endianity.Big);
             options.Write(buffer, offset + Offset.Options);
 
             buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
