@@ -100,5 +100,14 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(address, buffer.ReadMacAddress(ref offset, Endianity.Small));
             Assert.AreEqual(MacAddress.SizeOf, offset);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MacAddressBadStringErrorTest()
+        {
+            MacAddress address = new MacAddress("12:34:56:78");
+            Assert.IsNotNull(address);
+            Assert.Fail();
+        }
     }
 }

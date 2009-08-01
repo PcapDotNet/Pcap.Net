@@ -62,6 +62,7 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(DataLinkKind.Ethernet.ToString(), DataLink.Ethernet.ToString());
             Assert.AreEqual(DataLink.Ethernet.GetHashCode(), DataLink.Ethernet.GetHashCode());
             Assert.IsTrue(DataLink.Ethernet == DataLink.Ethernet);
+            Assert.IsFalse(DataLink.Ethernet != DataLink.Ethernet);
         }
     }
 }

@@ -28,9 +28,9 @@ namespace PcapDotNet.Packets
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   _addressesAndTimestamps.Aggregate(0, (value, pair) => value ^
-                                                                         pair.Key.GetHashCode() ^
-                                                                         (int)pair.Value);
+                   TimedRoute.Aggregate(0, (value, pair) => value ^
+                                                            pair.Key.GetHashCode() ^
+                                                            (int)pair.Value);
         }
 
         internal static IpV4OptionTimestampAndAddress Read(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
@@ -50,17 +50,17 @@ namespace PcapDotNet.Packets
 
         protected override int ValuesLength
         {
-            get { return _addressesAndTimestamps.Count * 2 * 4; }
+            get { return TimedRoute.Count * (IpV4Address.SizeOf + sizeof(uint)); }
         }
 
         protected override bool EqualValues(IpV4OptionTimestamp other)
         {
-            return _addressesAndTimestamps.SequenceEqual(((IpV4OptionTimestampAndAddress)other)._addressesAndTimestamps);
+            return TimedRoute.SequenceEqual(((IpV4OptionTimestampAndAddress)other).TimedRoute);
         }
 
         protected override void WriteValues(byte[] buffer, ref int offset)
         {
-            foreach (KeyValuePair<IpV4Address, uint> addressAndTimestamp in _addressesAndTimestamps)
+            foreach (KeyValuePair<IpV4Address, uint> addressAndTimestamp in TimedRoute)
             {
                 buffer.Write(ref offset, addressAndTimestamp.Key, Endianity.Big);
                 buffer.Write(ref offset, addressAndTimestamp.Value, Endianity.Big);

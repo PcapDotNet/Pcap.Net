@@ -75,9 +75,12 @@ namespace PcapDotNet.Packets.Test
 
                 if (datagram.Length != 0)
                 {
+                    Assert.AreNotEqual(datagram, Datagram.Empty);
                     Assert.AreNotEqual(datagram, random.NextDatagram(datagram.Length));
                     Assert.AreNotEqual(datagram.GetHashCode(), random.NextDatagram(datagram.Length).GetHashCode());
                 }
+                else
+                    Assert.AreEqual(datagram, Datagram.Empty);
             }
         }
     }

@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.TestUtils
                                 break;
 
                             case IpV4OptionType.RecordRoute:
-                                option = new IpV4OptionRecordRoute(addresses, pointedAddressIndex);
+                                option = new IpV4OptionRecordRoute(pointedAddressIndex, addresses);
                                 break;
                         }
                         break;
