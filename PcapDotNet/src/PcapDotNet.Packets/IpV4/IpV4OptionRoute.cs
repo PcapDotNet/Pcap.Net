@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets
 
         public override int Length
         {
-            get { return OptionMinimumLength + 4 * _addresses.Count; }
+            get { return OptionMinimumLength + IpV4Address.SizeOf * Route.Count; }
         }
 
         public override bool IsAppearsAtMostOnce
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets
 
             return Equivalent(other) &&
                    PointedAddressIndex == other.PointedAddressIndex &&
-                   _addresses.SequenceEqual(other._addresses);
+                   Route.SequenceEqual(other.Route);
         }
 
         public override bool Equals(IpV4Option other)
@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets
         {
             return base.GetHashCode() ^
                    PointedAddressIndex ^
-                   _addresses.Aggregate(0, (value, address) => value ^ address.GetHashCode());
+                   Route.Aggregate(0, (value, address) => value ^ address.GetHashCode());
         }
 
         public ReadOnlyCollection<IpV4Address> Route
@@ -59,8 +59,8 @@ namespace PcapDotNet.Packets
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedAddressIndex * 4);
-            for (int i = 0; i != _addresses.Count; ++i)
-                buffer.Write(ref offset, _addresses[i], Endianity.Big);
+            foreach (IpV4Address address in Route)
+                buffer.Write(ref offset, address, Endianity.Big);
         }
 
         protected static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.TestUtils;
@@ -176,8 +177,72 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(expected, actual);
             Assert.IsTrue(expected.IsValid);
             Assert.IsTrue(actual.IsValid);
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IpV4OptionTimestampOverflowErrorTest()
+        {
+            Random random = new Random();
+            IpV4Option option = new IpV4OptionTimestampOnly(random.NextByte(IpV4OptionTimestamp.OverflowMaxValue + 1, byte.MaxValue + 1), 0);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IpV4OptionTimestampPointedIndexErrorTest()
+        {
+            Random random = new Random();
+            IpV4Option option = new IpV4OptionTimestampOnly(0, random.NextByte(IpV4OptionTimestamp.PointedIndexMaxValue + 1, byte.MaxValue + 1));
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IpV4OptionRoutePointedAddressIndexErrorTest()
+        {
+            Random random = new Random();
+            IpV4Option option = new IpV4OptionRecordRoute(random.NextByte(IpV4OptionRecordRoute.PointedAddressIndexMaxValue + 1, byte.MaxValue + 1));
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionsTooLongErrorTest()
+        {
+            IpV4Options options = new IpV4Options(new IpV4OptionTimestampOnly(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+            Assert.IsNotNull(options);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionSimpleErrorTest()
+        {
+            IpV4Option option = new IpV4OptionSimple(IpV4OptionType.StrictSourceRouting);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4FragmentationOffsetErrorTest()
+        {
+            IpV4Fragmentation fragmentation = new IpV4Fragmentation(IpV4FragmentationOptions.None, 2);
+            Assert.IsNotNull(fragmentation);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4FragmentationOptionsErrorTest()
+        {
+            IpV4Fragmentation fragmentation = new IpV4Fragmentation((IpV4FragmentationOptions)12345, 8);
+            Assert.IsNotNull(fragmentation);
+            Assert.Fail();
         }
 
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)

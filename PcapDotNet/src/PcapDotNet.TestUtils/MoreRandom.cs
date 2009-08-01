@@ -13,6 +13,11 @@ namespace PcapDotNet.TestUtils
             return random.Next() % 2 == 0;
         }
 
+        public static byte NextByte(this Random random, int minValue, int maxValue)
+        {
+            return (byte)random.Next(minValue, maxValue);
+        }
+
         public static byte NextByte(this Random random, int maxValue)
         {
             return (byte)random.Next(maxValue);
