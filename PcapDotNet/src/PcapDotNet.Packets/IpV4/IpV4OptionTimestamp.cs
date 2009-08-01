@@ -6,6 +6,7 @@ namespace PcapDotNet.Packets
     {
         public const int OptionMinimumLength = 4;
         public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
+        public const int OverflowMaxValue = 15;
         public const int PointedIndexMaxValue = byte.MaxValue / 4 - 1;
 
         public IpV4OptionTimestampType TimestampType
@@ -105,6 +106,12 @@ namespace PcapDotNet.Packets
         protected IpV4OptionTimestamp(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex)
             : base(IpV4OptionType.InternetTimestamp)
         {
+            if (overflow > OverflowMaxValue)
+                throw new ArgumentOutOfRangeException("overflow", overflow, "Maximum value is " + OverflowMaxValue);
+
+            if (pointedIndex > PointedIndexMaxValue)
+                throw new ArgumentOutOfRangeException("pointedIndex", pointedIndex, "Maximum value is " + PointedIndexMaxValue);
+
             _timestampType = timestampType;
             _overflow = overflow;
             _pointedIndex = pointedIndex;
@@ -115,11 +122,6 @@ namespace PcapDotNet.Packets
         protected abstract bool EqualValues(IpV4OptionTimestamp other);
 
         protected abstract void WriteValues(byte[] buffer, ref int offset);
-
-        protected static TimeSpan ReadTimeOfDay(byte[] buffer, ref int offset)
-        {
-            return TimeSpan.FromMilliseconds(buffer.ReadUInt(ref offset, Endianity.Big));
-        }
 
         private readonly IpV4OptionTimestampType _timestampType;
         private readonly byte _overflow;

@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets
 {
     public class IpV4Options : ReadOnlyCollection<IpV4Option>, IEquatable<IpV4Options>
     {
-        public const int MaximumLength = IpV4Datagram.HeaderMaximumLength - IpV4Datagram.HeaderMinimumLength;
+        public const int MaximumBytesLength = IpV4Datagram.HeaderMaximumLength - IpV4Datagram.HeaderMinimumLength;
 
         public static IpV4Options None
         {
@@ -18,6 +18,8 @@ namespace PcapDotNet.Packets
         public IpV4Options(IList<IpV4Option> options)
             : this(EndOptions(options), true)
         {
+            if (BytesLength > MaximumBytesLength)
+                throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + MaximumBytesLength, "options");
         }
 
         public IpV4Options(params IpV4Option[] options)

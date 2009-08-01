@@ -70,7 +70,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IpV4Options NextIpV4Options(this Random random)
         {
-            int optionsLength = random.Next(IpV4Options.MaximumLength) / 4 * 4;
+            int optionsLength = random.Next(IpV4Options.MaximumBytesLength) / 4 * 4;
             List<IpV4Option> options = new List<IpV4Option>();
             while (optionsLength > 0)
             {
@@ -135,7 +135,7 @@ namespace PcapDotNet.Packets.TestUtils
                             break;
 
                         IpV4OptionTimestampType timestampType = random.NextEnum<IpV4OptionTimestampType>();
-                        byte overflow = random.NextByte(16);
+                        byte overflow = random.NextByte(IpV4OptionTimestamp.OverflowMaxValue + 1);
                         byte pointedIndex;
                         if (random.NextBool())
                             pointedIndex = random.NextByte(IpV4OptionTimestamp.PointedIndexMaxValue + 1);
@@ -146,17 +146,17 @@ namespace PcapDotNet.Packets.TestUtils
                         {
                             case IpV4OptionTimestampType.TimestampOnly:
                                 int numTimestamps = random.Next((optionsLength - IpV4OptionTimestamp.OptionMinimumLength) / 4 + 1);
-                                TimeSpan[] timestamps = new TimeSpan[numTimestamps];
+                                uint[] timestamps = new uint[numTimestamps];
                                 for (int i = 0; i != numTimestamps; ++i)
-                                    timestamps[i] = TimeSpan.FromMilliseconds((uint)random.NextDateTime().TimeOfDay.TotalMilliseconds);
+                                    timestamps[i] = random.NextUInt();
                                 option = new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
                                 break;
 
                             case IpV4OptionTimestampType.AddressAndTimestamp:
                                 int numPairs = random.Next((optionsLength - IpV4OptionTimestamp.OptionMinimumLength) / 8 + 1);
-                                KeyValuePair<IpV4Address, TimeSpan>[] pairs = new KeyValuePair<IpV4Address, TimeSpan>[numPairs];
+                                KeyValuePair<IpV4Address, uint>[] pairs = new KeyValuePair<IpV4Address, uint>[numPairs];
                                 for (int i = 0; i != numPairs; ++i)
-                                    pairs[i] = new KeyValuePair<IpV4Address, TimeSpan>(random.NextIpV4Address(), TimeSpan.FromMilliseconds((uint)random.NextDateTime().TimeOfDay.TotalMilliseconds));
+                                    pairs[i] = new KeyValuePair<IpV4Address, uint>(random.NextIpV4Address(), random.NextUInt());
 
                                 option = new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, pairs);
                                 break;
