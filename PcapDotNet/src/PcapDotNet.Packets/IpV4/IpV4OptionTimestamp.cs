@@ -53,6 +53,14 @@ namespace PcapDotNet.Packets
             return Equals(other as IpV4OptionTimestamp);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   ((byte)TimestampType << 16) ^
+                   (Overflow << 8) ^
+                   PointedIndex;
+        }
+
         internal static IpV4OptionTimestamp ReadOptionTimestamp(byte[] buffer, ref int offset, int length)
         {
             if (length < OptionMinimumLength - 1)

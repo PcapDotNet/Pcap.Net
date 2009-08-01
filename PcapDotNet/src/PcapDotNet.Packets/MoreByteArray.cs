@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets
             return (ushort)ReadShort(buffer, offset, endianity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ushort")]
         public static ushort ReadUShort(this byte[] buffer, ref int offset, Endianity endianity)
         {
             ushort result = ReadUShort(buffer, offset, endianity);
@@ -55,6 +56,7 @@ namespace PcapDotNet.Packets
             return (uint)ReadInt(buffer, offset, endianity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
         public static uint ReadUInt(this byte[] buffer, ref int offset, Endianity endianity)
         {
             uint result = ReadUInt(buffer, offset, endianity);

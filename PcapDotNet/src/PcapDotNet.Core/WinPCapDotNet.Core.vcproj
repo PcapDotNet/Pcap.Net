@@ -93,7 +93,7 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027"
+				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Reliability#CA2004"
 				EnableFxCop="true"
 				Dictionaries="CodeAnalysisDictionary.xml"
 			/>
@@ -103,7 +103,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Build Release Files"
-				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml"
+				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -186,7 +186,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Build Release Files"
-				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml"
+				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -208,7 +208,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{8A184AF5-E46C-482C-81A3-76D8CE290104}"
-			RelativePathToProject=".\Packets\Packets.csproj"
+			RelativePathToProject=".\PcapDotNet.Packets\PcapDotNet.Packets.csproj"
 		/>
 	</References>
 	<Files>

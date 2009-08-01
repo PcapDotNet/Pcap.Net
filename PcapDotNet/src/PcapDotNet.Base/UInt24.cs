@@ -30,8 +30,34 @@ namespace PcapDotNet.Base
             return _mostSignificant << 16 + _leastSignificant;
         }
 
+
+        public bool Equals(UInt24 other)
+        {
+            return other._mostSignificant == _mostSignificant && other._leastSignificant == _leastSignificant;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is UInt24) &&
+                   Equals((UInt24)obj);
+        }
+
+        public static bool operator ==(UInt24 value1, UInt24 value2)
+        {
+            return value1.Equals(value2);
+        }
+
+        public static bool operator !=(UInt24 value1, UInt24 value2)
+        {
+            return !(value1 == value2);
+        }
+
+        public override int GetHashCode()
+        {
+            return this;
+        }
+
         private readonly byte _mostSignificant;
         private readonly ushort _leastSignificant;
-
     }
 }

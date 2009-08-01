@@ -12,6 +12,14 @@ namespace PcapDotNet.Packets
             _addressesAndTimestamps = addressesAndTimestamps;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   _addressesAndTimestamps.Aggregate(0, (value, pair) => value ^
+                                                                         pair.Key.GetHashCode() ^
+                                                                         pair.Value.GetHashCode());
+        }
+
         internal static IpV4OptionTimestampAndAddress Read(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
         {
             if (numValues % 2 != 0)

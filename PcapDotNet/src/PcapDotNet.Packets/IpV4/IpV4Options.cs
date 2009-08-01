@@ -75,6 +75,12 @@ namespace PcapDotNet.Packets
             return Equals(obj as IpV4Options);
         }
 
+        public override int GetHashCode()
+        {
+            return Length.GetHashCode() ^
+                   _options.Aggregate(0, (value, option) => value ^ option.GetHashCode());
+        }
+
         internal void Write(byte[] buffer, int offset)
         {
             int offsetEnd = offset + Length;

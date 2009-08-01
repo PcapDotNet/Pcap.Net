@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(IpV4Datagram.HeaderMinimumLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
             Assert.AreEqual(0, packet.Ethernet.IpV4.TypeOfService, "IP TypeOfService");
             Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
-            Assert.AreEqual(new IpV4Fragmentation(IpV4FragmentationFlags.DontFragment, 0), packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+            Assert.AreEqual(new IpV4Fragmentation(IpV4FragmentationOptions.DoNotFragment, 0), packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
             Assert.AreEqual(128, packet.Ethernet.IpV4.Ttl, "IP Ttl");
             Assert.AreEqual(IpV4Protocol.Tcp, packet.Ethernet.IpV4.Protocol, "IP Protocol");
             Assert.AreEqual(0x9010, packet.Ethernet.IpV4.HeaderChecksum, "IP HeaderChecksum");
@@ -106,9 +106,9 @@ namespace PcapDotNet.Packets.Test
                 byte ipV4TypeOfService = random.NextByte();
                 ushort ipV4Identification = random.NextUShort();
                 byte ipV4Ttl = random.NextByte();
-                IpV4FragmentationFlags ipV4FragmentationFlags = random.NextEnum<IpV4FragmentationFlags>();
+                IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
                 ushort ipV4FragmentationOffset = random.NextUShort();
-                IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
+                IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
                 IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
                 IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
                 IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.Test
                 random.NextBytes(ipV4PayloadBuffer);
                 Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
-                Packet packet = PacketBuilder.IpV4(DateTime.Now,
+                Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
                                                    ethernetSource, ethernetDestination, ethernetType,
                                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
                                                    ipV4Source, ipV4Destination, ipV4Options,
@@ -139,7 +139,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreEqual(ipV4Identification, packet.Ethernet.IpV4.Identification, "IP Identification");
                 Assert.AreEqual(ipV4Fragmentation, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
-                Assert.AreEqual(ipV4Fragmentation.Flags, packet.Ethernet.IpV4.Fragmentation.Flags, "IP Fragmentation");
+                Assert.AreEqual(ipV4Fragmentation.Options, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
                 Assert.AreEqual(ipV4Fragmentation.Offset, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
                 Assert.AreEqual(ipV4Ttl, packet.Ethernet.IpV4.Ttl, "IP Ttl");
                 Assert.AreEqual(ipV4Protocol, packet.Ethernet.IpV4.Protocol, "IP Protocol");

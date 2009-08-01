@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets
             return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
         }
 
-        public static Packet IpV4(DateTime timestamp,
+        public static Packet EthernetIpV4(DateTime timestamp,
                                   MacAddress ethernetSource, MacAddress ethernetDestination, EthernetType ethernetType,
                                   byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
                                   byte ipV4Ttl, IpV4Protocol ipV4Protocol,

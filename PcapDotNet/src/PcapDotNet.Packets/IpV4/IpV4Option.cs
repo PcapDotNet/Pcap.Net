@@ -36,6 +36,11 @@ namespace PcapDotNet.Packets
             return Equals(obj as IpV4Option);
         }
 
+        public override int GetHashCode()
+        {
+            return (byte)OptionType;
+        }
+
         protected IpV4Option(IpV4OptionType type)
         {
             _type = type;

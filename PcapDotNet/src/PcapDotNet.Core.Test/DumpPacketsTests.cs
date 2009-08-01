@@ -78,7 +78,7 @@ namespace PcapDotNet.Core.Test
                         byte ipV4TypeOfService = random.NextByte();
                         ushort ipV4Identification = random.NextUShort();
                         byte ipV4Ttl = random.NextByte();
-                        IpV4FragmentationFlags ipV4FragmentationFlags = random.NextEnum<IpV4FragmentationFlags>();
+                        IpV4FragmentationOptions ipV4FragmentationFlags = random.NextEnum<IpV4FragmentationOptions>();
                         ushort ipV4FragmentationOffset = random.NextUShort();
                         IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
                         IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
@@ -90,7 +90,7 @@ namespace PcapDotNet.Core.Test
                         random.NextBytes(ipV4PayloadBuffer);
                         Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
-                        Packet packet = PacketBuilder.IpV4(DateTime.Now,
+                        Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
                                                            ethernetSource, ethernetDestination, ethernetType,
                                                            ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
                                                            ipV4Source, ipV4Destination, ipV4Options,
