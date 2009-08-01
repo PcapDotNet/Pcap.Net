@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace PcapDotNet.Packets
@@ -12,10 +13,10 @@ namespace PcapDotNet.Packets
         public IpV4Address(string value)
         {
             string[] values = value.Split('.');
-            _value = (uint)((byte.Parse(values[0]) << 24) +
-                            (byte.Parse(values[1]) << 16) +
-                            (byte.Parse(values[2]) << 8) +
-                            (byte.Parse(values[3])));
+            _value = (uint)((byte.Parse(values[0], CultureInfo.InvariantCulture) << 24) +
+                            (byte.Parse(values[1], CultureInfo.InvariantCulture) << 16) +
+                            (byte.Parse(values[2], CultureInfo.InvariantCulture) << 8) +
+                            (byte.Parse(values[3], CultureInfo.InvariantCulture)));
         }
 
         public static IpV4Address Zero
@@ -48,14 +49,14 @@ namespace PcapDotNet.Packets
                     Equals((IpV4Address)obj));
         }
 
-        public static bool operator ==(IpV4Address ipV4Address1, IpV4Address ipV4Address2)
+        public static bool operator ==(IpV4Address value1, IpV4Address value2)
         {
-            return ipV4Address1.Equals(ipV4Address2);
+            return value1.Equals(value2);
         }
 
-        public static bool operator !=(IpV4Address ipV4Address1, IpV4Address ipV4Address2)
+        public static bool operator !=(IpV4Address value1, IpV4Address value2)
         {
-            return !(ipV4Address1 == ipV4Address2);
+            return !(value1 == value2);
         }
 
         public override int GetHashCode()

@@ -11,6 +11,12 @@ namespace PcapDotNet.Packets
             _timestamps = timestamps;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   _timestamps.Aggregate(0, (value, timestamp) => value ^ timestamp.GetHashCode());
+        }
+
         internal static IpV4OptionTimestampOnly Read(byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
         {
             TimeSpan[] timestamps = new TimeSpan[numValues];

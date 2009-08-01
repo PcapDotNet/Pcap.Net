@@ -63,6 +63,14 @@ namespace PcapDotNet.Packets
             return Equals(other as IpV4OptionSecurity);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   (((ushort)Level << 16) | Compartments) ^
+                   (HandlingRestrictions << 16) ^
+                   TransmissionControlCode.GetHashCode();
+        }
+
         internal static IpV4OptionSecurity ReadOptionSecurity(byte[] buffer, ref int offset, int length)
         {
             if (length < OptionLength - 1)

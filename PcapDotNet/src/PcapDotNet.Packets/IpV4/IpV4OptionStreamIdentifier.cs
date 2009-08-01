@@ -39,6 +39,12 @@ namespace PcapDotNet.Packets
             return Equals(other as IpV4OptionStreamIdentifier);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   Identifier.GetHashCode();
+        }
+
         internal static IpV4OptionStreamIdentifier ReadOptionStreamIdentifier(byte[] buffer, ref int offset, int length)
         {
             if (length < OptionLength - 1)

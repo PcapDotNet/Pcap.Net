@@ -9,14 +9,14 @@ namespace PcapDotNet.Packets
             get { return _none; }
         }
 
-        public IpV4Fragmentation(IpV4FragmentationFlags flags, ushort offset)
-            : this((ushort)((ushort)flags | (offset / 8)))
+        public IpV4Fragmentation(IpV4FragmentationOptions options, ushort offset)
+            : this((ushort)((ushort)options | (offset / 8)))
         {
         }
 
-        public IpV4FragmentationFlags Flags
+        public IpV4FragmentationOptions Options
         {
-            get { return (IpV4FragmentationFlags)(_value & 0xE000); }
+            get { return (IpV4FragmentationOptions)(_value & 0xE000); }
         }
 
         public ushort Offset
@@ -35,6 +35,21 @@ namespace PcapDotNet.Packets
                     Equals((IpV4Fragmentation)obj));
         }
 
+        public static bool operator ==(IpV4Fragmentation value1, IpV4Fragmentation value2)
+        {
+            return value1.Equals(value2);
+        }
+
+        public static bool operator !=(IpV4Fragmentation value1, IpV4Fragmentation value2)
+        {
+            return !(value1 == value2);
+        }
+
+        public override int GetHashCode()
+        {
+            return _value;
+        }
+
         internal IpV4Fragmentation(ushort value)
         {
             _value = value;
@@ -45,7 +60,7 @@ namespace PcapDotNet.Packets
             buffer.Write(offset, _value, Endianity.Big);
         }
 
-        private static readonly IpV4Fragmentation _none = new IpV4Fragmentation(IpV4FragmentationFlags.None, 0);
+        private static readonly IpV4Fragmentation _none = new IpV4Fragmentation(IpV4FragmentationOptions.None, 0);
         private readonly ushort _value;
     }
 }

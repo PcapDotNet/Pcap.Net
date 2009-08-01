@@ -5,7 +5,35 @@
       <!--Word>cb</Word-->
     </Unrecognized>
     <Recognized>
-      <Word>Endianity</Word>
+      <Word>pcap</Word>
+      <Word>endianity</Word>
+      <Word>prespecified</Word>
+      <Word>ttl</Word>
+      <Word>mmmm</Word> <!-- Still couldn't find out what this mean -->
+      <Word>satnet</Word>
+      <Word>bbn</Word> <!-- Probably BBN Technologies (originally Bolt, Beranek and Newman) -->
+      <Word>aris</Word>
+      <Word>ax</Word>
+      <Word>cbt</Word>
+      <Word>cftp</Word> <!-- maybe Configurable Fault Tolerant Processor -->
+      <Word>dcn</Word>
+      <Word>emcon</Word>
+      <Word>fibre</Word>
+      <Word>gmtp</Word>
+      <Word>iplt</Word>
+      <Word>ipsilon</Word> <!-- As in Ipsilon Networks -->
+      <Word>kryptolan</Word>
+      <Word>internodal</Word>
+      <Word>qnx</Word> <!-- www.qnx.com -->
+      <Word>expak</Word>
+      <Word>sitara</Word>
+      <Word>tcf</Word>
+      <Word>ttp</Word>
+      <Word>lite</Word>
+      <Word>uti</Word>
+      <Word>rcc</Word>
+      <Word>internetwork</Word>
+      <Word>multiprotocol</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->
@@ -20,6 +48,9 @@
   <Acronyms>
     <CasingExceptions>
       <Acronym>Ip</Acronym>
+      <Acronym>Sm</Acronym>
+      <Acronym>Nd</Acronym>
+      <Acronym>Ns</Acronym>
     </CasingExceptions>
   </Acronyms>
 </Dictionary>

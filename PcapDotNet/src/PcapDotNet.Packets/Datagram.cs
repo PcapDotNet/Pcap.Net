@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PcapDotNet.Packets
 {
-    public class Datagram : IEquatable<Datagram>
+    public class Datagram : IEquatable<Datagram>, IEnumerable<byte>
     {
         public Datagram(byte[] buffer)
             : this(buffer, 0, buffer.Length)
@@ -46,6 +49,17 @@ namespace PcapDotNet.Packets
             return true;
         }
 
+        public IEnumerator<byte> GetEnumerator()
+        {
+            for (int i = 0; i != Length; ++i)
+                yield return this[i];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public bool Equals(Datagram other)
         {
             if (Length != other.Length)
@@ -63,6 +77,13 @@ namespace PcapDotNet.Packets
         public override bool Equals(object obj)
         {
             return Equals(obj as Datagram);
+        }
+
+        public override int GetHashCode()
+        {
+            int i = 0;
+            return Length.GetHashCode() ^
+                   this.Aggregate(0, (value, b) => value ^ (b << (8 * (i++ % 4))));
         }
 
         internal void Write(byte[] buffer, int offset)
@@ -87,6 +108,7 @@ namespace PcapDotNet.Packets
             return _buffer.ReadUShort(StartOffset + offset, endianity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
         protected uint ReadUInt(int offset, Endianity endianity)
         {
             return _buffer.ReadUInt(StartOffset + offset, endianity);

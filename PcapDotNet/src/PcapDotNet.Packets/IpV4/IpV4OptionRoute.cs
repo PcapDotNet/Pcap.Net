@@ -38,6 +38,13 @@ namespace PcapDotNet.Packets
             return Equals(other as IpV4OptionRoute);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   PointedAddressIndex ^
+                   _addresses.Aggregate(0, (value, address) => value ^ address.GetHashCode());
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);

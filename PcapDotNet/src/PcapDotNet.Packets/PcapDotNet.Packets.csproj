@@ -30,7 +30,8 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1028</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <DocumentationFile>..\..\bin\Debug\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,7 +42,8 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1028</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <DocumentationFile>..\..\bin\Release\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -68,7 +70,7 @@
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="IpV4\IpV4Fragmentation.cs" />
-    <Compile Include="IpV4\IpV4FragmentationFlags.cs" />
+    <Compile Include="IpV4\IpV4FragmentationOptions.cs" />
     <Compile Include="IpV4\IpV4Option.cs" />
     <Compile Include="IpV4\IpV4OptionEndOfOptionsList.cs" />
     <Compile Include="IpV4\IpV4OptionLooseSourceRouting.cs" />
