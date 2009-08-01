@@ -2,9 +2,10 @@ using System;
 
 namespace PcapDotNet.Packets
 {
-    public abstract class IpV4OptionTimestamp : IpV4Option, IEquatable<IpV4OptionTimestamp>
+    public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
         public const int OptionMinimumLength = 4;
+        public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
         public const int PointedIndexMaxValue = byte.MaxValue / 4 - 1;
 
         public IpV4OptionTimestampType TimestampType
@@ -61,13 +62,9 @@ namespace PcapDotNet.Packets
                    PointedIndex;
         }
 
-        internal static IpV4OptionTimestamp ReadOptionTimestamp(byte[] buffer, ref int offset, int length)
+        internal static IpV4OptionTimestamp ReadOptionTimestamp(byte[] buffer, ref int offset, int valueLength)
         {
-            if (length < OptionMinimumLength - 1)
-                return null;
-
-            byte optionLength = buffer[offset++];
-            if (optionLength < OptionMinimumLength || optionLength > length + 1 || optionLength % 4 != 0)
+            if (valueLength < OptionValueMinimumLength || valueLength % 4 != 2)
                 return null;
 
             byte pointer = buffer[offset++];
@@ -80,7 +77,7 @@ namespace PcapDotNet.Packets
             IpV4OptionTimestampType timestampType = (IpV4OptionTimestampType)(overflow & 0x0F);
             overflow >>= 4;
 
-            int numValues = optionLength / 4 - 1;
+            int numValues = valueLength / 4;
 
             switch (timestampType)
             {

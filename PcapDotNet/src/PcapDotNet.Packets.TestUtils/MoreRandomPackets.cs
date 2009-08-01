@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,11 +25,8 @@ namespace PcapDotNet.Packets.TestUtils
                 switch (optionType)
                 {
                     case IpV4OptionType.EndOfOptionList:
-                        option = new IpV4OptionEndOfOptionsList();
-                        break;
-
                     case IpV4OptionType.NoOperation:
-                        option = new IpV4OptionNoOperation();
+                        option = new IpV4OptionSimple(optionType);
                         break;
 
                     case IpV4OptionType.Security:
@@ -125,7 +122,7 @@ namespace PcapDotNet.Packets.TestUtils
                 options.Add(option);
                 optionsLength -= option.Length;
 
-                if (option is IpV4OptionEndOfOptionsList)
+                if (option.OptionType == IpV4OptionType.EndOfOptionList)
                     break;
             }
             return new IpV4Options(options);

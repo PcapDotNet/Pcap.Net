@@ -3,9 +3,10 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
-    public class IpV4OptionSecurity : IpV4Option, IEquatable<IpV4OptionSecurity>
+    public class IpV4OptionSecurity : IpV4OptionComplex, IEquatable<IpV4OptionSecurity>
     {
         public const int OptionLength = 11;
+        public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
         public IpV4OptionSecurity(IpV4OptionSecurityLevel level, ushort compartments,
                                   ushort handlingRestrictions, UInt24 transmissionControlCode)
@@ -71,12 +72,9 @@ namespace PcapDotNet.Packets
                    TransmissionControlCode.GetHashCode();
         }
 
-        internal static IpV4OptionSecurity ReadOptionSecurity(byte[] buffer, ref int offset, int length)
+        internal static IpV4OptionSecurity ReadOptionSecurity(byte[] buffer, ref int offset, byte valueLength)
         {
-            if (length < OptionLength - 1)
-                return null;
-            byte optionLength = buffer[offset++];
-            if (optionLength != OptionLength)
+            if (valueLength != OptionValueLength)
                 return null;
 
             IpV4OptionSecurityLevel level = (IpV4OptionSecurityLevel)buffer.ReadUShort(ref offset, Endianity.Big);

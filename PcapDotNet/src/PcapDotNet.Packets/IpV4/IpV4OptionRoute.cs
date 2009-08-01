@@ -3,9 +3,10 @@ using System.Linq;
 
 namespace PcapDotNet.Packets
 {
-    public abstract class IpV4OptionRoute : IpV4Option, IEquatable<IpV4OptionRoute>
+    public abstract class IpV4OptionRoute : IpV4OptionComplex, IEquatable<IpV4OptionRoute>
     {
         public const int OptionMinimumLength = 3;
+        public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
         public const byte PointedAddressIndexMaxValue = byte.MaxValue / 4 - 1;
 
         public byte PointedAddressIndex
@@ -55,16 +56,15 @@ namespace PcapDotNet.Packets
         }
 
         protected static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,
-                                      byte[] buffer, ref int offset, int length)
+                                      byte[] buffer, ref int offset, byte valueLength)
         {
             addresses = null;
             pointedAddressIndex = 0;
 
-            if (length < OptionMinimumLength - 1)
+            if (valueLength < OptionValueMinimumLength)
                 return false;
 
-            byte optionLength = buffer[offset++];
-            if (optionLength < OptionMinimumLength || optionLength > length + 1 || optionLength % 4 != 3)
+            if (valueLength % 4 != 1)
                 return false;
 
             byte pointer = buffer[offset++];
@@ -73,10 +73,10 @@ namespace PcapDotNet.Packets
 
             pointedAddressIndex = (byte)(pointer / 4 - 1);
 
-            int numAddresses = (optionLength - 3) / 4;
+            int numAddresses = valueLength / 4;
             addresses = new IpV4Address[numAddresses];
             for (int i = 0; i != numAddresses; ++i)
-                addresses[i] = new IpV4Address(buffer.ReadUInt(ref offset, Endianity.Big));
+                addresses[i] = buffer.ReadIpV4Address(ref offset, Endianity.Big);
 
             return true;
         }

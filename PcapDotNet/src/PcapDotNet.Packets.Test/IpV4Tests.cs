@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 
@@ -113,16 +114,17 @@ namespace PcapDotNet.Packets.Test
                 IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
                 IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
                 IpV4Options ipV4Options = random.NextIpV4Options();
+//                IpV4Options ipV4Options = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 1, 2, (UInt24)123456));
 
                 byte[] ipV4PayloadBuffer = new byte[random.Next(0, 50 * 1024)];
                 random.NextBytes(ipV4PayloadBuffer);
                 Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
                 Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                   ethernetSource, ethernetDestination, ethernetType,
-                                                   ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
-                                                   ipV4Source, ipV4Destination, ipV4Options,
-                                                   ipV4Payload);
+                                                           ethernetSource, ethernetDestination, ethernetType,
+                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
+                                                           ipV4Source, ipV4Destination, ipV4Options,
+                                                           ipV4Payload);
 
 
                 Assert.IsTrue(packet.IsValid);
@@ -134,7 +136,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
 
                 // IpV4
-                Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Options.Length, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
+                Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
                 Assert.AreEqual(ipV4TypeOfService, packet.Ethernet.IpV4.TypeOfService, "IP TypeOfService");
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreEqual(ipV4Identification, packet.Ethernet.IpV4.Identification, "IP Identification");

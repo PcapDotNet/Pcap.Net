@@ -4,6 +4,16 @@ namespace PcapDotNet.Packets
 {
     public abstract class IpV4Option : IEquatable<IpV4Option>
     {
+        public static IpV4OptionSimple End
+        {
+            get { return _end; }
+        }
+
+        public static IpV4OptionSimple Nop
+        {
+            get { return _nop; }
+        }
+
         public IpV4OptionType OptionType
         {
             get { return _type; }
@@ -41,6 +51,11 @@ namespace PcapDotNet.Packets
             return (byte)OptionType;
         }
 
+        public override string ToString()
+        {
+            return OptionType.ToString();
+        }
+
         protected IpV4Option(IpV4OptionType type)
         {
             _type = type;
@@ -56,28 +71,17 @@ namespace PcapDotNet.Packets
             switch (optionType)
             {
                 case IpV4OptionType.EndOfOptionList:
-                    return new IpV4OptionEndOfOptionsList();
-
+                    return End;
                 case IpV4OptionType.NoOperation:
-                    return new IpV4OptionNoOperation();
+                    return Nop;
 
                 case IpV4OptionType.Security:
-                    return IpV4OptionSecurity.ReadOptionSecurity(buffer, ref offset, offsetEnd - offset);
-
                 case IpV4OptionType.LooseSourceRouting:
-                    return IpV4OptionLooseSourceRouting.ReadOptionLooseSourceRouting(buffer, ref offset, offsetEnd - offset);
-
                 case IpV4OptionType.StrictSourceRouting:
-                    return IpV4OptionStrictSourceRouting.ReadOptionStrictSourceRouting(buffer, ref offset, offsetEnd - offset);
-
                 case IpV4OptionType.RecordRoute:
-                    return IpV4OptionRecordRoute.ReadOptionRecordRoute(buffer, ref offset, offsetEnd - offset);
-
                 case IpV4OptionType.StreamIdentifier:
-                    return IpV4OptionStreamIdentifier.ReadOptionStreamIdentifier(buffer, ref offset, offsetEnd - offset);
-
                 case IpV4OptionType.InternetTimestamp:
-                    return IpV4OptionTimestamp.ReadOptionTimestamp(buffer, ref offset, offsetEnd - offset);
+                    return IpV4OptionComplex.ReadOptionComplex(optionType, buffer, ref offset, offsetEnd - offset);
 
                 default:
                     return null;
@@ -88,6 +92,9 @@ namespace PcapDotNet.Packets
         {
             buffer[offset++] = (byte)OptionType;
         }
+
+        private static readonly IpV4OptionSimple _end = new IpV4OptionSimple(IpV4OptionType.EndOfOptionList);
+        private static readonly IpV4OptionSimple _nop = new IpV4OptionSimple(IpV4OptionType.NoOperation);
 
         private readonly IpV4OptionType _type;
     }
