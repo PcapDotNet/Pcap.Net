@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -148,7 +149,7 @@ namespace PcapDotNet.Core.Test
                 packetsToSend = new List<Packet>(numPackets);
                 for (int i = 0; i != numPackets; ++i)
                 {
-                    Packet packetToSend = MoreRandom.BuildRandomPacket(timestamp, sourceMac, destinationMac, packetSize);
+                    Packet packetToSend = _random.NextEthernet(packetSize, timestamp, sourceMac, destinationMac);
                     queue.Enqueue(packetToSend);
                     packetsToSend.Add(packetToSend);
                     timestamp = timestamp.AddSeconds(secondsBetweenTimestamps);
@@ -162,5 +163,7 @@ namespace PcapDotNet.Core.Test
 
             return queue;
         }
+
+        private static Random _random = new Random();
     }
 }

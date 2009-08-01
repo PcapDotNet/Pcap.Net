@@ -9,6 +9,48 @@ namespace PcapDotNet.Packets.TestUtils
 {
     public static class MoreRandomPackets
     {
+        public static Datagram NextDatagram(this Random random, int length)
+        {
+            byte[] buffer = new byte[length];
+            random.NextBytes(buffer);
+            return new Datagram(buffer);
+        }
+
+        public static MacAddress NextMacAddress(this Random random)
+        {
+            return new MacAddress(random.NextUInt48());
+        }
+
+        public static EthernetType NextEthernetType(this Random random)
+        {
+            return random.NextEnum(EthernetType.None);
+        }
+
+        public static Packet NextEthernet(this Random random, int packetSize, DateTime timestamp, MacAddress ethernetSource, MacAddress ethernetDestination)
+        {
+            if (packetSize < EthernetDatagram.HeaderLength)
+                throw new ArgumentOutOfRangeException("packetSize", packetSize, "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLength + ")");
+
+            return PacketBuilder.Ethernet(timestamp,
+                                          ethernetSource, ethernetDestination, random.NextEthernetType(),
+                                          random.NextDatagram(packetSize - EthernetDatagram.HeaderLength));
+        }
+
+        public static Packet NextEthernet(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)
+        {
+            return random.NextEthernet(packetSize, timestamp, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
+        }
+
+        public static Packet NextEthernet(this Random random, int packetSize, string ethernetSource, string ethernetDestination)
+        {
+            return random.NextEthernet(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
+        }
+
+        public static Packet NextEthernet(this Random random, int packetSize)
+        {
+            return random.NextEthernet(packetSize, DateTime.Now, random.NextMacAddress(), random.NextMacAddress());
+        }
+
         public static IpV4Address NextIpV4Address(this Random random)
         {
             return new IpV4Address(random.NextUInt());

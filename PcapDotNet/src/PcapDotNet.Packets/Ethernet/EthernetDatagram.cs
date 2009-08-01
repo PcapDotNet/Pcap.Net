@@ -22,6 +22,11 @@ namespace PcapDotNet.Packets
 
         public const int HeaderLength = 14;
 
+        public Datagram Payload
+        {
+            get { return IpV4; }
+        }
+
         public int PayloadLength
         {
             get { return Math.Max(0, Length - HeaderLength); }
@@ -31,7 +36,7 @@ namespace PcapDotNet.Packets
         { 
             get
             {
-                return new MacAddress(Buffer, StartOffset + Offset.Source);
+                return ReadMacAddress(Offset.Source, Endianity.Big);
             }
         }
 
@@ -39,7 +44,7 @@ namespace PcapDotNet.Packets
         { 
             get
             {
-                return new MacAddress(Buffer, StartOffset + Offset.Destination);
+                return ReadMacAddress(Offset.Destination, Endianity.Big);
             }
         }
 
@@ -89,9 +94,8 @@ namespace PcapDotNet.Packets
 
         internal static void WriteHeader(byte[] buffer, int offset, MacAddress ethernetSource, MacAddress ethernetDestination, EthernetType ethernetType)
         {
-            ethernetSource.Write(buffer, offset + Offset.Source);
-            ethernetDestination.Write(buffer, offset + Offset.Destination);
-            ethernetDestination.Write(buffer, offset + Offset.Destination);
+            buffer.Write(offset + Offset.Source, ethernetSource, Endianity.Big);
+            buffer.Write(offset + Offset.Destination, ethernetDestination, Endianity.Big);
             buffer.Write(offset + Offset.EtherTypeLength, (ushort)ethernetType, Endianity.Big);
         }
 

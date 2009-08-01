@@ -63,6 +63,7 @@
     <Compile Include="Datagram.cs" />
     <Compile Include="DataLink.cs" />
     <Compile Include="DataLinkKind.cs" />
+    <Compile Include="Endianity.cs" />
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PcapDotNet.Base
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct UInt24
     {
+        public const int SizeOf = 3;
         public static readonly UInt24 MaxValue = (UInt24)0x00FFFFFF;
-
-        private UInt24(int value)
-        {
-            _mostSignificant = (ushort)(value >> 8);
-            _leastSignificant = (byte)value;
-        }
 
         public static explicit operator UInt24(int value)
         {
@@ -57,12 +54,18 @@ namespace PcapDotNet.Base
             return ((int)this).ToString();
         }
 
-        private int ToInt()
+        private UInt24(int value)
         {
-            return (_mostSignificant << 8) + _leastSignificant;
+            _mostSignificant = (byte)(value >> 16);
+            _leastSignificant = (ushort)value;
         }
 
-        private readonly ushort _mostSignificant;
-        private readonly byte _leastSignificant;
+        private int ToInt()
+        {
+            return (_mostSignificant << 16) + _leastSignificant;
+        }
+
+        private readonly ushort _leastSignificant;
+        private readonly byte _mostSignificant;
     }
 }

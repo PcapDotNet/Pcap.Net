@@ -105,13 +105,18 @@ namespace PcapDotNet.Packets
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ushort")]
         protected ushort ReadUShort(int offset, Endianity endianity)
         {
-            return _buffer.ReadUShort(StartOffset + offset, endianity);
+            return Buffer.ReadUShort(StartOffset + offset, endianity);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
         protected uint ReadUInt(int offset, Endianity endianity)
         {
-            return _buffer.ReadUInt(StartOffset + offset, endianity);
+            return Buffer.ReadUInt(StartOffset + offset, endianity);
+        }
+
+        protected MacAddress ReadMacAddress(int offset, Endianity endianity)
+        {
+            return Buffer.ReadMacAddress(StartOffset + offset, endianity);
         }
 
         private static readonly Datagram _empty = new Datagram(new byte[0], 0, 0);

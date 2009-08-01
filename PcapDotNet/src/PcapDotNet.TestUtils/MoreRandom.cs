@@ -38,9 +38,19 @@ namespace PcapDotNet.TestUtils
             return (uint)random.Next();
         }
 
+        public static UInt48 NextUInt48(this Random random)
+        {
+            return (UInt48)random.NextLong(UInt48.MaxValue + 1);
+        }
+
         public static long NextLong(this Random random, long minValue, long maxValue)
         {
             return minValue + (long)random.NextULong((ulong)(maxValue - minValue));
+        }
+
+        public static long NextLong(this Random random, long maxValue)
+        {
+            return random.NextLong(0, maxValue);
         }
 
         public static long NextLong(this Random random)
@@ -63,22 +73,22 @@ namespace PcapDotNet.TestUtils
             return new DateTime(random.NextLong(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks + 1));
         }
 
-        public static T NextEnum<T>(this Random random)
+        public static T NextEnum<T>(this Random random, params T[] valuesToIgnore)
         {
             Type type = typeof(T);
             if (!type.IsEnum)
                 throw new ArgumentException("T must be an Enum");
 
-            Array enumValues = Enum.GetValues(type);
-            if (enumValues.Length == 0)
+            IList<T> enumValues = new List<T>(((IEnumerable<T>)Enum.GetValues(type)).Except(valuesToIgnore));
+            if (enumValues.Count == 0)
                 throw new ArgumentException("T is an enum with no values", "T");
 
             return (T)random.NextValue(enumValues);
         }
 
-        public static object NextValue(this Random random, Array values)
+        public static object NextValue<T>(this Random random, IList<T> values)
         {
-            return values.GetValue(random.Next(values.Length));
+            return values[random.Next(values.Count)];
         }
     }
 }

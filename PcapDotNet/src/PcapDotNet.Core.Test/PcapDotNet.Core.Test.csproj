@@ -46,7 +46,6 @@
     <Compile Include="DumpPacketsTests.cs" />
     <Compile Include="MoreAssert.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
-    <Compile Include="MoreRandom.cs" />
     <Compile Include="PacketHandler.cs" />
     <Compile Include="OfflinePacketDeviceTests.cs" />
     <Compile Include="PacketSendBufferTests.cs" />
@@ -55,6 +54,10 @@
     <Compile Include="PcapLibTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">
+      <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
+      <Name>PcapDotNet.Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Core\WinPCapDotNet.Core.vcproj">
       <Project>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</Project>
       <Name>PcapDotNet.Core</Name>
