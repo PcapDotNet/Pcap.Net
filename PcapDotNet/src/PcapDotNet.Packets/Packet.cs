@@ -75,6 +75,11 @@ namespace PcapDotNet.Packets
             return hashCode;
         }
 
+        public override string ToString()
+        {
+            return typeof(Packet).Name + " <" + DataLink + ", " + Length + ">";
+        }
+
         public bool IsValid
         {
             get

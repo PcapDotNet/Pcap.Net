@@ -6,6 +6,8 @@ namespace PcapDotNet.Packets
 {
     public struct MacAddress
     {
+        public const int SizeOf = UInt48.SizeOf;
+
         public MacAddress(UInt48 value)
         {
             _value = value;
@@ -67,32 +69,6 @@ namespace PcapDotNet.Packets
                                  (byte)(_value));
         }
 
-/*        internal MacAddress(byte[] buffer, int offset)
-        {
-            _b1 = buffer[offset++];
-            _b2 = buffer[offset++];
-            _b3 = buffer[offset++];
-            _b4 = buffer[offset++];
-            _b5 = buffer[offset++];
-            _b6 = buffer[offset];
-        }
-
-        internal void Write(byte[] buffer, int offset)
-        {
-            buffer[offset++] = _b1;
-            buffer[offset++] = _b2;
-            buffer[offset++] = _b3;
-            buffer[offset++] = _b4;
-            buffer[offset++] = _b5;
-            buffer[offset] = _b6;
-        }
-        */
         private readonly UInt48 _value;
-//        private readonly byte _b1;
-//        private readonly byte _b2;
-//        private readonly byte _b3;
-//        private readonly byte _b4;
-//        private readonly byte _b5;
-//        private readonly byte _b6;
     }
 }

@@ -140,21 +140,44 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreEqual(ipV4Identification, packet.Ethernet.IpV4.Identification, "IP Identification");
                 Assert.AreEqual(ipV4Fragmentation, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.IsTrue(ipV4Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.IsFalse(ipV4Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.AreEqual(ipV4Fragmentation.GetHashCode(), packet.Ethernet.IpV4.Fragmentation.GetHashCode(), "IP Fragmentation");
                 Assert.AreEqual(ipV4Fragmentation.Options, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
                 Assert.AreEqual(ipV4Fragmentation.Offset, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
+                if (ipV4Fragmentation.Equals(IpV4Fragmentation.None))
+                {
+                    Assert.AreEqual(IpV4FragmentationOptions.None, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
+                    Assert.AreEqual(0, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
+                }
                 Assert.AreEqual(ipV4Ttl, packet.Ethernet.IpV4.Ttl, "IP Ttl");
                 Assert.AreEqual(ipV4Protocol, packet.Ethernet.IpV4.Protocol, "IP Protocol");
 //                Assert.AreEqual(0x9010, packet.Ethernet.IpV4.HeaderChecksum, "IP HeaderChecksum");
                 Assert.AreEqual(true, packet.Ethernet.IpV4.IsHeaderChecksumCorrect, "IP HeaderChecksumCorrect");
                 Assert.AreEqual(ipV4Source, packet.Ethernet.IpV4.Source, "IP Source");
                 Assert.AreEqual(ipV4Destination, packet.Ethernet.IpV4.Destination, "IP Destination");
-                if (!ipV4Options.Equals(packet.Ethernet.IpV4.Options))
-                {
-                    Assert.AreEqual(ipV4Options, packet.Ethernet.IpV4.Options, "IP Options");
-                }
+                Assert.AreEqual(ipV4Options, packet.Ethernet.IpV4.Options, "IP Options");
+                Assert.AreEqual(ipV4Options.GetHashCode(), packet.Ethernet.IpV4.Options.GetHashCode(), "IP Options HashCode");
+                Assert.IsNotNull(packet.Ethernet.IpV4.Options.ToString());
+                for (int optionIndex = 0; optionIndex != ipV4Options.Count; ++optionIndex)
+                    Assert.AreEqual(ipV4Options[optionIndex], packet.Ethernet.IpV4.Options[optionIndex]);
 
                 Assert.AreEqual(ipV4Payload, packet.Ethernet.IpV4.Payload, "IP Payload");
             }
+        }
+
+        [TestMethod]
+        public void IpV4OptionsTest()
+        {
+            IpV4Options actual = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 12345, 54321, (UInt24)123456));
+            IpV4Options expected = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 12345, 54321, (UInt24)123456),
+                                                   IpV4Option.End);
+
+            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(expected.IsValid);
+            Assert.IsTrue(actual.IsValid);
+
+
         }
 
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)

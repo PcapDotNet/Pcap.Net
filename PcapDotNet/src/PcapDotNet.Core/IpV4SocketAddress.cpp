@@ -3,6 +3,7 @@
 
 using namespace System;
 using namespace System::Text;
+using namespace System::Net;
 using namespace PcapDotNet::Core;
 using namespace PcapDotNet::Packets;
 
@@ -26,5 +27,5 @@ IpV4SocketAddress::IpV4SocketAddress(sockaddr *address)
 : SocketAddress(address->sa_family)
 {
     sockaddr_in* ipV4Address = (struct sockaddr_in *)address;
-	_address = IpV4Address::FromReversedEndianity(ipV4Address->sin_addr.S_un.S_addr);
+    _address = IpV4Address((unsigned int)IPAddress::HostToNetworkOrder((int)(ipV4Address->sin_addr.S_un.S_addr)));
 }

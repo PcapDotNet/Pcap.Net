@@ -20,11 +20,16 @@ namespace PcapDotNet.Core.Test
                                                 "> Actual: <" + actual + ">.");
         }
 
-        public static void IsBiggerOrEqual<T>(T expectedMinimum, T actual) where T : IComparable<T>
+        public static void IsBiggerOrEqual<T>(T expectedMinimum, T actual, string message) where T : IComparable<T>
         {
             if (expectedMinimum.CompareTo(actual) > 0)
                 throw new AssertFailedException("Assert.IsBiggerOrEqual failed. Expected minimum: <" + expectedMinimum +
-                                                "> Actual: <" + actual + ">.");
+                                                "> Actual: <" + actual + ">. " + message);
+        }
+
+        public static void IsBiggerOrEqual<T>(T expectedMaximum, T actual) where T : IComparable<T>
+        {
+            IsBiggerOrEqual(expectedMaximum, actual, string.Empty);
         }
 
         public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual, string message) where T : IComparable<T>
@@ -39,10 +44,15 @@ namespace PcapDotNet.Core.Test
             IsSmallerOrEqual(expectedMaximum, actual, string.Empty);
         }
 
+        public static void IsInRange<T>(T expectedMinimum, T expectedMaximum, T actual, string message) where T : IComparable<T>
+        {
+            IsBiggerOrEqual(expectedMinimum, actual, message);
+            IsSmallerOrEqual(expectedMaximum, actual, message);
+        }
+
         public static void IsInRange<T>(T expectedMinimum, T expectedMaximum, T actual) where T : IComparable<T>
         {
-            IsBiggerOrEqual(expectedMinimum, actual);
-            IsSmallerOrEqual(expectedMaximum, actual);
+            IsInRange(expectedMinimum, expectedMaximum, actual, string.Empty);
         }
 
         public static void IsMatch(string expectedPattern, string actualValue)

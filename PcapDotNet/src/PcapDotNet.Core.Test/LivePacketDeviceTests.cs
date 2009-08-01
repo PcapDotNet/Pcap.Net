@@ -655,13 +655,13 @@ namespace PcapDotNet.Core.Test
                 PacketHandler handler = new PacketHandler(packetToSend, communicator, numPacketsToBreakLoop);
                 DateTime startWaiting = DateTime.Now;
                 PacketCommunicatorReceiveResult result = communicator.ReceiveSomePackets(out numPacketsGot, numPacketsToGet,
-                                                                                     handler.Handle);
+                                                                                         handler.Handle);
                 DateTime finishedWaiting = DateTime.Now;
 
                 Assert.AreEqual(expectedResult, result);
                 Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + TestDescription);
                 Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + TestDescription);
-                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
+                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds, TestDescription);
             }
         }
 

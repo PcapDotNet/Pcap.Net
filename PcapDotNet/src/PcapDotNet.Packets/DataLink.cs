@@ -2,6 +2,11 @@ namespace PcapDotNet.Packets
 {
     public struct DataLink : IDataLink
     {
+        public static DataLink Ethernet
+        {
+            get { return _ethernet; }
+        }
+
         public DataLink(DataLinkKind kind)
         {
             _kind = kind;
@@ -38,6 +43,12 @@ namespace PcapDotNet.Packets
             return _kind.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return Kind.ToString();
+        }
+
+        private static readonly DataLink _ethernet = new DataLink(DataLinkKind.Ethernet);
         private readonly DataLinkKind _kind;
     }
 }

@@ -5,6 +5,8 @@ namespace PcapDotNet.Packets
 {
     public struct IpV4Address
     {
+        public const int SizeOf = sizeof(uint);
+
         public IpV4Address(uint value)
         {
             _value = value;
@@ -27,15 +29,6 @@ namespace PcapDotNet.Packets
         public uint ToValue()
         {
             return _value;
-        }
-
-        public static IpV4Address FromReversedEndianity(uint value)
-        {
-            uint result = value >> 24;
-            result += (value >> 16) % 256 << 8;
-            result += (value >> 8) % 256 << 16;
-            result += value % 256 << 24;
-            return new IpV4Address(result);
         }
 
         public bool Equals(IpV4Address other)
