@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Packets.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -60,6 +61,28 @@ namespace PcapDotNet.Packets.Test
         public void RandomPacketTest()
         {
             Random random = new Random();
+
+            for (int i = 0; i != 1000; ++i)
+            {
+                Packet packet = random.NextPacket(random.Next(10 * 1024));
+
+                // Check Equals
+                Assert.AreEqual(packet, new Packet(packet.Buffer, packet.Timestamp.AddHours(1), packet.DataLink));
+                Assert.AreNotEqual(packet, random.NextPacket(random.Next(10 * 1024)));
+                if (packet.Length != 0)
+                    Assert.AreNotEqual(packet, random.NextPacket(packet.Length));
+
+                // Check GetHashCode
+                Assert.AreEqual(packet.GetHashCode(), new Packet(packet.Buffer, packet.Timestamp.AddHours(1), packet.DataLink).GetHashCode());
+                Assert.AreNotEqual(packet.GetHashCode(), random.NextPacket(random.Next(10 * 1024)).GetHashCode());
+                if (packet.Length != 0)
+                    Assert.AreNotEqual(packet.GetHashCode(), random.NextPacket(packet.Length).GetHashCode());
+
+                // Check ToString
+                Assert.IsNotNull(packet.ToString());
+
+                Assert.IsFalse(new Packet(packet.Buffer, DateTime.Now, (DataLinkKind)((int)DataLinkKind.Ethernet + 1)).IsValid);
+            }
         }
     }
 }

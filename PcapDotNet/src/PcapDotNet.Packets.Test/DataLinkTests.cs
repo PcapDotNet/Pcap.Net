@@ -1,17 +1,14 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Packets.TestUtils;
-using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for EthernetTests
+    /// Summary description for DataLinkTests
     /// </summary>
     [TestClass]
-    public class EthernetTests
+    public class DataLinkTests
     {
-        public EthernetTests()
+        public DataLinkTests()
         {
             //
             // TODO: Add constructor logic here
@@ -59,31 +56,12 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void RandomEthernetTest()
+        public void DataLinkTest()
         {
-            Random random = new Random();
-
-            for (int i = 0; i != 1000; ++i)
-            {
-                MacAddress ethernetSource = random.NextMacAddress();
-                MacAddress ethernetDestination = random.NextMacAddress();
-                EthernetType ethernetType = random.NextEnum(EthernetType.None);
-                int ethernetPayloadLength = random.Next(1500);
-                Datagram ethernetPayload = random.NextDatagram(ethernetPayloadLength);
-
-                Packet packet = PacketBuilder.Ethernet(DateTime.Now,
-                                                       ethernetSource, ethernetDestination, ethernetType,
-                                                       ethernetPayload);
-
-
-                // Ethernet
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
-                Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
-                Assert.AreEqual(ethernetDestination, packet.Ethernet.Destination, "Ethernet Destination");
-                Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
-
-                Assert.AreEqual(ethernetPayload, packet.Ethernet.Payload);
-            }
+            Assert.AreEqual(DataLink.Ethernet, DataLink.Ethernet);
+            Assert.AreEqual(DataLinkKind.Ethernet.ToString(), DataLink.Ethernet.ToString());
+            Assert.AreEqual(DataLink.Ethernet.GetHashCode(), DataLink.Ethernet.GetHashCode());
+            Assert.IsTrue(DataLink.Ethernet == DataLink.Ethernet);
         }
     }
 }

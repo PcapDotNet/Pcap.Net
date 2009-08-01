@@ -1,17 +1,17 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
-using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for EthernetTests
+    /// Summary description for DatagramTests
     /// </summary>
     [TestClass]
-    public class EthernetTests
+    public class DatagramTests
     {
-        public EthernetTests()
+        public DatagramTests()
         {
             //
             // TODO: Add constructor logic here
@@ -59,30 +59,25 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void RandomEthernetTest()
+        public void RandomDatagramTest()
         {
             Random random = new Random();
 
             for (int i = 0; i != 1000; ++i)
             {
-                MacAddress ethernetSource = random.NextMacAddress();
-                MacAddress ethernetDestination = random.NextMacAddress();
-                EthernetType ethernetType = random.NextEnum(EthernetType.None);
-                int ethernetPayloadLength = random.Next(1500);
-                Datagram ethernetPayload = random.NextDatagram(ethernetPayloadLength);
+                Datagram datagram = random.NextDatagram(random.Next(1024));
 
-                Packet packet = PacketBuilder.Ethernet(DateTime.Now,
-                                                       ethernetSource, ethernetDestination, ethernetType,
-                                                       ethernetPayload);
+                Assert.AreEqual(datagram, new Datagram(new List<byte>(datagram).ToArray()));
+                Assert.AreEqual(datagram.GetHashCode(), new Datagram(new List<byte>(datagram).ToArray()).GetHashCode());
 
+                Assert.AreNotEqual(datagram, random.NextDatagram(random.Next(10 * 1024)));
+                Assert.AreNotEqual(datagram.GetHashCode(), random.NextDatagram(random.Next(10 * 1024)).GetHashCode());
 
-                // Ethernet
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
-                Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
-                Assert.AreEqual(ethernetDestination, packet.Ethernet.Destination, "Ethernet Destination");
-                Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
-
-                Assert.AreEqual(ethernetPayload, packet.Ethernet.Payload);
+                if (datagram.Length != 0)
+                {
+                    Assert.AreNotEqual(datagram, random.NextDatagram(datagram.Length));
+                    Assert.AreNotEqual(datagram.GetHashCode(), random.NextDatagram(datagram.Length).GetHashCode());
+                }
             }
         }
     }

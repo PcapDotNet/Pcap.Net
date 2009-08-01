@@ -16,6 +16,18 @@ namespace PcapDotNet.Packets.TestUtils
             return new Datagram(buffer);
         }
 
+        public static DataLinkKind NextDataLinkKind(this Random random)
+        {
+            return random.NextEnum<DataLinkKind>();
+        }
+
+        public static Packet NextPacket(this Random random, int length)
+        {
+            byte[] buffer = new byte[length];
+            random.NextBytes(buffer);
+            return new Packet(buffer, DateTime.Now, random.NextDataLinkKind());
+        }
+
         public static MacAddress NextMacAddress(this Random random)
         {
             return new MacAddress(random.NextUInt48());

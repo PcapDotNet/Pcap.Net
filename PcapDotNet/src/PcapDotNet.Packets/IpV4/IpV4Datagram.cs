@@ -113,6 +113,21 @@ namespace PcapDotNet.Packets
             get { return Tcp; }
         }
 
+        public override bool CalculateIsValid()
+        {
+            if (Length < HeaderMinimumLength || Length < HeaderLength)
+                return false;
+
+            switch (Protocol)
+            {
+                case IpV4Protocol.Tcp:
+                    return Tcp.IsValid;
+                default:
+                    // Todo check the protocl further
+                    return true;
+            }
+        }
+
         public Datagram Tcp
         {
             get

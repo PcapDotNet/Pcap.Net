@@ -57,6 +57,25 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
+        public void UInt24Test()
+        {
+            UInt24 value = (UInt24)0x010203;
+            byte[] buffer = new byte[UInt24.SizeOf];
+
+            buffer.Write(0, value, Endianity.Big);
+            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Big));
+            Assert.AreEqual(0x01, buffer[0]);
+            Assert.AreEqual(0x02, buffer[1]);
+            Assert.AreEqual(0x03, buffer[2]);
+
+            buffer.Write(0, value, Endianity.Small);
+            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Small));
+            Assert.AreEqual(0x03, buffer[0]);
+            Assert.AreEqual(0x02, buffer[1]);
+            Assert.AreEqual(0x01, buffer[2]);
+        }
+
+        [TestMethod]
         public void UIntTest()
         {
             const uint value = 0x01020304;
@@ -75,25 +94,6 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(0x03, buffer[1]);
             Assert.AreEqual(0x02, buffer[2]);
             Assert.AreEqual(0x01, buffer[3]);
-        }
-
-        [TestMethod]
-        public void UInt24Test()
-        {
-            UInt24 value = (UInt24)0x010203;
-            byte[] buffer = new byte[UInt24.SizeOf];
-
-            buffer.Write(0, value, Endianity.Big);
-            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Big));
-            Assert.AreEqual(0x01, buffer[0]);
-            Assert.AreEqual(0x02, buffer[1]);
-            Assert.AreEqual(0x03, buffer[2]);
-
-            buffer.Write(0, value, Endianity.Small);
-            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Small));
-            Assert.AreEqual(0x03, buffer[0]);
-            Assert.AreEqual(0x02, buffer[1]);
-            Assert.AreEqual(0x01, buffer[2]);
         }
 
         [TestMethod]
