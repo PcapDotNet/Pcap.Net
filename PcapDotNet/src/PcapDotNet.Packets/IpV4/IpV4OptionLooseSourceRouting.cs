@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets
 {
     public class IpV4OptionLooseSourceRouting : IpV4OptionRoute
     {
-        public IpV4OptionLooseSourceRouting(IpV4Address[] addresses, byte pointedAddressIndex)
+        public IpV4OptionLooseSourceRouting(IList<IpV4Address> addresses, byte pointedAddressIndex)
             : base(IpV4OptionType.LooseSourceRouting, addresses, pointedAddressIndex)
         {
         }

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
@@ -16,7 +19,7 @@ namespace PcapDotNet.Packets
 
         public override int Length
         {
-            get { return OptionMinimumLength + 4 * _addresses.Length; }
+            get { return OptionMinimumLength + 4 * _addresses.Count; }
         }
 
         public override bool IsAppearsAtMostOnce
@@ -46,12 +49,17 @@ namespace PcapDotNet.Packets
                    _addresses.Aggregate(0, (value, address) => value ^ address.GetHashCode());
         }
 
+        public ReadOnlyCollection<IpV4Address> Route
+        {
+            get { return _addresses; }
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedAddressIndex * 4);
-            for (int i = 0; i != _addresses.Length; ++i)
+            for (int i = 0; i != _addresses.Count; ++i)
                 buffer.Write(ref offset, _addresses[i], Endianity.Big);
         }
 
@@ -81,17 +89,17 @@ namespace PcapDotNet.Packets
             return true;
         }
 
-        protected IpV4OptionRoute(IpV4OptionType optionType, IpV4Address[] addresses, byte pointedAddressIndex)
+        protected IpV4OptionRoute(IpV4OptionType optionType, IList<IpV4Address> addresses, byte pointedAddressIndex)
             : base(optionType)
         {
             if (pointedAddressIndex > PointedAddressIndexMaxValue)
                 throw new ArgumentOutOfRangeException("pointedAddressIndex", pointedAddressIndex, "Maximum value is " + PointedAddressIndexMaxValue);
 
-            _addresses = addresses;
+            _addresses = addresses.AsReadOnly();
             _pointedAddressIndex = pointedAddressIndex;
         }
 
-        private readonly IpV4Address[] _addresses;
+        private readonly ReadOnlyCollection<IpV4Address> _addresses;
         private readonly byte _pointedAddressIndex;
     }
 }

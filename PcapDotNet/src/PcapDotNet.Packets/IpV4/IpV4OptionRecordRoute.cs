@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets
 {
     public class IpV4OptionRecordRoute : IpV4OptionRoute
     {
-        public IpV4OptionRecordRoute(IpV4Address[] addresses, byte pointedAddressIndex)
+        public IpV4OptionRecordRoute(IList<IpV4Address> addresses, byte pointedAddressIndex)
             : base(IpV4OptionType.RecordRoute, addresses, pointedAddressIndex)
         {
         }

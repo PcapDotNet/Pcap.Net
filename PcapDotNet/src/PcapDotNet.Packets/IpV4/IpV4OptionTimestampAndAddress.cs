@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
     public class IpV4OptionTimestampAndAddress : IpV4OptionTimestamp
     {
-        public IpV4OptionTimestampAndAddress(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, KeyValuePair<IpV4Address, uint>[] addressesAndTimestamps)
+        public IpV4OptionTimestampAndAddress(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, IList<KeyValuePair<IpV4Address, uint>> addressesAndTimestamps)
             : base(timestampType, overflow, pointedIndex)
         {
             if (timestampType != IpV4OptionTimestampType.AddressAndTimestamp &&
@@ -15,7 +17,12 @@ namespace PcapDotNet.Packets
                 throw new ArgumentException("Illegal timestamp type " + timestampType, "timestampType");
             }
 
-            _addressesAndTimestamps = addressesAndTimestamps;
+            _addressesAndTimestamps = addressesAndTimestamps.AsReadOnly();
+        }
+
+        public ReadOnlyCollection<KeyValuePair<IpV4Address, uint>> TimedRoute
+        {
+            get { return _addressesAndTimestamps; }
         }
 
         public override int GetHashCode()
@@ -43,7 +50,7 @@ namespace PcapDotNet.Packets
 
         protected override int ValuesLength
         {
-            get { return _addressesAndTimestamps.Length * 2 * 4; }
+            get { return _addressesAndTimestamps.Count * 2 * 4; }
         }
 
         protected override bool EqualValues(IpV4OptionTimestamp other)
@@ -60,6 +67,6 @@ namespace PcapDotNet.Packets
             }
         }
 
-        private readonly KeyValuePair<IpV4Address, uint>[] _addressesAndTimestamps;
+        private readonly ReadOnlyCollection<KeyValuePair<IpV4Address, uint>> _addressesAndTimestamps;
     }
 }
