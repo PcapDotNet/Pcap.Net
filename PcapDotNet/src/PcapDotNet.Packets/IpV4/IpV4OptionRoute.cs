@@ -84,6 +84,9 @@ namespace PcapDotNet.Packets
         protected IpV4OptionRoute(IpV4OptionType optionType, IpV4Address[] addresses, byte pointedAddressIndex)
             : base(optionType)
         {
+            if (pointedAddressIndex > PointedAddressIndexMaxValue)
+                throw new ArgumentOutOfRangeException("pointedAddressIndex", pointedAddressIndex, "Maximum value is " + PointedAddressIndexMaxValue);
+
             _addresses = addresses;
             _pointedAddressIndex = pointedAddressIndex;
         }

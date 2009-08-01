@@ -23,9 +23,14 @@ namespace PcapDotNet.TestUtils
             return random.NextByte(byte.MaxValue + 1);
         }
 
+        public static ushort NextUShort(this Random random, int maxValue)
+        {
+            return (ushort)random.Next(maxValue);
+        }
+
         public static ushort NextUShort(this Random random)
         {
-            return (ushort)random.Next(ushort.MaxValue + 1);
+            return random.NextUShort(ushort.MaxValue + 1);
         }
 
         public static UInt24 NextUInt24(this Random random)

@@ -12,6 +12,11 @@ namespace PcapDotNet.Packets
         public IpV4Fragmentation(IpV4FragmentationOptions options, ushort offset)
             : this((ushort)((ushort)options | (offset / 8)))
         {
+            if (offset % 8 != 0)
+                throw new ArgumentException("offset must divide by 8", "offset");
+
+            if (((ushort)options & 0x1FFF) != 0)
+                throw new ArgumentException("invalid options " + options);
         }
 
         public IpV4FragmentationOptions Options

@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets
 {
     public class IpV4OptionTimestampOnly : IpV4OptionTimestamp
     {
-        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params TimeSpan[] timestamps)
+        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params uint[] timestamps)
             : base(IpV4OptionTimestampType.TimestampOnly, overflow, pointedIndex)
         {
             _timestamps = timestamps;
@@ -19,9 +19,9 @@ namespace PcapDotNet.Packets
 
         internal static IpV4OptionTimestampOnly Read(byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
         {
-            TimeSpan[] timestamps = new TimeSpan[numValues];
+            uint[] timestamps = new uint[numValues];
             for (int i = 0; i != numValues; ++i)
-                timestamps[i] = ReadTimeOfDay(buffer, ref offset);
+                timestamps[i] = buffer.ReadUInt(ref offset, Endianity.Big);
 
             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
         }
@@ -38,10 +38,10 @@ namespace PcapDotNet.Packets
 
         protected override void WriteValues(byte[] buffer, ref int offset)
         {
-            foreach (TimeSpan timestamp in _timestamps)
-                buffer.Write(ref offset, (uint)timestamp.TotalMilliseconds, Endianity.Big);
+            foreach (uint timestamp in _timestamps)
+                buffer.Write(ref offset, timestamp, Endianity.Big);
         }
 
-        private readonly TimeSpan[] _timestamps;
+        private readonly uint[] _timestamps;
     }
 }

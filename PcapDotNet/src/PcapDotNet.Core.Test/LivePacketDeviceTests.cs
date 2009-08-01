@@ -734,7 +734,7 @@ namespace PcapDotNet.Core.Test
                 MoreAssert.IsSmallerOrEqual<uint>(1, totalStatistics.PacketsCaptured, "PacketsCaptured");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByDriver, "PacketsDroppedByDriver");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByInterface, "PacketsDroppedByInterface");
-                Assert.AreEqual<uint>(0, totalStatistics.PacketsReceived, "PacketsReceived");
+                MoreAssert.IsSmallerOrEqual<uint>(1, totalStatistics.PacketsReceived, "PacketsReceived");
                 Assert.IsNotNull(totalStatistics.ToString());
                 communicator.SetKernelBufferSize(2 * 1024 * 1024); // 2 MB instead of 1
                 communicator.SetKernelMinimumBytesToCopy(10); // 10 bytes minimum to copy
