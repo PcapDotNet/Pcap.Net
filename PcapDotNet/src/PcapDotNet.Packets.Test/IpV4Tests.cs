@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 
@@ -215,15 +217,6 @@ namespace PcapDotNet.Packets.Test
         {
             IpV4Options options = new IpV4Options(new IpV4OptionTimestampOnly(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
             Assert.IsNotNull(options);
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void IpV4OptionSimpleErrorTest()
-        {
-            IpV4Option option = new IpV4OptionSimple(IpV4OptionType.StrictSourceRouting);
-            Assert.IsNotNull(option);
             Assert.Fail();
         }
 

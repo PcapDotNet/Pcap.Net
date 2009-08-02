@@ -1,4 +1,4 @@
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public abstract class IpV4OptionComplex : IpV4Option
     {

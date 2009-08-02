@@ -1,8 +1,20 @@
 using System;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
+    /// <summary>
+    /// This option provides a way for hosts to send security, compartmentation, handling restrictions, and TCC (closed user group) parameters.
+    /// 
+    /// The format for this option is as follows:
+    /// +--------+--------+---//---+---//---+---//---+---//---+
+    /// |10000010|00001011|SSS  SSS|CCC  CCC|HHH  HHH|  TCC   |
+    /// +--------+--------+---//---+---//---+---//---+---//---+
+    /// Type=130 Length=11
+    /// 
+    /// Must be copied on fragmentation.  
+    /// This option appears at most once in a datagram.
+    /// </summary>
     public class IpV4OptionSecurity : IpV4OptionComplex, IEquatable<IpV4OptionSecurity>
     {
         public const int OptionLength = 11;
@@ -18,21 +30,39 @@ namespace PcapDotNet.Packets
             _transmissionControlCode = transmissionControlCode;
         }
 
+        /// <summary>
+        /// Specifies one of the levels of security.
+        /// </summary>
         public IpV4OptionSecurityLevel Level
         {
             get { return _level; }
         }
 
+        /// <summary>
+        /// Compartments (C field):  16 bits
+        /// An all zero value is used when the information transmitted is not compartmented.  
+        /// Other values for the compartments field may be obtained from the Defense Intelligence Agency.
+        /// </summary>
         public ushort Compartments
         {
             get { return _compartments; }
         }
         
+        /// <summary>
+        /// Handling Restrictions (H field):  16 bits
+        /// The values for the control and release markings are alphanumeric digraphs 
+        /// and are defined in the Defense Intelligence Agency Manual DIAM 65-19, "Standard Security Markings".
+        /// </summary>
         public ushort HandlingRestrictions
         {
             get { return _handlingRestrictions; }
         }
 
+        /// <summary>
+        /// Transmission Control Code (TCC field):  24 bits
+        /// Provides a means to segregate traffic and define controlled communities of interest among subscribers. 
+        /// The TCC values are trigraphs, and are available from HQ DCA Code 530.
+        /// </summary>
         public UInt24 TransmissionControlCode
         {
             get { return _transmissionControlCode; }

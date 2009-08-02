@@ -1,6 +1,6 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public struct IpV4Fragmentation : IEquatable<IpV4Fragmentation>
     {

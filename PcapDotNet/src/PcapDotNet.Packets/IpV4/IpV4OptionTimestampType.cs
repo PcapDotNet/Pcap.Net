@@ -1,6 +1,6 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public enum IpV4OptionTimestampType : byte
     {

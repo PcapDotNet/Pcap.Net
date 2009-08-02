@@ -5,7 +5,7 @@ using namespace System;
 using namespace System::Text;
 using namespace System::Net;
 using namespace PcapDotNet::Core;
-using namespace PcapDotNet::Packets;
+using namespace PcapDotNet::Packets::IpV4;
 
 IpV4Address IpV4SocketAddress::Address::get()
 {

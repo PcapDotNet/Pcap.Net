@@ -1,6 +1,7 @@
 using System;
+using PcapDotNet.Packets.IpV4;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.Ethernet
 {
     /// <summary>
     /// +------+-----------------+------------+------------------+
@@ -63,16 +64,10 @@ namespace PcapDotNet.Packets
 
             switch (EtherType)
             {
-                case EthernetType.Arp:
-                case EthernetType.Ieee8021Q:
-                    return true;
                 case EthernetType.IpV4:
                     return IpV4.IsValid;
-                case EthernetType.IpV6:
-                    return true;
-
                 default:
-                    return false;
+                    return true;
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 

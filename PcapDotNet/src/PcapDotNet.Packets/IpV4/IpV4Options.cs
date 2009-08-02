@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public class IpV4Options : ReadOnlyCollection<IpV4Option>, IEquatable<IpV4Options>
     {

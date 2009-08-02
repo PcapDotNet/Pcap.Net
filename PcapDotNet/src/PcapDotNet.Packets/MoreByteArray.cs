@@ -1,11 +1,18 @@
 using System;
 using System.Net;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets
 {
     public static class MoreByteArray
     {
+        public static void BlockCopy(this byte[] source, int sourceOffset, byte[] destination, int destinationOffset, int count)
+        {
+            Buffer.BlockCopy(source, sourceOffset, destination, destinationOffset, count);
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "short")]
         public static short ReadShort(this byte[] buffer, int offset, Endianity endianity)
         {

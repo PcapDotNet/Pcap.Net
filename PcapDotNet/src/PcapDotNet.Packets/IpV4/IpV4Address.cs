@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public struct IpV4Address
     {

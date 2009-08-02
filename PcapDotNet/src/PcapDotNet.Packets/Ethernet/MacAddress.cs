@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.Ethernet
 {
     public struct MacAddress
     {

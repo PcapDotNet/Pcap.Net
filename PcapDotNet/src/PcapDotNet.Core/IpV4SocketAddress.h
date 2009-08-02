@@ -14,9 +14,9 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// The ip version 4 address.
         /// </summary>
-		property Packets::IpV4Address Address
+		property Packets::IpV4::IpV4Address Address
         {
-            Packets::IpV4Address get();
+            Packets::IpV4::IpV4Address get();
         }
 
         virtual System::String^ ToString() override;
@@ -25,6 +25,6 @@ namespace PcapDotNet { namespace Core
         IpV4SocketAddress(sockaddr *address);
 
     private:
-		Packets::IpV4Address _address;
+		Packets::IpV4::IpV4Address _address;
     };
 }}

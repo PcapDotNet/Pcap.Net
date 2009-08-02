@@ -1,7 +1,55 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
+    /// <summary>
+    /// Internet Timestamp
+    /// +--------+--------+--------+--------+
+    /// |01000100| length | pointer|oflw|flg|
+    /// +--------+--------+--------+--------+
+    /// |         internet address          |
+    /// +--------+--------+--------+--------+
+    /// |             timestamp             |
+    /// +--------+--------+--------+--------+
+    /// |                 .                 |
+    ///                   .
+    ///                   .
+    ///  Type = 68
+    /// 
+    /// The Option Length is the number of octets in the option counting the type, length, pointer, and overflow/flag octets (maximum length 40).
+    /// 
+    /// The Pointer is the number of octets from the beginning of this option to the end of timestamps plus one 
+    /// (i.e., it points to the octet beginning the space for next timestamp).  
+    /// The smallest legal value is 5.  
+    /// The timestamp area is full when the pointer is greater than the length.
+    /// 
+    /// The Overflow (oflw) [4 bits] is the number of IP modules that cannot register timestamps due to lack of space.
+    /// 
+    /// The Flag (flg) [4 bits] values are 
+    /// 0 -- time stamps only, stored in consecutive 32-bit words,
+    /// 1 -- each timestamp is preceded with internet address of the registering entity,
+    /// 3 -- the internet address fields are prespecified.  
+    ///      An IP module only registers its timestamp if it matches its own address with the next specified internet address.
+    /// 
+    /// The Timestamp is a right-justified, 32-bit timestamp in milliseconds since midnight UT.  
+    /// If the time is not available in milliseconds or cannot be provided with respect to midnight UT 
+    /// then any time may be inserted as a timestamp provided the high order bit of the timestamp field is set to one 
+    /// to indicate the use of a non-standard value.
+    /// 
+    /// The originating host must compose this option with a large enough timestamp data area to hold all the timestamp information expected.  
+    /// The size of the option does not change due to adding timestamps.  
+    /// The intitial contents of the timestamp data area must be zero or internet address/zero pairs.
+    /// 
+    /// If the timestamp data area is already full (the pointer exceeds the length) the datagram is forwarded without inserting the timestamp, 
+    /// but the overflow count is incremented by one.
+    /// If there is some room but not enough room for a full timestamp to be inserted, or the overflow count itself overflows, 
+    /// the original datagram is considered to be in error and is discarded.
+    /// In either case an ICMP parameter problem message may be sent to the source host.
+    /// 
+    /// The timestamp option is not copied upon fragmentation.  
+    /// It is carried in the first fragment.  
+    /// Appears at most once in a datagram.
+    /// </summary>
     public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
         public const int OptionMinimumLength = 4;

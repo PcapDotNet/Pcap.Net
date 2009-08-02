@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
@@ -91,8 +93,9 @@ namespace PcapDotNet.Packets.TestUtils
             switch (optionType)
             {
                 case IpV4OptionType.EndOfOptionList:
+                    return IpV4Option.End;
                 case IpV4OptionType.NoOperation:
-                    return new IpV4OptionSimple(optionType);
+                    return IpV4Option.Nop;
 
                 case IpV4OptionType.Security:
                     return new IpV4OptionSecurity(random.NextEnum<IpV4OptionSecurityLevel>(), random.NextUShort(), random.NextUShort(),
