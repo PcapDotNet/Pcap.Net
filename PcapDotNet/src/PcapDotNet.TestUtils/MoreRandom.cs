@@ -83,7 +83,7 @@ namespace PcapDotNet.TestUtils
             return new DateTime(random.NextLong(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks + 1));
         }
 
-        public static T NextEnum<T>(this Random random, params T[] valuesToIgnore)
+        public static T NextEnum<T>(this Random random, IEnumerable<T> valuesToIgnore)
         {
             Type type = typeof(T);
             if (!type.IsEnum)
@@ -94,6 +94,11 @@ namespace PcapDotNet.TestUtils
                 throw new ArgumentException("T is an enum with no values", "T");
 
             return (T)random.NextValue(enumValues);
+        }
+
+        public static T NextEnum<T>(this Random random, params T[] valuesToIgnore)
+        {
+            return random.NextEnum((IEnumerable<T>)valuesToIgnore);
         }
 
         public static object NextValue<T>(this Random random, IList<T> values)
