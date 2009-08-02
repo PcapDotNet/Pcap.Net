@@ -44,5 +44,10 @@ namespace PcapDotNet.Base
         {
             return sequence.SequenceToString(string.Empty);
         }
+
+        public static int SequenceGetHashCode<T>(this IEnumerable<T> sequence)
+        {
+            return sequence.Aggregate(0, (valueSoFar, element) => valueSoFar ^ element.GetHashCode());
+        }
     }
 }

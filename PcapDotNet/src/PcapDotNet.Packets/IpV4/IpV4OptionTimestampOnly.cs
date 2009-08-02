@@ -26,8 +26,7 @@ namespace PcapDotNet.Packets
 
         public override int GetHashCode()
         {
-            return base.GetHashCode() ^
-                   _timestamps.Aggregate(0, (value, timestamp) => value ^ timestamp.GetHashCode());
+            return base.GetHashCode() ^ Timestamps.SequenceGetHashCode();
         }
 
         internal static IpV4OptionTimestampOnly Read(byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
@@ -41,17 +40,17 @@ namespace PcapDotNet.Packets
 
         protected override int ValuesLength
         {
-            get { return _timestamps.Count * 4; }
+            get { return Timestamps.Count * sizeof(uint); }
         }
 
         protected override bool EqualValues(IpV4OptionTimestamp other)
         {
-            return _timestamps.SequenceEqual(((IpV4OptionTimestampOnly)other)._timestamps);
+            return Timestamps.SequenceEqual(((IpV4OptionTimestampOnly)other).Timestamps);
         }
 
         protected override void WriteValues(byte[] buffer, ref int offset)
         {
-            foreach (uint timestamp in _timestamps)
+            foreach (uint timestamp in Timestamps)
                 buffer.Write(ref offset, timestamp, Endianity.Big);
         }
 

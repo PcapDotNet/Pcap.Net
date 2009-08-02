@@ -154,9 +154,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                             case IpV4OptionTimestampType.AddressAndTimestamp:
                                 int numPairs = random.Next((optionsLength - IpV4OptionTimestamp.OptionMinimumLength) / 8 + 1);
-                                KeyValuePair<IpV4Address, uint>[] pairs = new KeyValuePair<IpV4Address, uint>[numPairs];
+                                IpV4OptionTimedAddress[] pairs = new IpV4OptionTimedAddress[numPairs];
                                 for (int i = 0; i != numPairs; ++i)
-                                    pairs[i] = new KeyValuePair<IpV4Address, uint>(random.NextIpV4Address(), random.NextUInt());
+                                    pairs[i] = new IpV4OptionTimedAddress(random.NextIpV4Address(), random.NextUInt());
 
                                 option = new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, pairs);
                                 break;

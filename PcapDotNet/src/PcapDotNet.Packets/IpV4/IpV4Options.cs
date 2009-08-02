@@ -56,7 +56,7 @@ namespace PcapDotNet.Packets
         public override int GetHashCode()
         {
             return BytesLength.GetHashCode() ^
-                   this.Aggregate(0, (value, option) => value ^ option.GetHashCode());
+                   this.SequenceGetHashCode();
         }
 
         public override string ToString()
