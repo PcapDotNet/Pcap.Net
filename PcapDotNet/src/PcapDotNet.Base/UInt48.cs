@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace PcapDotNet.Base
@@ -47,7 +48,7 @@ namespace PcapDotNet.Base
 
         public override string ToString()
         {
-            return ((long)this).ToString();
+            return ((long)this).ToString(CultureInfo.InvariantCulture);
         }
 
         private UInt48(long value)

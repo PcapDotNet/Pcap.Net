@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -51,7 +52,7 @@ namespace PcapDotNet.Base
 
         public override string ToString()
         {
-            return ((int)this).ToString();
+            return ((int)this).ToString(CultureInfo.InvariantCulture);
         }
 
         private UInt24(int value)

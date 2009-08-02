@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets
 {
     public class IpV4OptionTimestampAndAddress : IpV4OptionTimestamp
     {
-        public IpV4OptionTimestampAndAddress(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, IList<KeyValuePair<IpV4Address, uint>> addressesAndTimestamps)
+        public IpV4OptionTimestampAndAddress(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, IList<IpV4OptionTimedAddress> addressesAndTimestamps)
             : base(timestampType, overflow, pointedIndex)
         {
             if (timestampType != IpV4OptionTimestampType.AddressAndTimestamp &&
@@ -20,17 +20,14 @@ namespace PcapDotNet.Packets
             _addressesAndTimestamps = addressesAndTimestamps.AsReadOnly();
         }
 
-        public ReadOnlyCollection<KeyValuePair<IpV4Address, uint>> TimedRoute
+        public ReadOnlyCollection<IpV4OptionTimedAddress> TimedRoute
         {
             get { return _addressesAndTimestamps; }
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode() ^
-                   TimedRoute.Aggregate(0, (value, pair) => value ^
-                                                            pair.Key.GetHashCode() ^
-                                                            (int)pair.Value);
+            return base.GetHashCode() ^ TimedRoute.SequenceGetHashCode();
         }
 
         internal static IpV4OptionTimestampAndAddress Read(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
@@ -38,11 +35,11 @@ namespace PcapDotNet.Packets
             if (numValues % 2 != 0)
                 return null;
 
-            KeyValuePair<IpV4Address, uint>[] addressesAndTimestamps = new KeyValuePair<IpV4Address, uint>[numValues / 2];
+            IpV4OptionTimedAddress[] addressesAndTimestamps = new IpV4OptionTimedAddress[numValues / 2];
             for (int i = 0; i != numValues / 2; ++i)
             {
-                addressesAndTimestamps[i] = new KeyValuePair<IpV4Address, uint>(buffer.ReadIpV4Address(ref offset, Endianity.Big),
-                                                                                buffer.ReadUInt(ref offset, Endianity.Big));
+                addressesAndTimestamps[i] = new IpV4OptionTimedAddress(buffer.ReadIpV4Address(ref offset, Endianity.Big),
+                                                                       buffer.ReadUInt(ref offset, Endianity.Big));
             }
 
             return new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, addressesAndTimestamps);
@@ -60,13 +57,13 @@ namespace PcapDotNet.Packets
 
         protected override void WriteValues(byte[] buffer, ref int offset)
         {
-            foreach (KeyValuePair<IpV4Address, uint> addressAndTimestamp in TimedRoute)
+            foreach (IpV4OptionTimedAddress addressAndTimestamp in TimedRoute)
             {
-                buffer.Write(ref offset, addressAndTimestamp.Key, Endianity.Big);
-                buffer.Write(ref offset, addressAndTimestamp.Value, Endianity.Big);
+                buffer.Write(ref offset, addressAndTimestamp.Address, Endianity.Big);
+                buffer.Write(ref offset, addressAndTimestamp.MillisecondsSinceMidnight, Endianity.Big);
             }
         }
 
-        private readonly ReadOnlyCollection<KeyValuePair<IpV4Address, uint>> _addressesAndTimestamps;
+        private readonly ReadOnlyCollection<IpV4OptionTimedAddress> _addressesAndTimestamps;
     }
 }

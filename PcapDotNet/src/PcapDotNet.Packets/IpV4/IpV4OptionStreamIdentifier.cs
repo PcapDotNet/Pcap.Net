@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets
     public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IEquatable<IpV4OptionStreamIdentifier>
     {
         public const int OptionLength = 4;
-        public const int OptionvalueLength = OptionLength - OptionHeaderLength;
+        public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
         public IpV4OptionStreamIdentifier(ushort identifier)
             : base(IpV4OptionType.StreamIdentifier)

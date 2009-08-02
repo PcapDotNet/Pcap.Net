@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets
         {
             return base.GetHashCode() ^
                    PointedAddressIndex ^
-                   Route.Aggregate(0, (value, address) => value ^ address.GetHashCode());
+                   Route.SequenceGetHashCode();
         }
 
         public ReadOnlyCollection<IpV4Address> Route
