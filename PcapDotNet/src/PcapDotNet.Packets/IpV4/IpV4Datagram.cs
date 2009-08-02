@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
     /// +-----+---------+-----+-----------------+-------+-----------------+

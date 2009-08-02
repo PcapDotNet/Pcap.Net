@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     public abstract class IpV4OptionRoute : IpV4OptionComplex, IEquatable<IpV4OptionRoute>
     {

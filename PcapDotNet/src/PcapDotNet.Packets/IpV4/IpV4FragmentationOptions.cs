@@ -1,6 +1,6 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
     [Flags]
     public enum IpV4FragmentationOptions : ushort

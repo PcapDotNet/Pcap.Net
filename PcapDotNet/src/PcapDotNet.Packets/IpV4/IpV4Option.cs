@@ -1,39 +1,68 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
+    /// <summary>
+    /// Represents an ip option according to rfc 791. 
+    /// </summary>
     public abstract class IpV4Option : IEquatable<IpV4Option>
     {
+        ///<summary>
+        /// This option indicates the end of the option list.
+        /// This might not coincide with the end of the internet header according to the internet header length.
+        /// This is used at the end of all options, not the end of each option, and need only be used if the end of the options would not otherwise coincide with the end of the internet header.
+        /// May be copied, introduced, or deleted on fragmentation, or for any other reason.
+        ///</summary>
         public static IpV4OptionSimple End
         {
             get { return _end; }
         }
 
+        /// <summary>
+        /// This option may be used between options, for example, to align the beginning of a subsequent option on a 32 bit boundary.
+        /// May be copied, introduced, or deleted on fragmentation, or for any other reason.
+        /// </summary>
         public static IpV4OptionSimple Nop
         {
             get { return _nop; }
         }
 
+        /// <summary>
+        /// The type of the ip option.
+        /// </summary>
         public IpV4OptionType OptionType
         {
             get { return _type; }
         }
 
+        /// <summary>
+        /// The number of bytes this option will take.
+        /// </summary>
         public abstract int Length
         { 
             get;
         }
 
+        /// <summary>
+        /// True iff this option may appear at most once in a datagram.
+        /// </summary>
         public abstract bool IsAppearsAtMostOnce
         {
             get;
         }
 
+        /// <summary>
+        /// Checks whether two options have equivalent type.
+        /// Useful to check if an option that must appear at most once appears in the list.
+        /// </summary>
         public bool Equivalent(IpV4Option option)
         {
             return OptionType == option.OptionType;
         }
 
+        /// <summary>
+        /// Checks if the two options are exactly the same - including type and value.
+        /// </summary>
         public virtual bool Equals(IpV4Option other)
         {
             if (other == null)
@@ -41,16 +70,33 @@ namespace PcapDotNet.Packets
             return Equivalent(other);
         }
 
+        /// <summary>
+        /// Checks if the two options are exactly the same - including type and value.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as IpV4Option);
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. 
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"/>.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
             return (byte)OptionType;
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return OptionType.ToString();

@@ -6,13 +6,32 @@ using System.Text;
 
 namespace PcapDotNet.Base
 {
+    /// <summary>
+    /// Extension methods for IEnumerable of type T.
+    /// </summary>
     public static class MoreIEnumerable
     {
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> sequence, T value)
+        /// <summary>
+        /// Concatenates a sequence with more values.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence to concatenate.</param>
+        /// <param name="values">The values that will be concatenated with the sequence.</param>
+        /// <returns>A sequence containing all the original sequence elements cocatenated with values elements.</returns>
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> sequence, params T[] values)
         {
-            return sequence.Concat(new[] {value});
+            return sequence.Concat((IEnumerable<T>)values);
         }
 
+        /// <summary>
+        /// Converts a sequence to a string by converting each element to a string.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to translate to string.</param>
+        /// <param name="separator">A separator between the elements.</param>
+        /// <param name="prefix">Prefix to the entire string.</param>
+        /// <param name="suffix">Suffix to the entire string.</param>
+        /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence, string separator, string prefix, string suffix)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -30,21 +49,48 @@ namespace PcapDotNet.Base
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Converts a sequence to a string by converting each element to a string.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to translate to string.</param>
+        /// <param name="separator">A separator between the elements.</param>
+        /// <param name="prefix">Prefix to the entire string.</param>
+        /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence, string separator, string prefix)
         {
             return sequence.SequenceToString(separator, prefix, string.Empty);
         }
 
+        /// <summary>
+        /// Converts a sequence to a string by converting each element to a string.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to translate to string.</param>
+        /// <param name="separator">A separator between the elements.</param>
+        /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence, string separator)
         {
             return sequence.SequenceToString(separator, string.Empty);
         }
 
+        /// <summary>
+        /// Converts a sequence to a string by converting each element to a string.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to translate to string.</param>
+        /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence)
         {
             return sequence.SequenceToString(string.Empty);
         }
 
+        /// <summary>
+        /// Creates a hash code by xoring the hash codes of the elements in the sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to create the hash code for.</param>
+        /// <returns>The hash code created by xoring all the hash codes of the elements in the sequence.</returns>
         public static int SequenceGetHashCode<T>(this IEnumerable<T> sequence)
         {
             return sequence.Aggregate(0, (valueSoFar, element) => valueSoFar ^ element.GetHashCode());

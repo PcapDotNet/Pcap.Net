@@ -1,7 +1,19 @@
 using System;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.IpV4
 {
+    /// <summary>
+    /// Stream Identifier
+    /// +--------+--------+--------+--------+
+    /// |10001000|00000010|    Stream ID    |
+    /// +--------+--------+--------+--------+
+    ///  Type=136 Length=4
+    /// 
+    /// This option provides a way for the 16-bit SATNET stream identifier to be carried through networks that do not support the stream concept.
+    /// 
+    /// Must be copied on fragmentation.  
+    /// Appears at most once in a datagram.
+    /// </summary>
     public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IEquatable<IpV4OptionStreamIdentifier>
     {
         public const int OptionLength = 4;
