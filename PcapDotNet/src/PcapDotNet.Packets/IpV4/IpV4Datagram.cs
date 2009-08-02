@@ -105,7 +105,12 @@ namespace PcapDotNet.Packets.IpV4
 
         public IpV4Options Options
         {
-            get { return new IpV4Options(Buffer, StartOffset + Offset.Options, HeaderLength - HeaderMinimumLength); }
+            get
+            {
+                if (_options == null)
+                    _options = new IpV4Options(Buffer, StartOffset + Offset.Options, HeaderLength - HeaderMinimumLength);
+                return _options;
+            }
         }
 
         public Datagram Payload
@@ -195,6 +200,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         private bool? _isHeaderChecksumCorrect;
+        private IpV4Options _options;
         private Datagram _tcp;
     }
 }
