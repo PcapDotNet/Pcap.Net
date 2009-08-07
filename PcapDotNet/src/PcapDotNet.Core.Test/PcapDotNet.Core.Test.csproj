@@ -40,18 +40,25 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BerkeleyPacketFilterTests.cs" />
     <Compile Include="DumpPacketsTests.cs" />
     <Compile Include="MoreAssert.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
+    <Compile Include="MoreIpV4Option.cs" />
+    <Compile Include="MoreXElement.cs" />
     <Compile Include="PacketHandler.cs" />
     <Compile Include="OfflinePacketDeviceTests.cs" />
     <Compile Include="PacketSendBufferTests.cs" />
     <Compile Include="PcapDataLinkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PcapLibTests.cs" />
+    <Compile Include="WiresharkCompareTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">

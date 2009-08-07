@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Text;
 
@@ -57,7 +58,15 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The version (4).
         /// </summary>
-        public const int Version = 0x4;
+        public const int DefaultVersion = 0x4;
+
+        /// <summary>
+        /// The header length in bytes.
+        /// </summary>
+        public int Version
+        {
+            get { return (this[Offset.VersionAndHeaderLength] & 0xF0) >> 4; }
+        }
 
         /// <summary>
         /// The header length in bytes.
@@ -200,7 +209,7 @@ namespace PcapDotNet.Packets.IpV4
                                          IpV4Options options, int payloadLength)
         {
             int headerLength = HeaderMinimumLength + options.BytesLength;
-            buffer[offset + Offset.VersionAndHeaderLength] = (byte)((Version << 4) + headerLength / 4);
+            buffer[offset + Offset.VersionAndHeaderLength] = (byte)((DefaultVersion << 4) + headerLength / 4);
             buffer[offset + Offset.TypeOfService] = typeOfService;
             buffer.Write(offset + Offset.TotalLength, (ushort)(headerLength + payloadLength), Endianity.Big);
             buffer.Write(offset + Offset.Identification, identification, Endianity.Big);
@@ -239,8 +248,8 @@ namespace PcapDotNet.Packets.IpV4
 
         private ushort CalculateHeaderChecksum()
         {
-            uint sum = Sum16Bits(Buffer, StartOffset, Offset.HeaderChecksum) +
-                       Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, HeaderLength - Offset.HeaderChecksum - 2);
+            uint sum = Sum16Bits(Buffer, StartOffset, Math.Min(Offset.HeaderChecksum, Length)) +
+                       Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, Math.Min(HeaderLength, Length) - Offset.HeaderChecksum - 2);
 
             return Sum16BitsToChecksum(sum);
         }

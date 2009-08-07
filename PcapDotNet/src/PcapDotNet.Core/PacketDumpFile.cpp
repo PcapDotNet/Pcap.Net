@@ -6,8 +6,37 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace System::Collections::Generic;
 using namespace PcapDotNet::Core;
 using namespace PcapDotNet::Packets;
+
+// static
+void PacketDumpFile::Dump(String^ fileName, PcapDataLink dataLink, int snapshotLength, IEnumerable<Packet^>^ packets)
+{
+    pcap_t* pcapDescriptor = pcap_open_dead(dataLink.Value, snapshotLength);
+    if (pcapDescriptor == NULL)
+        throw gcnew InvalidOperationException("Unable to open open a dead capture");
+
+    try
+    {
+        PacketDumpFile^ dumpFile = gcnew PacketDumpFile(pcapDescriptor, fileName);
+        try
+        {
+            for each (Packet^ packet in packets)
+            {
+                dumpFile->Dump(packet);
+            }
+        }
+        finally
+        {
+            dumpFile->~PacketDumpFile();
+        }
+    }
+    finally
+    {
+        pcap_close(pcapDescriptor);
+    }
+}
 
 void PacketDumpFile::Dump(Packet^ packet)
 {

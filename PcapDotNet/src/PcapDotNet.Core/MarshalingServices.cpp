@@ -6,9 +6,12 @@ using namespace System::Runtime::InteropServices;
 using namespace PcapDotNet::Core;
 
 // static 
-std::string MarshalingServices::ManagedToUnmanagedString(System::String^ managedString)
+std::string MarshalingServices::ManagedToUnmanagedString(String^ managedString)
 {
     // Marshal the managed string to unmanaged memory.
+    if (String::IsNullOrEmpty(managedString))
+        return std::string();
+
     array<Byte>^ managedBytes = Encoding::ASCII->GetBytes(managedString);
     pin_ptr<Byte> pinManagedBytes = &managedBytes[0];
     Byte* unmanagedBytes = pinManagedBytes;

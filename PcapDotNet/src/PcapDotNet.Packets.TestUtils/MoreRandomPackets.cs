@@ -30,6 +30,8 @@ namespace PcapDotNet.Packets.TestUtils
             return new Packet(buffer, DateTime.Now, random.NextDataLinkKind());
         }
 
+        // Ethernet
+
         public static MacAddress NextMacAddress(this Random random)
         {
             return new MacAddress(random.NextUInt48());
@@ -40,7 +42,7 @@ namespace PcapDotNet.Packets.TestUtils
             return random.NextEnum(EthernetType.None);
         }
 
-        public static Packet NextEthernet(this Random random, int packetSize, DateTime timestamp, MacAddress ethernetSource, MacAddress ethernetDestination)
+        public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, MacAddress ethernetSource, MacAddress ethernetDestination)
         {
             if (packetSize < EthernetDatagram.HeaderLength)
                 throw new ArgumentOutOfRangeException("packetSize", packetSize, "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLength + ")");
@@ -50,24 +52,33 @@ namespace PcapDotNet.Packets.TestUtils
                                           random.NextDatagram(packetSize - EthernetDatagram.HeaderLength));
         }
 
-        public static Packet NextEthernet(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)
+        public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)
         {
-            return random.NextEthernet(packetSize, timestamp, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
+            return random.NextEthernetPacket(packetSize, timestamp, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
         }
 
-        public static Packet NextEthernet(this Random random, int packetSize, string ethernetSource, string ethernetDestination)
+        public static Packet NextEthernetPacket(this Random random, int packetSize, string ethernetSource, string ethernetDestination)
         {
-            return random.NextEthernet(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
+            return random.NextEthernetPacket(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
         }
 
-        public static Packet NextEthernet(this Random random, int packetSize)
+        public static Packet NextEthernetPacket(this Random random, int packetSize)
         {
-            return random.NextEthernet(packetSize, DateTime.Now, random.NextMacAddress(), random.NextMacAddress());
+            return random.NextEthernetPacket(packetSize, DateTime.Now, random.NextMacAddress(), random.NextMacAddress());
         }
+
+        // IPv4
 
         public static IpV4Address NextIpV4Address(this Random random)
         {
             return new IpV4Address(random.NextUInt());
+        }
+
+        public static IpV4Fragmentation NextIpV4Fragmentation(this Random random)
+        {
+            IpV4FragmentationOptions ipV4FragmentationFlags = random.NextEnum<IpV4FragmentationOptions>();
+            ushort ipV4FragmentationOffset = (ushort)(random.NextUShort() / 8 * 8);
+            return new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
         }
 
         public static IpV4OptionTimeOfDay NextIpV4OptionTimeOfDay(this Random random)
@@ -199,6 +210,5 @@ namespace PcapDotNet.Packets.TestUtils
             }
             return new IpV4Options(options);
         }
-
     }
 }

@@ -83,7 +83,7 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
                 MoreAssert.IsInRange(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1.02), finishedWaiting - startWaiting);
 
-                Packet sentPacket = _random.NextEthernet(24, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(24, SourceMac, DestinationMac);
 
                 DateTime startSendingTime = DateTime.Now;
 
@@ -159,7 +159,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
 
                 for (int i = 0; i != NumPackets; ++i)
                     communicator.SendPacket(sentPacket);
@@ -184,7 +184,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
 
                 for (int i = 0; i != NumPackets; ++i)
                     communicator.SendPacket(sentPacket);
@@ -234,7 +234,7 @@ namespace PcapDotNet.Core.Test
                 communicator.Mode = PacketCommunicatorMode.Statistics;
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = _random.NextEthernet(PacketSize, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(PacketSize, SourceMac, DestinationMac);
 
                 PacketSampleStatistics statistics;
                 PacketCommunicatorReceiveResult result = communicator.ReceiveStatistics(out statistics);
@@ -341,7 +341,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetKernelBufferSize(50);
-                Packet packet = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 communicator.ReceivePacket(out packet);
             }
@@ -358,7 +358,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetKernelBufferSize(50);
-                Packet packet = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 int numPacketsGot;
                 communicator.ReceiveSomePackets(out numPacketsGot, 1, delegate { });
@@ -376,7 +376,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetKernelBufferSize(50);
-                Packet packet = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 Exception exception = null;
                 Thread thread = new Thread(delegate()
@@ -434,7 +434,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetKernelMinimumBytesToCopy(1024 * 1024);
-                Packet expectedPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet expectedPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 for (int i = 0; i != 5; ++i)
                 {
                     communicator.SendPacket(expectedPacket);
@@ -459,7 +459,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetKernelMinimumBytesToCopy(1);
-                Packet expectedPacket = _random.NextEthernet(100, SourceMac, DestinationMac);
+                Packet expectedPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 for (int i = 0; i != 100; ++i)
                 {
                     communicator.SendPacket(expectedPacket);
@@ -486,7 +486,7 @@ namespace PcapDotNet.Core.Test
                 communicator.SetSamplingMethod(new SamplingMethodOneEveryCount(5));
                 for (int i = 0; i != 20; ++i)
                 {
-                    Packet expectedPacket = _random.NextEthernet(60 * (i + 1), SourceMac, DestinationMac);
+                    Packet expectedPacket = _random.NextEthernetPacket(60 * (i + 1), SourceMac, DestinationMac);
                     communicator.SendPacket(expectedPacket);
                 }
 
@@ -514,12 +514,12 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
-                Packet expectedPacket = _random.NextEthernet(60, SourceMac, DestinationMac);
+                Packet expectedPacket = _random.NextEthernetPacket(60, SourceMac, DestinationMac);
                 communicator.SendPacket(expectedPacket);
                 Thread.Sleep(TimeSpan.FromSeconds(0.75));
                 for (int i = 0; i != 10; ++i)
                 {
-                    expectedPacket = _random.NextEthernet(60 * (i + 2), SourceMac, DestinationMac);
+                    expectedPacket = _random.NextEthernetPacket(60 * (i + 2), SourceMac, DestinationMac);
                     communicator.SendPacket(expectedPacket);
                     Thread.Sleep(TimeSpan.FromSeconds(0.5));
                 }
@@ -587,7 +587,7 @@ namespace PcapDotNet.Core.Test
 
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
 
-                Packet sentPacket = _random.NextEthernet(packetSize, sourceMac, destinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(packetSize, sourceMac, destinationMac);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
                 int numStatisticsGot = 0;
@@ -637,7 +637,7 @@ namespace PcapDotNet.Core.Test
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
 
-            Packet packetToSend = _random.NextEthernet(packetSize, SourceMac, DestinationMac);
+            Packet packetToSend = _random.NextEthernetPacket(packetSize, SourceMac, DestinationMac);
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
@@ -681,7 +681,7 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
-                Packet sentPacket = _random.NextEthernet(packetSize, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(packetSize, SourceMac, DestinationMac);
 
                 PacketCommunicatorReceiveResult result = PacketCommunicatorReceiveResult.None;
 

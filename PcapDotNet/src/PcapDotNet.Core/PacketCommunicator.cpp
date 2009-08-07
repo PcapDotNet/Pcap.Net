@@ -14,25 +14,26 @@ using namespace System::Collections::Generic;
 using namespace PcapDotNet::Packets;
 using namespace PcapDotNet::Core;
 
-PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
+// static 
+DateTime PacketCommunicator::MinimumPacketTimestamp::get()
 {
-    // Open the device
-    char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
-                                       snapshotLength,               // portion of the packet to capture
-                                                              // 65536 guarantees that the whole packet will be captured on all the link layers
-                                       safe_cast<int>(attributes),
-                                       readTimeout,           // read timeout
-                                       auth,                  // authentication on the remote machine
-                                       errbuf);               // error buffer
+    timeval zeroTimeValue;
+    zeroTimeValue.tv_sec = Int32::MinValue;
+    zeroTimeValue.tv_usec = Int32::MinValue;
+    DateTime result;
+    Timestamp::PcapTimestampToDateTime(zeroTimeValue, result);
+    return result;
+}
 
-    if (pcapDescriptor == NULL)
-    {
-        throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
-    }
-
-    _pcapDescriptor = pcapDescriptor;
-    _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
+// static 
+DateTime PacketCommunicator::MaximumPacketTimestamp::get()
+{
+    timeval maxTimeValue;
+    maxTimeValue.tv_sec = Int32::MaxValue;
+    maxTimeValue.tv_usec = Int32::MaxValue;
+    DateTime result;
+    Timestamp::PcapTimestampToDateTime(maxTimeValue, result);
+    return result;
 }
 
 PcapDataLink PacketCommunicator::DataLink::get()
@@ -299,6 +300,43 @@ PacketCommunicator::~PacketCommunicator()
     pcap_close(_pcapDescriptor);
 }
 
+// Internal
+
+PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
+{
+    // Open the device
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
+                                       snapshotLength,        // portion of the packet to capture
+                                                              // 65536 guarantees that the whole packet will be captured on all the link layers
+                                       safe_cast<int>(attributes),
+                                       readTimeout,           // read timeout
+                                       auth,                  // authentication on the remote machine
+                                       errbuf);               // error buffer
+
+    if (pcapDescriptor == NULL)
+    {
+        throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
+    }
+
+    _pcapDescriptor = pcapDescriptor;
+    _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
+}
+
+// Protected
+
+pcap_t* PacketCommunicator::PcapDescriptor::get()
+{
+    return _pcapDescriptor;
+}
+
+InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::String^ errorMessage)
+{
+    return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
+}
+
+// Private
+
 // static
 Packet^ PacketCommunicator::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, IDataLink^ dataLink)
 {
@@ -331,16 +369,6 @@ void PacketCommunicator::AssertMode(PacketCommunicatorMode mode)
 {
     if (Mode != mode)
         throw gcnew InvalidOperationException("Wrong Mode. Must be in mode " + mode.ToString() + " and not in mode " + Mode.ToString());
-}
-
-InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::String^ errorMessage)
-{
-    return PcapError::BuildInvalidOperation(errorMessage, _pcapDescriptor);
-}
-
-pcap_t* PacketCommunicator::PcapDescriptor::get()
-{
-    return _pcapDescriptor;
 }
 
 void PacketCommunicator::PacketHandler::Handle(unsigned char *, const struct pcap_pkthdr *packetHeader, const unsigned char *packetData)

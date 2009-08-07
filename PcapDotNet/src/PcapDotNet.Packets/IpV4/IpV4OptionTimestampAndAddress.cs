@@ -43,6 +43,14 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
+        /// The number of timestamps this option holds (or can hold).
+        /// </summary>
+        public override int CountTimestamps
+        {
+            get { return TimedRoute.Count(); }
+        }
+
+        /// <summary>
         /// The pairs of addresses and timestamps where each timestamp time passed since midnight UT.
         /// </summary>
         public ReadOnlyCollection<IpV4OptionTimedAddress> TimedRoute

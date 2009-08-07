@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PcapDeclarations.h"
+#include "PcapDataLink.h"
 
 namespace PcapDotNet { namespace Core 
 {
@@ -10,6 +11,16 @@ namespace PcapDotNet { namespace Core
     public ref class PacketDumpFile : System::IDisposable
     {
     public:
+        /// <summary>
+        /// Creates a dump file and saves the given packets to disk.
+        /// This method is useful when you've got packets to save but no device.
+        /// </summary>
+        /// <param name="fileName">The name of the dump file.</param>
+        /// <param name="dataLink">The data link of the packets saved globally in the dump file.</param>
+        /// <param name="snapshotLength">The dimension of the packet portion (in bytes) that is used when writing the packets. 65536 guarantees that the whole packet will be captured on all the link layers.</param>
+        /// <param name="packets">The packets to save to the dump file.</param>
+        static void Dump(System::String^ fileName, PcapDataLink dataLink, int snapshotLength, System::Collections::Generic::IEnumerable<Packets::Packet^>^ packets);
+
         /// <summary>
         /// Save a packet to disk.
         /// Outputs a packet to the "savefile" opened with PacketCommunicator.OpenDump().
