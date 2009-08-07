@@ -87,7 +87,7 @@ namespace PcapDotNet.Core.Test
             Random random = new Random();
             for (int i = 0; i != numPackets; ++i)
             {
-                DateTime packetTimestamp = random.NextDateTime(PacketCommunicator.MinimumPacketTimestamp, PacketCommunicator.MaximumPacketTimestamp);
+                DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp);
                 if (random.NextBool())
                 {
                     yield return
@@ -315,14 +315,6 @@ namespace PcapDotNet.Core.Test
                         return optionFieldShow;
                     });
 
-//                List<string> strings1 = new List<string>(optionShows);
-//                List<string> strings2 = new List<string>(option.GetWiresharkSubfieldStrings());
-
-//                for (int i = 0; i != strings1.Count; ++i )
-//                {
-//                    Assert.AreEqual(strings1[i], strings2[i]);
-//                }
-
                 Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
             }
         }
@@ -355,7 +347,7 @@ namespace PcapDotNet.Core.Test
                         DateTime fieldTimestamp = fieldShow[4] == ' '
                                                       ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
                                                       : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-0.5), fieldTimestamp.AddSeconds(0.5), packet.Timestamp);
+                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-1), fieldTimestamp.AddSeconds(1), packet.Timestamp);
                         break;
 
                     case "frame.len":

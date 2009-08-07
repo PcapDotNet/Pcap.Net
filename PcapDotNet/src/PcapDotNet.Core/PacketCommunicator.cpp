@@ -2,7 +2,7 @@
 
 #include "MarshalingServices.h"
 #include "PacketDumpFile.h"
-#include "Timestamp.h"
+#include "PacketTimestamp.h"
 #include "PcapError.h"
 #include "Pcap.h"
 
@@ -13,28 +13,6 @@ using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Generic;
 using namespace PcapDotNet::Packets;
 using namespace PcapDotNet::Core;
-
-// static 
-DateTime PacketCommunicator::MinimumPacketTimestamp::get()
-{
-    timeval zeroTimeValue;
-    zeroTimeValue.tv_sec = Int32::MinValue;
-    zeroTimeValue.tv_usec = Int32::MinValue;
-    DateTime result;
-    Timestamp::PcapTimestampToDateTime(zeroTimeValue, result);
-    return result;
-}
-
-// static 
-DateTime PacketCommunicator::MaximumPacketTimestamp::get()
-{
-    timeval maxTimeValue;
-    maxTimeValue.tv_sec = Int32::MaxValue;
-    maxTimeValue.tv_usec = Int32::MaxValue;
-    DateTime result;
-    Timestamp::PcapTimestampToDateTime(maxTimeValue, result);
-    return result;
-}
 
 PcapDataLink PacketCommunicator::DataLink::get()
 {
@@ -341,7 +319,7 @@ InvalidOperationException^ PacketCommunicator::BuildInvalidOperation(System::Str
 Packet^ PacketCommunicator::CreatePacket(const pcap_pkthdr& packetHeader, const unsigned char* packetData, IDataLink^ dataLink)
 {
     DateTime timestamp;
-    Timestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
+    PacketTimestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
 
     array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader.caplen);
     return gcnew Packet(managedPacketData, timestamp, dataLink);

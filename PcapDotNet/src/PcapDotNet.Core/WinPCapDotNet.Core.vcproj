@@ -372,11 +372,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Timestamp.cpp"
+				RelativePath=".\PacketTimestamp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Timestamp.h"
+				RelativePath=".\PacketTimestamp.h"
 				>
 			</File>
 		</Filter>

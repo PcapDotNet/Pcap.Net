@@ -23,16 +23,6 @@ namespace PcapDotNet { namespace Core
     public ref class PacketCommunicator abstract : System::IDisposable
     {
     public:
-        static property System::DateTime MinimumPacketTimestamp
-        {
-            System::DateTime get();
-        }
-
-        static property System::DateTime MaximumPacketTimestamp
-        {
-            System::DateTime get();
-        }
-
         /// <summary>
         /// The link layer of an adapter.
         /// </summary>
