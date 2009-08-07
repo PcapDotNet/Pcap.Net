@@ -98,6 +98,11 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
+        /// The number of timestamps this option holds (or can hold).
+        /// </summary>
+        public abstract int CountTimestamps { get; }
+
+        /// <summary>
         /// The number of bytes this option will take.
         /// </summary>
         public override int Length

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -20,6 +21,34 @@ namespace PcapDotNet.Base
         public static readonly UInt48 MaxValue = (UInt48)0x0000FFFFFFFFFFFF;
 
         /// <summary>
+        /// Converts the string representation of a number in a specified style to its 48-bit unsigned integer equivalent.
+        /// </summary>
+        /// <param name="value">A string representing the number to convert.</param>
+        /// <param name="style">
+        /// A bitwise combination of NumberStyles values that indicates the permitted format of s. 
+        /// A typical value to specify is NumberStyles.Integer.
+        /// </param>
+        /// <returns>A 48-bit unsigned integer equivalent to the number specified in s.</returns>
+        public static UInt48 Parse(string value, NumberStyles style, IFormatProvider provider)
+        {
+            ulong parsedValue = ulong.Parse(value, style, provider);
+            if (parsedValue > MaxValue)
+                throw new FormatException("parsed value " + parsedValue + " is larger than max value " + MaxValue);
+
+            return (UInt48)parsedValue;
+        }
+
+        /// <summary>
+        /// Converts a 32 bit unsigned integer to a 48 bit unsigned integer by taking all the 32 bits.
+        /// </summary>
+        /// <param name="value">The 32 bit value to convert.</param>
+        /// <returns>The 48 bit value created by taking all the 32 bits of the 32bit value.</returns>
+        public static implicit operator UInt48(uint value)
+        {
+            return new UInt48(value);
+        }
+
+        /// <summary>
         /// Converts a 64 bit signed integer to a 48 bit unsigned integer by taking the 48 least significant bits.
         /// </summary>
         /// <param name="value">The 64 bit value to convert.</param>
@@ -30,6 +59,16 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
+        /// Converts a 64 bit unsigned integer to a 48 bit unsigned integer by taking the 48 least significant bits.
+        /// </summary>
+        /// <param name="value">The 64 bit value to convert.</param>
+        /// <returns>The 48 bit value created by taking the 48 least significant bits of the 64 bit value.</returns>
+        public static explicit operator UInt48(ulong value)
+        {
+            return new UInt48((long)value);
+        }
+
+        /// <summary>
         /// Converts the 48 bits unsigned integer to a 64 bits signed integer.
         /// </summary>
         /// <param name="value">The 48 bit value to convert.</param>
@@ -37,6 +76,26 @@ namespace PcapDotNet.Base
         public static implicit operator long(UInt48 value)
         {
             return value.ToLong();
+        }
+
+        /// <summary>
+        /// Converts the 48 bits unsigned integer to a 64 bits unsigned integer.
+        /// </summary>
+        /// <param name="value">The 48 bit value to convert.</param>
+        /// <returns>The 64 bit value converted from the 48 bit value.</returns>
+        public static implicit operator ulong(UInt48 value)
+        {
+            return (ulong)value.ToLong();
+        }
+
+        /// <summary>
+        /// Converts the 48 bits unsigned integer to an 8 bits unsigned integer.
+        /// </summary>
+        /// <param name="value">The 48 bit value to convert.</param>
+        /// <returns>The 8 bit value converted from the 48 bit value.</returns>
+        public static explicit operator byte(UInt48 value)
+        {
+            return (byte)value.ToByte();
         }
 
         /// <summary>
@@ -120,7 +179,13 @@ namespace PcapDotNet.Base
             return (((long)_mostSignificant) << 32) + _leastSignificant;
         }
 
+        private byte ToByte()
+        {
+            return (byte)_leastSignificant;
+        }
+
         private readonly uint _leastSignificant;
         private readonly ushort _mostSignificant;
+
     }
 }

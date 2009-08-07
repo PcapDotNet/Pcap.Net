@@ -149,7 +149,7 @@ namespace PcapDotNet.Core.Test
                 packetsToSend = new List<Packet>(numPackets);
                 for (int i = 0; i != numPackets; ++i)
                 {
-                    Packet packetToSend = _random.NextEthernet(packetSize, timestamp, sourceMac, destinationMac);
+                    Packet packetToSend = _random.NextEthernetPacket(packetSize, timestamp, sourceMac, destinationMac);
                     queue.Enqueue(packetToSend);
                     packetsToSend.Add(packetToSend);
                     timestamp = timestamp.AddSeconds(secondsBetweenTimestamps);

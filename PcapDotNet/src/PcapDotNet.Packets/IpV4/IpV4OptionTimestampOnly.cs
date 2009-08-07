@@ -35,6 +35,14 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
+        /// The number of timestamps this option holds (or can hold).
+        /// </summary>
+        public override int CountTimestamps
+        {
+            get { return Timestamps.Count(); }
+        }
+
+        /// <summary>
         /// The timestamps as time passed since midnight UT.
         /// </summary>
         public ReadOnlyCollection<IpV4OptionTimeOfDay> Timestamps

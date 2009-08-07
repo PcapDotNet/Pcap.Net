@@ -78,9 +78,14 @@ namespace PcapDotNet.TestUtils
             return ((((ulong)random.NextUInt()) << 32) + random.NextUInt());
         }
 
+        public static DateTime NextDateTime(this Random random, DateTime minimumValue, DateTime maximumValue)
+        {
+            return new DateTime(random.NextLong(minimumValue.Ticks, maximumValue.Ticks + 1));
+        }
+
         public static DateTime NextDateTime(this Random random)
         {
-            return new DateTime(random.NextLong(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks + 1));
+            return random.NextDateTime(DateTime.MinValue, DateTime.MaxValue);
         }
 
         public static T NextEnum<T>(this Random random, IEnumerable<T> valuesToIgnore)
