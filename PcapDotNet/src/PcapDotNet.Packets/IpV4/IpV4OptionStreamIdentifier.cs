@@ -3,7 +3,7 @@ using System;
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
-    /// Stream Identifier
+    /// Stream Identifier option.
     /// +--------+--------+--------+--------+
     /// |10001000|00000010|    Stream ID    |
     /// +--------+--------+--------+--------+
@@ -16,30 +16,52 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IEquatable<IpV4OptionStreamIdentifier>
     {
+        /// <summary>
+        /// The number of bytes this option take.
+        /// </summary>
         public const int OptionLength = 4;
+
+        /// <summary>
+        /// The number of bytes this option's value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Create the option according to the given identifier.
+        /// </summary>
         public IpV4OptionStreamIdentifier(ushort identifier)
             : base(IpV4OptionType.StreamIdentifier)
         {
             _identifier = identifier;
         }
 
+        /// <summary>
+        /// The identifier of the stream.
+        /// </summary>
         public ushort Identifier
         {
             get { return _identifier; }
         }
 
+        /// <summary>
+        /// The number of bytes this option will take.
+        /// </summary>
         public override int Length
         {
             get { return OptionLength; }
         }
 
+        /// <summary>
+        /// True iff this option may appear at most once in a datagram.
+        /// </summary>
         public override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Two stream identifier options are equal if they have the same identifier.
+        /// </summary>
         public bool Equals(IpV4OptionStreamIdentifier other)
         {
             if (other == null)
@@ -47,11 +69,18 @@ namespace PcapDotNet.Packets.IpV4
             return Identifier == other.Identifier;
         }
 
+        /// <summary>
+        /// Two stream identifier options are equal if they have the same identifier.
+        /// </summary>
         public override bool Equals(IpV4Option other)
         {
             return Equals(other as IpV4OptionStreamIdentifier);
         }
 
+        /// <summary>
+        /// The hash code value is the xor of the base class hash code and the identifier hash code.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^

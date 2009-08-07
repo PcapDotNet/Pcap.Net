@@ -17,9 +17,35 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public class IpV4OptionSecurity : IpV4OptionComplex, IEquatable<IpV4OptionSecurity>
     {
+        /// <summary>
+        /// The number of bytes this option take.
+        /// </summary>
         public const int OptionLength = 11;
+
+        /// <summary>
+        /// The number of bytes this option's value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Create the security option from the different security field values.
+        /// </summary>
+        /// <param name="level">Specifies one of the levels of security.</param>
+        /// <param name="compartments">
+        /// Compartments (C field):  16 bits
+        /// An all zero value is used when the information transmitted is not compartmented.  
+        /// Other values for the compartments field may be obtained from the Defense Intelligence Agency.
+        /// </param>
+        /// <param name="handlingRestrictions">
+        /// Handling Restrictions (H field):  16 bits
+        /// The values for the control and release markings are alphanumeric digraphs 
+        /// and are defined in the Defense Intelligence Agency Manual DIAM 65-19, "Standard Security Markings".
+        /// </param>
+        /// <param name="transmissionControlCode">
+        /// Transmission Control Code (TCC field):  24 bits
+        /// Provides a means to segregate traffic and define controlled communities of interest among subscribers. 
+        /// The TCC values are trigraphs, and are available from HQ DCA Code 530.
+        /// </param>
         public IpV4OptionSecurity(IpV4OptionSecurityLevel level, ushort compartments,
                                   ushort handlingRestrictions, UInt24 transmissionControlCode)
             : base(IpV4OptionType.Security)
@@ -68,16 +94,25 @@ namespace PcapDotNet.Packets.IpV4
             get { return _transmissionControlCode; }
         }
 
+        /// <summary>
+        /// The number of bytes this option will take.
+        /// </summary>
         public override int Length
         {
             get { return OptionLength; }
         }
 
+        /// <summary>
+        /// True iff this option may appear at most once in a datagram.
+        /// </summary>
         public override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Two security options are equal iff they have the exam same field values.
+        /// </summary>
         public bool Equals(IpV4OptionSecurity other)
         {
             if (other == null)
@@ -89,16 +124,23 @@ namespace PcapDotNet.Packets.IpV4
                    TransmissionControlCode == other.TransmissionControlCode;
         }
 
+        /// <summary>
+        /// Two security options are equal iff they have the exam same field values.
+        /// </summary>
         public override bool Equals(IpV4Option other)
         {
             return Equals(other as IpV4OptionSecurity);
         }
 
+        /// <summary>
+        /// The hash code is the xor of the following hash code: base class hash code, level and compartments, handling restrictions, transmission control code.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   (((ushort)Level << 16) | Compartments) ^
-                   (HandlingRestrictions << 16) ^
+                   (((ushort)Level << 16) | Compartments).GetHashCode() ^
+                   (HandlingRestrictions << 16).GetHashCode() ^
                    TransmissionControlCode.GetHashCode();
         }
 

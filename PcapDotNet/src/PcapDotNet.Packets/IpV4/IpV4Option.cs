@@ -79,32 +79,20 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// Serves as a hash function for a particular type. 
+        /// The hash code of the option is the hash code of the option type.
         /// </summary>
-        /// <returns>
-        /// A hash code for the current <see cref="T:System.Object"/>.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
+        /// <returns></returns>
         public override int GetHashCode()
         {
-            return (byte)OptionType;
+            return OptionType.GetHashCode();
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// The string of the option is the string of the option type.
         /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return OptionType.ToString();
-        }
-
-        protected IpV4Option(IpV4OptionType type)
-        {
-            _type = type;
         }
 
         internal static IpV4Option Read(byte[] buffer, ref int offset, int length)
@@ -137,6 +125,14 @@ namespace PcapDotNet.Packets.IpV4
         internal virtual void Write(byte[] buffer, ref int offset)
         {
             buffer[offset++] = (byte)OptionType;
+        }
+
+        /// <summary>
+        /// Constructs the option by type.
+        /// </summary>
+        protected IpV4Option(IpV4OptionType type)
+        {
+            _type = type;
         }
 
         private static readonly IpV4OptionSimple _end = new IpV4OptionSimple(IpV4OptionType.EndOfOptionList);

@@ -95,5 +95,17 @@ namespace PcapDotNet.Base
         {
             return sequence.Aggregate(0, (valueSoFar, element) => valueSoFar ^ element.GetHashCode());
         }
+
+        /// <summary>
+        /// Returns a hash code by xoring all the bytes.
+        /// Each byte is xored with the next 8 bits of the integer.
+        /// </summary>
+        /// <param name="sequence">The bytes to xor.</param>
+        /// <returns>The hash code resulted by xoring all the bytes.</returns>
+        public static int BytesSequenceGetHashCode(this IEnumerable<byte> sequence)
+        {
+            int i = 0;
+            return sequence.Aggregate(0, (value, b) => value ^ (b << (8 * (i++ % 4))));
+        }
     }
 }

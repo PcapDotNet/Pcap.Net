@@ -44,8 +44,13 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public class IpV4OptionLooseSourceRouting : IpV4OptionRoute
     {
-        public IpV4OptionLooseSourceRouting(IList<IpV4Address> addresses, byte pointedAddressIndex)
-            : base(IpV4OptionType.LooseSourceRouting, addresses, pointedAddressIndex)
+        /// <summary>
+        /// Constructs the option from the given values.
+        /// </summary>
+        /// <param name="route">The route addresses values.</param>
+        /// <param name="pointedAddressIndex">The pointed index in the route.</param>
+        public IpV4OptionLooseSourceRouting(IList<IpV4Address> route, byte pointedAddressIndex)
+            : base(IpV4OptionType.LooseSourceRouting, route, pointedAddressIndex)
         {
         }
 

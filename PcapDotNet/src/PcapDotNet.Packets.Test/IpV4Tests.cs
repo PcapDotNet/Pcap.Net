@@ -123,7 +123,7 @@ namespace PcapDotNet.Packets.Test
                 Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
                 Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                           ethernetSource, ethernetDestination, ethernetType,
+                                                           ethernetSource, ethernetDestination,
                                                            ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
                                                            ipV4Source, ipV4Destination, ipV4Options,
                                                            ipV4Payload);
@@ -215,7 +215,13 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentException))]
         public void IpV4OptionsTooLongErrorTest()
         {
-            IpV4Options options = new IpV4Options(new IpV4OptionTimestampOnly(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+            IpV4Options options = new IpV4Options(
+                new IpV4OptionTimestampOnly(1, 2,
+                                            new IpV4OptionTimeOfDay(3), new IpV4OptionTimeOfDay(4), new IpV4OptionTimeOfDay(5),
+                                            new IpV4OptionTimeOfDay(6), new IpV4OptionTimeOfDay(7), new IpV4OptionTimeOfDay(8),
+                                            new IpV4OptionTimeOfDay(9), new IpV4OptionTimeOfDay(10), new IpV4OptionTimeOfDay(11),
+                                            new IpV4OptionTimeOfDay(12), new IpV4OptionTimeOfDay(13), new IpV4OptionTimeOfDay(14),
+                                            new IpV4OptionTimeOfDay(15), new IpV4OptionTimeOfDay(16), new IpV4OptionTimeOfDay(17)));
             Assert.IsNotNull(options);
             Assert.Fail();
         }

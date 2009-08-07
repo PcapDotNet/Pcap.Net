@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets
@@ -92,68 +93,37 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Serves as a hash function for a particular type. 
+        /// The hash code of a packet is the xor of all its bytes. Each byte is xored with the next 8 bits of the integer.
         /// </summary>
-        /// <returns>
-        /// A hash code for the current <see cref="T:System.Object"/>.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
-            int hashCode = 0;
-            int offset = 0;
-            for (; offset < _data.Length - 3; offset += 4)
-                hashCode ^= _data.ReadInt(offset, Endianity.Small);
-            if (offset < _data.Length - 1)
-                hashCode ^= _data.ReadShort(offset, Endianity.Small);
-            if (offset < _data.Length)
-                hashCode ^= _data[offset] >> 2;
-            return hashCode;
+            return this.BytesSequenceGetHashCode();
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// The Packet string contains the datalink and the length.
         /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return typeof(Packet).Name + " <" + DataLink + ", " + Length + ">";
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Returns an enumerator that iterates through the bytes of the packet.
         /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        /// </returns>
-        /// <filterpriority>1</filterpriority>
         public IEnumerator<byte> GetEnumerator()
         {
             return ((IEnumerable<byte>)Buffer).GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// Returns the first offset in the packet that contains the given byte.
         /// </summary>
-        /// <returns>
-        /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-        /// </returns>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
         public int IndexOf(byte item)
         {
             return ((IList<byte>)Buffer).IndexOf(item);
@@ -176,15 +146,9 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Gets the element at the specified index.
+        /// Returns the value of the byte in the given offset.
         /// Set operation is invalid because the object is immutable.
         /// </summary>
-        /// <returns>
-        /// The element at the specified index.
-        /// </returns>
-        /// <param name="index">The zero-based index of the element to get.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
-        /// <exception cref="T:System.NotSupportedException">The property is set.</exception>
         public byte this[int index]
         {
             get { return Buffer[index]; }
@@ -208,21 +172,16 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+        /// Determines whether the packet contains a specific byte.
         /// </summary>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
-        /// </returns>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
         public bool Contains(byte item)
         {
             return Buffer.Contains(item);
         }
 
         /// <summary>
-        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// Copies the bytes of the packet to a buffer, starting at a particular offset.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param><param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception><exception cref="T:System.ArgumentException"><paramref name="array"/> is multidimensional.-or-<paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.-or-Type <paramref name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.</exception>
         public void CopyTo(byte[] array, int arrayIndex)
         {
             Buffer.BlockCopy(0, array, arrayIndex, Length);
@@ -237,11 +196,8 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// Returns the number of bytes in this packet.
         /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-        /// </returns>
         public int Count
         {
             get { return Length; }
@@ -274,7 +230,7 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Takes the entire packet as an ethernet datagram.
+        /// Takes the entire packet as an Ethernet datagram.
         /// </summary>
         public EthernetDatagram Ethernet
         {

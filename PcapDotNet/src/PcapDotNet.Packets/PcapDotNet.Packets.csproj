@@ -84,6 +84,7 @@
     <Compile Include="IpV4\IpV4OptionStreamIdentifier.cs" />
     <Compile Include="IpV4\IpV4OptionStrictSourceRouting.cs" />
     <Compile Include="IpV4\IpV4OptionTimedAddress.cs" />
+    <Compile Include="IpV4\IpV4OptionTimeOfDay.cs" />
     <Compile Include="IpV4\IpV4OptionTimestamp.cs" />
     <Compile Include="IpV4\IpV4OptionTimestampAndAddress.cs" />
     <Compile Include="IpV4\IpV4OptionTimestampOnly.cs" />

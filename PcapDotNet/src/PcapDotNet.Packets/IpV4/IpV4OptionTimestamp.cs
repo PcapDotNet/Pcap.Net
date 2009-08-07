@@ -52,26 +52,54 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
+        /// <summary>
+        /// The minimum length in bytes for the option (type, length, pointer, overflow and flags).
+        /// </summary>
         public const int OptionMinimumLength = 4;
+
+        /// <summary>
+        /// The minimum length in bytes of the option value.
+        /// </summary>
         public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
+
+        /// <summary>
+        /// The maximum value for the overflow field.
+        /// </summary>
         public const int OverflowMaxValue = 15;
+
+        /// <summary>
+        /// The maximum value for the pointed index field.
+        /// </summary>
         public const int PointedIndexMaxValue = byte.MaxValue / 4 - 1;
 
+        /// <summary>
+        /// The timestamp option type.
+        /// </summary>
         public IpV4OptionTimestampType TimestampType
         {
             get { return _timestampType; }
         }
 
+        /// <summary>
+        /// The number of IP modules that cannot register timestamps due to lack of space.
+        /// </summary>
         public byte Overflow
         {
             get { return _overflow; }
         }
 
+        /// <summary>
+        /// The index in the timestamp that points to the for next timestamp. 
+        /// The timestamp area is considered full when the index points beyond the timestamps.
+        /// </summary>
         public byte PointedIndex
         {
             get { return _pointedIndex; }
         }
 
+        /// <summary>
+        /// The number of bytes this option will take.
+        /// </summary>
         public override int Length
         {
             get
@@ -81,12 +109,17 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// True iff this option may appear at most once in a datagram.
+        /// </summary>
         public override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
 
-
+        /// <summary>
+        /// Two options are equal if they have the same value (timestamp, overflow, pointed equals, addresses and timestamps).
+        /// </summary>
         public bool Equals(IpV4OptionTimestamp other)
         {
             if (other == null)
@@ -98,17 +131,22 @@ namespace PcapDotNet.Packets.IpV4
                    EqualValues(other);
         }
 
+        /// <summary>
+        /// Two options are equal if they have the same value (timestamp, overflow, pointed equals and addresses).
+        /// </summary>
         public override bool Equals(IpV4Option other)
         {
             return Equals(other as IpV4OptionTimestamp);
         }
 
+        /// <summary>
+        /// The hash code is the xor of the base class hash code, the timestamp and overflow hash code and the pointed index hash code.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   ((byte)TimestampType << 16) ^
-                   (Overflow << 8) ^
-                   PointedIndex;
+                   (((byte)TimestampType << 16) | (Overflow << 8)).GetHashCode() ^
+                   PointedIndex.GetHashCode();
         }
 
         internal static IpV4OptionTimestamp ReadOptionTimestamp(byte[] buffer, ref int offset, int valueLength)
@@ -151,6 +189,12 @@ namespace PcapDotNet.Packets.IpV4
             WriteValues(buffer, ref offset);
         }
 
+        /// <summary>
+        /// Create the option by giving it all the data.
+        /// </summary>
+        /// <param name="timestampType">The timestamp option type.</param>
+        /// <param name="overflow">The number of IP modules that cannot register timestamps due to lack of space. Maximum value is 15.</param>
+        /// <param name="pointedIndex">The index in the timestamp to points to the octet beginning the space for next timestamp. The timestamp area is considered full when the index points beyond the timestamps.</param>
         protected IpV4OptionTimestamp(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex)
             : base(IpV4OptionType.InternetTimestamp)
         {
@@ -165,10 +209,19 @@ namespace PcapDotNet.Packets.IpV4
             _pointedIndex = pointedIndex;
         }
 
+        /// <summary>
+        /// The number of bytes the value of the option take.
+        /// </summary>
         protected abstract int ValuesLength { get; }
 
+        /// <summary>
+        /// True iff the options values is equal.
+        /// </summary>
         protected abstract bool EqualValues(IpV4OptionTimestamp other);
 
+        /// <summary>
+        /// Writes the value of the option to the buffer.
+        /// </summary>
         protected abstract void WriteValues(byte[] buffer, ref int offset);
 
         private readonly IpV4OptionTimestampType _timestampType;
