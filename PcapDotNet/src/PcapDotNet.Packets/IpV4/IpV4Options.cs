@@ -6,15 +6,31 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
+    /// <summary>
+    /// Represents IPv4 Options.
+    /// The options may appear or not in datagrams.  
+    /// They must be implemented by all IP modules (host and gateways).  
+    /// What is optional is their transmission in any particular datagram, not their implementation.
+    /// </summary>
     public class IpV4Options : ReadOnlyCollection<IpV4Option>, IEquatable<IpV4Options>
     {
+        /// <summary>
+        /// The maximum number of bytes the options may take.
+        /// </summary>
         public const int MaximumBytesLength = IpV4Datagram.HeaderMaximumLength - IpV4Datagram.HeaderMinimumLength;
 
+        /// <summary>
+        /// No options instance.
+        /// </summary>
         public static IpV4Options None
         {
             get { return _none; }
         }
 
+        /// <summary>
+        /// Creates options from a list of options.
+        /// </summary>
+        /// <param name="options">The list of options.</param>
         public IpV4Options(IList<IpV4Option> options)
             : this(EndOptions(options), true)
         {
@@ -22,21 +38,34 @@ namespace PcapDotNet.Packets.IpV4
                 throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + MaximumBytesLength, "options");
         }
 
+        /// <summary>
+        /// Creates options from a list of options.
+        /// </summary>
+        /// <param name="options">The list of options.</param>
         public IpV4Options(params IpV4Option[] options)
             : this((IList<IpV4Option>)options)
         {
         }
 
+        /// <summary>
+        /// The number of bytes the options take.
+        /// </summary>
         public int BytesLength
         {
             get { return _bytesLength; }
         }
 
+        /// <summary>
+        /// Whether or not the options parsed ok.
+        /// </summary>
         public bool IsValid
         {
             get { return _isValid; }
         }
 
+        /// <summary>
+        /// Two options are equal iff they have the exact same options.
+        /// </summary>
         public bool Equals(IpV4Options other)
         {
             if (other == null)
@@ -48,17 +77,28 @@ namespace PcapDotNet.Packets.IpV4
             return this.SequenceEqual(other);
         }
 
+        /// <summary>
+        /// Two options are equal iff they have the exact same options.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as IpV4Options);
         }
 
+        /// <summary>
+        /// The hash code is the xor of the following hash codes: number of bytes the options take and all the options.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return BytesLength.GetHashCode() ^
                    this.SequenceGetHashCode();
         }
 
+        /// <summary>
+        /// A string of all the option type names.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return this.SequenceToString(", ", typeof(IpV4Options).Name + " {", "}");
@@ -68,6 +108,17 @@ namespace PcapDotNet.Packets.IpV4
             : this(Read(buffer, offset, length))
         {
             _bytesLength = length;
+        }
+
+        internal void Write(byte[] buffer, int offset)
+        {
+            int offsetEnd = offset + BytesLength;
+            foreach (IpV4Option option in this)
+                option.Write(buffer, ref offset);
+
+            // Padding
+            while (offset < offsetEnd)
+                buffer[offset++] = 0;
         }
 
         private IpV4Options(IList<IpV4Option> options, bool isValid)
@@ -120,17 +171,6 @@ namespace PcapDotNet.Packets.IpV4
             }
 
             return new Tuple<IList<IpV4Option>, bool>(options, true);
-        }
-
-        internal void Write(byte[] buffer, int offset)
-        {
-            int offsetEnd = offset + BytesLength;
-            foreach (IpV4Option option in this)
-                option.Write(buffer, ref offset);
-
-            // Padding
-            while (offset < offsetEnd)
-                buffer[offset++] = 0;
         }
 
         private readonly int _bytesLength;

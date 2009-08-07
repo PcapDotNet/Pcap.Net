@@ -4,6 +4,8 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Ethernet
 {
     /// <summary>
+    /// Represents an Ethernet datagram.
+    /// 
     /// +------+-----------------+------------+------------------+
     /// | Byte | 0-5             | 6-11       | 12-13            |
     /// +------+-----------------+------------+------------------+
@@ -21,18 +23,30 @@ namespace PcapDotNet.Packets.Ethernet
             public const int EtherTypeLength = 12;
         }
 
+        /// <summary>
+        /// Ethernet header length in bytes.
+        /// </summary>
         public const int HeaderLength = 14;
 
+        /// <summary>
+        /// The Ethernet payload.
+        /// </summary>
         public Datagram Payload
         {
             get { return IpV4; }
         }
 
+        /// <summary>
+        /// The Ethernet payload length in bytes.
+        /// </summary>
         public int PayloadLength
         {
             get { return Math.Max(0, Length - HeaderLength); }
         }
 
+        /// <summary>
+        /// Ethernet source address.
+        /// </summary>
         public MacAddress Source
         { 
             get
@@ -41,6 +55,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// Ethernet destination address.
+        /// </summary>
         public MacAddress Destination
         { 
             get
@@ -49,6 +66,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// Ethernet type (next protocol).
+        /// </summary>
         public EthernetType EtherType 
         {
             get
@@ -57,20 +77,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
-        public override bool CalculateIsValid()
-        {
-            if (Length < HeaderLength)
-                return false;
-
-            switch (EtherType)
-            {
-                case EthernetType.IpV4:
-                    return IpV4.IsValid;
-                default:
-                    return true;
-            }
-        }
-
+        /// <summary>
+        /// The Ethernet payload as an IPv4 datagram.
+        /// </summary>
         public IpV4Datagram IpV4
         {
             get
@@ -80,7 +89,6 @@ namespace PcapDotNet.Packets.Ethernet
                 return _ipV4;
             }
         }
-
 
         internal EthernetDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
@@ -92,6 +100,23 @@ namespace PcapDotNet.Packets.Ethernet
             buffer.Write(offset + Offset.Source, ethernetSource, Endianity.Big);
             buffer.Write(offset + Offset.Destination, ethernetDestination, Endianity.Big);
             buffer.Write(offset + Offset.EtherTypeLength, (ushort)ethernetType, Endianity.Big);
+        }
+
+        /// <summary>
+        /// An Ethernet datagram is valid iff its length is big enough for the header and its payload is valid.
+        /// </summary>
+        protected override bool CalculateIsValid()
+        {
+            if (Length < HeaderLength)
+                return false;
+
+            switch (EtherType)
+            {
+                case EthernetType.IpV4:
+                    return IpV4.IsValid;
+                default:
+                    return true;
+            }
         }
 
         private IpV4Datagram _ipV4;

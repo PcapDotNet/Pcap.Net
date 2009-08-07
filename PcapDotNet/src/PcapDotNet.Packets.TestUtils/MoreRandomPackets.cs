@@ -70,6 +70,11 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV4Address(random.NextUInt());
         }
 
+        public static IpV4OptionTimeOfDay NextIpV4OptionTimeOfDay(this Random random)
+        {
+            return new IpV4OptionTimeOfDay(random.NextUInt());
+        }
+
         public static IpV4Option NextIpV4Option(this Random random, int maximumOptionLength)
         {
             if (maximumOptionLength == 0)
@@ -146,9 +151,9 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         case IpV4OptionTimestampType.TimestampOnly:
                             int numTimestamps = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 4 + 1);
-                            uint[] timestamps = new uint[numTimestamps];
+                            IpV4OptionTimeOfDay[] timestamps = new IpV4OptionTimeOfDay[numTimestamps];
                             for (int i = 0; i != numTimestamps; ++i)
-                                timestamps[i] = random.NextUInt();
+                                timestamps[i] = random.NextIpV4OptionTimeOfDay();
                             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
 
                         case IpV4OptionTimestampType.AddressAndTimestamp:
@@ -156,7 +161,7 @@ namespace PcapDotNet.Packets.TestUtils
                             int numPairs = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 8 + 1);
                             IpV4OptionTimedAddress[] pairs = new IpV4OptionTimedAddress[numPairs];
                             for (int i = 0; i != numPairs; ++i)
-                                pairs[i] = new IpV4OptionTimedAddress(random.NextIpV4Address(), random.NextUInt());
+                                pairs[i] = new IpV4OptionTimedAddress(random.NextIpV4Address(), random.NextIpV4OptionTimeOfDay());
 
                             return new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, pairs);
 

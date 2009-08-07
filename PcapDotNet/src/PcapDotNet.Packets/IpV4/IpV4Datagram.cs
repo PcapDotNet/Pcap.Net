@@ -5,6 +5,8 @@ using System.Text;
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
+    /// Represents an IPv4 datagram.
+    /// 
     /// +-----+---------+-----+-----------------+-------+-----------------+
     /// | Bit | 0-3     | 4-7 | 8-15            | 16-18 | 19-31           |
     /// +-----+---------+-----+-----------------+-------+-----------------+
@@ -20,10 +22,21 @@ namespace PcapDotNet.Packets.IpV4
     /// +-----+-----------------------------------------------------------+
     /// | 160 | Options with padding                                      |
     /// +-----+-----------------------------------------------------------+
+    /// | 160 | Data                                                      |
+    /// | to  |                                                           |
+    /// | 360 |                                                           |
+    /// +-----+-----------------------------------------------------------+
     /// </summary>
     public class IpV4Datagram : Datagram
     {
+        /// <summary>
+        /// The minimum length of the header in bytes.
+        /// </summary>
         public const int HeaderMinimumLength = 20;
+
+        /// <summary>
+        /// The maximum length of the header in bytes.
+        /// </summary>
         public const int HeaderMaximumLength = 60;
 
         private static class Offset
@@ -41,48 +54,78 @@ namespace PcapDotNet.Packets.IpV4
             public const int Options = 20;
         }
 
+        /// <summary>
+        /// The version (4).
+        /// </summary>
         public const int Version = 0x4;
 
+        /// <summary>
+        /// The header length in bytes.
+        /// </summary>
         public int HeaderLength
         {
             get { return (this[Offset.VersionAndHeaderLength] & 0x0F) * 4; }
         }
 
+        /// <summary>
+        /// Type of Service field.
+        /// </summary>
         public byte TypeOfService
         {
             get { return this[Offset.TypeOfService];}
         }
 
+        /// <summary>
+        /// The length of the entire datagram as stated in the total length field.
+        /// </summary>
         public ushort TotalLength
         {
             get { return ReadUShort(Offset.TotalLength, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The value of the IPv4 ID field.
+        /// </summary>
         public ushort Identification
         {
             get { return ReadUShort(Offset.Identification, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The fragmentation information field.
+        /// </summary>
         public IpV4Fragmentation Fragmentation
         {
             get { return new IpV4Fragmentation(ReadUShort(Offset.Fragmentation, Endianity.Big)); }
         }
 
+        /// <summary>
+        /// The TTL field.
+        /// </summary>
         public byte Ttl
         {
             get { return this[Offset.Ttl]; }
         }
 
+        /// <summary>
+        /// The IPv4 (next) protocol field.
+        /// </summary>
         public IpV4Protocol Protocol
         {
             get { return (IpV4Protocol)this[Offset.Protocol]; }
         }
 
+        /// <summary>
+        /// The header check sum value.
+        /// </summary>
         public ushort HeaderChecksum
         {
             get { return ReadUShort(Offset.HeaderChecksum, Endianity.Big); }
         }
 
+        /// <summary>
+        /// True iff the header checksum value is correct according to the header.
+        /// </summary>
         public bool IsHeaderChecksumCorrect
         {
             get 
@@ -93,16 +136,25 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// The source address.
+        /// </summary>
         public IpV4Address Source
         {
             get { return new IpV4Address(ReadUInt(Offset.Source, Endianity.Big)); }
         }
 
+        /// <summary>
+        /// The destination address.
+        /// </summary>
         public IpV4Address Destination
         {
             get { return new IpV4Address(ReadUInt(Offset.Destination, Endianity.Big)); }
         }
 
+        /// <summary>
+        /// The options field with all the parsed options if any exist.
+        /// </summary>
         public IpV4Options Options
         {
             get
@@ -113,26 +165,17 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// The payload of the datagram.
+        /// </summary>
         public Datagram Payload
         {
             get { return Tcp; }
         }
 
-        public override bool CalculateIsValid()
-        {
-            if (Length < HeaderMinimumLength || Length < HeaderLength)
-                return false;
-
-            switch (Protocol)
-            {
-                case IpV4Protocol.Tcp:
-                    return Tcp.IsValid;
-                default:
-                    // Todo check the protocl further
-                    return true;
-            }
-        }
-
+        /// <summary>
+        /// The payload of the datagram as a TCP datagram.
+        /// </summary>
         public Datagram Tcp
         {
             get
@@ -170,6 +213,28 @@ namespace PcapDotNet.Packets.IpV4
             options.Write(buffer, offset + Offset.Options);
 
             buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
+        }
+
+        /// <summary>
+        /// An IPv4 datagram is valid if its length is big enough for the header, the header checksum is correct and the payload is valid.
+        /// </summary>
+        /// <returns></returns>
+        protected override bool CalculateIsValid()
+        {
+            if (Length < HeaderMinimumLength || Length < HeaderLength)
+                return false;
+
+            if (!IsHeaderChecksumCorrect)
+                return false;
+
+            switch (Protocol)
+            {
+                case IpV4Protocol.Tcp:
+                    return Tcp.IsValid;
+                default:
+                    // Todo check the protocl further
+                    return true;
+            }
         }
 
         private ushort CalculateHeaderChecksum()

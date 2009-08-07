@@ -23,36 +23,43 @@ namespace PcapDotNet.Packets.IpV4
         /// This option occupies only 1 octet; it has no length octet.
         /// </summary>
         EndOfOptionList = 0,
+
         /// <summary>
         /// No Operation.  
         /// This option occupies only 1 octet; it has no length octet.
         /// </summary>
         NoOperation = 1,
+
         /// <summary>
         /// Security.  
         /// Used to carry Security, Compartmentation, User Group (TCC), and Handling Restriction Codes compatible with DOD requirements.
         /// </summary>
         Security = 130,
+
         /// <summary>
         /// Loose Source Routing.
         /// Used to route the internet datagram based on information supplied by the source.
         /// </summary>
         LooseSourceRouting = 131,
+
         /// <summary>
         /// Strict Source Routing.  
         /// Used to route the internet datagram based on information supplied by the source.
         /// </summary>
         StrictSourceRouting = 137,
+
         /// <summary>
         /// Record Route.  
         /// Used to trace the route an internet datagram takes.
         /// </summary>
         RecordRoute = 7,
+
         /// <summary>
         /// Stream ID.  
         /// Used to carry the stream identifier.
         /// </summary>
         StreamIdentifier = 136,
+
         /// <summary>
         /// Internet Timestamp.
         /// </summary>

@@ -41,13 +41,23 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public class IpV4OptionRecordRoute : IpV4OptionRoute
     {
-        public IpV4OptionRecordRoute(byte pointedAddressIndex, IList<IpV4Address> addresses)
-            : base(IpV4OptionType.RecordRoute, addresses, pointedAddressIndex)
+        /// <summary>
+        /// Constructs the option from the given values.
+        /// </summary>
+        /// <param name="route">The route addresses values.</param>
+        /// <param name="pointedAddressIndex">The pointed index in the route.</param>
+        public IpV4OptionRecordRoute(byte pointedAddressIndex, IList<IpV4Address> route)
+            : base(IpV4OptionType.RecordRoute, route, pointedAddressIndex)
         {
         }
 
-        public IpV4OptionRecordRoute(byte pointedAddressIndex, params IpV4Address[] addresses)
-            : this(pointedAddressIndex, (IList<IpV4Address>)addresses)
+        /// <summary>
+        /// Constructs the option from the given values.
+        /// </summary>
+        /// <param name="route">The route addresses values.</param>
+        /// <param name="pointedAddressIndex">The pointed index in the route.</param>
+        public IpV4OptionRecordRoute(byte pointedAddressIndex, params IpV4Address[] route)
+            : this(pointedAddressIndex, (IList<IpV4Address>)route)
         {
         }
 

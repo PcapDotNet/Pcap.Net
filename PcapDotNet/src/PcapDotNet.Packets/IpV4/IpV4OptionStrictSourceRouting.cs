@@ -45,8 +45,11 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public class IpV4OptionStrictSourceRouting : IpV4OptionRoute
     {
-        public IpV4OptionStrictSourceRouting(IList<IpV4Address> addresses, byte pointedAddressIndex)
-            : base(IpV4OptionType.StrictSourceRouting, addresses, pointedAddressIndex)
+        /// <summary>
+        /// Create the option according to the given values.
+        /// </summary>
+        public IpV4OptionStrictSourceRouting(IList<IpV4Address> route, byte pointedAddressIndex)
+            : base(IpV4OptionType.StrictSourceRouting, route, pointedAddressIndex)
         {
         }
 
