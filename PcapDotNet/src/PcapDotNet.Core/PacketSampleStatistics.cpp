@@ -1,5 +1,5 @@
 #include "PacketSampleStatistics.h"
-#include "Timestamp.h"
+#include "PacketTimestamp.h"
 #include "Pcap.h"
 
 using namespace System;
@@ -28,7 +28,7 @@ System::String^ PacketSampleStatistics::ToString()
 
 PacketSampleStatistics::PacketSampleStatistics(const pcap_pkthdr& packetHeader, const unsigned char* packetData)
 {
-    PcapDotNet::Core::Timestamp::PcapTimestampToDateTime(packetHeader.ts, _timestamp);
+    PacketTimestamp::PcapTimestampToDateTime(packetHeader.ts, _timestamp);
 
     _acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
     _acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);

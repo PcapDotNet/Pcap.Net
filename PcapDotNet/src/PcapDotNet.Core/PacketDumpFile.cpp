@@ -1,5 +1,5 @@
 #include "PacketDumpFile.h"
-#include "Timestamp.h"
+#include "PacketTimestamp.h"
 #include "PacketHeader.h"
 #include "MarshalingServices.h"
 #include "PcapError.h"

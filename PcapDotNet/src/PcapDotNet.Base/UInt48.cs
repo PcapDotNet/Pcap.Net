@@ -28,6 +28,7 @@ namespace PcapDotNet.Base
         /// A bitwise combination of NumberStyles values that indicates the permitted format of s. 
         /// A typical value to specify is NumberStyles.Integer.
         /// </param>
+        /// <param name="provider">An System.IFormatProvider that supplies culture-specific formatting information about value.</param>
         /// <returns>A 48-bit unsigned integer equivalent to the number specified in s.</returns>
         public static UInt48 Parse(string value, NumberStyles style, IFormatProvider provider)
         {
