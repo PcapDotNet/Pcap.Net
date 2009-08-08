@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
@@ -40,6 +41,32 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.RouterAlert:
                     return "Router Alert: Unknown (" + ((IpV4OptionRouterAlert)option).Value + ")";
 
+                case IpV4OptionType.QuickStart:
+                    IpV4OptionQuickStart quickStart = (IpV4OptionQuickStart)option;
+
+                    StringBuilder quickStartWireshark = new StringBuilder("Quick-Start: ");
+
+                    if (quickStart.Function == IpV4OptionQuickStartFunction.RateRequest)
+                        quickStartWireshark.Append("Rate request");
+                    else
+                        quickStartWireshark.Append("Rate report");
+
+                    quickStartWireshark.Append(", ");
+
+                    if (quickStart.RateKbps == 0)
+                        quickStartWireshark.Append("0 bit/s");
+                    else if (quickStart.RateKbps < 1024)
+                        quickStartWireshark.Append(quickStart.RateKbps + " kbit/s");
+                    else if (quickStart.RateKbps < 1024 * 1024)
+                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000) + " Mbit/s");
+                    else
+                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000000) + " Gbit/s");
+
+                    if (quickStart.Function == IpV4OptionQuickStartFunction.RateRequest)
+                        quickStartWireshark.Append(", QS TTL " + quickStart.Ttl);
+
+                    return quickStartWireshark.ToString();
+
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }
@@ -53,6 +80,7 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.NoOperation:
                 case IpV4OptionType.StreamIdentifier:
                 case IpV4OptionType.RouterAlert:
+                case IpV4OptionType.QuickStart:
                     break;
 
                 case IpV4OptionType.LooseSourceRouting:
