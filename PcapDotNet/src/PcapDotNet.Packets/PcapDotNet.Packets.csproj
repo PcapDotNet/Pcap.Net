@@ -75,6 +75,7 @@
     <Compile Include="IpV4\IpV4Option.cs" />
     <Compile Include="IpV4\IpV4OptionComplex.cs" />
     <Compile Include="IpV4\IpV4OptionLooseSourceRouting.cs" />
+    <Compile Include="IpV4\IpV4OptionQuickStart.cs" />
     <Compile Include="IpV4\IpV4OptionRouterAlert.cs" />
     <Compile Include="IpV4\IpV4OptionSecurityProtectionAuthority.cs" />
     <Compile Include="IpV4\IpV4OptionSimple.cs" />

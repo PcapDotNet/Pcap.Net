@@ -34,6 +34,11 @@ namespace PcapDotNet.Packets.IpV4
         NoOperation = 1,
 
         /// <summary>
+        /// Quick Start (QS). RFC 4782.  
+        /// </summary>
+        QuickStart = 25,
+
+        /// <summary>
         /// Traceroute Using an IP Option.
         /// RFC 1393.
         /// </summary>

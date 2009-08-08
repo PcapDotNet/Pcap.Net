@@ -349,7 +349,7 @@ namespace PcapDotNet.Core.Test
                         DateTime fieldTimestamp = fieldShow[4] == ' '
                                                       ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
                                                       : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-1), fieldTimestamp.AddSeconds(1), packet.Timestamp);
+                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp);
                         break;
 
                     case "frame.len":
