@@ -244,6 +244,28 @@ namespace PcapDotNet.Packets.Test
             Assert.Fail();
         }
 
+        [TestMethod]
+        public void IpV4OptionTimeOfDayTest()
+        {
+            TimeSpan timeOfDay = new TimeSpan(1, 2, 3);
+            IpV4OptionTimeOfDay timeSinceMidnight = new IpV4OptionTimeOfDay(timeOfDay);
+            Assert.AreEqual(timeOfDay, timeSinceMidnight.TimeSinceMidnightUniversalTime);
+            Assert.IsTrue(timeOfDay == timeSinceMidnight.TimeSinceMidnightUniversalTime);
+            Assert.IsFalse(timeOfDay != timeSinceMidnight.TimeSinceMidnightUniversalTime);
+        }
+
+        [TestMethod]
+        public void IpV4OptionTimedAddressTest()
+        {
+            IpV4OptionTimedAddress timedAddress1 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4OptionTimeOfDay(new TimeSpan(1, 2, 3)));
+            IpV4OptionTimedAddress timedAddress2 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4OptionTimeOfDay(new TimeSpan(1, 2, 3)));
+
+            Assert.AreEqual(timedAddress1, timedAddress2);
+            Assert.IsTrue(timedAddress1 == timedAddress2);
+            Assert.IsFalse(timedAddress1 != timedAddress2);
+
+        }
+
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
         {
             return HexToPacket(hexString, DateTime.MinValue, dataLinkKind);
