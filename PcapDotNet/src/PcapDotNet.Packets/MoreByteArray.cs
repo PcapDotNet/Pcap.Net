@@ -220,18 +220,6 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Reads 4 bytes from a specific offset as an IPv4 time of day with a given endianity.
-        /// </summary>
-        /// <param name="buffer">The buffer to read the bytes from.</param>
-        /// <param name="offset">The offset in the buffer to start reading.</param>
-        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
-        /// <returns>The value converted from the read bytes according to the endianity.</returns>
-        public static IpV4OptionTimeOfDay ReadIpV4OptionTimeOfDay(this byte[] buffer, int offset, Endianity endianity)
-        {
-            return new IpV4OptionTimeOfDay(buffer.ReadUInt(offset, endianity));
-        }
-
-        /// <summary>
         /// Reads 4 bytes from a specific offset as an IPv4 time of day with a given endianity and increments the offset by the number of bytes read.
         /// </summary>
         /// <param name="buffer">The buffer to read the bytes from.</param>

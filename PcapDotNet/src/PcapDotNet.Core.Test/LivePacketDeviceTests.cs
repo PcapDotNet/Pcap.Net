@@ -727,7 +727,8 @@ namespace PcapDotNet.Core.Test
             try
             {
                 PacketTotalStatistics totalStatistics = communicator.TotalStatistics;
-                Assert.AreEqual(totalStatistics, totalStatistics);
+                Assert.AreEqual<object>(totalStatistics, totalStatistics);
+                Assert.AreNotEqual(null, totalStatistics);
                 Assert.AreEqual(totalStatistics.GetHashCode(), totalStatistics.GetHashCode());
                 Assert.IsTrue(totalStatistics.Equals(totalStatistics));
                 Assert.AreNotEqual(null, totalStatistics);

@@ -51,27 +51,27 @@ namespace PcapDotNet.Packets.IpV4
         /// This field specifies the (U.S.) classification level at which the datagram must be protected.  
         /// The information in the datagram must be protected at this level.  
         /// </param>
-        /// <param name="protectionAuthority">
+        /// <param name="protectionAuthorities">
         /// This field identifies the National Access Programs or Special Access Programs 
         /// which specify protection rules for transmission and processing of the information contained in the datagram. 
         /// </param>
         /// <param name="length">
         /// The number of bytes this option will take.
         /// </param>
-        public IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel classificationLevel, IpV4OptionSecurityProtectionAuthority protectionAuthority, byte length)
+        public IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel classificationLevel, IpV4OptionSecurityProtectionAuthorities protectionAuthorities, byte length)
             : base(IpV4OptionType.BasicSecurity)
         {
             if (length < OptionMinimumLength)
                 throw new ArgumentOutOfRangeException("length", length, "Minimum option length is " + OptionMinimumLength);
 
-            if (length == OptionMinimumLength && protectionAuthority != IpV4OptionSecurityProtectionAuthority.None)
+            if (length == OptionMinimumLength && protectionAuthorities != IpV4OptionSecurityProtectionAuthorities.None)
             {
-                throw new ArgumentException("Can't have a protection authority without minimum of " + OptionValueMinimumLength + 1 + " length",
-                                            "protectionAuthority");
+                throw new ArgumentException("Can't have a protection authority without minimum of " + (OptionValueMinimumLength + 1) + " length",
+                                            "protectionAuthorities");
             }
 
             _classificationLevel = classificationLevel;
-            _protectionAuthority = protectionAuthority;
+            _protectionAuthorities = protectionAuthorities;
             _length = length;
         }
 
@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.IpV4
         /// The information in the datagram must be protected at this level.  
         /// </param>
         public IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel classificationLevel)
-            : this(classificationLevel, IpV4OptionSecurityProtectionAuthority.None, OptionMinimumLength)
+            : this(classificationLevel, IpV4OptionSecurityProtectionAuthorities.None, OptionMinimumLength)
         {
         }
 
@@ -108,9 +108,9 @@ namespace PcapDotNet.Packets.IpV4
         /// This field identifies the National Access Programs or Special Access Programs 
         /// which specify protection rules for transmission and processing of the information contained in the datagram. 
         /// </summary>
-        public IpV4OptionSecurityProtectionAuthority ProtectionAuthority
+        public IpV4OptionSecurityProtectionAuthorities ProtectionAuthorities
         {
-            get { return _protectionAuthority; }
+            get { return _protectionAuthorities; }
         }
 
 
@@ -139,7 +139,7 @@ namespace PcapDotNet.Packets.IpV4
                 return false;
 
             return ClassificationLevel == other.ClassificationLevel &&
-                   ProtectionAuthority == other.ProtectionAuthority &&
+                   ProtectionAuthorities == other.ProtectionAuthorities &&
                    Length == other.Length;
         }
 
@@ -159,9 +159,16 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthority) << 8) | Length).GetHashCode();
+                   ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthorities) << 8) | Length).GetHashCode();
         }
 
+        /// <summary>
+        /// Tries to read the option from a buffer starting from the option value (after the type and length).
+        /// </summary>
+        /// <param name="buffer">The buffer to read the option from.</param>
+        /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
+        /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
+        /// <returns>On success - the complex option read. On failure - null.</returns>
         public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength < OptionValueMinimumLength)
@@ -177,24 +184,24 @@ namespace PcapDotNet.Packets.IpV4
                 return null;
             }
 
-            // Protection authority
-            int protectionAuthorityLength = valueLength - OptionValueMinimumLength;
-            IpV4OptionSecurityProtectionAuthority protectionAuthority = IpV4OptionSecurityProtectionAuthority.None;
-            if (protectionAuthorityLength > 0)
+            // Protection authorities
+            int protectionAuthoritiesLength = valueLength - OptionValueMinimumLength;
+            IpV4OptionSecurityProtectionAuthorities protectionAuthorities = IpV4OptionSecurityProtectionAuthorities.None;
+            if (protectionAuthoritiesLength > 0)
             {
-                for (int i = 0; i < protectionAuthorityLength - 1; ++i)
+                for (int i = 0; i < protectionAuthoritiesLength - 1; ++i)
                 {
                     if ((buffer[offset + i] & 0x01) == 0)
                         return null;
                 }
-                if ((buffer[offset + protectionAuthorityLength - 1] & 0x01) != 0)
+                if ((buffer[offset + protectionAuthoritiesLength - 1] & 0x01) != 0)
                     return null;
 
-                protectionAuthority = (IpV4OptionSecurityProtectionAuthority)(buffer[offset] & 0xFE);
+                protectionAuthorities = (IpV4OptionSecurityProtectionAuthorities)(buffer[offset] & 0xFE);
             }
-            offset += protectionAuthorityLength;
+            offset += protectionAuthoritiesLength;
 
-            return new IpV4OptionBasicSecurity(classificationLevel, protectionAuthority, (byte)(OptionMinimumLength + protectionAuthorityLength));
+            return new IpV4OptionBasicSecurity(classificationLevel, protectionAuthorities, (byte)(OptionMinimumLength + protectionAuthoritiesLength));
         }
 
         internal override void Write(byte[] buffer, ref int offset)
@@ -205,7 +212,7 @@ namespace PcapDotNet.Packets.IpV4
             int protectionAuthorityLength = Length - OptionMinimumLength;
             if (protectionAuthorityLength > 0)
             {
-                buffer[offset++] = (byte)ProtectionAuthority;
+                buffer[offset++] = (byte)ProtectionAuthorities;
                 if (protectionAuthorityLength > 1)
                 {
                     buffer[offset - 1] |= 0x01;
@@ -217,7 +224,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         private readonly IpV4OptionSecurityClassificationLevel _classificationLevel;
-        private readonly IpV4OptionSecurityProtectionAuthority _protectionAuthority;
+        private readonly IpV4OptionSecurityProtectionAuthorities _protectionAuthorities;
         private readonly byte _length;
     }
 }

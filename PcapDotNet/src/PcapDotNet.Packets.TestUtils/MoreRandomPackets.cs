@@ -118,13 +118,14 @@ namespace PcapDotNet.Packets.TestUtils
                     return IpV4Option.Nop;
 
                 case IpV4OptionType.BasicSecurity:
-                    IpV4OptionSecurityProtectionAuthority protectionAuthority = IpV4OptionSecurityProtectionAuthority.None;
+                    IpV4OptionSecurityProtectionAuthorities protectionAuthorities = IpV4OptionSecurityProtectionAuthorities.None;
                     int protectionAuthorityLength = random.Next(maximumOptionLength - IpV4OptionBasicSecurity.OptionMinimumLength);
                     if (protectionAuthorityLength > 0)
-                        protectionAuthority = random.NextEnum<IpV4OptionSecurityProtectionAuthority>();
+                        protectionAuthorities = random.NextEnum<IpV4OptionSecurityProtectionAuthorities>();
 
-                    return new IpV4OptionBasicSecurity(random.NextEnum<IpV4OptionSecurityClassificationLevel>(), protectionAuthority,
-                                                  (byte)(IpV4OptionBasicSecurity.OptionMinimumLength + protectionAuthorityLength));
+                    return new IpV4OptionBasicSecurity(random.NextEnum(IpV4OptionSecurityClassificationLevel.None),
+                                                       protectionAuthorities,
+                                                       (byte)(IpV4OptionBasicSecurity.OptionMinimumLength + protectionAuthorityLength));
 
                 case IpV4OptionType.LooseSourceRouting:
                 case IpV4OptionType.StrictSourceRouting:

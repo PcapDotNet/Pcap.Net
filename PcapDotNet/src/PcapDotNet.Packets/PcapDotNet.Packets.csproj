@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Naming#CA1710</CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -68,6 +68,7 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
+    <Compile Include="IpV4\IIpv4OptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="IpV4\IpV4Fragmentation.cs" />
@@ -76,8 +77,9 @@
     <Compile Include="IpV4\IpV4OptionComplex.cs" />
     <Compile Include="IpV4\IpV4OptionLooseSourceRouting.cs" />
     <Compile Include="IpV4\IpV4OptionQuickStart.cs" />
+    <Compile Include="IpV4\IpV4OptionQuickStartFunction.cs" />
     <Compile Include="IpV4\IpV4OptionRouterAlert.cs" />
-    <Compile Include="IpV4\IpV4OptionSecurityProtectionAuthority.cs" />
+    <Compile Include="IpV4\IpV4OptionSecurityProtectionAuthorities.cs" />
     <Compile Include="IpV4\IpV4OptionSimple.cs" />
     <Compile Include="IpV4\IpV4OptionRecordRoute.cs" />
     <Compile Include="IpV4\IpV4OptionRoute.cs" />

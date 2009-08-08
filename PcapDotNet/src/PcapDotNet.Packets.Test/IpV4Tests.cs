@@ -238,8 +238,9 @@ namespace PcapDotNet.Packets.Test
             TimeSpan timeOfDay = new TimeSpan(1, 2, 3);
             IpV4OptionTimeOfDay timeSinceMidnight = new IpV4OptionTimeOfDay(timeOfDay);
             Assert.AreEqual(timeOfDay, timeSinceMidnight.TimeSinceMidnightUniversalTime);
-            Assert.IsTrue(timeOfDay == timeSinceMidnight.TimeSinceMidnightUniversalTime);
-            Assert.IsFalse(timeOfDay != timeSinceMidnight.TimeSinceMidnightUniversalTime);
+            Assert.AreEqual<object>(timeSinceMidnight, timeSinceMidnight);
+            Assert.IsTrue(timeSinceMidnight == timeSinceMidnight);
+            Assert.IsFalse(timeSinceMidnight != timeSinceMidnight);
         }
 
         [TestMethod]
@@ -251,7 +252,76 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(timedAddress1, timedAddress2);
             Assert.IsTrue(timedAddress1 == timedAddress2);
             Assert.IsFalse(timedAddress1 != timedAddress2);
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IpV4OptionBasicSecurtiyBadLengthTest()
+        {
+            IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.None, 1);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionBasicSecurtiyNoProtectionAuthoritiesButWithValueTest()
+        {
+            IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.Nsa, 3);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionQuickStartBadFunctionTest()
+        {
+            IpV4OptionQuickStart option = new IpV4OptionQuickStart((IpV4OptionQuickStartFunction)2, 1, 2, 16);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IpV4OptionQuickStartBadRateTest()
+        {
+            IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 100, 1, 32);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionQuickStartBadNonceTest()
+        {
+            IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 1, 1, 2);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionTimestampAndAddressBadTypeTest()
+        {
+            IpV4OptionTimestampAndAddress option = new IpV4OptionTimestampAndAddress((IpV4OptionTimestampType)166, 1, 2);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void IpV4DatagramInvalidShortTest()
+        {
+            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                       new MacAddress(1), new MacAddress(2),
+                                                       0, 1, new IpV4Fragmentation(IpV4FragmentationOptions.MoreFragments, 8), 1,
+                                                       IpV4Protocol.WidebandExpak, new IpV4Address(1), new IpV4Address(2), new IpV4Options(),
+                                                       Datagram.Empty);
+            Assert.IsTrue(packet.IsValid);
+
+            byte[] badPacketBuffer = new byte[packet.Length - 5];
+            packet.Buffer.BlockCopy(0, badPacketBuffer, 0, badPacketBuffer.Length);
+            Packet badPacket = new Packet(badPacketBuffer, DateTime.Now, packet.DataLink);
+            Assert.IsFalse(badPacket.IsValid, "badPacket.IsValid");
         }
 
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
