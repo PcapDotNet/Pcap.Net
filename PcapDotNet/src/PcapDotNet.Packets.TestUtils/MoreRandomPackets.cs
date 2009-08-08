@@ -92,8 +92,8 @@ namespace PcapDotNet.Packets.TestUtils
                 throw new ArgumentOutOfRangeException("maximumOptionLength", maximumOptionLength, "option length must be positive");
 
             List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType>();
-            if (maximumOptionLength < IpV4OptionSecurity.OptionMinimumLength)
-                impossibleOptionTypes.Add(IpV4OptionType.Security);
+            if (maximumOptionLength < IpV4OptionBasicSecurity.OptionMinimumLength)
+                impossibleOptionTypes.Add(IpV4OptionType.BasicSecurity);
             if (maximumOptionLength < IpV4OptionRoute.OptionMinimumLength)
             {
                 impossibleOptionTypes.Add(IpV4OptionType.LooseSourceRouting);
@@ -113,14 +113,14 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV4OptionType.NoOperation:
                     return IpV4Option.Nop;
 
-                case IpV4OptionType.Security:
+                case IpV4OptionType.BasicSecurity:
                     IpV4OptionSecurityProtectionAuthority protectionAuthority = IpV4OptionSecurityProtectionAuthority.None;
-                    int protectionAuthorityLength = random.Next(maximumOptionLength - IpV4OptionSecurity.OptionMinimumLength);
+                    int protectionAuthorityLength = random.Next(maximumOptionLength - IpV4OptionBasicSecurity.OptionMinimumLength);
                     if (protectionAuthorityLength > 0)
                         protectionAuthority = random.NextEnum<IpV4OptionSecurityProtectionAuthority>();
 
-                    return new IpV4OptionSecurity(random.NextEnum<IpV4OptionSecurityClassificationLevel>(), protectionAuthority,
-                                                  (byte)(IpV4OptionSecurity.OptionMinimumLength + protectionAuthorityLength));
+                    return new IpV4OptionBasicSecurity(random.NextEnum<IpV4OptionSecurityClassificationLevel>(), protectionAuthority,
+                                                  (byte)(IpV4OptionBasicSecurity.OptionMinimumLength + protectionAuthorityLength));
 
                 case IpV4OptionType.LooseSourceRouting:
                 case IpV4OptionType.StrictSourceRouting:

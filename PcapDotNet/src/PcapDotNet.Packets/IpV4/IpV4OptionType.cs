@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.IpV4
         /// DoD Basic Security:  
         /// Used to carry the classification level and protection authority flags.
         /// </summary>
-        Security = 130,
+        BasicSecurity = 130,
 
         /// <summary>
         /// Loose Source Routing.

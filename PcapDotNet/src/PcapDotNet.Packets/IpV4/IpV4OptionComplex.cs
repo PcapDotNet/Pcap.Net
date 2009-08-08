@@ -23,8 +23,8 @@ namespace PcapDotNet.Packets.IpV4
 
             switch (optionType)
             {
-                case IpV4OptionType.Security:
-                    return IpV4OptionSecurity.ReadOptionSecurity(buffer, ref offset, optionValueLength);
+                case IpV4OptionType.BasicSecurity:
+                    return IpV4OptionBasicSecurity.ReadOptionSecurity(buffer, ref offset, optionValueLength);
 
                 case IpV4OptionType.LooseSourceRouting:
                     return IpV4OptionLooseSourceRouting.ReadOptionLooseSourceRouting(buffer, ref offset, optionValueLength);
