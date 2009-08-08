@@ -4,102 +4,101 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
-    /// This option provides a way for hosts to send security, compartmentation, handling restrictions, and TCC (closed user group) parameters.
+    /// This option identifies the U.S. classification level at which the datagram is to be protected 
+    /// and the authorities whose protection rules apply to each datagram.
     /// 
-    /// The format for this option is as follows:
-    /// +--------+--------+---//---+---//---+---//---+---//---+
-    /// |10000010|00001011|SSS  SSS|CCC  CCC|HHH  HHH|  TCC   |
-    /// +--------+--------+---//---+---//---+---//---+---//---+
-    /// Type=130 Length=11
+    /// This option is used by end systems and intermediate systems of aninternet to:
     /// 
-    /// Must be copied on fragmentation.  
-    /// This option appears at most once in a datagram.
+    /// a.  Transmit from source to destination in a network standard representation the common security labels required by computer security models,
+    /// 
+    /// b.  Validate the datagram as appropriate for transmission from the source and delivery to the destination,
+    /// 
+    /// c.  Ensure that the route taken by the datagram is protected to the level required by all protection authorities indicated on the datagram.
+    /// In order to provide this facility in a general Internet environment, interior and exterior gateway protocols must be augmented 
+    /// to include security label information in support of routing control.
+    /// 
+    /// The DoD Basic Security option must be copied on fragmentation.  
+    /// This option appears at most once in a datagram.  
+    /// Some security systems require this to be the first option if more than one option is carried in the IP header, 
+    /// but this is not a generic requirement levied by this specification.
+    /// 
+    /// The format of the DoD Basic Security option is as follows:
+    /// +------------+------------+------------+-------------//----------+
+    /// |  10000010  |  XXXXXXXX  |  SSSSSSSS  |  AAAAAAA[1]    AAAAAAA0 |
+    /// |            |            |            |         [0]             |
+    /// +------------+------------+------------+-------------//----------+
+    ///   TYPE = 130     LENGTH   CLASSIFICATION         PROTECTION
+    ///                                LEVEL              AUTHORITY
+    ///                                                     FLAGS
     /// </summary>
     public class IpV4OptionSecurity : IpV4OptionComplex, IEquatable<IpV4OptionSecurity>
     {
         /// <summary>
-        /// The number of bytes this option take.
+        /// The minimum number of bytes this option take.
         /// </summary>
-        public const int OptionLength = 11;
+        public const int OptionMinimumLength = 3;
 
         /// <summary>
-        /// The number of bytes this option's value take.
+        /// The minimum number of bytes this option's value take.
         /// </summary>
-        public const int OptionValueLength = OptionLength - OptionHeaderLength;
+        public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
 
         /// <summary>
         /// Create the security option from the different security field values.
         /// </summary>
-        /// <param name="level">Specifies one of the levels of security.</param>
-        /// <param name="compartments">
-        /// Compartments (C field):  16 bits
-        /// An all zero value is used when the information transmitted is not compartmented.  
-        /// Other values for the compartments field may be obtained from the Defense Intelligence Agency.
+        /// <param name="classificationLevel">
+        /// This field specifies the (U.S.) classification level at which the datagram must be protected.  
+        /// The information in the datagram must be protected at this level.  
         /// </param>
-        /// <param name="handlingRestrictions">
-        /// Handling Restrictions (H field):  16 bits
-        /// The values for the control and release markings are alphanumeric digraphs 
-        /// and are defined in the Defense Intelligence Agency Manual DIAM 65-19, "Standard Security Markings".
+        /// <param name="protectionAuthority">
+        /// This field identifies the National Access Programs or Special Access Programs 
+        /// which specify protection rules for transmission and processing of the information contained in the datagram. 
         /// </param>
-        /// <param name="transmissionControlCode">
-        /// Transmission Control Code (TCC field):  24 bits
-        /// Provides a means to segregate traffic and define controlled communities of interest among subscribers. 
-        /// The TCC values are trigraphs, and are available from HQ DCA Code 530.
+        /// <param name="length">
+        /// The number of bytes this option will take.
         /// </param>
-        public IpV4OptionSecurity(IpV4OptionSecurityLevel level, ushort compartments,
-                                  ushort handlingRestrictions, UInt24 transmissionControlCode)
+        public IpV4OptionSecurity(IpV4OptionSecurityClassificationLevel classificationLevel, IpV4OptionSecurityProtectionAuthority protectionAuthority, byte length)
             : base(IpV4OptionType.Security)
         {
-            _level = level;
-            _compartments = compartments;
-            _handlingRestrictions = handlingRestrictions;
-            _transmissionControlCode = transmissionControlCode;
+            if (length < OptionMinimumLength)
+                throw new ArgumentOutOfRangeException("length", length, "Minimum option length is " + OptionMinimumLength);
+
+            if (length == OptionMinimumLength && protectionAuthority != IpV4OptionSecurityProtectionAuthority.None)
+            {
+                throw new ArgumentException("Can't have a protection authority without minimum of " + OptionValueMinimumLength + 1 + " length",
+                                            "protectionAuthority");
+            }
+
+            _classificationLevel = classificationLevel;
+            _protectionAuthority = protectionAuthority;
+            _length = length;
         }
 
         /// <summary>
-        /// Specifies one of the levels of security.
+        /// This field specifies the (U.S.) classification level at which the datagram must be protected.  
+        /// The information in the datagram must be protected at this level.  
         /// </summary>
-        public IpV4OptionSecurityLevel Level
+        public IpV4OptionSecurityClassificationLevel ClassificationLevel
         {
-            get { return _level; }
+            get { return _classificationLevel; }
         }
 
         /// <summary>
-        /// Compartments (C field):  16 bits
-        /// An all zero value is used when the information transmitted is not compartmented.  
-        /// Other values for the compartments field may be obtained from the Defense Intelligence Agency.
+        /// This field identifies the National Access Programs or Special Access Programs 
+        /// which specify protection rules for transmission and processing of the information contained in the datagram. 
         /// </summary>
-        public ushort Compartments
+        public IpV4OptionSecurityProtectionAuthority ProtectionAuthority
         {
-            get { return _compartments; }
-        }
-        
-        /// <summary>
-        /// Handling Restrictions (H field):  16 bits
-        /// The values for the control and release markings are alphanumeric digraphs 
-        /// and are defined in the Defense Intelligence Agency Manual DIAM 65-19, "Standard Security Markings".
-        /// </summary>
-        public ushort HandlingRestrictions
-        {
-            get { return _handlingRestrictions; }
+            get { return _protectionAuthority; }
         }
 
-        /// <summary>
-        /// Transmission Control Code (TCC field):  24 bits
-        /// Provides a means to segregate traffic and define controlled communities of interest among subscribers. 
-        /// The TCC values are trigraphs, and are available from HQ DCA Code 530.
-        /// </summary>
-        public UInt24 TransmissionControlCode
-        {
-            get { return _transmissionControlCode; }
-        }
 
         /// <summary>
         /// The number of bytes this option will take.
         /// </summary>
         public override int Length
         {
-            get { return OptionLength; }
+            get { return _length; }
         }
 
         /// <summary>
@@ -118,10 +117,9 @@ namespace PcapDotNet.Packets.IpV4
             if (other == null)
                 return false;
 
-            return Level == other.Level &&
-                   Compartments == other.Compartments &&
-                   HandlingRestrictions == other.HandlingRestrictions &&
-                   TransmissionControlCode == other.TransmissionControlCode;
+            return ClassificationLevel == other.ClassificationLevel &&
+                   ProtectionAuthority == other.ProtectionAuthority &&
+                   Length == other.Length;
         }
 
         /// <summary>
@@ -133,43 +131,73 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The hash code is the xor of the following hash code: base class hash code, level and compartments, handling restrictions, transmission control code.
+        /// The hash code is the xor of the base class hash code 
+        /// with the hash code of the combination of the classification level, protection authority and length.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   (((ushort)Level << 16) | Compartments).GetHashCode() ^
-                   (HandlingRestrictions << 16).GetHashCode() ^
-                   TransmissionControlCode.GetHashCode();
+                   ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthority) << 8) | Length).GetHashCode();
         }
 
         internal static IpV4OptionSecurity ReadOptionSecurity(byte[] buffer, ref int offset, byte valueLength)
         {
-            if (valueLength != OptionValueLength)
+            if (valueLength < OptionValueMinimumLength)
                 return null;
 
-            IpV4OptionSecurityLevel level = (IpV4OptionSecurityLevel)buffer.ReadUShort(ref offset, Endianity.Big);
-            ushort compartments = buffer.ReadUShort(ref offset, Endianity.Big);
-            ushort handlingRestrictions = buffer.ReadUShort(ref offset, Endianity.Big);
-            UInt24 transmissionControlCode = buffer.ReadUInt24(ref offset, Endianity.Big);
+            // Classification level
+            IpV4OptionSecurityClassificationLevel classificationLevel = (IpV4OptionSecurityClassificationLevel)buffer[offset++];
+            if (classificationLevel != IpV4OptionSecurityClassificationLevel.Confidential &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.Secret &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.TopSecret &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.Unclassified)
+            {
+                return null;
+            }
 
-            return new IpV4OptionSecurity(level, compartments, handlingRestrictions, transmissionControlCode);
+            // Protection authority
+            int protectionAuthorityLength = valueLength - OptionValueMinimumLength;
+            IpV4OptionSecurityProtectionAuthority protectionAuthority = IpV4OptionSecurityProtectionAuthority.None;
+            if (protectionAuthorityLength > 0)
+            {
+                for (int i = 0; i < protectionAuthorityLength - 1; ++i)
+                {
+                    if ((buffer[offset + i] & 0x01) == 0)
+                        return null;
+                }
+                if ((buffer[offset + protectionAuthorityLength - 1] & 0x01) != 0)
+                    return null;
+
+                protectionAuthority = (IpV4OptionSecurityProtectionAuthority)(buffer[offset] & 0xFE);
+            }
+            offset += protectionAuthorityLength;
+
+            return new IpV4OptionSecurity(classificationLevel, protectionAuthority, (byte)(OptionMinimumLength + protectionAuthorityLength));
         }
 
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)Length;
-            buffer.Write(ref offset, (ushort)Level, Endianity.Big);
-            buffer.Write(ref offset, Compartments, Endianity.Big);
-            buffer.Write(ref offset, HandlingRestrictions, Endianity.Big);
-            buffer.Write(ref offset, TransmissionControlCode, Endianity.Big);
+            buffer[offset++] = (byte)ClassificationLevel;
+
+            int protectionAuthorityLength = Length - OptionMinimumLength;
+            if (protectionAuthorityLength > 0)
+            {
+                buffer[offset++] = (byte)ProtectionAuthority;
+                if (protectionAuthorityLength > 1)
+                {
+                    buffer[offset - 1] |= 0x01;
+                    for (int i = 0; i != protectionAuthorityLength - 2; ++i)
+                        buffer[offset++] = 0x01;
+                    buffer[offset++] = 0x00;
+                }
+            }
         }
 
-        private readonly IpV4OptionSecurityLevel _level;
-        private readonly ushort _compartments;
-        private readonly ushort _handlingRestrictions;
-        private readonly UInt24 _transmissionControlCode;
+        private readonly IpV4OptionSecurityClassificationLevel _classificationLevel;
+        private readonly IpV4OptionSecurityProtectionAuthority _protectionAuthority;
+        private readonly byte _length;
     }
 }

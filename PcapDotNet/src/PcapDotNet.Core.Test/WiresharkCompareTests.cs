@@ -308,18 +308,10 @@ namespace PcapDotNet.Core.Test
                     break;
                 }
                 IpV4Option option = options[currentOptionIndex++];
+                if (option.OptionType == IpV4OptionType.Security)
+                    continue; // Wireshark doesn't support 
                 field.AssertShow(option.GetWiresharkString());
-                var optionShows = field.Fields().Select(
-                    delegate(XElement optionField)
-                    {
-                        string optionFieldShow = optionField.Show();
-                        if (optionFieldShow.StartsWith("Handling restrictions: "))
-                            optionFieldShow = "Handling restrictions: ";
-                        else if (optionFieldShow.StartsWith("Transmission control code: "))
-                            optionFieldShow = "Transmission control code: ";
-
-                        return optionFieldShow;
-                    });
+                var optionShows = from f in field.Fields() select f.Show();
 
                 Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
             }

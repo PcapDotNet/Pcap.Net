@@ -31,8 +31,8 @@ namespace PcapDotNet.Packets.IpV4
         NoOperation = 1,
 
         /// <summary>
-        /// Security.  
-        /// Used to carry Security, Compartmentation, User Group (TCC), and Handling Restriction Codes compatible with DOD requirements.
+        /// DoD Basic Security:  
+        /// Used to carry the classification level and protection authority flags.
         /// </summary>
         Security = 130,
 
