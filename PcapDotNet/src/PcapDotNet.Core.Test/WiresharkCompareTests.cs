@@ -310,7 +310,7 @@ namespace PcapDotNet.Core.Test
                 IpV4Option option = options[currentOptionIndex++];
                 if (option.OptionType == IpV4OptionType.BasicSecurity)
                 {
-                    Assert.IsTrue(field.Show().StartsWith("Security"));
+                    Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
                     continue; // Wireshark doesn't support 
                 }
                 field.AssertShow(option.GetWiresharkString());

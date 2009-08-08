@@ -17,7 +17,7 @@ namespace PcapDotNet.Core.Test
                     return "NOP";
 
                 case IpV4OptionType.BasicSecurity:
-                    return "Security:";
+                    return "Security";
 
                 case IpV4OptionType.LooseSourceRouting:
                     return "Loose source route (" + option.Length + " bytes)";
