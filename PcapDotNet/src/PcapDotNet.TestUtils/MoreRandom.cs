@@ -45,7 +45,12 @@ namespace PcapDotNet.TestUtils
 
         public static uint NextUInt(this Random random)
         {
-            return (uint)random.Next();
+            return (uint)random.Next(int.MinValue, int.MaxValue);
+        }
+
+        public static uint NextUInt(this Random random, uint maxValue)
+        {
+            return random.NextUInt() % maxValue;
         }
 
         public static UInt48 NextUInt48(this Random random)
