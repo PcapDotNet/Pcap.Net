@@ -16,7 +16,7 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.NoOperation:
                     return "NOP";
 
-                case IpV4OptionType.Security:
+                case IpV4OptionType.BasicSecurity:
                     return "Security:";
 
                 case IpV4OptionType.LooseSourceRouting:
@@ -46,20 +46,6 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.EndOfOptionList:
                 case IpV4OptionType.NoOperation:
                 case IpV4OptionType.StreamIdentifier:
-                    break;
-
-                case IpV4OptionType.Security:
-                    IpV4OptionSecurity securityOption = (IpV4OptionSecurity)option;
-                    switch (securityOption.ClassificationLevel)
-                    {
-                        default:
-                            yield return "Security: " + securityOption.ClassificationLevel;
-                            break;
-                    }
-
-//                    yield return "Compartments: " + securityOption.Compartments;
-//                    yield return "Handling restrictions: ";
-//                    yield return "Transmission control code: ";
                     break;
 
                 case IpV4OptionType.LooseSourceRouting:
@@ -112,6 +98,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
+                case IpV4OptionType.BasicSecurity:
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }

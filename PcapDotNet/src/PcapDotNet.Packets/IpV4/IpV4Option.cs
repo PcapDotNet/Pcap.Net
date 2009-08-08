@@ -109,7 +109,7 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4OptionType.NoOperation:
                     return Nop;
 
-                case IpV4OptionType.Security:
+                case IpV4OptionType.BasicSecurity:
                 case IpV4OptionType.LooseSourceRouting:
                 case IpV4OptionType.StrictSourceRouting:
                 case IpV4OptionType.RecordRoute:

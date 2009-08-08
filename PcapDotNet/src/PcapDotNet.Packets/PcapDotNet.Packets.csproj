@@ -80,7 +80,7 @@
     <Compile Include="IpV4\IpV4OptionRecordRoute.cs" />
     <Compile Include="IpV4\IpV4OptionRoute.cs" />
     <Compile Include="IpV4\IpV4Options.cs" />
-    <Compile Include="IpV4\IpV4OptionSecurity.cs" />
+    <Compile Include="IpV4\IpV4OptionBasicSecurity.cs" />
     <Compile Include="IpV4\IpV4OptionSecurityClassificationLevel.cs" />
     <Compile Include="IpV4\IpV4OptionStreamIdentifier.cs" />
     <Compile Include="IpV4\IpV4OptionStrictSourceRouting.cs" />

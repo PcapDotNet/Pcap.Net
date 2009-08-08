@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.IpV4
     ///                                LEVEL              AUTHORITY
     ///                                                     FLAGS
     /// </summary>
-    public class IpV4OptionSecurity : IpV4OptionComplex, IEquatable<IpV4OptionSecurity>
+    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IEquatable<IpV4OptionBasicSecurity>
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -57,8 +57,8 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="length">
         /// The number of bytes this option will take.
         /// </param>
-        public IpV4OptionSecurity(IpV4OptionSecurityClassificationLevel classificationLevel, IpV4OptionSecurityProtectionAuthority protectionAuthority, byte length)
-            : base(IpV4OptionType.Security)
+        public IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel classificationLevel, IpV4OptionSecurityProtectionAuthority protectionAuthority, byte length)
+            : base(IpV4OptionType.BasicSecurity)
         {
             if (length < OptionMinimumLength)
                 throw new ArgumentOutOfRangeException("length", length, "Minimum option length is " + OptionMinimumLength);
@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Two security options are equal iff they have the exam same field values.
         /// </summary>
-        public bool Equals(IpV4OptionSecurity other)
+        public bool Equals(IpV4OptionBasicSecurity other)
         {
             if (other == null)
                 return false;
@@ -127,7 +127,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public override bool Equals(IpV4Option other)
         {
-            return Equals(other as IpV4OptionSecurity);
+            return Equals(other as IpV4OptionBasicSecurity);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace PcapDotNet.Packets.IpV4
                    ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthority) << 8) | Length).GetHashCode();
         }
 
-        internal static IpV4OptionSecurity ReadOptionSecurity(byte[] buffer, ref int offset, byte valueLength)
+        internal static IpV4OptionBasicSecurity ReadOptionSecurity(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength < OptionValueMinimumLength)
                 return null;
@@ -173,7 +173,7 @@ namespace PcapDotNet.Packets.IpV4
             }
             offset += protectionAuthorityLength;
 
-            return new IpV4OptionSecurity(classificationLevel, protectionAuthority, (byte)(OptionMinimumLength + protectionAuthorityLength));
+            return new IpV4OptionBasicSecurity(classificationLevel, protectionAuthority, (byte)(OptionMinimumLength + protectionAuthorityLength));
         }
 
         internal override void Write(byte[] buffer, ref int offset)
