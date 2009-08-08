@@ -42,7 +42,8 @@ namespace PcapDotNet.Packets.IpV4
     /// Must be copied on fragmentation.  
     /// Appears at most once in a datagram.
     /// </summary>
-    public class IpV4OptionLooseSourceRouting : IpV4OptionRoute
+    [IpV4OptionTypeRegistration(IpV4OptionType.LooseSourceRouting)]
+    public class IpV4OptionLooseSourceRouting : IpV4OptionRoute, IIpv4OptionComplexFactory
     {
         /// <summary>
         /// Constructs the option from the given values.
@@ -54,7 +55,15 @@ namespace PcapDotNet.Packets.IpV4
         {
         }
 
-        internal static IpV4OptionLooseSourceRouting ReadOptionLooseSourceRouting(byte[] buffer, ref int offset, byte valueLength)
+        /// <summary>
+        /// Empty loose source routing.
+        /// </summary>
+        public IpV4OptionLooseSourceRouting()
+            : this(new IpV4Address[]{}, 0)
+        {
+        }
+
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             IpV4Address[] addresses;
             byte pointedAddressIndex;

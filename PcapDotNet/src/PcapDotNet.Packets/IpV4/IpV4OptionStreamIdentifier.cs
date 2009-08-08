@@ -14,7 +14,8 @@ namespace PcapDotNet.Packets.IpV4
     /// Must be copied on fragmentation.  
     /// Appears at most once in a datagram.
     /// </summary>
-    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IEquatable<IpV4OptionStreamIdentifier>
+    [IpV4OptionTypeRegistration(IpV4OptionType.StreamIdentifier)]
+    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionStreamIdentifier>
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -87,7 +88,15 @@ namespace PcapDotNet.Packets.IpV4
                    Identifier.GetHashCode();
         }
 
-        internal static IpV4OptionStreamIdentifier ReadOptionStreamIdentifier(byte[] buffer, ref int offset, byte valueLength)
+        /// <summary>
+        /// Creates a 0 stream identifier
+        /// </summary>
+        public IpV4OptionStreamIdentifier()
+            : this(0)
+        {
+        }
+
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionHeaderLength)
                 return null;

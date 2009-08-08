@@ -39,7 +39,8 @@ namespace PcapDotNet.Packets.IpV4
     /// Not copied on fragmentation, goes in first fragment only.
     /// Appears at most once in a datagram.
     /// </summary>
-    public class IpV4OptionRecordRoute : IpV4OptionRoute
+    [IpV4OptionTypeRegistration(IpV4OptionType.RecordRoute)]
+    public class IpV4OptionRecordRoute : IpV4OptionRoute, IIpv4OptionComplexFactory
     {
         /// <summary>
         /// Constructs the option from the given values.
@@ -61,7 +62,15 @@ namespace PcapDotNet.Packets.IpV4
         {
         }
 
-        internal static IpV4OptionRecordRoute ReadOptionRecordRoute(byte[] buffer, ref int offset, byte valueLength)
+        /// <summary>
+        /// Constructs an empty record route option.
+        /// </summary>
+        public IpV4OptionRecordRoute()
+            : this(0)
+        {
+        }
+
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             IpV4Address[] addresses;
             byte pointedAddressIndex;

@@ -31,7 +31,8 @@ namespace PcapDotNet.Packets.IpV4
     ///                                LEVEL              AUTHORITY
     ///                                                     FLAGS
     /// </summary>
-    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IEquatable<IpV4OptionBasicSecurity>
+    [IpV4OptionTypeRegistration(IpV4OptionType.BasicSecurity)]
+    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -72,6 +73,26 @@ namespace PcapDotNet.Packets.IpV4
             _classificationLevel = classificationLevel;
             _protectionAuthority = protectionAuthority;
             _length = length;
+        }
+
+        /// <summary>
+        /// Create the security option with only classification level.
+        /// </summary>
+        /// <param name="classificationLevel">
+        /// This field specifies the (U.S.) classification level at which the datagram must be protected.  
+        /// The information in the datagram must be protected at this level.  
+        /// </param>
+        public IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel classificationLevel)
+            : this(classificationLevel, IpV4OptionSecurityProtectionAuthority.None, OptionMinimumLength)
+        {
+        }
+
+        /// <summary>
+        /// Creates unclassified security option.
+        /// </summary>
+        public IpV4OptionBasicSecurity()
+            : this(IpV4OptionSecurityClassificationLevel.Unclassified)
+        {
         }
 
         /// <summary>
@@ -141,7 +162,7 @@ namespace PcapDotNet.Packets.IpV4
                    ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthority) << 8) | Length).GetHashCode();
         }
 
-        internal static IpV4OptionBasicSecurity ReadOptionSecurity(byte[] buffer, ref int offset, byte valueLength)
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength < OptionValueMinimumLength)
                 return null;
