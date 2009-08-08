@@ -43,7 +43,8 @@ namespace PcapDotNet.Packets.IpV4
     /// Must be copied on fragmentation.  
     /// Appears at most once in a datagram.
     /// </summary>
-    public class IpV4OptionStrictSourceRouting : IpV4OptionRoute
+    [IpV4OptionTypeRegistration(IpV4OptionType.StrictSourceRouting)]
+    public class IpV4OptionStrictSourceRouting : IpV4OptionRoute, IIpv4OptionComplexFactory
     {
         /// <summary>
         /// Create the option according to the given values.
@@ -53,7 +54,15 @@ namespace PcapDotNet.Packets.IpV4
         {
         }
 
-        internal static IpV4OptionStrictSourceRouting ReadOptionStrictSourceRouting(byte[] buffer, ref int offset, byte valueLength)
+        /// <summary>
+        /// Creates an empty strict source routing option.
+        /// </summary>
+        public IpV4OptionStrictSourceRouting()
+            : this(new List<IpV4Address>(), 0)
+        {
+        }
+
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             IpV4Address[] addresses;
             byte pointedAddressIndex;

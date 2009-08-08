@@ -52,6 +52,41 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
+        [IpV4OptionTypeRegistration(IpV4OptionType.InternetTimestamp)]
+        internal class IpV4OptionTimestampFactory : IIpv4OptionComplexFactory
+        {
+            public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+            {
+                if (valueLength < OptionValueMinimumLength || valueLength % 4 != 2)
+                    return null;
+
+                byte pointer = buffer[offset++];
+                if (pointer % 4 != 1 || pointer < 5)
+                    return null;
+
+                byte pointedIndex = (byte)(pointer / 4 - 1);
+
+                byte overflow = buffer[offset++];
+                IpV4OptionTimestampType timestampType = (IpV4OptionTimestampType)(overflow & 0x0F);
+                overflow >>= 4;
+
+                int numValues = valueLength / 4;
+
+                switch (timestampType)
+                {
+                    case IpV4OptionTimestampType.TimestampOnly:
+                        return IpV4OptionTimestampOnly.Read(overflow, pointedIndex, buffer, ref offset, numValues);
+
+                    case IpV4OptionTimestampType.AddressAndTimestamp:
+                    case IpV4OptionTimestampType.AddressPrespecified:
+                        return IpV4OptionTimestampAndAddress.Read(timestampType, overflow, pointedIndex, buffer, ref offset, numValues);
+
+                    default:
+                        return null;
+                }
+            }
+        }
+
         /// <summary>
         /// The minimum length in bytes for the option (type, length, pointer, overflow and flags).
         /// </summary>
@@ -152,37 +187,6 @@ namespace PcapDotNet.Packets.IpV4
             return base.GetHashCode() ^
                    (((byte)TimestampType << 16) | (Overflow << 8)).GetHashCode() ^
                    PointedIndex.GetHashCode();
-        }
-
-        internal static IpV4OptionTimestamp ReadOptionTimestamp(byte[] buffer, ref int offset, int valueLength)
-        {
-            if (valueLength < OptionValueMinimumLength || valueLength % 4 != 2)
-                return null;
-
-            byte pointer = buffer[offset++];
-            if (pointer % 4 != 1 || pointer < 5)
-                return null;
-
-            byte pointedIndex = (byte)(pointer / 4 - 1);
-
-            byte overflow = buffer[offset++];
-            IpV4OptionTimestampType timestampType = (IpV4OptionTimestampType)(overflow & 0x0F);
-            overflow >>= 4;
-
-            int numValues = valueLength / 4;
-
-            switch (timestampType)
-            {
-                case IpV4OptionTimestampType.TimestampOnly:
-                    return IpV4OptionTimestampOnly.Read(overflow, pointedIndex, buffer, ref offset, numValues);
-
-                case IpV4OptionTimestampType.AddressAndTimestamp:
-                case IpV4OptionTimestampType.AddressPrespecified:
-                    return IpV4OptionTimestampAndAddress.Read(timestampType, overflow, pointedIndex, buffer, ref offset, numValues);
-
-                default:
-                    return null;
-            }
         }
 
         internal override void Write(byte[] buffer, ref int offset)

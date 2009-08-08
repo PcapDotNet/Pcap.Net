@@ -1,11 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
 namespace PcapDotNet.Packets.IpV4
 {
+    internal class IpV4OptionTypeRegistrationAttribute : Attribute
+    {
+        public IpV4OptionTypeRegistrationAttribute(IpV4OptionType optionType)
+        {
+            OptionType = optionType;
+        }
+
+        public IpV4OptionType OptionType { get; set; }
+    }
+
+    internal interface IIpv4OptionComplexFactory
+    {
+        IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength);
+    }
+
     /// <summary>
     /// Represents a complex IPv4 option.
     /// Complex option means that it contains data and not just the type.
     /// </summary>
     public abstract class IpV4OptionComplex : IpV4Option
     {
+        private static readonly Dictionary<IpV4OptionType, IIpv4OptionComplexFactory> _complexOptions;
+
+        static IpV4OptionComplex()
+        {
+            var complexOptions =
+                from type in Assembly.GetExecutingAssembly().GetTypes()
+                where typeof(IIpv4OptionComplexFactory).IsAssignableFrom(type) &&
+                      GetRegistrationAttribute(type) != null
+                select new
+                           {
+                               GetRegistrationAttribute(type).OptionType,
+                               Option = (IIpv4OptionComplexFactory)Activator.CreateInstance(type)
+                           };
+
+            _complexOptions = complexOptions.ToDictionary(option => option.OptionType, option => option.Option);
+        }
+
+        private static IpV4OptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
+        {
+            var registraionAttributes = type.GetCustomAttributes(typeof(IpV4OptionTypeRegistrationAttribute), false);
+            if (registraionAttributes.Length == 0)
+                return null;
+
+            return ((IpV4OptionTypeRegistrationAttribute)registraionAttributes[0]);
+        }
+
         /// <summary>
         /// The header length in bytes for the option (type and size).
         /// </summary>
@@ -18,36 +64,13 @@ namespace PcapDotNet.Packets.IpV4
             byte optionLength = buffer[offset++];
             if (length + 1 < optionLength)
                 return null;
-
             byte optionValueLength = (byte)(optionLength - OptionHeaderLength);
 
-            switch (optionType)
-            {
-                case IpV4OptionType.BasicSecurity:
-                    return IpV4OptionBasicSecurity.ReadOptionSecurity(buffer, ref offset, optionValueLength);
+            IIpv4OptionComplexFactory prototype;
+            if (!_complexOptions.TryGetValue(optionType, out prototype))
+                return null;
 
-                case IpV4OptionType.LooseSourceRouting:
-                    return IpV4OptionLooseSourceRouting.ReadOptionLooseSourceRouting(buffer, ref offset, optionValueLength);
-
-                case IpV4OptionType.StrictSourceRouting:
-                    return IpV4OptionStrictSourceRouting.ReadOptionStrictSourceRouting(buffer, ref offset, optionValueLength);
-
-                case IpV4OptionType.RecordRoute:
-                    return IpV4OptionRecordRoute.ReadOptionRecordRoute(buffer, ref offset, optionValueLength);
-
-                case IpV4OptionType.StreamIdentifier:
-                    return IpV4OptionStreamIdentifier.ReadOptionStreamIdentifier(buffer, ref offset, optionValueLength);
-
-                case IpV4OptionType.InternetTimestamp:
-                    return IpV4OptionTimestamp.ReadOptionTimestamp(buffer, ref offset, optionValueLength);
-
-                case IpV4OptionType.TraceRoute:
-                    return IpV4OptionTraceRoute.ReadOptionTraceRoute(buffer, ref offset, optionValueLength);
-
-                default:
-                    return null;
-
-            }
+            return prototype.CreateInstance(buffer, ref offset, optionValueLength);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

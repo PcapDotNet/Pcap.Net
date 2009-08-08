@@ -24,7 +24,8 @@ namespace PcapDotNet.Packets.IpV4
     /// C (class): 2 (Debugging & Measurement)
     /// Number: 18 (F+C+Number = 82)
     /// </summary>
-    public class IpV4OptionTraceRoute : IpV4OptionComplex, IEquatable<IpV4OptionTraceRoute>
+    [IpV4OptionTypeRegistration(IpV4OptionType.TraceRoute)]
+    public class IpV4OptionTraceRoute : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionTraceRoute>
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -64,6 +65,14 @@ namespace PcapDotNet.Packets.IpV4
             _outboundHopCount = outboundHopCount;
             _returnHopCount = returnHopCount;
             _originatorIpAddress = originatorIpAddress;
+        }
+
+        /// <summary>
+        /// Creates empty trace route option.
+        /// </summary>
+        public IpV4OptionTraceRoute()
+            : this(0, 0, 0, IpV4Address.Zero)
+        {
         }
 
         /// <summary>
@@ -157,7 +166,7 @@ namespace PcapDotNet.Packets.IpV4
 
         }
 
-        internal static IpV4OptionTraceRoute ReadOptionTraceRoute(byte[] buffer, ref int offset, byte valueLength)
+        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionValueLength)
                 return null;
