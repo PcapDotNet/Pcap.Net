@@ -170,18 +170,6 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void IpV4OptionsTest()
-        {
-            IpV4Options actual = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 12345, 54321, (UInt24)123456));
-            IpV4Options expected = new IpV4Options(new IpV4OptionSecurity(IpV4OptionSecurityLevel.Unclassified, 12345, 54321, (UInt24)123456),
-                                                   IpV4Option.End);
-
-            Assert.AreEqual(expected, actual);
-            Assert.IsTrue(expected.IsValid);
-            Assert.IsTrue(actual.IsValid);
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IpV4OptionTimestampOverflowErrorTest()
         {

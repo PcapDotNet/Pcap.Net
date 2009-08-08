@@ -92,7 +92,7 @@ namespace PcapDotNet.Packets.TestUtils
                 throw new ArgumentOutOfRangeException("maximumOptionLength", maximumOptionLength, "option length must be positive");
 
             List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType>();
-            if (maximumOptionLength < IpV4OptionSecurity.OptionLength)
+            if (maximumOptionLength < IpV4OptionSecurity.OptionMinimumLength)
                 impossibleOptionTypes.Add(IpV4OptionType.Security);
             if (maximumOptionLength < IpV4OptionRoute.OptionMinimumLength)
             {
@@ -114,8 +114,13 @@ namespace PcapDotNet.Packets.TestUtils
                     return IpV4Option.Nop;
 
                 case IpV4OptionType.Security:
-                    return new IpV4OptionSecurity(random.NextEnum<IpV4OptionSecurityLevel>(), random.NextUShort(), random.NextUShort(),
-                                                  random.NextUInt24());
+                    IpV4OptionSecurityProtectionAuthority protectionAuthority = IpV4OptionSecurityProtectionAuthority.None;
+                    int protectionAuthorityLength = random.Next(maximumOptionLength - IpV4OptionSecurity.OptionMinimumLength);
+                    if (protectionAuthorityLength > 0)
+                        protectionAuthority = random.NextEnum<IpV4OptionSecurityProtectionAuthority>();
+
+                    return new IpV4OptionSecurity(random.NextEnum<IpV4OptionSecurityClassificationLevel>(), protectionAuthority,
+                                                  (byte)(IpV4OptionSecurity.OptionMinimumLength + protectionAuthorityLength));
 
                 case IpV4OptionType.LooseSourceRouting:
                 case IpV4OptionType.StrictSourceRouting:

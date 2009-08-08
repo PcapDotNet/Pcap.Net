@@ -50,32 +50,16 @@ namespace PcapDotNet.Core.Test
 
                 case IpV4OptionType.Security:
                     IpV4OptionSecurity securityOption = (IpV4OptionSecurity)option;
-                    switch (securityOption.Level)
+                    switch (securityOption.ClassificationLevel)
                     {
-                        case IpV4OptionSecurityLevel.EncryptedForTransmissionOnly:
-                            yield return "Security: EFTO";
-                            break;
-
-                        case IpV4OptionSecurityLevel.Mmmm:
-                            yield return "Security: " + securityOption.Level.ToString().ToUpper();
-                            break;
-
-                        case IpV4OptionSecurityLevel.TopSecret:
-                            yield return "Security: Top secret";
-                            break;
-
-                        case IpV4OptionSecurityLevel.Prog:
-                            yield return "Security: Unknown (0x" + ((ushort)securityOption.Level).ToString("x4") + ")";
-                            break;
-
                         default:
-                            yield return "Security: " + securityOption.Level;
+                            yield return "Security: " + securityOption.ClassificationLevel;
                             break;
                     }
 
-                    yield return "Compartments: " + securityOption.Compartments;
-                    yield return "Handling restrictions: ";
-                    yield return "Transmission control code: ";
+//                    yield return "Compartments: " + securityOption.Compartments;
+//                    yield return "Handling restrictions: ";
+//                    yield return "Transmission control code: ";
                     break;
 
                 case IpV4OptionType.LooseSourceRouting:
