@@ -5,16 +5,6 @@ using System.Reflection;
 
 namespace PcapDotNet.Packets.IpV4
 {
-    internal class IpV4OptionTypeRegistrationAttribute : Attribute
-    {
-        public IpV4OptionTypeRegistrationAttribute(IpV4OptionType optionType)
-        {
-            OptionType = optionType;
-        }
-
-        public IpV4OptionType OptionType { get; set; }
-    }
-
     internal interface IIpv4OptionComplexFactory
     {
         IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength);
@@ -26,8 +16,6 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public abstract class IpV4OptionComplex : IpV4Option
     {
-        private static readonly Dictionary<IpV4OptionType, IIpv4OptionComplexFactory> _complexOptions;
-
         static IpV4OptionComplex()
         {
             var complexOptions =
@@ -43,19 +31,20 @@ namespace PcapDotNet.Packets.IpV4
             _complexOptions = complexOptions.ToDictionary(option => option.OptionType, option => option.Option);
         }
 
-        private static IpV4OptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
-        {
-            var registraionAttributes = type.GetCustomAttributes(typeof(IpV4OptionTypeRegistrationAttribute), false);
-            if (registraionAttributes.Length == 0)
-                return null;
-
-            return ((IpV4OptionTypeRegistrationAttribute)registraionAttributes[0]);
-        }
-
         /// <summary>
         /// The header length in bytes for the option (type and size).
         /// </summary>
         public const int OptionHeaderLength = 2;
+
+        internal class IpV4OptionTypeRegistrationAttribute : Attribute
+        {
+            public IpV4OptionTypeRegistrationAttribute(IpV4OptionType optionType)
+            {
+                OptionType = optionType;
+            }
+
+            public IpV4OptionType OptionType { get; set; }
+        }
 
         internal static IpV4OptionComplex ReadOptionComplex(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
         {
@@ -86,5 +75,16 @@ namespace PcapDotNet.Packets.IpV4
             : base(type)
         {
         }
+
+        private static IpV4OptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
+        {
+            var registraionAttributes = type.GetCustomAttributes(typeof(IpV4OptionTypeRegistrationAttribute), false);
+            if (registraionAttributes.Length == 0)
+                return null;
+
+            return ((IpV4OptionTypeRegistrationAttribute)registraionAttributes[0]);
+        }
+        
+        private static readonly Dictionary<IpV4OptionType, IIpv4OptionComplexFactory> _complexOptions;
     }
 }

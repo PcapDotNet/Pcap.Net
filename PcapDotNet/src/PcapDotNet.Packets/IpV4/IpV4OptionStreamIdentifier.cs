@@ -37,6 +37,14 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
+        /// Creates a 0 stream identifier
+        /// </summary>
+        public IpV4OptionStreamIdentifier()
+            : this(0)
+        {
+        }
+
+        /// <summary>
         /// The identifier of the stream.
         /// </summary>
         public ushort Identifier
@@ -81,19 +89,10 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The hash code value is the xor of the base class hash code and the identifier hash code.
         /// </summary>
-        /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    Identifier.GetHashCode();
-        }
-
-        /// <summary>
-        /// Creates a 0 stream identifier
-        /// </summary>
-        public IpV4OptionStreamIdentifier()
-            : this(0)
-        {
         }
 
         public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
