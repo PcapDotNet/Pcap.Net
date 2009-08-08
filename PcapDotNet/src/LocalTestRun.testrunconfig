@@ -6,7 +6,6 @@
       <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Base.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Base.pdb" instrumentInPlace="true" />
       <CodeCoverageItem binaryFile="c:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.dll" pdbFile="c:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.pdb" instrumentInPlace="true" />
       <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Packets.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Packets.pdb" instrumentInPlace="true" />
-      <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.Test.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.Test.pdb" instrumentInPlace="true" />
     </Regular>
   </CodeCoverage>
   <TestTypeSpecific>

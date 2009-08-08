@@ -75,11 +75,14 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            // Create packets
-            List<Packet> packets = new List<Packet>(CreateRandomPackets(1000));
+            for (int i = 0; i != 1; ++i)
+            {
+                // Create packets
+                List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
 
-            // Create pcap file
-            ComparePacketsToWireshark(packets);
+                // Create pcap file
+                ComparePacketsToWireshark(packets);
+            }
         }
 
         private static IEnumerable<Packet> CreateRandomPackets(int numPackets)
@@ -122,7 +125,8 @@ namespace PcapDotNet.Core.Test
                                             Arguments = " -t r -n -r \"" + pcapFilename + "\" -T pdml",
                                             WorkingDirectory = WiresharkDiretory,
                                             UseShellExecute = false,
-                                            RedirectStandardOutput = true
+                                            RedirectStandardOutput = true,
+                                            CreateNoWindow = true
                                         };
                 Console.WriteLine("Starting process " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
                 process.Start();
@@ -298,7 +302,9 @@ namespace PcapDotNet.Core.Test
                 if (currentOptionIndex >= options.Count)
                 {
                     Assert.IsFalse(options.IsValid);
-                    Assert.IsTrue(field.Show().StartsWith("Unknown") || field.Show().Contains("with too"));
+                    Assert.IsTrue(field.Show().StartsWith("Unknown") ||
+                                  field.Show().Contains("with too") ||
+                                  field.Show().Contains(" bytes says option goes past end of options"), field.Show());
                     break;
                 }
                 IpV4Option option = options[currentOptionIndex++];

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
 
@@ -83,6 +85,27 @@ namespace PcapDotNet.Packets.Test
 
                 Assert.IsFalse(new Packet(packet.Buffer, DateTime.Now, (DataLinkKind)((int)DataLinkKind.Ethernet + 1)).IsValid);
             }
+        }
+
+        [TestMethod]
+        public void PacketIListTest()
+        {
+            byte[] buffer = new byte[]{1,2,3,4,5};
+            IList<byte> packet = new Packet(buffer, DateTime.Now, DataLinkKind.Ethernet);
+
+            Assert.IsTrue(packet.Contains(1));
+
+            buffer = new byte[buffer.Length];
+            packet.CopyTo(buffer, 0);
+            packet.SequenceEqual(buffer);
+
+            Assert.AreEqual(1, packet.IndexOf(2));
+            Assert.AreEqual(buffer.Length, packet.Count);
+            Assert.AreEqual(buffer[2], packet[2]);
+            Assert.IsTrue(packet.IsReadOnly);
+
+
+
         }
     }
 }
