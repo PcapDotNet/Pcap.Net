@@ -41,10 +41,19 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4OptionType.InternetTimestamp:
                     return IpV4OptionTimestamp.ReadOptionTimestamp(buffer, ref offset, optionValueLength);
 
+                case IpV4OptionType.TraceRoute:
+                    return IpV4OptionTraceRoute.ReadOptionTraceRoute(buffer, ref offset, optionValueLength);
+
                 default:
                     return null;
 
             }
+        }
+
+        internal override void Write(byte[] buffer, ref int offset)
+        {
+            base.Write(buffer, ref offset);
+            buffer[offset++] = (byte)Length;
         }
 
         /// <summary>

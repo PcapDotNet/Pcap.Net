@@ -34,6 +34,9 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.InternetTimestamp:
                     return "Time stamp" + (option.Length < 5 ? " (with option length = " + option.Length + " bytes; should be >= 5)" : ":");
 
+                case IpV4OptionType.TraceRoute:
+                    return "Unknown (0x52) (12 bytes)";
+
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }

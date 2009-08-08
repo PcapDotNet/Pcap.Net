@@ -92,7 +92,6 @@ namespace PcapDotNet.Packets.IpV4
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedAddressIndex * 4);
             foreach (IpV4Address address in Route)
                 buffer.Write(ref offset, address, Endianity.Big);

@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// Two security options are equal iff they have the exam same field values.
+        /// Two security options are equal iff they have the exact same field values.
         /// </summary>
         public bool Equals(IpV4OptionBasicSecurity other)
         {
@@ -123,7 +123,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// Two security options are equal iff they have the exam same field values.
+        /// Two security options are equal iff they have the exact same field values.
         /// </summary>
         public override bool Equals(IpV4Option other)
         {
@@ -179,7 +179,6 @@ namespace PcapDotNet.Packets.IpV4
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)ClassificationLevel;
 
             int protectionAuthorityLength = Length - OptionMinimumLength;
