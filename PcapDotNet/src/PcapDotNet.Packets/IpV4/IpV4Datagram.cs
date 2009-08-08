@@ -76,6 +76,9 @@ namespace PcapDotNet.Packets.IpV4
             get { return (this[Offset.VersionAndHeaderLength] & 0x0F) * 4; }
         }
 
+        /// <summary>
+        /// The real number of bytes in the header (different than HeaderLength when the datagram is too small).
+        /// </summary>
         public int RealHeaderLength
         {
             get { return Math.Min(HeaderLength, Length); }

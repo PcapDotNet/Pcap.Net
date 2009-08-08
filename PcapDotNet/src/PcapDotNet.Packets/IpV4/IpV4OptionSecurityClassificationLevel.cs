@@ -10,6 +10,11 @@ namespace PcapDotNet.Packets.IpV4
     public enum IpV4OptionSecurityClassificationLevel : byte
     {
         /// <summary>
+        /// An invalid value for a classification level.
+        /// </summary>
+        None,
+
+        /// <summary>
         /// Top Secret
         /// </summary>
         TopSecret = 0x3D,

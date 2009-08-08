@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Protection authority flags do NOT represent accreditation authorities, though the semantics are superficially similar.  
     /// </summary>
     [Flags]
-    public enum IpV4OptionSecurityProtectionAuthority : byte
+    public enum IpV4OptionSecurityProtectionAuthorities : byte
     {
         /// <summary>
         /// No protection authorities.
@@ -44,6 +44,6 @@ namespace PcapDotNet.Packets.IpV4
         /// Department of Energy (DOE).
         /// Attn:  DP343.2 Washington, DC  20545
         /// </summary>
-        DeparmentOfEnergy = 0x08
+        DepartmentOfEnergy = 0x08
     }
 }

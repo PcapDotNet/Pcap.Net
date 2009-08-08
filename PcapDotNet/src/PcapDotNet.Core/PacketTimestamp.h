@@ -29,8 +29,11 @@ namespace PcapDotNet { namespace Core
 
     private:
         static PacketTimestamp() { Initialize(); }
-        PacketTimestamp(){}
+
         static void Initialize();
+
+        [System::Diagnostics::DebuggerNonUserCode]
+        PacketTimestamp(){}
 
         static System::DateTime _minimumPacketTimestamp;
         static System::DateTime _maximumPacketTimestamp;

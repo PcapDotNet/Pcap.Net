@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
 
@@ -103,9 +104,36 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(buffer.Length, packet.Count);
             Assert.AreEqual(buffer[2], packet[2]);
             Assert.IsTrue(packet.IsReadOnly);
+        }
 
+        [TestMethod]
+        public void MutationMethodsTest()
+        {
+            string[] methodNames = new[] {"Add", "Clear", "Insert", "Remove", "RemoveAt", "set_Item"};
 
+            Packet packet = new Random().NextPacket(100);
+            var methods = from method in typeof(Packet).GetMethods()
+                          where (methodNames.Contains(method.Name))
+                          select method;
 
+            Assert.AreEqual(methodNames.Length, methods.Count());
+
+            foreach (var method in methods)
+            {
+                var parameters = from parameter in method.GetParameters()
+                                 select Activator.CreateInstance(parameter.ParameterType);
+                try
+                {
+                    method.Invoke(packet, parameters.ToArray());
+                }
+                catch (TargetInvocationException e)
+                {
+                    Assert.IsInstanceOfType(e.InnerException, typeof(InvalidOperationException));
+                    continue;
+                }
+
+                Assert.Fail();
+            }
         }
     }
 }
