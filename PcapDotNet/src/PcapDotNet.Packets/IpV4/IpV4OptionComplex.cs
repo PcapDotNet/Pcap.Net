@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.IpV4
             if (length + 1 < optionLength)
                 return null;
 
-            byte optionValueLength = (byte)(optionLength - 2);
+            byte optionValueLength = (byte)(optionLength - OptionHeaderLength);
 
             switch (optionType)
             {

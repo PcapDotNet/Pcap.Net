@@ -15,6 +15,9 @@ namespace PcapDotNet.Packets.IpV4
     /// 1 = reserved for future use
     /// 2 = debugging and measurement
     /// 3 = reserved for future use
+    /// 
+    /// DoD Extended Security Option (133), RFC 1108, is not supported because it only defines abstract option and no concrete option RFC is available.
+    /// EIP: The Extended Internet Protocol, RFC 1385, is not supported because according iana.org its option type is 145 but according to the RFC its option type is 138 (0x8A).
     /// </summary>
     public enum IpV4OptionType : byte
     {
