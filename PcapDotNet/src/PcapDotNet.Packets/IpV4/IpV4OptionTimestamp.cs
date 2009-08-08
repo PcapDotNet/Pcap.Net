@@ -188,7 +188,6 @@ namespace PcapDotNet.Packets.IpV4
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            buffer[offset++] = (byte)Length;
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedIndex * 4);
             buffer[offset++] = (byte)(((byte)(Overflow << 4)) | (byte)TimestampType);
             WriteValues(buffer, ref offset);

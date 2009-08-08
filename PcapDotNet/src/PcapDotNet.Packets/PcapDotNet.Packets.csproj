@@ -90,6 +90,7 @@
     <Compile Include="IpV4\IpV4OptionTimestampAndAddress.cs" />
     <Compile Include="IpV4\IpV4OptionTimestampOnly.cs" />
     <Compile Include="IpV4\IpV4OptionTimestampType.cs" />
+    <Compile Include="IpV4\IpV4OptionTraceRoute.cs" />
     <Compile Include="IpV4\IpV4OptionType.cs" />
     <Compile Include="IpV4\IpV4Protocol.cs" />
     <Compile Include="MoreByteArray.cs" />

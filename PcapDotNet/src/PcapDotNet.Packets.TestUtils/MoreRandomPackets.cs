@@ -104,6 +104,8 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(IpV4OptionType.StreamIdentifier);
             if (maximumOptionLength < IpV4OptionTimestamp.OptionMinimumLength)
                 impossibleOptionTypes.Add(IpV4OptionType.InternetTimestamp);
+            if (maximumOptionLength < IpV4OptionTraceRoute.OptionLength)
+                impossibleOptionTypes.Add(IpV4OptionType.TraceRoute);
 
             IpV4OptionType optionType = random.NextEnum<IpV4OptionType>(impossibleOptionTypes);
             switch (optionType)
@@ -184,6 +186,9 @@ namespace PcapDotNet.Packets.TestUtils
                         default:
                             throw new InvalidOperationException("timestampType = " + timestampType);
                     }
+
+                case IpV4OptionType.TraceRoute:
+                    return new IpV4OptionTraceRoute(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextIpV4Address());
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

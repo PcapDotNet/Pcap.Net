@@ -115,6 +115,7 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4OptionType.RecordRoute:
                 case IpV4OptionType.StreamIdentifier:
                 case IpV4OptionType.InternetTimestamp:
+                case IpV4OptionType.TraceRoute:
                     return IpV4OptionComplex.ReadOptionComplex(optionType, buffer, ref offset, offsetEnd - offset);
 
                 default:

@@ -34,6 +34,12 @@ namespace PcapDotNet.Packets.IpV4
         NoOperation = 1,
 
         /// <summary>
+        /// Traceroute Using an IP Option.
+        /// RFC 1393.
+        /// </summary>
+        TraceRoute = 82,
+
+        /// <summary>
         /// DoD Basic Security:  
         /// Used to carry the classification level and protection authority flags.
         /// </summary>

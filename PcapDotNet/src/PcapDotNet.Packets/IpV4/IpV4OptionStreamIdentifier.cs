@@ -99,7 +99,6 @@ namespace PcapDotNet.Packets.IpV4
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            buffer[offset++] = (byte)Length;
             buffer.Write(ref offset, Identifier, Endianity.Big);
         }
 

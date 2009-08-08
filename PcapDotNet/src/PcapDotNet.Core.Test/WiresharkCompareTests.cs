@@ -308,7 +308,8 @@ namespace PcapDotNet.Core.Test
                     break;
                 }
                 IpV4Option option = options[currentOptionIndex++];
-                if (option.OptionType == IpV4OptionType.BasicSecurity)
+                if (option.OptionType == IpV4OptionType.BasicSecurity ||
+                    option.OptionType == IpV4OptionType.TraceRoute)
                 {
                     Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
                     continue; // Wireshark doesn't support 
