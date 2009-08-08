@@ -76,6 +76,11 @@ namespace PcapDotNet.Packets.IpV4
             get { return (this[Offset.VersionAndHeaderLength] & 0x0F) * 4; }
         }
 
+        public int RealHeaderLength
+        {
+            get { return Math.Min(HeaderLength, Length); }
+        }
+
         /// <summary>
         /// Type of Service field.
         /// </summary>
@@ -169,7 +174,7 @@ namespace PcapDotNet.Packets.IpV4
             get
             {
                 if (_options == null)
-                    _options = new IpV4Options(Buffer, StartOffset + Offset.Options, HeaderLength - HeaderMinimumLength);
+                    _options = new IpV4Options(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
                 return _options;
             }
         }

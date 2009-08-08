@@ -37,6 +37,9 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.TraceRoute:
                     return "Unknown (0x52) (12 bytes)";
 
+                case IpV4OptionType.RouterAlert:
+                    return "Router Alert: Unknown (" + ((IpV4OptionRouterAlert)option).Value + ")";
+
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }
@@ -49,6 +52,7 @@ namespace PcapDotNet.Core.Test
                 case IpV4OptionType.EndOfOptionList:
                 case IpV4OptionType.NoOperation:
                 case IpV4OptionType.StreamIdentifier:
+                case IpV4OptionType.RouterAlert:
                     break;
 
                 case IpV4OptionType.LooseSourceRouting:

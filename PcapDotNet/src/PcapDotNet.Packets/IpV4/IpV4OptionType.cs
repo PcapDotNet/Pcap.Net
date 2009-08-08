@@ -72,6 +72,11 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Internet Timestamp.
         /// </summary>
-        InternetTimestamp = 68
+        InternetTimestamp = 68,
+
+        /// <summary>
+        /// Router Alert Option (RFC 2113).
+        /// </summary>
+        RouterAlert = 148
     }
 }

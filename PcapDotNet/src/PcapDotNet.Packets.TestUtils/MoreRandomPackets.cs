@@ -190,6 +190,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV4OptionType.TraceRoute:
                     return new IpV4OptionTraceRoute(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextIpV4Address());
 
+                case IpV4OptionType.RouterAlert:
+                    return new IpV4OptionRouterAlert(random.NextUShort());
+
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);
             }

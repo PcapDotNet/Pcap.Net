@@ -109,17 +109,8 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4OptionType.NoOperation:
                     return Nop;
 
-                case IpV4OptionType.BasicSecurity:
-                case IpV4OptionType.LooseSourceRouting:
-                case IpV4OptionType.StrictSourceRouting:
-                case IpV4OptionType.RecordRoute:
-                case IpV4OptionType.StreamIdentifier:
-                case IpV4OptionType.InternetTimestamp:
-                case IpV4OptionType.TraceRoute:
-                    return IpV4OptionComplex.ReadOptionComplex(optionType, buffer, ref offset, offsetEnd - offset);
-
-                default:
-                    return null;
+                    default:
+                return IpV4OptionComplex.ReadOptionComplex(optionType, buffer, ref offset, offsetEnd - offset);
             }
         }
 
