@@ -14,6 +14,18 @@ namespace PcapDotNet.Packets
     /// </summary>
     public class Packet : IList<byte>, IEquatable<Packet>
     {
+        public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
+        {
+            byte[] bytes = new byte[value.Length / 2];
+
+            for (int i = 0; i < value.Length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(value.Substring(i, 2), 16);
+            }
+
+            return new Packet(bytes, timestamp, dataLink);
+        }
+
         /// <summary>
         /// Create a packet from an array of bytes.
         /// </summary>

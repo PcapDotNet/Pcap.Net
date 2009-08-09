@@ -12,6 +12,7 @@ using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.Packets.Udp;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
@@ -75,14 +76,34 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 10; ++i)
+            for (int i = 0; i != 100; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
 
-                // Create pcap file
+                // Compare packets to wireshark
                 ComparePacketsToWireshark(packets);
             }
+        }
+
+        [TestMethod]
+        public void CompareTimestampPacketsToWiresharkTest()
+        {
+            const long ticks = 633737178954260865;
+            DateTime timestamp = new DateTime(ticks).ToUniversalTime().ToLocalTime();
+
+            // Create packet
+            Packet packet = new Packet(new byte[14], timestamp, DataLinkKind.Ethernet);
+
+            // Compare packet to wireshark
+            ComparePacketsToWireshark(new[]{packet});
+        }
+
+        private enum PacketType
+        {
+            Ethernet,
+            IpV4,
+            Udp
         }
 
         private static IEnumerable<Packet> CreateRandomPackets(int numPackets)
@@ -90,22 +111,37 @@ namespace PcapDotNet.Core.Test
             Random random = new Random();
             for (int i = 0; i != numPackets; ++i)
             {
-                DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp);
-                if (random.NextBool())
+                DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+                switch (random.NextEnum<PacketType>(PacketType.Udp))
+//                switch (PacketType.Udp)
                 {
-                    yield return
-                        PacketBuilder.Ethernet(packetTimestamp,
-                                               random.NextMacAddress(), random.NextMacAddress(), random.NextEnum<EthernetType>(),
-                                               random.NextDatagram(random.Next(100)));
-                }
-                else
-                {
-                    yield return PacketBuilder.EthernetIpV4(packetTimestamp,
-                                                            random.NextMacAddress(), random.NextMacAddress(),
-                                                            random.NextByte(), random.NextUShort(), random.NextIpV4Fragmentation(), random.NextByte(),
-                                                            random.NextEnum<IpV4Protocol>(),
-                                                            random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                    case PacketType.Ethernet:
+                        yield return PacketBuilder.Ethernet(packetTimestamp,
+                                                            random.NextMacAddress(), random.NextMacAddress(), random.NextEnum<EthernetType>(),
                                                             random.NextDatagram(random.Next(100)));
+                        break;
+
+                    case PacketType.IpV4:
+                        yield return PacketBuilder.EthernetIpV4(packetTimestamp,
+                                                                random.NextMacAddress(), random.NextMacAddress(),
+                                                                random.NextByte(), random.NextUShort(), random.NextIpV4Fragmentation(),
+                                                                random.NextByte(),
+                                                                random.NextEnum<IpV4Protocol>(),
+                                                                random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                                random.NextDatagram(random.Next(100)));
+                        break;
+
+                    case PacketType.Udp:
+                        yield return PacketBuilder.EthernetIpV4Udp(packetTimestamp,
+                                                                   random.NextMacAddress(), random.NextMacAddress(),
+                                                                   random.NextByte(), random.NextUShort(), 
+                                                                   new IpV4Fragmentation(), 
+//                                                                   random.NextIpV4Fragmentation(),
+                                                                   random.NextByte(),
+                                                                   random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                                   random.NextUShort(), random.NextUShort(), random.NextBool(),
+                                                                   random.NextDatagram(random.Next(100)));
+                        break;
                 }
             }
         }
@@ -122,7 +158,7 @@ namespace PcapDotNet.Core.Test
                 process.StartInfo = new ProcessStartInfo()
                                         {
                                             FileName = WiresharkTsharkPath,
-                                            Arguments = " -t r -n -r \"" + pcapFilename + "\" -T pdml",
+                                            Arguments = " -o udp.check_checksum:TRUE -t r -n -r \"" + pcapFilename + "\" -T pdml",
                                             WorkingDirectory = WiresharkDiretory,
                                             UseShellExecute = false,
                                             RedirectStandardOutput = true,
@@ -150,8 +186,10 @@ namespace PcapDotNet.Core.Test
             IEnumerator<Packet> packetEnumerator = packets.GetEnumerator();
 
             // Parse XML
+            int i = 1;
             foreach (var documentPacket in document.Element("pdml").Elements("packet"))
             {
+                Console.WriteLine("Checking packet " + i++);
                 packetEnumerator.MoveNext();
                 Packet packet = packetEnumerator.Current;
 
@@ -189,8 +227,41 @@ namespace PcapDotNet.Core.Test
                         CompareIpV4(layer, (IpV4Datagram)currentDatagram);
                         break;
 
+                    case "udp":
+                        PropertyInfo udpProperty = currentDatagram.GetType().GetProperty("Udp");
+                        if (udpProperty == null)
+                            break;
+                        Datagram previousDatagram = (Datagram)currentDatagram;
+                        currentDatagram = udpProperty.GetValue(currentDatagram, new object[] { });
+                        CompareUdp(layer, (IpV4Datagram)previousDatagram);
+                        break;
+
                     default:
                         return;
+                }
+            }
+        }
+
+        private static void CompareFrame(XElement frame, Packet packet)
+        {
+            foreach (var field in frame.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "frame.time":
+                        string fieldShow = field.Show();
+                        if (fieldShow == "Not representable")
+                            break;
+                        fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
+                        DateTime fieldTimestamp = fieldShow[4] == ' '
+                                                      ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
+                                                      : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp);
+                        break;
+
+                    case "frame.len":
+                        field.AssertShowDecimal(packet.Length);
+                        break;
                 }
             }
         }
@@ -211,6 +282,19 @@ namespace PcapDotNet.Core.Test
 
                     case "eth.type":
                         field.AssertShowHex((ushort)ethernetDatagram.EtherType);
+                        break;
+                }
+            }
+        }
+
+        private static void CompareEthernetAddress(XElement element, MacAddress address)
+        {
+            foreach (var field in element.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "eth.addr":
+                        field.AssertShow(address.ToString().ToLower());
                         break;
                 }
             }
@@ -321,39 +405,41 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static void CompareEthernetAddress(XElement element, MacAddress address)
+        private static void CompareUdp(XElement udpElement, IpV4Datagram ipV4Datagram)
         {
-            foreach (var field in element.Fields())
+            UdpDatagram udpDatagram = ipV4Datagram.Udp;
+
+            foreach (var field in udpElement.Fields())
             {
                 switch (field.Name())
                 {
-                    case "eth.addr":
-                        field.AssertShow(address.ToString().ToLower());
-                        break;
-                }
-            }
-        }
-
-        private static void CompareFrame(XElement frame, Packet packet)
-        {
-            foreach (var field in frame.Fields())
-            {
-                switch (field.Name())
-                {
-                    case "frame.time":
-                        string fieldShow = field.Show();
-                        if (fieldShow == "Not representable")
-                            break;
-                        fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
-                        Console.WriteLine(fieldShow);
-                        DateTime fieldTimestamp = fieldShow[4] == ' '
-                                                      ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
-                                                      : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp);
+                    case "udp.srcport":
+                        field.AssertShowDecimal(udpDatagram.SourcePort);
                         break;
 
-                    case "frame.len":
-                        field.AssertShowDecimal(packet.Length);
+                    case "udp.dstport":
+                        field.AssertShowDecimal(udpDatagram.DestinationPort);
+                        break;
+
+                    case "udp.length":
+                        field.AssertShowDecimal(udpDatagram.TotalLength);
+                        break;
+
+                    case "udp.checksum":
+                        field.AssertShowHex(udpDatagram.Checksum);
+                        foreach (var checksumField in field.Fields())
+                        {
+                            switch (checksumField.Name())
+                            {
+                                case "udp.checksum_good":
+                                    checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
+                                    break;
+
+                                case "ip.checksum_bad":
+                                    checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
+                                    break;
+                            }
+                        }
                         break;
                 }
             }

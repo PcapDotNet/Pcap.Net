@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Test
                                                            ipV4Payload);
 
 
-                Assert.IsTrue(packet.IsValid);
+                Assert.IsTrue(ipV4Protocol == IpV4Protocol.Udp || packet.IsValid, "IsValid");
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
@@ -324,21 +324,20 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(badPacket.IsValid, "badPacket.IsValid");
         }
 
-        private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
+        [TestMethod]
+        public void IpV4BadChecksumTest()
         {
-            return HexToPacket(hexString, DateTime.MinValue, dataLinkKind);
+            Packet packet =
+                HexToPacket(
+                    "14f50eac02b964f8ce8b889908004a800061088400007b11fffb9434d5228511ae3b88044b379404429319088f008b13b7f8000000002cea09e70039a38af80cf279bad8b22df584ea50177467c686df799957540db1ab0015140be458517507e456d123f14680b9f1f36b834d908c",
+                    DataLinkKind.Ethernet);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
         }
 
-        private static Packet HexToPacket(string hexString, DateTime timestamp, DataLinkKind dataLinkKind)
+        private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
         {
-            byte[] bytes = new byte[hexString.Length / 2];
-
-            for (int i = 0; i < hexString.Length; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hexString.Substring(i, 2), 16);
-            }
-
-            return new Packet(bytes, timestamp, dataLinkKind);
+            return Packet.FromHexadecimalString(hexString, DateTime.MinValue, dataLinkKind);
         }
     }
 }
