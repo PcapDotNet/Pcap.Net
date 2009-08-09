@@ -340,11 +340,12 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-                communicator.SetKernelBufferSize(50);
+                communicator.SetKernelBufferSize(10);
                 Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 communicator.ReceivePacket(out packet);
             }
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -357,12 +358,13 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-                communicator.SetKernelBufferSize(50);
+                communicator.SetKernelBufferSize(10);
                 Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 int numPacketsGot;
                 communicator.ReceiveSomePackets(out numPacketsGot, 1, delegate { });
             }
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -375,7 +377,7 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
-                communicator.SetKernelBufferSize(50);
+                communicator.SetKernelBufferSize(10);
                 Packet packet = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
                 communicator.SendPacket(packet);
                 Exception exception = null;
@@ -397,6 +399,8 @@ namespace PcapDotNet.Core.Test
                 if (exception != null)
                     throw exception;
             }
+
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -406,10 +410,12 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.Mode = PacketCommunicatorMode.Statistics;
-                communicator.SetKernelBufferSize(50);
+                communicator.SetKernelBufferSize(10);
                 PacketSampleStatistics statistics;
                 communicator.ReceiveStatistics(out statistics);
             }
+
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -419,9 +425,10 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.Mode = PacketCommunicatorMode.Statistics;
-                communicator.SetKernelBufferSize(50);
-                communicator.ReceiveStatistics(1, delegate { });
+                communicator.SetKernelBufferSize(10);
+                communicator.ReceiveStatistics(1, delegate { Assert.Fail(); });
             }
+            Assert.Fail();
         }
 
         [TestMethod]
