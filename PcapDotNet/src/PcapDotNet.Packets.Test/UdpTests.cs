@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
-using PcapDotNet.Packets.Udp;
+using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
@@ -103,6 +103,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(UdpDatagram.HeaderLength + udpPayload.Length, packet.Ethernet.IpV4.Udp.TotalLength, "Total Length");
                 Assert.IsTrue(!udpCalculateChecksum && packet.Ethernet.IpV4.Udp.Checksum == 0 ||
                               packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
+                Assert.AreEqual(udpPayload, packet.Ethernet.IpV4.Udp.Payload, "Payload");
             }
         }
 

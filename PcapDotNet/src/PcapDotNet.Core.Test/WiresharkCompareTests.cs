@@ -12,7 +12,7 @@ using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
-using PcapDotNet.Packets.Udp;
+using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test

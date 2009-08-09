@@ -1,6 +1,6 @@
 using System;
 
-namespace PcapDotNet.Packets.Udp
+namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// This User Datagram Protocol (UDP) is defined to make available a datagram mode of packet-switched computer communication  
@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Udp
     /// +---------------- ...
 
     /// </summary>
-    public class UdpDatagram : Datagram
+    public class UdpDatagram : TransportDatagram
     {
         /// <summary>
         /// The number of bytes the datagram header takes.
@@ -35,31 +35,13 @@ namespace PcapDotNet.Packets.Udp
 
         private static class Offset
         {
-            public const int SourcePort = 0;
-            public const int DestinationPort = 2;
+//            public const int SourcePort = 0;
+//            public const int DestinationPort = 2;
             public const int TotalLength = 4;
             public const int Checksum = 6;
         }
 
         internal const int ChecksumOffset = Offset.Checksum;
-
-        /// <summary>
-        /// Source Port is an optional field, when meaningful, it indicates the port of the sending process, 
-        /// and may be assumed to be the port to which a reply should be addressed in the absence of any other information. 
-        /// If not used, a value of zero is inserted.
-        /// </summary>
-        public ushort SourcePort
-        {
-            get { return ReadUShort(Offset.SourcePort, Endianity.Big); }
-        }
-
-        /// <summary>
-        /// Destination Port has a meaning within the context of a particular internet destination address.
-        /// </summary>
-        public ushort DestinationPort
-        {
-            get { return ReadUShort(Offset.DestinationPort, Endianity.Big); }
-        }
 
         /// <summary>
         /// The length in octets of this user datagram including this header and the data.   
@@ -94,8 +76,7 @@ namespace PcapDotNet.Packets.Udp
 
         internal static void WriteHeader(byte[] buffer, int offset, ushort sourcePort, ushort destinationPort, int payloadLength)
         {
-            buffer.Write(offset + Offset.SourcePort, sourcePort, Endianity.Big);
-            buffer.Write(offset + Offset.DestinationPort, destinationPort, Endianity.Big);
+            WriteHeader(buffer, offset, sourcePort, destinationPort);
             buffer.Write(offset + Offset.TotalLength, (ushort)(HeaderLength + payloadLength), Endianity.Big);
         }
 
