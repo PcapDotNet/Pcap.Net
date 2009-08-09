@@ -51,6 +51,7 @@
     <Compile Include="PacketTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IpV4AddressTests.cs" />
+    <Compile Include="UdpTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">

@@ -215,9 +215,6 @@ namespace PcapDotNet.Packets.TestUtils
             {
                 IpV4Option option = random.NextIpV4Option(optionsLength);
 
-                if (option == null)
-                    continue;
-
                 if (option.IsAppearsAtMostOnce &&
                     options.FindIndex(option.Equivalent) != -1)
                 {

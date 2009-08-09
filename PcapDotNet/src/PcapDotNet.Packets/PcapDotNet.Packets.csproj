@@ -42,7 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Naming#CA1710</CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
@@ -101,6 +101,7 @@
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Udp\UdpDatagram.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />

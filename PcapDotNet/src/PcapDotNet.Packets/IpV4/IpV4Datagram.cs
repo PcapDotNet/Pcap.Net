@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Packets.Udp;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -182,6 +183,19 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        public bool IsTransportChecksumCorrect
+        {
+            get
+            {
+                if (_isTransportChecksumCorrect == null)
+                {
+                    ushort transportChecksum = Udp.Checksum;
+                    _isTransportChecksumCorrect = (transportChecksum != 0) && (CalculateTransportChecksum() == transportChecksum);
+                }
+                return _isTransportChecksumCorrect.Value;
+            }
+        }
+
         /// <summary>
         /// The payload of the datagram.
         /// </summary>
@@ -201,6 +215,20 @@ namespace PcapDotNet.Packets.IpV4
                     _tcp = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _tcp;
+            }
+        }
+
+        /// <summary>
+        /// The payload of the datagram as a UDP datagram.
+        /// </summary>
+        public UdpDatagram Udp
+        {
+            get
+            {
+                if (_udp == null && Length >= HeaderLength)
+                    _udp = new UdpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _udp;
             }
         }
 
@@ -232,6 +260,30 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
         }
 
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset)
+        {
+            ushort checksum = CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset);
+            buffer.Write(offset + headerLength + transportChecksumOffset, checksum, Endianity.Big);
+        }
+
+        private ushort CalculateTransportChecksum()
+        {
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), UdpDatagram.ChecksumOffset);
+        }
+
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset)
+        {
+            uint sum = Sum16Bits(buffer, offset + Offset.Source, 2 * IpV4Address.SizeOf) +
+                       buffer[offset + Offset.Protocol] + transportLength +
+                       Sum16Bits(buffer, offset + headerLength, transportChecksumOffset) +
+                       Sum16Bits(buffer, offset + headerLength + transportChecksumOffset + 2, transportLength - transportChecksumOffset - 2);
+
+            ushort checksumResult = Sum16BitsToChecksum(sum);
+            if (checksumResult == 0)
+                return 0xFFFF;
+            return checksumResult;
+        }
+
         /// <summary>
         /// An IPv4 datagram is valid if its length is big enough for the header, the header checksum is correct and the payload is valid.
         /// </summary>
@@ -246,10 +298,12 @@ namespace PcapDotNet.Packets.IpV4
 
             switch (Protocol)
             {
-                case IpV4Protocol.Tcp:
-                    return Tcp.IsValid;
+//                case IpV4Protocol.Tcp:
+//                    return Tcp.IsValid; //&& IsTransportChecksumCorrect;
+                case IpV4Protocol.Udp:
+                    return Udp.IsValid && (Udp.Checksum == 0 || IsTransportChecksumCorrect);
                 default:
-                    // Todo check the protocl further
+                    // Todo check more protocols
                     return true;
             }
         }
@@ -264,11 +318,14 @@ namespace PcapDotNet.Packets.IpV4
 
         private static ushort Sum16BitsToChecksum(uint sum)
         {
-            // take only 16 bits out of the 32 bit sum and add up the carrier
-            sum = (sum & 0x0000FFFF) + (sum >> 16);
+            // Take only 16 bits out of the 32 bit sum and add up the carrier.
+            // if the results overflows - do it again.
+            while (sum > 0xFFFF)
+                sum = (sum & 0xFFFF) + (sum >> 16);
 
             // one's complement the result
             sum = ~sum;
+
             return (ushort)sum;
         }
 
@@ -279,12 +336,14 @@ namespace PcapDotNet.Packets.IpV4
             while (offset < endOffset - 1)
                 sum += buffer.ReadUShort(ref offset, Endianity.Big);
             if (offset < endOffset)
-                sum += buffer[offset];
+                sum += (ushort)(buffer[offset] << 8);
             return sum;
         }
 
         private bool? _isHeaderChecksumCorrect;
+        private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
         private Datagram _tcp;
+        private UdpDatagram _udp;
     }
 }
