@@ -33,15 +33,13 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int HeaderLength = 8;
 
-        private static class Offset
+        internal static class Offset
         {
 //            public const int SourcePort = 0;
 //            public const int DestinationPort = 2;
             public const int TotalLength = 4;
             public const int Checksum = 6;
         }
-
-        internal const int ChecksumOffset = Offset.Checksum;
 
         /// <summary>
         /// The length in octets of this user datagram including this header and the data.   
@@ -56,9 +54,19 @@ namespace PcapDotNet.Packets.Transport
         /// Checksum is the 16-bit one's complement of the one's complement sum of a pseudo header of information from the IP header, 
         /// the UDP header, and the data, padded  with zero octets at the end (if  necessary) to  make  a multiple of two octets.
         /// </summary>
-        public ushort Checksum
+        public override ushort Checksum
         {
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
+        }
+
+        public override int ChecksumOffset
+        {
+            get { return Offset.Checksum; }
+        }
+
+        public override bool IsChecksumOptional
+        {
+            get { return true; }
         }
 
         /// <summary>

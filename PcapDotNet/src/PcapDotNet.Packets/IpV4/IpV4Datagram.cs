@@ -189,8 +189,9 @@ namespace PcapDotNet.Packets.IpV4
             {
                 if (_isTransportChecksumCorrect == null)
                 {
-                    ushort transportChecksum = Udp.Checksum;
-                    _isTransportChecksumCorrect = (transportChecksum != 0) && (CalculateTransportChecksum() == transportChecksum);
+                    ushort transportChecksum = Transport.Checksum;
+                    _isTransportChecksumCorrect = (Transport.IsChecksumOptional && transportChecksum == 0) ||
+                                                  (CalculateTransportChecksum() == transportChecksum);
                 }
                 return _isTransportChecksumCorrect.Value;
             }
@@ -207,12 +208,12 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The payload of the datagram as a TCP datagram.
         /// </summary>
-        public Datagram Tcp
+        public TcpDatagram Tcp
         {
             get
             {
                 if (_tcp == null && Length >= HeaderLength)
-                    _tcp = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                    _tcp = new TcpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _tcp;
             }
@@ -232,6 +233,24 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        public TransportDatagram Transport
+        {
+            get
+            {
+                switch (Protocol)
+                {
+                    case IpV4Protocol.Tcp:
+                        return Tcp;
+
+                    case IpV4Protocol.Udp:
+                        return Udp;
+
+                    default:
+                        return null;
+                }
+            }
+        }
+
         internal IpV4Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -245,6 +264,7 @@ namespace PcapDotNet.Packets.IpV4
                                          IpV4Options options, int payloadLength)
         {
             int headerLength = HeaderMinimumLength + options.BytesLength;
+
             buffer[offset + Offset.VersionAndHeaderLength] = (byte)((DefaultVersion << 4) + headerLength / 4);
             buffer[offset + Offset.TypeOfService] = typeOfService;
             buffer.Write(offset + Offset.TotalLength, (ushort)(headerLength + payloadLength), Endianity.Big);
@@ -260,18 +280,18 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
         }
 
-        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset)
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional)
         {
-            ushort checksum = CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset);
+            ushort checksum = CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional);
             buffer.Write(offset + headerLength + transportChecksumOffset, checksum, Endianity.Big);
         }
 
         private ushort CalculateTransportChecksum()
         {
-            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), UdpDatagram.ChecksumOffset);
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), Transport.ChecksumOffset, Transport.IsChecksumOptional);
         }
 
-        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset)
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional)
         {
             uint sum = Sum16Bits(buffer, offset + Offset.Source, 2 * IpV4Address.SizeOf) +
                        buffer[offset + Offset.Protocol] + transportLength +
@@ -279,7 +299,7 @@ namespace PcapDotNet.Packets.IpV4
                        Sum16Bits(buffer, offset + headerLength + transportChecksumOffset + 2, transportLength - transportChecksumOffset - 2);
 
             ushort checksumResult = Sum16BitsToChecksum(sum);
-            if (checksumResult == 0)
+            if (checksumResult == 0 && isChecksumOptional)
                 return 0xFFFF;
             return checksumResult;
         }
@@ -300,8 +320,10 @@ namespace PcapDotNet.Packets.IpV4
             {
 //                case IpV4Protocol.Tcp:
 //                    return Tcp.IsValid; //&& IsTransportChecksumCorrect;
+                case IpV4Protocol.Tcp:
                 case IpV4Protocol.Udp:
-                    return Udp.IsValid && (Udp.Checksum == 0 || IsTransportChecksumCorrect);
+                    return Transport.IsValid && (Transport.IsChecksumOptional && Transport.Checksum == 0 ||
+                                                 IsTransportChecksumCorrect);
                 default:
                     // Todo check more protocols
                     return true;
@@ -343,7 +365,7 @@ namespace PcapDotNet.Packets.IpV4
         private bool? _isHeaderChecksumCorrect;
         private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
-        private Datagram _tcp;
+        private TcpDatagram _tcp;
         private UdpDatagram _udp;
     }
 }

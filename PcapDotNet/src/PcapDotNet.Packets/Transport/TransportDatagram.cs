@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -38,6 +40,12 @@ namespace PcapDotNet.Packets.Transport
         {
             get { return ReadUShort(Offset.DestinationPort, Endianity.Big); }
         }
+
+        public abstract ushort Checksum { get; }
+
+        public abstract int ChecksumOffset { get; }
+
+        public abstract bool IsChecksumOptional { get; }
 
         protected static void WriteHeader(byte[] buffer, int offset, ushort sourcePort, ushort destinationPort)
         {

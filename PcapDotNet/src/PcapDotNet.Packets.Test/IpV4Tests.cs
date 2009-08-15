@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Test
                                                            ipV4Payload);
 
 
-                Assert.IsTrue(ipV4Protocol == IpV4Protocol.Udp || packet.IsValid, "IsValid");
+                Assert.IsTrue(ipV4Protocol == IpV4Protocol.Udp || ipV4Protocol == IpV4Protocol.Tcp || packet.IsValid, "IsValid");
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");

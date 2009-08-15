@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="MoreIEnumerable.cs" />
     <Compile Include="MoreIList.cs" />
+    <Compile Include="MorePropertyInfo.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="UInt24.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
