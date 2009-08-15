@@ -139,9 +139,10 @@ namespace PcapDotNet.Base.Test
         {
             const long ticks = 633737178954260865;
             Assert.AreEqual("Jerusalem Daylight Time", TimeZone.CurrentTimeZone.DaylightName);
+            Assert.AreEqual("Israel Standard Time", TimeZoneInfo.Local.Id);
 
             DateTime dateTime = new DateTime(ticks, DateTimeKind.Local);
-//            Assert.AreEqual(dateTime.ToLocalTime(), dateTime.ToUniversalTime().ToLocalTime());
+            Assert.IsTrue(TimeZoneInfo.Local.IsInvalidTime(dateTime));
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -76,7 +77,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 10; ++i)
+            for (int i = 0; i != 1000; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
@@ -103,7 +104,8 @@ namespace PcapDotNet.Core.Test
         {
             Ethernet,
             IpV4,
-            Udp
+            Udp,
+            Tcp
         }
 
         private static IEnumerable<Packet> CreateRandomPackets(int numPackets)
@@ -112,8 +114,8 @@ namespace PcapDotNet.Core.Test
             for (int i = 0; i != numPackets; ++i)
             {
                 DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
-                switch (random.NextEnum<PacketType>(PacketType.Udp))
-//                switch (PacketType.Udp)
+//                switch (PacketType.Tcp)
+                switch (random.NextEnum<PacketType>())
                 {
                     case PacketType.Ethernet:
                         yield return PacketBuilder.Ethernet(packetTimestamp,
@@ -134,12 +136,24 @@ namespace PcapDotNet.Core.Test
                     case PacketType.Udp:
                         yield return PacketBuilder.EthernetIpV4Udp(packetTimestamp,
                                                                    random.NextMacAddress(), random.NextMacAddress(),
-                                                                   random.NextByte(), random.NextUShort(), 
-                                                                   new IpV4Fragmentation(), 
-//                                                                   random.NextIpV4Fragmentation(),
+                                                                   random.NextByte(), random.NextUShort(),
+                                                                   random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
                                                                    random.NextByte(),
                                                                    random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
                                                                    random.NextUShort(), random.NextUShort(), random.NextBool(),
+                                                                   random.NextDatagram(random.Next(100)));
+                        break;
+
+                    case PacketType.Tcp:
+                        yield return PacketBuilder.EthernetIpV4Tcp(packetTimestamp,
+                                                                   random.NextMacAddress(), random.NextMacAddress(),
+                                                                   random.NextByte(), random.NextUShort(),
+                                                                   random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
+                                                                   random.NextByte(),
+                                                                   random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                                   random.NextUShort(), random.NextUShort(), random.NextUInt(), random.NextUInt(),
+                                                                   random.NextFlags<TcpFlags>(), 
+                                                                   random.NextUShort(), random.NextUShort(), new TcpOptions(), 
                                                                    random.NextDatagram(random.Next(100)));
                         break;
                 }
@@ -158,7 +172,13 @@ namespace PcapDotNet.Core.Test
                 process.StartInfo = new ProcessStartInfo()
                                         {
                                             FileName = WiresharkTsharkPath,
-                                            Arguments = " -o udp.check_checksum:TRUE -t r -n -r \"" + pcapFilename + "\" -T pdml",
+                                            Arguments = "-o udp.check_checksum:TRUE " +
+                                                        "-o tcp.relative_sequence_numbers:FALSE " +
+                                                        "-o tcp.analyze_sequence_numbers:FALSE " +
+                                                        "-o tcp.track_bytes_in_flight:FALSE " +
+                                                        "-o tcp.desegment_tcp_streams:FALSE " +
+                                                        "-o tcp.check_checksum:TRUE " +
+                                                        "-t r -n -r \"" + pcapFilename + "\" -T pdml",
                                             WorkingDirectory = WiresharkDiretory,
                                             UseShellExecute = false,
                                             RedirectStandardOutput = true,
@@ -215,7 +235,7 @@ namespace PcapDotNet.Core.Test
                         PropertyInfo ethernetProperty = currentDatagram.GetType().GetProperty("Ethernet");
                         if (ethernetProperty == null)
                             break;
-                        currentDatagram = ethernetProperty.GetValue(currentDatagram, new object[] {});
+                        currentDatagram = ethernetProperty.GetValue(currentDatagram);
                         CompareEtherent(layer, (EthernetDatagram)currentDatagram);
                         break;
 
@@ -223,7 +243,7 @@ namespace PcapDotNet.Core.Test
                         PropertyInfo ipV4Property = currentDatagram.GetType().GetProperty("IpV4");
                         if (ipV4Property == null)
                             break;
-                        currentDatagram = ipV4Property.GetValue(currentDatagram, new object[] {});
+                        currentDatagram = ipV4Property.GetValue(currentDatagram);
                         CompareIpV4(layer, (IpV4Datagram)currentDatagram);
                         break;
 
@@ -231,9 +251,22 @@ namespace PcapDotNet.Core.Test
                         PropertyInfo udpProperty = currentDatagram.GetType().GetProperty("Udp");
                         if (udpProperty == null)
                             break;
-                        Datagram previousDatagram = (Datagram)currentDatagram;
-                        currentDatagram = udpProperty.GetValue(currentDatagram, new object[] { });
-                        CompareUdp(layer, (IpV4Datagram)previousDatagram);
+                        {
+                            Datagram ipDatagram = (Datagram)currentDatagram;
+                            currentDatagram = udpProperty.GetValue(currentDatagram);
+                            CompareUdp(layer, (IpV4Datagram)ipDatagram);
+                        }
+                        break;
+
+                    case "tcp":
+                        PropertyInfo tcpProperty = currentDatagram.GetType().GetProperty("Tcp");
+                        if (tcpProperty == null)
+                            break;
+                        {
+                            Datagram ipDatagram = (Datagram)currentDatagram;
+                            currentDatagram = tcpProperty.GetValue(currentDatagram);
+                            CompareTcp(layer, (IpV4Datagram)ipDatagram);
+                        }
                         break;
 
                     default:
@@ -386,9 +419,13 @@ namespace PcapDotNet.Core.Test
                 if (currentOptionIndex >= options.Count)
                 {
                     Assert.IsFalse(options.IsValid);
-                    Assert.IsTrue(field.Show().StartsWith("Unknown") ||
+                    Assert.IsTrue(field.Show() == "Commercial IP security option" ||
+                                  field.Show().StartsWith("Unknown") ||
+                                  field.Show().StartsWith("Security") ||
+                                  field.Show().StartsWith("Router Alert (with option length = ") ||
                                   field.Show().Contains("with too") ||
-                                  field.Show().Contains(" bytes says option goes past end of options"), field.Show());
+                                  field.Show().Contains(" bytes says option goes past end of options") ||
+                                  field.Fields().Where(value => value.Show() == "(suboption would go past end of option)").Count() != 0, field.Show());
                     break;
                 }
                 IpV4Option option = options[currentOptionIndex++];
@@ -427,19 +464,119 @@ namespace PcapDotNet.Core.Test
 
                     case "udp.checksum":
                         field.AssertShowHex(udpDatagram.Checksum);
+                        if (udpDatagram.Checksum != 0)
+                        {
+                            foreach (var checksumField in field.Fields())
+                            {
+                                switch (checksumField.Name())
+                                {
+                                    case "udp.checksum_good":
+                                        checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
+                                        break;
+
+                                    case "udp.checksum_bad":
+                                        checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
+                                        break;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        private static void CompareTcp(XElement tcpElement, IpV4Datagram ipV4Datagram)
+        {
+            TcpDatagram tcpDatagram = ipV4Datagram.Tcp;
+
+            foreach (var field in tcpElement.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "tcp.srcport":
+                        field.AssertShowDecimal(tcpDatagram.SourcePort);
+                        break;
+
+                    case "tcp.dstport":
+                        field.AssertShowDecimal(tcpDatagram.DestinationPort);
+                        break;
+
+                    case "tcp.seq":
+                        field.AssertShowDecimal(tcpDatagram.SequenceNumber);
+                        break;
+
+                    case "tcp.ack":
+                        field.AssertShowDecimal(tcpDatagram.AcknowledgmentNumber);
+                        break;
+
+                    case "tcp.hdr_len":
+                        field.AssertShowDecimal(tcpDatagram.HeaderLength);
+                        break;
+
+                    case "tcp.flags":
+                        field.AssertShowHex((byte)tcpDatagram.Flags);
+                        foreach (var flagField in field.Fields())
+                        {
+                            switch (flagField.Name())
+                            {
+                                case "tcp.flags.cwr":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsCwr);
+                                    break;
+
+                                case "tcp.flags.ecn":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsEce);
+                                    break;
+
+                                case "tcp.flags.urg":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsUrg);
+                                    break;
+
+                                case "tcp.flags.ack":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsAck);
+                                    break;
+
+                                case "tcp.flags.push":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsPush);
+                                    break;
+
+                                case "tcp.flags.reset":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsReset);
+                                    break;
+
+                                case "tcp.flags.syn":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsSyn);
+                                    break;
+
+                                case "tcp.flags.fin":
+                                    flagField.AssertShowDecimal(tcpDatagram.IsFin);
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case "tcp.window_size":
+                        field.AssertShowDecimal(tcpDatagram.Window);
+                        break;
+
+                    case "tcp.checksum":
+                        field.AssertShowHex(tcpDatagram.Checksum);
                         foreach (var checksumField in field.Fields())
                         {
                             switch (checksumField.Name())
                             {
-                                case "udp.checksum_good":
+                                case "tcp.checksum_good":
                                     checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
                                     break;
 
-                                case "ip.checksum_bad":
+                                case "tcp.checksum_bad":
                                     checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
                                     break;
                             }
                         }
+                        break;
+
+                    case "tcp.urgent_pointer":
+                        field.AssertShowDecimal(tcpDatagram.UrgentPointer);
                         break;
                 }
             }

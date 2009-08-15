@@ -39,7 +39,10 @@ namespace PcapDotNet.Core.Test
                     return "Unknown (0x52) (12 bytes)";
 
                 case IpV4OptionType.RouterAlert:
-                    return "Router Alert: Unknown (" + ((IpV4OptionRouterAlert)option).Value + ")";
+                    ushort routerAlertValue = ((IpV4OptionRouterAlert)option).Value;
+                    return "Router Alert: " + ((routerAlertValue != 0)
+                                                   ? "Unknown (" + routerAlertValue + ")"
+                                                   : "Every router examines packet");
 
                 case IpV4OptionType.QuickStart:
                     IpV4OptionQuickStart quickStart = (IpV4OptionQuickStart)option;

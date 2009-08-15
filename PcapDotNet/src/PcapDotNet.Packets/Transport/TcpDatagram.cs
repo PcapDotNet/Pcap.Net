@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -20,12 +22,13 @@ namespace PcapDotNet.Packets.Transport
     /// </summary>
     public class TcpDatagram : TransportDatagram
     {
-        private static class Offset
+        public const int HeaderMinimumLength = 20;
+
+        internal static class Offset
         {
             public const int SequenceNumber = 4;
             public const int AcknowledgmentNumber = 8;
-            public const int HeaderLength = 12;
-            public const int Flags = 12;
+            public const int HeaderLengthAndFlags = 12;
             public const int Window = 14;
             public const int Checksum = 16;
             public const int UrgentPointer = 18;
@@ -63,12 +66,17 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public int HeaderLength
         {
-            get { return 4 * (this[Offset.HeaderLength] >> 4); }
+            get { return 4 * (this[Offset.HeaderLengthAndFlags] >> 4); }
+        }
+
+        public int RealHeaderLength
+        {
+            get { return Math.Min(HeaderLength, Length); }
         }
 
         public TcpFlags Flags
         {
-            get { return (TcpFlags)(ReadUShort(Offset.Flags, Endianity.Big) & 0x01FF); }
+            get { return (TcpFlags)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & 0x01FF); }
         }
 
         public ushort Window
@@ -76,14 +84,101 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUShort(Offset.Window, Endianity.Big); }
         }
 
-        public ushort Checksum
+        public override ushort Checksum
         {
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
+        }
+
+        public override int ChecksumOffset
+        {
+            get { return Offset.Checksum; }
+        }
+
+        public override bool IsChecksumOptional
+        {
+            get { return false; }
         }
 
         public ushort UrgentPointer
         {
             get { return ReadUShort(Offset.UrgentPointer, Endianity.Big); }
         }
+
+        public TcpOptions Options
+        {
+            get
+            {
+                if (_options == null)
+                    _options = new TcpOptions(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
+                return _options;
+            }
+        }
+
+        /// <summary>
+        /// The payload of the TCP datagram.
+        /// </summary>
+        public Datagram Payload
+        {
+            get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
+        }
+
+        public bool IsCwr
+        {
+            get { return (Flags & TcpFlags.Cwr) == TcpFlags.Cwr; }
+        }
+
+        public bool IsEce
+        {
+            get { return (Flags & TcpFlags.Ece) == TcpFlags.Ece; }
+        }
+
+        public bool IsUrg
+        {
+            get { return (Flags & TcpFlags.Urg) == TcpFlags.Urg; }
+        }
+
+        public bool IsAck
+        {
+            get { return (Flags & TcpFlags.Ack) == TcpFlags.Ack; }
+        }
+
+        public bool IsPush
+        {
+            get { return (Flags & TcpFlags.Psh) == TcpFlags.Psh; }
+        }
+
+        public bool IsReset
+        {
+            get { return (Flags & TcpFlags.Rst) == TcpFlags.Rst; }
+        }
+
+        public bool IsSyn
+        {
+            get { return (Flags & TcpFlags.Syn) == TcpFlags.Syn; }
+        }
+
+        public bool IsFin
+        {
+            get { return (Flags & TcpFlags.Fin) == TcpFlags.Fin; }
+        }
+
+        internal static void WriteHeader(byte[] buffer, int offset,
+                                         ushort sourcePort, ushort destinationPort,
+                                         uint sequenceNumber, uint acknowledgmentNumber,
+                                         TcpFlags flags, ushort window, ushort urgentPointer,
+                                         TcpOptions options)
+        {
+            int headerLength = HeaderMinimumLength + options.BytesLength;
+
+            WriteHeader(buffer, offset, sourcePort, destinationPort);
+            buffer.Write(offset + Offset.SequenceNumber, sequenceNumber, Endianity.Big);
+            buffer.Write(offset + Offset.AcknowledgmentNumber, acknowledgmentNumber, Endianity.Big);
+            buffer.Write(offset + Offset.HeaderLengthAndFlags, (ushort)(((ushort)((headerLength / 4) << 12)) | (ushort)flags), Endianity.Big);
+            buffer.Write(offset + Offset.Window, window, Endianity.Big);
+            buffer.Write(offset + Offset.UrgentPointer, urgentPointer, Endianity.Big);
+            options.Write(buffer, offset + Offset.Options);
+        }
+
+        private TcpOptions _options;
     }
 }

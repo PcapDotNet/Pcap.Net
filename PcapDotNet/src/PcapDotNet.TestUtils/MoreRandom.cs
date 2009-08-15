@@ -85,7 +85,8 @@ namespace PcapDotNet.TestUtils
 
         public static DateTime NextDateTime(this Random random, DateTime minimumValue, DateTime maximumValue)
         {
-            return new DateTime(random.NextLong(minimumValue.Ticks, maximumValue.Ticks + 1));
+            return new DateTime(random.NextLong(minimumValue.ToUniversalTime().Ticks,
+                                                maximumValue.ToUniversalTime().Ticks + 1), DateTimeKind.Utc).ToLocalTime();
         }
 
         public static DateTime NextDateTime(this Random random)
@@ -114,6 +115,30 @@ namespace PcapDotNet.TestUtils
         public static object NextValue<T>(this Random random, IList<T> values)
         {
             return values[random.Next(values.Count)];
+        }
+
+        public static T NextFlags<T>(this Random random)
+        {
+            Type type = typeof(T);
+            if (!type.IsEnum)
+                throw new ArgumentException("T must be an Enum");
+
+            IEnumerable<T> enumValues = (IEnumerable<T>)Enum.GetValues(type);
+            Type underlyingType = Enum.GetUnderlyingType(type);
+
+            List<object> enumValuesAsUnderlyingType = new List<object>(enumValues.Select(value => Convert.ChangeType(value, underlyingType)));
+            List<ulong> enumValuesAsULong;
+            if (underlyingType == typeof(ushort))
+                enumValuesAsULong = new List<ulong>(enumValuesAsUnderlyingType.Cast<ushort>().Select(value => (ulong)value));
+            else
+                throw new ArgumentException("Type " + underlyingType + " is not supported");
+
+            ulong resultValue = enumValuesAsULong.Aggregate(default(ulong),
+                                                            (result, value) => random.NextBool()
+                                                                                   ? result | value
+                                                                                   : result);
+            T resultEnum = (T)Convert.ChangeType(resultValue, underlyingType);
+            return resultEnum;
         }
     }
 }

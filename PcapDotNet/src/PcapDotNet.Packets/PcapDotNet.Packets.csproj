@@ -103,6 +103,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transport\TcpDatagram.cs" />
     <Compile Include="Transport\TcpFlags.cs" />
+    <Compile Include="Transport\TcpOption.cs" />
+    <Compile Include="Transport\TcpOptions.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
   </ItemGroup>
