@@ -1,12 +1,20 @@
 using System;
+using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.Transport
 {
-    public class TcpOptions
+    public class TcpOptions : Options<TcpOption>
     {
+        public const int MaximumBytesLength = TcpDatagram.HeaderMaximumLength - TcpDatagram.HeaderMinimumLength;
+
         public static TcpOptions None
         {
             get { return _none; }
+        }
+
+        public TcpOptions(IList<TcpOption> options)
+            : base(options, TcpOption.End, MaximumBytesLength)
+        {
         }
 
         /// <summary>
@@ -14,29 +22,16 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         /// <param name="options">The list of options.</param>
         public TcpOptions(params TcpOption[] options)
+            : this((IList<TcpOption>)options)
         {
-            _bytesLength = 0;
         }
 
         internal TcpOptions(byte[] buffer, int offset, int length)
-//            : this(Read(buffer, offset, length))
+            : base(buffer, offset, length, TcpOption.End)
         {
-            _bytesLength = length;
         }
 
 
-        public int BytesLength
-        {
-            get { return _bytesLength; }
-        }
-
-        internal void Write(byte[] buffer, int offset)
-        {
-//            throw new NotImplementedException();
-        }
-
-        private readonly int _bytesLength;
-        private readonly bool _isValid;
         private static readonly TcpOptions _none = new TcpOptions();
     }
 }

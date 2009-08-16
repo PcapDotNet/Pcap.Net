@@ -11,6 +11,11 @@ namespace PcapDotNet.Base
     /// </summary>
     public static class MoreIEnumerable
     {
+        public static bool IsEmpty<T>(this IEnumerable<T> sequence)
+        {
+            return !sequence.GetEnumerator().MoveNext();
+        }
+
         /// <summary>
         /// Concatenates a sequence with more values.
         /// </summary>

@@ -68,6 +68,8 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
+    <Compile Include="Option.cs" />
+    <Compile Include="IOptionComplexFactory.cs" />
     <Compile Include="IpV4\IIpv4OptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
@@ -98,6 +100,9 @@
     <Compile Include="IpV4\IpV4OptionType.cs" />
     <Compile Include="IpV4\IpV4Protocol.cs" />
     <Compile Include="MoreByteArray.cs" />
+    <Compile Include="OptionComplexFactory.cs" />
+    <Compile Include="Options.cs" />
+    <Compile Include="OptionTypeRegistrationAttribute.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,6 +110,7 @@
     <Compile Include="Transport\TcpFlags.cs" />
     <Compile Include="Transport\TcpOption.cs" />
     <Compile Include="Transport\TcpOptions.cs" />
+    <Compile Include="Transport\TcpOptionSimple.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
   </ItemGroup>
