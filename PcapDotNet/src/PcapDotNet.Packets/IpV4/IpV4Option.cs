@@ -93,8 +93,8 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4OptionType.NoOperation:
                     return Nop;
 
-                    default:
-                return IpV4OptionComplex.ReadOptionComplex(optionType, buffer, ref offset, offsetEnd - offset);
+                default:
+                    return OptionComplexFactory<IpV4OptionType>.Read(optionType, buffer, ref offset, offsetEnd - offset);
             }
         }
 

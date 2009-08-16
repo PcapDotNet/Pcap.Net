@@ -52,10 +52,10 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
-        [IpV4OptionTypeRegistration(IpV4OptionType.InternetTimestamp)]
-        internal class IpV4OptionTimestampFactory : IIpv4OptionComplexFactory
+        [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.InternetTimestamp)]
+        internal class IpV4OptionTimestampFactory : IOptionComplexFactory
         {
-            public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+            public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
             {
                 if (valueLength < OptionValueMinimumLength || valueLength % 4 != 2)
                     return null;

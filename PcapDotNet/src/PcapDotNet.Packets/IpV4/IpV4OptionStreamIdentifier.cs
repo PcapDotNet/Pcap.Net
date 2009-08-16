@@ -14,18 +14,13 @@ namespace PcapDotNet.Packets.IpV4
     /// Must be copied on fragmentation.  
     /// Appears at most once in a datagram.
     /// </summary>
-    [IpV4OptionTypeRegistration(IpV4OptionType.StreamIdentifier)]
-    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionStreamIdentifier>
+    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.StreamIdentifier)]
+    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionStreamIdentifier>
     {
         /// <summary>
         /// The number of bytes this option take.
         /// </summary>
         public const int OptionLength = 4;
-
-        /// <summary>
-        /// The number of bytes this option's value take.
-        /// </summary>
-        public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
         /// <summary>
         /// Create the option according to the given identifier.
@@ -102,7 +97,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
         /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
         /// <returns>On success - the complex option read. On failure - null.</returns>
-        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionHeaderLength)
                 return null;

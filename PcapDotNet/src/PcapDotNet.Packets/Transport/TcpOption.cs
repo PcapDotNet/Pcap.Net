@@ -2,13 +2,7 @@ using System;
 
 namespace PcapDotNet.Packets.Transport
 {
-    public enum TcpOptionType : byte
-    {
-        EndOfOptionList = 0,
-        NoOperation = 1
-    }
-
-    public abstract class TcpOption : Option
+    public abstract class TcpOption : Option, IEquatable<TcpOption>
     {
         public static TcpOption End
         {
@@ -25,12 +19,30 @@ namespace PcapDotNet.Packets.Transport
             OptionType = optionType;
         }
 
+        public TcpOptionType OptionType { get; private set; }
+
         public override bool Equivalent(Option other)
         {
             return OptionType == ((TcpOption)other).OptionType;
         }
 
-        public TcpOptionType OptionType { get; private set; }
+        /// <summary>
+        /// Checks if the two options are exactly the same - including type and value.
+        /// </summary>
+        public virtual bool Equals(TcpOption other)
+        {
+            if (other == null)
+                return false;
+            return Equivalent(other);
+        }
+
+        /// <summary>
+        /// Checks if the two options are exactly the same - including type and value.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TcpOption);
+        }
 
         internal override Option Read(byte[] buffer, ref int offset, int length)
         {

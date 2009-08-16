@@ -24,8 +24,8 @@ namespace PcapDotNet.Packets.IpV4
     /// C (class): 2 (Debugging and Measurement)
     /// Number: 18 (F+C+Number = 82)
     /// </summary>
-    [IpV4OptionTypeRegistration(IpV4OptionType.TraceRoute)]
-    public class IpV4OptionTraceRoute : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionTraceRoute>
+    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.TraceRoute)]
+    public class IpV4OptionTraceRoute : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionTraceRoute>
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -173,7 +173,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
         /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
         /// <returns>On success - the complex option read. On failure - null.</returns>
-        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionValueLength)
                 return null;

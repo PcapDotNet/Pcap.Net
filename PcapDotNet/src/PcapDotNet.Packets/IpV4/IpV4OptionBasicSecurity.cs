@@ -31,8 +31,8 @@ namespace PcapDotNet.Packets.IpV4
     ///                                LEVEL              AUTHORITY
     ///                                                     FLAGS
     /// </summary>
-    [IpV4OptionTypeRegistration(IpV4OptionType.BasicSecurity)]
-    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IIpv4OptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
+    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.BasicSecurity)]
+    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -169,7 +169,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
         /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
         /// <returns>On success - the complex option read. On failure - null.</returns>
-        public IpV4OptionComplex CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength < OptionValueMinimumLength)
                 return null;

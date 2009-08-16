@@ -16,32 +16,6 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public const int OptionHeaderLength = 2;
 
-        internal sealed class IpV4OptionTypeRegistrationAttribute : Attribute
-        {
-            public IpV4OptionTypeRegistrationAttribute(IpV4OptionType optionType)
-            {
-                OptionType = optionType;
-            }
-
-            public IpV4OptionType OptionType { get; set; }
-        }
-
-        internal static IpV4OptionComplex ReadOptionComplex(IpV4OptionType optionType, byte[] buffer, ref int offset, int length)
-        {
-            if (length < 1)
-                return null;
-            byte optionLength = buffer[offset++];
-            if (length + 1 < optionLength)
-                return null;
-            byte optionValueLength = (byte)(optionLength - OptionHeaderLength);
-
-            IIpv4OptionComplexFactory prototype;
-            if (!_complexOptions.TryGetValue(optionType, out prototype))
-                return null;
-
-            return prototype.CreateInstance(buffer, ref offset, optionValueLength);
-        }
-
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
@@ -55,31 +29,5 @@ namespace PcapDotNet.Packets.IpV4
             : base(type)
         {
         }
-
-        private static Dictionary<IpV4OptionType, IIpv4OptionComplexFactory> InitializeComplexOptions()
-        {
-            var complexOptions =
-                from type in Assembly.GetExecutingAssembly().GetTypes()
-                where typeof(IIpv4OptionComplexFactory).IsAssignableFrom(type) &&
-                      GetRegistrationAttribute(type) != null
-                select new
-                {
-                    GetRegistrationAttribute(type).OptionType,
-                    Option = (IIpv4OptionComplexFactory)Activator.CreateInstance(type)
-                };
-
-            return complexOptions.ToDictionary(option => option.OptionType, option => option.Option);
-        }
-
-        private static IpV4OptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
-        {
-            var registraionAttributes = type.GetCustomAttributes(typeof(IpV4OptionTypeRegistrationAttribute), false);
-            if (registraionAttributes.Length == 0)
-                return null;
-
-            return ((IpV4OptionTypeRegistrationAttribute)registraionAttributes[0]);
-        }
-        
-        private static readonly Dictionary<IpV4OptionType, IIpv4OptionComplexFactory> _complexOptions = InitializeComplexOptions();
     }
 }
