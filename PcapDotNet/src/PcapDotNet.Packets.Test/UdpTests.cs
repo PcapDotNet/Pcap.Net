@@ -66,7 +66,6 @@ namespace PcapDotNet.Packets.Test
         {
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
-            const EthernetType ethernetType = EthernetType.IpV4;
 
             Random random = new Random();
 
@@ -76,7 +75,6 @@ namespace PcapDotNet.Packets.Test
             IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
             ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
             IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
-            IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
             IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
             IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
             IpV4Options ipV4Options = random.NextIpV4Options();
@@ -103,6 +101,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(UdpDatagram.HeaderLength + udpPayload.Length, packet.Ethernet.IpV4.Udp.TotalLength, "Total Length");
                 Assert.IsTrue(!udpCalculateChecksum && packet.Ethernet.IpV4.Udp.Checksum == 0 ||
                               packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
+                Assert.IsTrue(packet.Ethernet.IpV4.Udp.IsChecksumOptional, "IsChecksumOptional");
                 Assert.AreEqual(udpPayload, packet.Ethernet.IpV4.Udp.Payload, "Payload");
             }
         }

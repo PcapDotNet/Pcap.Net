@@ -66,7 +66,6 @@ namespace PcapDotNet.Packets.Test
         {
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
-            const EthernetType ethernetType = EthernetType.IpV4;
 
             Random random = new Random();
 
@@ -76,7 +75,6 @@ namespace PcapDotNet.Packets.Test
             IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
             ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
             IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
-            IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
             IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
             IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
             IpV4Options ipV4Options = random.NextIpV4Options();
@@ -90,7 +88,7 @@ namespace PcapDotNet.Packets.Test
                 TcpFlags tcpFlags = random.NextFlags<TcpFlags>();
                 ushort tcpWindow = random.NextUShort();
                 ushort tcpUrgentPointer = random.NextUShort();
-                TcpOptions tcpOptions = new TcpOptions();
+                TcpOptions tcpOptions = random.NextTcpOptions();
                 Datagram tcpPayload = random.NextDatagram(random.Next(60000));
 
                 Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
@@ -103,7 +101,7 @@ namespace PcapDotNet.Packets.Test
 
                 Assert.IsTrue(packet.IsValid);
 
-                // UDP
+                // TCP
                 Assert.AreEqual(tcpSourcePort, packet.Ethernet.IpV4.Tcp.SourcePort, "Source Port");
                 Assert.AreEqual(tcpDestinationPort, packet.Ethernet.IpV4.Tcp.DestinationPort, "Destination Port");
                 Assert.AreEqual(tcpSequenceNumber, packet.Ethernet.IpV4.Tcp.SequenceNumber, "Sequence Number");
@@ -111,20 +109,20 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(tcpFlags, packet.Ethernet.IpV4.Tcp.Flags, "Flags");
                 Assert.AreEqual(tcpWindow, packet.Ethernet.IpV4.Tcp.Window, "Window");
                 Assert.AreEqual(tcpUrgentPointer, packet.Ethernet.IpV4.Tcp.UrgentPointer, "Urgent Pointer");
+                Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
+                Assert.AreEqual((tcpFlags & TcpFlags.Ack) == TcpFlags.Ack, packet.Ethernet.IpV4.Tcp.IsAck, "IsAck");
+                Assert.AreEqual((tcpFlags & TcpFlags.Cwr) == TcpFlags.Cwr, packet.Ethernet.IpV4.Tcp.IsCwr, "IsCwr");
+                Assert.AreEqual((tcpFlags & TcpFlags.Ece) == TcpFlags.Ece, packet.Ethernet.IpV4.Tcp.IsEce, "IsEce");
+                Assert.AreEqual((tcpFlags & TcpFlags.Fin) == TcpFlags.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
+                Assert.AreEqual((tcpFlags & TcpFlags.Psh) == TcpFlags.Psh, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
+                Assert.AreEqual((tcpFlags & TcpFlags.Rst) == TcpFlags.Rst, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
+                Assert.AreEqual((tcpFlags & TcpFlags.Syn) == TcpFlags.Syn, packet.Ethernet.IpV4.Tcp.IsSyn, "IsSyn");
+                Assert.AreEqual((tcpFlags & TcpFlags.Urg) == TcpFlags.Urg, packet.Ethernet.IpV4.Tcp.IsUrg, "IsUrg");
+                Assert.IsFalse(packet.Ethernet.IpV4.Tcp.IsChecksumOptional, "IsChecksumOptional");
                 Assert.AreEqual(TcpDatagram.HeaderMinimumLength + tcpOptions.BytesLength + tcpPayload.Length, packet.Ethernet.IpV4.Tcp.Length, "Total Length");
                 Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
                 Assert.AreEqual(tcpPayload, packet.Ethernet.IpV4.Tcp.Payload, "Payload");
             }
-        }
-
-        [TestMethod]
-        public void UdpChecksumTest()
-        {
-            Packet packet = Packet.FromHexadecimalString(
-                "3352c58e71ffc4f39ec3bae508004cfe0043361200008611eec22ea2c8d11e9eb7b9520c2a33f2bbbed998980bba4404f941019404eb51880496ce00000005a87a270013a683f572c10e1504a0df15448a",
-                DateTime.Now, DataLinkKind.Ethernet);
-
-            Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect);
         }
     }
 }

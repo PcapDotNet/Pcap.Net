@@ -5,6 +5,7 @@ using System.Text;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
@@ -228,6 +229,72 @@ namespace PcapDotNet.Packets.TestUtils
                     break;
             }
             return new IpV4Options(options);
+        }
+
+        public static TcpOption NextTcpOption(this Random random, int maximumOptionLength)
+        {
+            if (maximumOptionLength == 0)
+                throw new ArgumentOutOfRangeException("maximumOptionLength", maximumOptionLength, "option length must be positive");
+
+            List<TcpOptionType> impossibleOptionTypes = new List<TcpOptionType>();
+            if (maximumOptionLength < TcpOptionMaximumSegmentSize.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.MaximumSegmentSize);
+
+            impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
+            impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
+            impossibleOptionTypes.Add(TcpOptionType.Cc);
+            impossibleOptionTypes.Add(TcpOptionType.CcEcho);
+            impossibleOptionTypes.Add(TcpOptionType.CcNew);
+            impossibleOptionTypes.Add(TcpOptionType.Echo);
+            impossibleOptionTypes.Add(TcpOptionType.EchoReply);
+            impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
+            impossibleOptionTypes.Add(TcpOptionType.PartialOrderConnectionPermitted);
+            impossibleOptionTypes.Add(TcpOptionType.PartialOrderServiceProfile);
+            impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
+            impossibleOptionTypes.Add(TcpOptionType.Sack);
+            impossibleOptionTypes.Add(TcpOptionType.SackPermitted);
+            impossibleOptionTypes.Add(TcpOptionType.TimeStamp);
+            impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
+            impossibleOptionTypes.Add(TcpOptionType.WindowScale);
+
+            TcpOptionType optionType = random.NextEnum<TcpOptionType>(impossibleOptionTypes);
+            switch (optionType)
+            {
+                case TcpOptionType.EndOfOptionList:
+                    return TcpOption.End;
+
+                case TcpOptionType.NoOperation:
+                    return TcpOption.Nop;
+
+                case TcpOptionType.MaximumSegmentSize:
+                    return new TcpOptionMaximumSegmentSize(random.NextUShort());
+
+                default:
+                    throw new InvalidOperationException("optionType = " + optionType);
+            }
+        }
+
+        public static TcpOptions NextTcpOptions(this Random random)
+        {
+            int optionsLength = random.Next(TcpOptions.MaximumBytesLength) / 4 * 4;
+            List<TcpOption> options = new List<TcpOption>();
+            while (optionsLength > 0)
+            {
+                TcpOption option = random.NextTcpOption(optionsLength);
+
+                if (option.IsAppearsAtMostOnce &&
+                    options.FindIndex(option.Equivalent) != -1)
+                {
+                    continue;
+                }
+
+                options.Add(option);
+                optionsLength -= option.Length;
+
+                if (option.OptionType == TcpOptionType.EndOfOptionList)
+                    break;
+            }
+            return new TcpOptions(options);
         }
     }
 }

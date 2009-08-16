@@ -50,6 +50,7 @@
     <Compile Include="MoreAssert.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MoreIpV4Option.cs" />
+    <Compile Include="MoreTcpOption.cs" />
     <Compile Include="MoreXElement.cs" />
     <Compile Include="PacketDumpFileTests.cs" />
     <Compile Include="PacketHandler.cs" />
