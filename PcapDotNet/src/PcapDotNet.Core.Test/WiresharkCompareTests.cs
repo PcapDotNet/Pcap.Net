@@ -616,6 +616,15 @@ namespace PcapDotNet.Core.Test
                         ++currentOptionIndex;
                         break;
 
+                    case "tcp.options.wscale":
+                        field.AssertShowDecimal(option is TcpOptionWindowScale);
+                        break;
+
+                    case "tcp.options.wscale_val":
+                        field.AssertShowDecimal(((TcpOptionWindowScale)option).ScaleFactorLog);
+                        ++currentOptionIndex;
+                        break;
+
                     default:
                         throw new InvalidOperationException(field.Name());
                 }

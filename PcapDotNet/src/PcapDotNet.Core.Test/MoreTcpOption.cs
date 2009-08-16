@@ -18,9 +18,6 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.NoOperation:
                     return "NOP";
 
-                case TcpOptionType.MaximumSegmentSize:
-                    return "Security";
-
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }
