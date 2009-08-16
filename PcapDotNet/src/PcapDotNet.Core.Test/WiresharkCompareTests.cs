@@ -153,7 +153,8 @@ namespace PcapDotNet.Core.Test
                                                                    random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
                                                                    random.NextUShort(), random.NextUShort(), random.NextUInt(), random.NextUInt(),
                                                                    random.NextFlags<TcpFlags>(), 
-                                                                   random.NextUShort(), random.NextUShort(), new TcpOptions(), 
+                                                                   random.NextUShort(), random.NextUShort(), 
+                                                                   random.NextTcpOptions(),
                                                                    random.NextDatagram(random.Next(100)));
                         break;
                 }
@@ -579,7 +580,49 @@ namespace PcapDotNet.Core.Test
                     case "tcp.urgent_pointer":
                         field.AssertShowDecimal(tcpDatagram.UrgentPointer);
                         break;
+
+                    case "tcp.options":
+                        CompareTcpOptions(field, tcpDatagram.Options);
+                        break;
                 }
+            }
+        }
+
+        private static void CompareTcpOptions(XElement element, TcpOptions options)
+        {
+            int currentOptionIndex = 0;
+            foreach (var field in element.Fields())
+            {
+                if (currentOptionIndex >= options.Count)
+                {
+                    Assert.IsFalse(options.IsValid);
+                    Assert.Fail();
+                }
+
+                TcpOption option = options[currentOptionIndex];
+                switch (field.Name())
+                {
+                    case "":
+                        field.AssertShow(option.GetWiresharkString());
+                        ++currentOptionIndex;
+                        break;
+
+                    case "tcp.options.mss":
+                        field.AssertShowDecimal(option is TcpOptionMaximumSegmentSize);
+                        break;
+
+                    case "tcp.options.mss_val":
+                        field.AssertShowDecimal(((TcpOptionMaximumSegmentSize)option).MaximumSegmentSize);
+                        ++currentOptionIndex;
+                        break;
+
+                    default:
+                        throw new InvalidOperationException(field.Name());
+                }
+
+//                var optionShows = from f in field.Fields() select f.Show();
+//
+//                Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
             }
         }
     }
