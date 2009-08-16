@@ -77,7 +77,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 1000; ++i)
+            for (int i = 0; i != 10; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
@@ -209,11 +209,12 @@ namespace PcapDotNet.Core.Test
             int i = 1;
             foreach (var documentPacket in document.Element("pdml").Elements("packet"))
             {
-                Console.WriteLine("Checking packet " + i++);
+                Console.WriteLine("Checking packet " + i);
                 packetEnumerator.MoveNext();
                 Packet packet = packetEnumerator.Current;
 
                 ComparePacket(packet, documentPacket);
+                ++i;
             }
         }
 

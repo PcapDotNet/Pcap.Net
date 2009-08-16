@@ -23,6 +23,7 @@ namespace PcapDotNet.Packets.Transport
     public class TcpDatagram : TransportDatagram
     {
         public const int HeaderMinimumLength = 20;
+        public const int HeaderMaximumLength = 60;
 
         internal static class Offset
         {

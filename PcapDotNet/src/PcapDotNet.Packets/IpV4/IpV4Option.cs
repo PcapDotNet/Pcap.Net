@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.IpV4
     /// <summary>
     /// Represents an ip option according to rfc 791. 
     /// </summary>
-    public abstract class IpV4Option : IEquatable<IpV4Option>
+    public abstract class IpV4Option : Option, IEquatable<IpV4Option>
     {
         ///<summary>
         /// This option indicates the end of the option list.
@@ -36,28 +36,12 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The number of bytes this option will take.
-        /// </summary>
-        public abstract int Length
-        { 
-            get;
-        }
-
-        /// <summary>
-        /// True iff this option may appear at most once in a datagram.
-        /// </summary>
-        public abstract bool IsAppearsAtMostOnce
-        {
-            get;
-        }
-
-        /// <summary>
         /// Checks whether two options have equivalent type.
         /// Useful to check if an option that must appear at most once appears in the list.
         /// </summary>
-        public bool Equivalent(IpV4Option option)
+        public override bool Equivalent(Option option)
         {
-            return OptionType == option.OptionType;
+            return OptionType == ((IpV4Option)option).OptionType;
         }
 
         /// <summary>
@@ -95,7 +79,7 @@ namespace PcapDotNet.Packets.IpV4
             return OptionType.ToString();
         }
 
-        internal static IpV4Option Read(byte[] buffer, ref int offset, int length)
+        internal override Option Read(byte[] buffer, ref int offset, int length)
         {
             int offsetEnd = offset + length;
             if (offset == offsetEnd)
@@ -114,7 +98,7 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
-        internal virtual void Write(byte[] buffer, ref int offset)
+        internal override void Write(byte[] buffer, ref int offset)
         {
             buffer[offset++] = (byte)OptionType;
         }

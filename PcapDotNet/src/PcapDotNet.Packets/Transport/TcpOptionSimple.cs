@@ -1,9 +1,9 @@
-namespace PcapDotNet.Packets.IpV4
+namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// A simple IPv4 option - holds only the type.
     /// </summary>
-    public class IpV4OptionSimple : IpV4Option
+    public class TcpOptionSimple : TcpOption
     {
         /// <summary>
         /// The number of bytes this option will take.
@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.IpV4
             get { return false; }
         }
 
-        internal IpV4OptionSimple(IpV4OptionType optionType)
+        internal TcpOptionSimple(TcpOptionType optionType)
             : base(optionType)
         {
         }
