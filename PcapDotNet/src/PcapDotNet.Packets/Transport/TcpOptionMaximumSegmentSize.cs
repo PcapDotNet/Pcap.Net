@@ -21,6 +21,8 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 4;
 
+        public const int OptionValueLength = OptionLength - OptionHeaderLength;
+
         public TcpOptionMaximumSegmentSize(ushort maximumSegmentSize)
             : base(TcpOptionType.MaximumSegmentSize)
         {
@@ -77,7 +79,7 @@ namespace PcapDotNet.Packets.Transport
         /// <returns>On success - the complex option read. On failure - null.</returns>
         public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
-            if (valueLength != OptionHeaderLength)
+            if (valueLength != OptionValueLength)
                 return null;
 
             ushort maximumSegmentSize = buffer.ReadUShort(ref offset, Endianity.Big);

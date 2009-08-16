@@ -25,6 +25,18 @@ namespace PcapDotNet.Packets
             Buffer.BlockCopy(source, sourceOffset, destination, destinationOffset, count);
         }
 
+        public static byte ReadByte(this byte[] buffer, int offset)
+        {
+            return buffer[offset];
+        }
+
+        public static byte ReadByte(this byte[] buffer, ref int offset)
+        {
+            byte result = ReadByte(buffer, offset);
+            offset += sizeof(byte);
+            return result;
+        }
+
         /// <summary>
         /// Reads 2 bytes from a specific offset as a short with a given endianity.
         /// </summary>
@@ -229,6 +241,17 @@ namespace PcapDotNet.Packets
         public static IpV4OptionTimeOfDay ReadIpV4OptionTimeOfDay(this byte[] buffer, ref int offset, Endianity endianity)
         {
             return new IpV4OptionTimeOfDay(buffer.ReadUInt(ref offset, endianity));
+        }
+
+        public static void Write(this byte[] buffer, int offset, byte value)
+        {
+            buffer[offset] = value;
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, byte value)
+        {
+            Write(buffer, offset, value);
+            offset += sizeof(byte);
         }
 
         /// <summary>

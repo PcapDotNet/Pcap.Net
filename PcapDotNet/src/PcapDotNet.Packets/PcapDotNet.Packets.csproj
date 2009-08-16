@@ -114,6 +114,7 @@
     <Compile Include="Transport\TcpOptions.cs" />
     <Compile Include="Transport\TcpOptionSimple.cs" />
     <Compile Include="Transport\TcpOptionType.cs" />
+    <Compile Include="Transport\TcpOptionWindowScale.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
   </ItemGroup>

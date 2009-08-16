@@ -239,6 +239,8 @@ namespace PcapDotNet.Packets.TestUtils
             List<TcpOptionType> impossibleOptionTypes = new List<TcpOptionType>();
             if (maximumOptionLength < TcpOptionMaximumSegmentSize.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.MaximumSegmentSize);
+            if (maximumOptionLength < TcpOptionWindowScale.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.WindowScale);
 
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
@@ -255,7 +257,6 @@ namespace PcapDotNet.Packets.TestUtils
             impossibleOptionTypes.Add(TcpOptionType.SackPermitted);
             impossibleOptionTypes.Add(TcpOptionType.TimeStamp);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
-            impossibleOptionTypes.Add(TcpOptionType.WindowScale);
 
             TcpOptionType optionType = random.NextEnum<TcpOptionType>(impossibleOptionTypes);
             switch (optionType)
@@ -268,6 +269,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.MaximumSegmentSize:
                     return new TcpOptionMaximumSegmentSize(random.NextUShort());
+
+                case TcpOptionType.WindowScale:
+                    return new TcpOptionWindowScale(random.NextByte());
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);
