@@ -29,6 +29,12 @@ namespace PcapDotNet.Core.Test
                                           ? string.Empty
                                           : ((TcpOptionSelectiveAcknowledgment)option).Blocks.SequenceToString(" ", " "));
 
+                case TcpOptionType.Echo:
+                    return "Echo: " + ((TcpOptionEcho)option).Info;
+
+                case TcpOptionType.EchoReply:
+                    return "Echo reply: " + ((TcpOptionEchoReply)option).Info;
+
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }
@@ -43,6 +49,8 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.MaximumSegmentSize:
                 case TcpOptionType.WindowScale:
                 case TcpOptionType.SelectiveAcknowledgmentPermitted:
+                case TcpOptionType.Echo:
+                case TcpOptionType.EchoReply:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:

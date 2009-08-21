@@ -625,6 +625,10 @@ namespace PcapDotNet.Core.Test
                         ++currentOptionIndex;
                         break;
 
+                    case "tcp.options.echo":
+                        field.AssertShowDecimal(option is TcpOptionEchoReply || option is TcpOptionEcho);
+                        break;
+
                     default:
                         throw new InvalidOperationException(field.Name());
                 }
