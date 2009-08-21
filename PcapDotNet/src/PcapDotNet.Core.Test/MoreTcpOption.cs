@@ -39,6 +39,11 @@ namespace PcapDotNet.Core.Test
                     TcpOptionTimeStamp timeStampOption = (TcpOptionTimeStamp)option;
                     return "Timestamps: TSval " + timeStampOption.TimeStampValue + ", TSecr " + timeStampOption.TimeStampEchoReply;
 
+                case TcpOptionType.PartialOrderServiceProfile:
+                    return "Unknown (0x0a) (3 bytes)";
+
+                case TcpOptionType.PartialOrderConnectionPermitted:
+                    return "Unknown (0x09) (2 bytes)";
 
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
@@ -57,6 +62,8 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.Echo:
                 case TcpOptionType.EchoReply:
                 case TcpOptionType.TimeStamp:
+                case TcpOptionType.PartialOrderServiceProfile:
+                case TcpOptionType.PartialOrderConnectionPermitted:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:
