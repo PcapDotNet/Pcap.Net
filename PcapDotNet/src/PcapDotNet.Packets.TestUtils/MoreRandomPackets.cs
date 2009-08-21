@@ -249,6 +249,8 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.Echo);
             if (maximumOptionLength < TcpOptionEchoReply.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.EchoReply);
+            if (maximumOptionLength < TcpOptionTimeStamp.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.TimeStamp);
 
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
@@ -259,7 +261,6 @@ namespace PcapDotNet.Packets.TestUtils
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderConnectionPermitted);
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderServiceProfile);
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
-            impossibleOptionTypes.Add(TcpOptionType.TimeStamp);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
 
             TcpOptionType optionType = random.NextEnum<TcpOptionType>(impossibleOptionTypes);
@@ -292,6 +293,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.EchoReply:
                     return new TcpOptionEchoReply(random.NextUInt());
+
+                case TcpOptionType.TimeStamp:
+                    return new TcpOptionTimeStamp(random.NextUInt(), random.NextUInt());
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

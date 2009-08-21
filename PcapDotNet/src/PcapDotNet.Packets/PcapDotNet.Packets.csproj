@@ -118,6 +118,7 @@
     <Compile Include="Transport\TcpOptionSelectiveAcknowledgmentBlock.cs" />
     <Compile Include="Transport\TcpOptionSelectiveAcknowledgmentPermitted.cs" />
     <Compile Include="Transport\TcpOptionSimple.cs" />
+    <Compile Include="Transport\TcpOptionTimeStamp.cs" />
     <Compile Include="Transport\TcpOptionType.cs" />
     <Compile Include="Transport\TcpOptionWindowScale.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />

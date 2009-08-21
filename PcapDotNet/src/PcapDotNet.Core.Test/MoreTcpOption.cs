@@ -35,6 +35,11 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.EchoReply:
                     return "Echo reply: " + ((TcpOptionEchoReply)option).Info;
 
+                case TcpOptionType.TimeStamp:
+                    TcpOptionTimeStamp timeStampOption = (TcpOptionTimeStamp)option;
+                    return "Timestamps: TSval " + timeStampOption.TimeStampValue + ", TSecr " + timeStampOption.TimeStampEchoReply;
+
+
                 default:
                     throw new InvalidOperationException("Illegal option type " + option.OptionType);
             }
@@ -51,6 +56,7 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.SelectiveAcknowledgmentPermitted:
                 case TcpOptionType.Echo:
                 case TcpOptionType.EchoReply:
+                case TcpOptionType.TimeStamp:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:
