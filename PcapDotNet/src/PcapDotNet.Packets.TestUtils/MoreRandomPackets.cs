@@ -241,6 +241,10 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.MaximumSegmentSize);
             if (maximumOptionLength < TcpOptionWindowScale.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.WindowScale);
+            if (maximumOptionLength < TcpOptionSelectiveAcknowledgment.OptionMinimumLength)
+                impossibleOptionTypes.Add(TcpOptionType.SelectiveAcknowledgment);
+            if (maximumOptionLength < TcpOptionSelectiveAcknowledgmentPermitted.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.SelectiveAcknowledgmentPermitted);
 
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
@@ -253,8 +257,6 @@ namespace PcapDotNet.Packets.TestUtils
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderConnectionPermitted);
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderServiceProfile);
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
-            impossibleOptionTypes.Add(TcpOptionType.Sack);
-            impossibleOptionTypes.Add(TcpOptionType.SackPermitted);
             impossibleOptionTypes.Add(TcpOptionType.TimeStamp);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
 
@@ -272,6 +274,16 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.WindowScale:
                     return new TcpOptionWindowScale(random.NextByte());
+
+                case TcpOptionType.SelectiveAcknowledgment:
+                    int numBlocks = random.Next((maximumOptionLength - TcpOptionSelectiveAcknowledgment.OptionMinimumLength) / 8 + 1);
+                    TcpOptionSelectiveAcknowledgmentBlock[] blocks = new TcpOptionSelectiveAcknowledgmentBlock[numBlocks];
+                    for (int i = 0; i != numBlocks; ++i)
+                        blocks[i] = new TcpOptionSelectiveAcknowledgmentBlock(random.NextUInt(), random.NextUInt());
+                    return new TcpOptionSelectiveAcknowledgment(blocks);
+
+                case TcpOptionType.SelectiveAcknowledgmentPermitted:
+                    return new TcpOptionSelectiveAcknowledgmentPermitted();
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

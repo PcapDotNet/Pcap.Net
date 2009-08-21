@@ -44,6 +44,16 @@ namespace PcapDotNet.Packets.Transport
             return Equals(obj as TcpOption);
         }
 
+        public override int GetHashCode()
+        {
+            return OptionType.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return OptionType.ToString();
+        }
+
         internal override Option Read(byte[] buffer, ref int offset, int length)
         {
             int offsetEnd = offset + length;

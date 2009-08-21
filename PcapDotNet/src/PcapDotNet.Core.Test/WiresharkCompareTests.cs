@@ -77,7 +77,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 10; ++i)
+            for (int i = 0; i != 100; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
@@ -629,9 +629,8 @@ namespace PcapDotNet.Core.Test
                         throw new InvalidOperationException(field.Name());
                 }
 
-//                var optionShows = from f in field.Fields() select f.Show();
-//
-//                Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
+                var optionShows = from f in field.Fields() select f.Show();
+                Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
             }
         }
     }
