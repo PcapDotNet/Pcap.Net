@@ -629,6 +629,10 @@ namespace PcapDotNet.Core.Test
                         field.AssertShowDecimal(option is TcpOptionEchoReply || option is TcpOptionEcho);
                         break;
 
+                    case "tcp.options.time_stamp":
+                        field.AssertShowDecimal(option is TcpOptionTimeStamp);
+                        break;
+
                     default:
                         throw new InvalidOperationException(field.Name());
                 }
