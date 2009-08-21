@@ -245,14 +245,16 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.SelectiveAcknowledgment);
             if (maximumOptionLength < TcpOptionSelectiveAcknowledgmentPermitted.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.SelectiveAcknowledgmentPermitted);
+            if (maximumOptionLength < TcpOptionEcho.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.Echo);
+            if (maximumOptionLength < TcpOptionEchoReply.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.EchoReply);
 
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
             impossibleOptionTypes.Add(TcpOptionType.Cc);
             impossibleOptionTypes.Add(TcpOptionType.CcEcho);
             impossibleOptionTypes.Add(TcpOptionType.CcNew);
-            impossibleOptionTypes.Add(TcpOptionType.Echo);
-            impossibleOptionTypes.Add(TcpOptionType.EchoReply);
             impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderConnectionPermitted);
             impossibleOptionTypes.Add(TcpOptionType.PartialOrderServiceProfile);
@@ -284,6 +286,12 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.SelectiveAcknowledgmentPermitted:
                     return new TcpOptionSelectiveAcknowledgmentPermitted();
+
+                case TcpOptionType.Echo:
+                    return new TcpOptionEcho(random.NextUInt());
+
+                case TcpOptionType.EchoReply:
+                    return new TcpOptionEchoReply(random.NextUInt());
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

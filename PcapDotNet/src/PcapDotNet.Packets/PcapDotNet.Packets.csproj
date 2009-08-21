@@ -110,6 +110,8 @@
     <Compile Include="Transport\TcpFlags.cs" />
     <Compile Include="Transport\TcpOption.cs" />
     <Compile Include="Transport\TcpOptionComplex.cs" />
+    <Compile Include="Transport\TcpOptionEcho.cs" />
+    <Compile Include="Transport\TcpOptionEchoReply.cs" />
     <Compile Include="Transport\TcpOptionMaximumSegmentSize.cs" />
     <Compile Include="Transport\TcpOptions.cs" />
     <Compile Include="Transport\TcpOptionSelectiveAcknowledgment.cs" />
