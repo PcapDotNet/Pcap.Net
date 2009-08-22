@@ -122,6 +122,7 @@
     <Compile Include="Transport\TcpOptionEcho.cs" />
     <Compile Include="Transport\TcpOptionEchoReply.cs" />
     <Compile Include="Transport\TcpOptionMaximumSegmentSize.cs" />
+    <Compile Include="Transport\TcpOptionMd5Signature.cs" />
     <Compile Include="Transport\TcpOptionPartialOrderConnectionPermitted.cs" />
     <Compile Include="Transport\TcpOptionPartialOrderServiceProfile.cs" />
     <Compile Include="Transport\TcpOptions.cs" />
