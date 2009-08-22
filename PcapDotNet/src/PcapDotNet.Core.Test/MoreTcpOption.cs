@@ -53,6 +53,12 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.ConnectionCountEcho:
                     return "CC.ECHO: " + ((TcpOptionConnectionCountEcho)option).ConnectionCount;
 
+                case TcpOptionType.AlternateChecksumRequest:
+                    return "Unknown (0x0e) (3 bytes)";
+
+                case TcpOptionType.AlternateChecksumData:
+                    return "Unknown (0x0f) (" + option.Length + " bytes)";
+
                 case (TcpOptionType)20:
                     return "SCPS capabilities" + (option.Length >= 4
                                                          ? string.Empty
@@ -97,6 +103,8 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.ConnectionCount:
                 case TcpOptionType.ConnectionCountNew:
                 case TcpOptionType.ConnectionCountEcho:
+                case TcpOptionType.AlternateChecksumRequest:
+                case TcpOptionType.AlternateChecksumData:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:

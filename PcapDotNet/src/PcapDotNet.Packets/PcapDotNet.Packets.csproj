@@ -111,6 +111,9 @@
     <Compile Include="Transport\TcpDatagram.cs" />
     <Compile Include="Transport\TcpFlags.cs" />
     <Compile Include="Transport\TcpOption.cs" />
+    <Compile Include="Transport\TcpOptionAlternateChecksumData.cs" />
+    <Compile Include="Transport\TcpOptionAlternateChecksumRequest.cs" />
+    <Compile Include="Transport\TcpOptionAlternateChecksumType.cs" />
     <Compile Include="Transport\TcpOptionComplex.cs" />
     <Compile Include="Transport\TcpOptionConnectionCount.cs" />
     <Compile Include="Transport\TcpOptionConnectionCountBase.cs" />

@@ -71,18 +71,14 @@ namespace PcapDotNet.Packets.Transport
             if (valueLength < OptionValueMinimumLength)
                 return null;
 
-            byte[] data = new byte[valueLength];
-            buffer.BlockCopy(offset, data, 0, valueLength);
-            offset += valueLength;
-
+            byte[] data = buffer.ReadBytes(ref offset, valueLength);
             return new TcpOptionUnknown(optionType, data);
         }
 
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            foreach (byte value in Data)
-                buffer.Write(ref offset, value);
+            buffer.Write(ref offset, Data);
         }
     }
 }
