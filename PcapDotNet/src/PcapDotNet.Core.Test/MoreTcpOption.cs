@@ -44,6 +44,15 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.PartialOrderConnectionPermitted:
                     return "Unknown (0x09) (2 bytes)";
 
+                case TcpOptionType.ConnectionCount:
+                    return "CC: " + ((TcpOptionConnectionCount)option).ConnectionCount;
+
+                case TcpOptionType.ConnectionCountNew:
+                    return "CC.NEW: " + ((TcpOptionConnectionCountNew)option).ConnectionCount;
+
+                case TcpOptionType.ConnectionCountEcho:
+                    return "CC.ECHO: " + ((TcpOptionConnectionCountEcho)option).ConnectionCount;
+
                 case (TcpOptionType)20:
                     return "SCPS capabilities" + (option.Length >= 4
                                                          ? string.Empty
@@ -85,6 +94,9 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.TimeStamp:
                 case TcpOptionType.PartialOrderServiceProfile:
                 case TcpOptionType.PartialOrderConnectionPermitted:
+                case TcpOptionType.ConnectionCount:
+                case TcpOptionType.ConnectionCountNew:
+                case TcpOptionType.ConnectionCountEcho:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:

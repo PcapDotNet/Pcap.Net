@@ -1,0 +1,43 @@
+namespace PcapDotNet.Packets.Transport
+{
+    /// <summary>
+    /// CC Option (RFC 1644).
+    /// +--------+--------+--------+--------+--------+--------+
+    /// |00001011|00000110|    Connection Count:  SEG.CC      |
+    /// +--------+--------+--------+--------+--------+--------+
+    ///  Kind=11  Length=6
+    /// 
+    /// This option may be sent in an initial SYN segment, and it may be sent in other segments if a CC or CC.NEW option 
+    /// has been received for this incarnation of the connection.  
+    /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
+    /// </summary>
+    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCount)]
+    public class TcpOptionConnectionCount : TcpOptionConnectionCountBase, IOptionComplexFactory
+    {
+        public TcpOptionConnectionCount(uint connectionCount)
+            : base(TcpOptionType.ConnectionCount, connectionCount)
+        {
+        }
+
+        public TcpOptionConnectionCount()
+            : this(0)
+        {
+        }
+
+        /// <summary>
+        /// Tries to read the option from a buffer starting from the option value (after the type and length).
+        /// </summary>
+        /// <param name="buffer">The buffer to read the option from.</param>
+        /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
+        /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
+        /// <returns>On success - the complex option read. On failure - null.</returns>
+        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        {
+            uint connectionCount;
+            if (!TryRead(out connectionCount, buffer, ref offset, valueLength))
+                return null;
+
+            return new TcpOptionConnectionCount(connectionCount);
+        }
+    }
+}
