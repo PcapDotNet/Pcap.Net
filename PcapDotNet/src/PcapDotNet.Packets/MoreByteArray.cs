@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using PcapDotNet.Base;
@@ -34,6 +35,20 @@ namespace PcapDotNet.Packets
         {
             byte result = ReadByte(buffer, offset);
             offset += sizeof(byte);
+            return result;
+        }
+
+        public static byte[] ReadBytes(this byte[] buffer, int offset, int length)
+        {
+            byte[] bytes = new byte[length];
+            buffer.BlockCopy(offset, bytes, 0, length);
+            return bytes;
+        }
+
+        public static byte[] ReadBytes(this byte[] buffer, ref int offset, int length)
+        {
+            byte[] result = buffer.ReadBytes(offset, length);
+            offset += length;
             return result;
         }
 
@@ -252,6 +267,17 @@ namespace PcapDotNet.Packets
         {
             Write(buffer, offset, value);
             offset += sizeof(byte);
+        }
+
+        public static void Write(this byte[] buffer, int offset, IEnumerable<byte> value)
+        {
+            buffer.Write(ref offset, value);
+        }
+
+        public static void Write(this byte[] buffer, ref int offset, IEnumerable<byte> value)
+        {
+            foreach (byte b in value)
+                buffer.Write(offset++, b);
         }
 
         /// <summary>
