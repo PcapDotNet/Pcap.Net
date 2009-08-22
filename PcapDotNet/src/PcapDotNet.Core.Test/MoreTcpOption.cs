@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
-using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Core.Test
@@ -45,8 +44,30 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.PartialOrderConnectionPermitted:
                     return "Unknown (0x09) (2 bytes)";
 
+                case (TcpOptionType)20:
+                    return "SCPS capabilities" + (option.Length >= 4
+                                                         ? string.Empty
+                                                         : " (with option length = " + option.Length + " bytes; should be >= 4)");
+
+                case (TcpOptionType)21:
+                    return "Selective Negative Acknowledgement" + (option.Length == 6
+                                                         ? string.Empty
+                                                         : " (with option length = " + option.Length + " bytes; should be 6)");
+                    
+                case (TcpOptionType)22:
+                    return "SCPS record boundary" + (option.Length == 2
+                                                         ? string.Empty
+                                                         : " (with option length = " + option.Length + " bytes; should be 2)");
+
+                case (TcpOptionType)23:
+                    return "SCPS corruption experienced" + (option.Length == 2
+                                                                ? string.Empty
+                                                                : " (with option length = " + option.Length + " bytes; should be 2)");
+
                 default:
-                    throw new InvalidOperationException("Illegal option type " + option.OptionType);
+                    if (typeof(TcpOptionType).GetEnumValues<TcpOptionType>().Contains(option.OptionType))
+                        throw new InvalidOperationException("Invalid option type " + option.OptionType);
+                    return "Unknown (0x" + ((byte)option.OptionType).ToString("x2") + ") (" + option.Length + " bytes)";
             }
         }
 
@@ -79,7 +100,9 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 default:
-                    throw new InvalidOperationException("Illegal option type " + option.OptionType);
+                    if (typeof(TcpOptionType).GetEnumValues<TcpOptionType>().Contains(option.OptionType))
+                        throw new InvalidOperationException("Invalid option type " + option.OptionType);
+                    break;
             }
         }
     }

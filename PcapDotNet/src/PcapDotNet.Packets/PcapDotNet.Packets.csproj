@@ -68,6 +68,8 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
+    <Compile Include="IOptionUnkownFactory.cs" />
+    <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="IOptionComplexFactory.cs" />
     <Compile Include="IpV4\IIpv4OptionComplexFactory.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="Transport\TcpOptionSimple.cs" />
     <Compile Include="Transport\TcpOptionTimeStamp.cs" />
     <Compile Include="Transport\TcpOptionType.cs" />
+    <Compile Include="Transport\TcpOptionUnknown.cs" />
     <Compile Include="Transport\TcpOptionWindowScale.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />

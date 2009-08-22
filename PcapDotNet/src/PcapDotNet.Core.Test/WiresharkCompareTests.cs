@@ -77,7 +77,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 100; ++i)
+            for (int i = 0; i != 1000; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
@@ -425,6 +425,7 @@ namespace PcapDotNet.Core.Test
                                   field.Show().StartsWith("Unknown") ||
                                   field.Show().StartsWith("Security") ||
                                   field.Show().StartsWith("Router Alert (with option length = ") ||
+                                  field.Show().StartsWith("Stream identifier (with option length = ") ||
                                   field.Show().Contains("with too") ||
                                   field.Show().Contains(" bytes says option goes past end of options") ||
                                   field.Fields().Where(value => value.Show() == "(suboption would go past end of option)").Count() != 0, field.Show());
@@ -438,9 +439,12 @@ namespace PcapDotNet.Core.Test
                     continue; // Wireshark doesn't support 
                 }
                 field.AssertShow(option.GetWiresharkString());
-                var optionShows = from f in field.Fields() select f.Show();
 
-                Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
+                if ((option is IpV4OptionUnknown)) 
+                    continue;
+
+                var optionShows = from f in field.Fields() select f.Show();
+                MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
             }
         }
 
@@ -603,7 +607,10 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "":
-                        field.AssertShow(option.GetWiresharkString());
+                        if (option.OptionType == (TcpOptionType)21)
+                            Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
+                        else
+                            field.AssertShow(option.GetWiresharkString());
                         ++currentOptionIndex;
                         break;
 
@@ -633,12 +640,23 @@ namespace PcapDotNet.Core.Test
                         field.AssertShowDecimal(option is TcpOptionTimeStamp);
                         break;
 
+                    case "tcp.options.scps.vector":
+                        Assert.AreEqual((TcpOptionType)20, option.OptionType);
+                        ++currentOptionIndex;
+                        break;
+
+                    case "tcp.options.snack":
+                    case "tcp.options.snack.offset":
+                    case "tcp.options.snack.size":
+                        Assert.AreEqual((TcpOptionType)21, option.OptionType);
+                        break;
+  
                     default:
                         throw new InvalidOperationException(field.Name());
                 }
 
                 var optionShows = from f in field.Fields() select f.Show();
-                Assert.IsTrue(optionShows.SequenceEqual(option.GetWiresharkSubfieldStrings()));
+                MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
             }
         }
     }

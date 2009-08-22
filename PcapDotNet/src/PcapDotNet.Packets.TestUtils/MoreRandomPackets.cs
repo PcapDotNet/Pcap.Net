@@ -87,10 +87,29 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV4OptionTimeOfDay(random.NextUInt());
         }
 
+        public static IpV4OptionUnknown NextIpV4OptionUnknown(this Random random, int maximumOptionLength)
+        {
+            IpV4OptionType unknownOptionType;
+            byte unknownOptionTypeValue;
+            do
+            {
+                unknownOptionTypeValue = random.NextByte();
+                unknownOptionType = (IpV4OptionType)unknownOptionTypeValue;
+            } while (unknownOptionType.ToString() != unknownOptionTypeValue.ToString());
+            
+            Byte[] unknownOptionData = new byte[random.Next(maximumOptionLength - IpV4OptionUnknown.OptionMinimumLength + 1)];
+            random.NextBytes(unknownOptionData);
+
+            return new IpV4OptionUnknown(unknownOptionType, unknownOptionData);
+        }
+
         public static IpV4Option NextIpV4Option(this Random random, int maximumOptionLength)
         {
             if (maximumOptionLength == 0)
                 throw new ArgumentOutOfRangeException("maximumOptionLength", maximumOptionLength, "option length must be positive");
+
+            if (maximumOptionLength >= IpV4OptionUnknown.OptionMinimumLength && random.Next(100) > 90)
+                return random.NextIpV4OptionUnknown(maximumOptionLength);
 
             List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType>();
             if (maximumOptionLength < IpV4OptionBasicSecurity.OptionMinimumLength)
@@ -231,10 +250,29 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV4Options(options);
         }
 
+        public static TcpOptionUnknown NextTcpOptionUnknown(this Random random, int maximumOptionLength)
+        {
+            TcpOptionType unknownOptionType;
+            byte unknownOptionTypeValue;
+            do
+            {
+                unknownOptionTypeValue = random.NextByte();
+                unknownOptionType = (TcpOptionType)unknownOptionTypeValue;
+            } while (unknownOptionType.ToString() != unknownOptionTypeValue.ToString());
+
+            Byte[] unknownOptionData = new byte[random.Next(maximumOptionLength - TcpOptionUnknown.OptionMinimumLength + 1)];
+            random.NextBytes(unknownOptionData);
+
+            return new TcpOptionUnknown(unknownOptionType, unknownOptionData);
+        }
+
         public static TcpOption NextTcpOption(this Random random, int maximumOptionLength)
         {
             if (maximumOptionLength == 0)
                 throw new ArgumentOutOfRangeException("maximumOptionLength", maximumOptionLength, "option length must be positive");
+
+            if (maximumOptionLength >= TcpOptionUnknown.OptionMinimumLength && random.Next(100) > 90)
+                return random.NextTcpOptionUnknown(maximumOptionLength);
 
             List<TcpOptionType> impossibleOptionTypes = new List<TcpOptionType>();
             if (maximumOptionLength < TcpOptionMaximumSegmentSize.OptionLength)
