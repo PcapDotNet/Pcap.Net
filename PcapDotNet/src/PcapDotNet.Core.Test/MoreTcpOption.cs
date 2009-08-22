@@ -59,6 +59,9 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.AlternateChecksumData:
                     return "Unknown (0x0f) (" + option.Length + " bytes)";
 
+                case TcpOptionType.Md5Signature:
+                    return "TCP MD5 signature";
+
                 case (TcpOptionType)20:
                     return "SCPS capabilities" + (option.Length >= 4
                                                          ? string.Empty
@@ -105,6 +108,7 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.ConnectionCountEcho:
                 case TcpOptionType.AlternateChecksumRequest:
                 case TcpOptionType.AlternateChecksumData:
+                case TcpOptionType.Md5Signature:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:

@@ -303,8 +303,9 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
             if (maximumOptionLength < TcpOptionAlternateChecksumData.OptionMinimumLength)
                 impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
+            if (maximumOptionLength < TcpOptionMd5Signature.OptionLength)
+                impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
 
-            impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
 
@@ -362,6 +363,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.AlternateChecksumData:
                     return new TcpOptionAlternateChecksumData(random.NextBytes(random.Next(maximumOptionLength - TcpOptionAlternateChecksumData.OptionMinimumLength + 1)));
+
+                case TcpOptionType.Md5Signature:
+                    return new TcpOptionMd5Signature(random.NextBytes(TcpOptionMd5Signature.OptionValueLength));
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);
