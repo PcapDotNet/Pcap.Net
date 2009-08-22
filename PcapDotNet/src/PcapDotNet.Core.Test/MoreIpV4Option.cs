@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
@@ -70,8 +73,15 @@ namespace PcapDotNet.Core.Test
 
                     return quickStartWireshark.ToString();
 
+                case (IpV4OptionType)134:
+                    return "Commercial IP security option" + (option.Length >= 10
+                                                                  ? string.Empty
+                                                                  : " (with option length = " + option.Length + " bytes; should be >= 10)");
+
                 default:
-                    throw new InvalidOperationException("Illegal option type " + option.OptionType);
+                    if (typeof(IpV4OptionType).GetEnumValues<IpV4OptionType>().Contains(option.OptionType))
+                        throw new InvalidOperationException("Invalid option type " + option.OptionType);
+                    return "Unknown (0x" + ((byte)option.OptionType).ToString("x2") + ") (" + option.Length + " bytes)";
             }
         }
 
@@ -138,7 +148,9 @@ namespace PcapDotNet.Core.Test
 
                 case IpV4OptionType.BasicSecurity:
                 default:
-                    throw new InvalidOperationException("Illegal option type " + option.OptionType);
+                    if (typeof(IpV4OptionType).GetEnumValues<IpV4OptionType>().Contains(option.OptionType))
+                        throw new InvalidOperationException("Invalid option type " + option.OptionType);
+                    break;
             }
         }
     }

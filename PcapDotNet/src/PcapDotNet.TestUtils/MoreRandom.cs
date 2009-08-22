@@ -100,7 +100,7 @@ namespace PcapDotNet.TestUtils
             if (!type.IsEnum)
                 throw new ArgumentException("T must be an Enum");
 
-            IList<T> enumValues = new List<T>(((IEnumerable<T>)Enum.GetValues(type)).Except(valuesToIgnore));
+            IList<T> enumValues = new List<T>(type.GetEnumValues<T>().Except(valuesToIgnore));
             if (enumValues.Count == 0)
                 throw new ArgumentException("T is an enum with no values", "T");
 

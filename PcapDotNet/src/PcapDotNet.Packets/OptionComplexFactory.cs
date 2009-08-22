@@ -18,15 +18,28 @@ namespace PcapDotNet.Packets
             if (length < 1)
                 return null;
             byte optionLength = buffer[offset++];
-            if (length + 1 < optionLength)
+            if (optionLength < OptionHeaderLength || length + 1 < optionLength)
                 return null;
             byte optionValueLength = (byte)(optionLength - OptionHeaderLength);
 
             IOptionComplexFactory prototype;
             if (!_complexOptions.TryGetValue(optionType, out prototype))
-                return null;
+                return _unkownFactoryOptionPrototype.CreateInstance(optionType, buffer, ref offset, optionValueLength);
 
             return prototype.CreateInstance(buffer, ref offset, optionValueLength);
+        }
+
+        private static IOptionUnkownFactory<TOptionType> InitializeUnkownOptionPrototype()
+        {
+            var unkownOptions =
+                from type in Assembly.GetExecutingAssembly().GetTypes()
+                where typeof(IOptionUnkownFactory<TOptionType>).IsAssignableFrom(type)
+                select (IOptionUnkownFactory<TOptionType>)Activator.CreateInstance(type);
+
+            if (unkownOptions.Count() != 1)
+                throw new InvalidOperationException("Must be only one unkown option for option type " + typeof(TOptionType));
+
+            return unkownOptions.First();
         }
 
         private static Dictionary<TOptionType, IOptionComplexFactory> InitializeComplexOptions()
@@ -58,5 +71,6 @@ namespace PcapDotNet.Packets
         }
 
         private static readonly Dictionary<TOptionType, IOptionComplexFactory> _complexOptions = InitializeComplexOptions();
+        private static readonly IOptionUnkownFactory<TOptionType> _unkownFactoryOptionPrototype = InitializeUnkownOptionPrototype();
     }
 }

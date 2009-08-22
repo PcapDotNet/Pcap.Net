@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Core.Test
 {
@@ -58,6 +61,13 @@ namespace PcapDotNet.Core.Test
         public static void IsMatch(string expectedPattern, string actualValue)
         {
             Assert.IsTrue(Regex.IsMatch(actualValue, expectedPattern), "Expected pattern: <" + expectedPattern + ">. Actual value: <" + actualValue + ">.");
+        }
+
+        public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence)
+        {
+            Assert.IsTrue(expectedSequence.SequenceEqual(actualSequence),
+                          "Expected sequence: <" + expectedSequence.SequenceToString(",") + ">. Actual sequence: <" +
+                          actualSequence.SequenceToString(",") + ">.");
         }
     }
 }
