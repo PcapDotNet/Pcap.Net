@@ -293,12 +293,15 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.PartialOrderServiceProfile);
             if (maximumOptionLength < TcpOptionPartialOrderConnectionPermitted.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.PartialOrderConnectionPermitted);
-            
+            if (maximumOptionLength < TcpOptionConnectionCountBase.OptionLength)
+            {
+                impossibleOptionTypes.Add(TcpOptionType.ConnectionCount);
+                impossibleOptionTypes.Add(TcpOptionType.ConnectionCountNew);
+                impossibleOptionTypes.Add(TcpOptionType.ConnectionCountEcho);
+            }
+
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumRequest);
-            impossibleOptionTypes.Add(TcpOptionType.Cc);
-            impossibleOptionTypes.Add(TcpOptionType.CcEcho);
-            impossibleOptionTypes.Add(TcpOptionType.CcNew);
             impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
@@ -342,6 +345,15 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.PartialOrderConnectionPermitted:
                     return new TcpOptionPartialOrderConnectionPermitted();
+
+                case TcpOptionType.ConnectionCount:
+                    return new TcpOptionConnectionCount(random.NextUInt());
+
+                case TcpOptionType.ConnectionCountEcho:
+                    return new TcpOptionConnectionCountEcho(random.NextUInt());
+
+                case TcpOptionType.ConnectionCountNew:
+                    return new TcpOptionConnectionCountNew(random.NextUInt());
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

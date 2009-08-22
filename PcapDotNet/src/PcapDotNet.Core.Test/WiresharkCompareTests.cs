@@ -77,10 +77,10 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 1000; ++i)
+            for (int i = 0; i != 500; ++i)
             {
                 // Create packets
-                List<Packet> packets = new List<Packet>(CreateRandomPackets(100));
+                List<Packet> packets = new List<Packet>(CreateRandomPackets(200));
 
                 // Compare packets to wireshark
                 ComparePacketsToWireshark(packets);
@@ -422,6 +422,7 @@ namespace PcapDotNet.Core.Test
                 {
                     Assert.IsFalse(options.IsValid);
                     Assert.IsTrue(field.Show() == "Commercial IP security option" ||
+                                  field.Show() == "Loose source route (length byte past end of options)" ||
                                   field.Show().StartsWith("Unknown") ||
                                   field.Show().StartsWith("Security") ||
                                   field.Show().StartsWith("Router Alert (with option length = ") ||
@@ -633,14 +634,27 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.options.echo":
-                        field.AssertShowDecimal(option is TcpOptionEchoReply || option is TcpOptionEcho);
+                        Assert.IsTrue(option is TcpOptionEchoReply || option is TcpOptionEcho);
+                        field.AssertShowDecimal(1);
                         break;
 
                     case "tcp.options.time_stamp":
-                        field.AssertShowDecimal(option is TcpOptionTimeStamp);
+                        Assert.IsTrue(option is TcpOptionTimeStamp);
+                        field.AssertShowDecimal(1);
+                        break;
+
+                    case "tcp.options.cc":
+                        Assert.IsTrue(option is TcpOptionConnectionCountBase);
+                        field.AssertShowDecimal(1);
                         break;
 
                     case "tcp.options.scps.vector":
+                        Assert.AreEqual((TcpOptionType)20, option.OptionType);
+                        if (field.Show() == "0")
+                            ++currentOptionIndex;
+                        break;
+
+                    case "tcp.options.scps":
                         Assert.AreEqual((TcpOptionType)20, option.OptionType);
                         ++currentOptionIndex;
                         break;
@@ -655,6 +669,9 @@ namespace PcapDotNet.Core.Test
                         throw new InvalidOperationException(field.Name());
                 }
 
+                if ((option is TcpOptionUnknown))
+                    continue;
+                
                 var optionShows = from f in field.Fields() select f.Show();
                 MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
             }
