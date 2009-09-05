@@ -68,11 +68,29 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(0x02, buffer[1]);
             Assert.AreEqual(0x03, buffer[2]);
 
+            int offset = 0;
+            buffer.Write(ref offset, value, Endianity.Big);
+            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Big));
+            Assert.AreEqual(3, offset);
+
+            offset = 0;
+            Assert.AreEqual(value, buffer.ReadUInt24(ref offset, Endianity.Big));
+            Assert.AreEqual(3, offset);
+
             buffer.Write(0, value, Endianity.Small);
             Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Small));
             Assert.AreEqual(0x03, buffer[0]);
             Assert.AreEqual(0x02, buffer[1]);
             Assert.AreEqual(0x01, buffer[2]);
+
+            offset = 0;
+            buffer.Write(ref offset, value, Endianity.Small);
+            Assert.AreEqual(value, buffer.ReadUInt24(0, Endianity.Small));
+            Assert.AreEqual(3, offset);
+
+            offset = 0;
+            Assert.AreEqual(value, buffer.ReadUInt24(ref offset, Endianity.Small));
+            Assert.AreEqual(3, offset);
         }
 
         [TestMethod]
@@ -111,6 +129,11 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(0x05, buffer[4]);
             Assert.AreEqual(0x06, buffer[5]);
 
+            int offset = 0;
+            buffer.Write(ref offset, value, Endianity.Big);
+            Assert.AreEqual(value, buffer.ReadUInt48(0, Endianity.Big));
+            Assert.AreEqual(6, offset);
+
             buffer.Write(0, value, Endianity.Small);
             Assert.AreEqual(value, buffer.ReadUInt48(0, Endianity.Small));
             Assert.AreEqual(0x06, buffer[0]);
@@ -119,6 +142,11 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(0x03, buffer[3]);
             Assert.AreEqual(0x02, buffer[4]);
             Assert.AreEqual(0x01, buffer[5]);
+
+            offset = 0;
+            buffer.Write(ref offset, value, Endianity.Small);
+            Assert.AreEqual(value, buffer.ReadUInt48(0, Endianity.Small));
+            Assert.AreEqual(6, offset);
         }
     }
 }

@@ -80,6 +80,7 @@ namespace PcapDotNet.Packets.Test
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
+                Assert.AreNotEqual(2, packet.Ethernet.Source, "Ethernet Source");
                 Assert.AreEqual(ethernetDestination, packet.Ethernet.Destination, "Ethernet Destination");
                 Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
@@ -81,6 +82,12 @@ namespace PcapDotNet.Packets.Test
                 }
                 else
                     Assert.AreEqual(datagram, Datagram.Empty);
+
+                // Check Enumerable
+                IEnumerable enumerable = datagram;
+                int offset = 0;
+                foreach (byte b in enumerable)
+                    Assert.AreEqual(datagram[offset++], b);
             }
         }
     }

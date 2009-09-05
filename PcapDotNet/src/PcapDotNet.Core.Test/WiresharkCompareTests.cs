@@ -165,6 +165,9 @@ namespace PcapDotNet.Core.Test
         {
             string pcapFilename = Path.GetTempPath() + "temp.pcap";
             PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
+//            List<Packet> packetsList = new List<Packet>();
+//            new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
+//            packets = packetsList;
 
             // Create pdml file
             string documentFilename = pcapFilename + ".pdml";
@@ -429,6 +432,7 @@ namespace PcapDotNet.Core.Test
                                   field.Show().StartsWith("Stream identifier (with option length = ") ||
                                   field.Show().Contains("with too") ||
                                   field.Show().Contains(" bytes says option goes past end of options") ||
+                                  field.Fields().First().Show().StartsWith("Pointer: ") && field.Fields().First().Show().EndsWith(" (points to middle of address)") ||
                                   field.Fields().Where(value => value.Show() == "(suboption would go past end of option)").Count() != 0, field.Show());
                     break;
                 }
