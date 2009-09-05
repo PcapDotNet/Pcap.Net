@@ -110,6 +110,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(tcpWindow, packet.Ethernet.IpV4.Tcp.Window, "Window");
                 Assert.AreEqual(tcpUrgentPointer, packet.Ethernet.IpV4.Tcp.UrgentPointer, "Urgent Pointer");
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
+                foreach (TcpOption option in tcpOptions)
+                {
+                    Assert.AreEqual(option, option);
+                    Assert.AreEqual(option.GetHashCode(), option.GetHashCode());
+                    Assert.IsFalse(string.IsNullOrEmpty(option.ToString()));
+                }
+                Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
                 Assert.AreEqual((tcpFlags & TcpFlags.Ack) == TcpFlags.Ack, packet.Ethernet.IpV4.Tcp.IsAck, "IsAck");
                 Assert.AreEqual((tcpFlags & TcpFlags.Cwr) == TcpFlags.Cwr, packet.Ethernet.IpV4.Tcp.IsCwr, "IsCwr");
                 Assert.AreEqual((tcpFlags & TcpFlags.Ece) == TcpFlags.Ece, packet.Ethernet.IpV4.Tcp.IsEce, "IsEce");

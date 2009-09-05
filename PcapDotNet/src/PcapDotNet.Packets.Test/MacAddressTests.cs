@@ -90,12 +90,22 @@ namespace PcapDotNet.Packets.Test
             Assert.AreNotEqual(address, buffer.ReadMacAddress(0, Endianity.Small));
 
             int offset = 0;
+            buffer.Write(ref offset, address, Endianity.Big);
+            Assert.AreEqual(address, buffer.ReadMacAddress(0, Endianity.Big));
+            Assert.AreEqual(6, offset);
+
+            offset = 0;
             Assert.AreEqual(address, buffer.ReadMacAddress(ref offset, Endianity.Big));
             Assert.AreEqual(MacAddress.SizeOf, offset);
 
             buffer.Write(0, address, Endianity.Small);
             Assert.AreEqual(address, buffer.ReadMacAddress(0, Endianity.Small));
             Assert.AreNotEqual(address, buffer.ReadMacAddress(0, Endianity.Big));
+
+            offset = 0;
+            buffer.Write(ref offset, address, Endianity.Small);
+            Assert.AreEqual(address, buffer.ReadMacAddress(0, Endianity.Small));
+            Assert.AreEqual(6, offset);
 
             offset = 0;
             Assert.AreEqual(address, buffer.ReadMacAddress(ref offset, Endianity.Small));

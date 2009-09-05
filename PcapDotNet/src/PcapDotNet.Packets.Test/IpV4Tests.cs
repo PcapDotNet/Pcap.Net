@@ -6,6 +6,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
@@ -143,6 +144,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreEqual(ipV4Identification, packet.Ethernet.IpV4.Identification, "IP Identification");
                 Assert.AreEqual(ipV4Fragmentation, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.AreNotEqual(2, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsTrue(ipV4Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsFalse(ipV4Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.AreEqual(ipV4Fragmentation.GetHashCode(), packet.Ethernet.IpV4.Fragmentation.GetHashCode(), "IP Fragmentation");
@@ -160,10 +162,22 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ipV4Source, packet.Ethernet.IpV4.Source, "IP Source");
                 Assert.AreEqual(ipV4Destination, packet.Ethernet.IpV4.Destination, "IP Destination");
                 Assert.AreEqual(ipV4Options, packet.Ethernet.IpV4.Options, "IP Options");
+                Assert.AreNotEqual(null, packet.Ethernet.IpV4.Options, "IP Options");
+                Assert.AreNotEqual(new IpV4Options(new IpV4OptionUnknown(0, new byte[35])), packet.Ethernet.IpV4.Options, "IP Options");
                 Assert.AreEqual(ipV4Options.GetHashCode(), packet.Ethernet.IpV4.Options.GetHashCode(), "IP Options HashCode");
                 Assert.IsNotNull(packet.Ethernet.IpV4.Options.ToString());
                 for (int optionIndex = 0; optionIndex != ipV4Options.Count; ++optionIndex)
+                {
                     Assert.AreEqual(ipV4Options[optionIndex], packet.Ethernet.IpV4.Options[optionIndex]);
+                    Assert.AreNotEqual(null, packet.Ethernet.IpV4.Options[optionIndex]);
+                }
+
+                if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.Tcp)
+                    Assert.IsInstanceOfType(packet.Ethernet.IpV4.Transport, typeof(TcpDatagram));
+                else if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.Udp)
+                    Assert.IsInstanceOfType(packet.Ethernet.IpV4.Transport, typeof(UdpDatagram));
+                else
+                    Assert.IsNull(packet.Ethernet.IpV4.Transport);
 
                 Assert.AreEqual(ipV4Payload, packet.Ethernet.IpV4.Payload, "IP Payload");
             }

@@ -75,11 +75,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsFalse(address != new IpV4Address(address.ToString()));
                 Assert.AreEqual(address.GetHashCode(), new IpV4Address(address.ToString()).GetHashCode());
                 Assert.AreEqual(address, new IpV4Address(address.ToValue()));
-
+                
                 Assert.AreNotEqual(address, random.NextIpV4Address());
                 Assert.IsFalse(address == random.NextIpV4Address());
                 Assert.IsTrue(address != random.NextIpV4Address());
                 Assert.AreNotEqual(address.GetHashCode(), random.NextIpV4Address().GetHashCode());
+
+                Assert.AreNotEqual(2, address);
             }
         }
 

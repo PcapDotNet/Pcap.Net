@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -85,6 +86,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsNotNull(packet.ToString());
 
                 Assert.IsFalse(new Packet(packet.Buffer, DateTime.Now, (DataLinkKind)((int)DataLinkKind.Ethernet + 1)).IsValid);
+
+                // Check Enumerable
+                IEnumerable enumerable = packet;
+                int offset = 0;
+                foreach (byte b in enumerable)
+                    Assert.AreEqual(packet[offset++], b);
+
             }
         }
 
