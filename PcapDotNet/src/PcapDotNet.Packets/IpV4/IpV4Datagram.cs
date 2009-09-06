@@ -183,6 +183,11 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// Returns whether the TCP or UDP checksum is correct.
+        /// The protocol must be TCP or UDP.
+        /// For UDP, the checksum is optional, so 0 checksum is still correct.
+        /// </summary>
         public bool IsTransportChecksumCorrect
         {
             get

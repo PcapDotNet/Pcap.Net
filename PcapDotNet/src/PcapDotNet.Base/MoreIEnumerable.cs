@@ -11,6 +11,9 @@ namespace PcapDotNet.Base
     /// </summary>
     public static class MoreIEnumerable
     {
+        /// <summary>
+        /// True iff the sequence has no elements.
+        /// </summary>
         public static bool IsEmpty<T>(this IEnumerable<T> sequence)
         {
             return !sequence.GetEnumerator().MoveNext();

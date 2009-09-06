@@ -41,13 +41,20 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUShort(Offset.DestinationPort, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Checksum is the 16-bit one's complement of the one's complement sum of a pseudo header of information from the IP header, 
+        /// the Transport header, and the data, padded with zero octets at the end (if necessary) to make a multiple of two octets.
+        /// </summary>
         public abstract ushort Checksum { get; }
 
-        public abstract int ChecksumOffset { get; }
-
+        /// <summary>
+        /// True iff the checksum for the transport type is optional.
+        /// </summary>
         public abstract bool IsChecksumOptional { get; }
 
-        protected static void WriteHeader(byte[] buffer, int offset, ushort sourcePort, ushort destinationPort)
+        internal abstract int ChecksumOffset { get; }
+
+        internal static void WriteHeader(byte[] buffer, int offset, ushort sourcePort, ushort destinationPort)
         {
             buffer.Write(offset + Offset.SourcePort, sourcePort, Endianity.Big);
             buffer.Write(offset + Offset.DestinationPort, destinationPort, Endianity.Big);

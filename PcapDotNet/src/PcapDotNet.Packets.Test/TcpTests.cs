@@ -117,14 +117,14 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsFalse(string.IsNullOrEmpty(option.ToString()));
                 }
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
-                Assert.AreEqual((tcpFlags & TcpFlags.Ack) == TcpFlags.Ack, packet.Ethernet.IpV4.Tcp.IsAck, "IsAck");
-                Assert.AreEqual((tcpFlags & TcpFlags.Cwr) == TcpFlags.Cwr, packet.Ethernet.IpV4.Tcp.IsCwr, "IsCwr");
-                Assert.AreEqual((tcpFlags & TcpFlags.Ece) == TcpFlags.Ece, packet.Ethernet.IpV4.Tcp.IsEce, "IsEce");
+                Assert.AreEqual((tcpFlags & TcpFlags.Acknowledgment) == TcpFlags.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
+                Assert.AreEqual((tcpFlags & TcpFlags.CongestionWindowReduced) == TcpFlags.CongestionWindowReduced, packet.Ethernet.IpV4.Tcp.IsCongestionWindowReduced, "IsCongestionWindowReduced");
+                Assert.AreEqual((tcpFlags & TcpFlags.ExplicitCongestionNotificationEcho) == TcpFlags.ExplicitCongestionNotificationEcho, packet.Ethernet.IpV4.Tcp.IsExplicitCongestionNotificationEcho, "IsExplicitCongestionNotificationEcho");
                 Assert.AreEqual((tcpFlags & TcpFlags.Fin) == TcpFlags.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
-                Assert.AreEqual((tcpFlags & TcpFlags.Psh) == TcpFlags.Psh, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
-                Assert.AreEqual((tcpFlags & TcpFlags.Rst) == TcpFlags.Rst, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
-                Assert.AreEqual((tcpFlags & TcpFlags.Syn) == TcpFlags.Syn, packet.Ethernet.IpV4.Tcp.IsSyn, "IsSyn");
-                Assert.AreEqual((tcpFlags & TcpFlags.Urg) == TcpFlags.Urg, packet.Ethernet.IpV4.Tcp.IsUrg, "IsUrg");
+                Assert.AreEqual((tcpFlags & TcpFlags.Push) == TcpFlags.Push, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
+                Assert.AreEqual((tcpFlags & TcpFlags.Reset) == TcpFlags.Reset, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
+                Assert.AreEqual((tcpFlags & TcpFlags.Synchronize) == TcpFlags.Synchronize, packet.Ethernet.IpV4.Tcp.IsSynchronize, "IsSynchronize");
+                Assert.AreEqual((tcpFlags & TcpFlags.Urgent) == TcpFlags.Urgent, packet.Ethernet.IpV4.Tcp.IsUrgent, "IsUrgent");
                 Assert.IsFalse(packet.Ethernet.IpV4.Tcp.IsChecksumOptional, "IsChecksumOptional");
                 Assert.AreEqual(TcpDatagram.HeaderMinimumLength + tcpOptions.BytesLength + tcpPayload.Length, packet.Ethernet.IpV4.Tcp.Length, "Total Length");
                 Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");

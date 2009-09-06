@@ -1,5 +1,9 @@
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// A generic option (for IPv4 and TCP).
+    /// The option is read from buffer and can be of different length.
+    /// </summary>
     public abstract class Option
     {
         /// <summary>

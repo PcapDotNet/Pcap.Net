@@ -34,9 +34,9 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.EchoReply:
                     return "Echo reply: " + ((TcpOptionEchoReply)option).Info;
 
-                case TcpOptionType.TimeStamp:
-                    TcpOptionTimeStamp timeStampOption = (TcpOptionTimeStamp)option;
-                    return "Timestamps: TSval " + timeStampOption.TimeStampValue + ", TSecr " + timeStampOption.TimeStampEchoReply;
+                case TcpOptionType.Timestamp:
+                    TcpOptionTimestamp timestampOption = (TcpOptionTimestamp)option;
+                    return "Timestamps: TSval " + timestampOption.TimestampValue + ", TSecr " + timestampOption.TimestampEchoReply;
 
                 case TcpOptionType.PartialOrderServiceProfile:
                     return "Unknown (0x0a) (3 bytes)";
@@ -100,7 +100,7 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.SelectiveAcknowledgmentPermitted:
                 case TcpOptionType.Echo:
                 case TcpOptionType.EchoReply:
-                case TcpOptionType.TimeStamp:
+                case TcpOptionType.Timestamp:
                 case TcpOptionType.PartialOrderServiceProfile:
                 case TcpOptionType.PartialOrderConnectionPermitted:
                 case TcpOptionType.ConnectionCount:

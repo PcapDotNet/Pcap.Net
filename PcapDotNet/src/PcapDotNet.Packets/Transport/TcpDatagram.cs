@@ -75,6 +75,7 @@ namespace PcapDotNet.Packets.Transport
             get { return Math.Min(HeaderLength, Length); }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public TcpFlags Flags
         {
             get { return (TcpFlags)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & 0x01FF); }
@@ -88,11 +89,6 @@ namespace PcapDotNet.Packets.Transport
         public override ushort Checksum
         {
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
-        }
-
-        public override int ChecksumOffset
-        {
-            get { return Offset.Checksum; }
         }
 
         public override bool IsChecksumOptional
@@ -123,44 +119,49 @@ namespace PcapDotNet.Packets.Transport
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
         }
 
-        public bool IsCwr
+        public bool IsCongestionWindowReduced
         {
-            get { return (Flags & TcpFlags.Cwr) == TcpFlags.Cwr; }
+            get { return (Flags & TcpFlags.CongestionWindowReduced) == TcpFlags.CongestionWindowReduced; }
         }
 
-        public bool IsEce
+        public bool IsExplicitCongestionNotificationEcho
         {
-            get { return (Flags & TcpFlags.Ece) == TcpFlags.Ece; }
+            get { return (Flags & TcpFlags.ExplicitCongestionNotificationEcho) == TcpFlags.ExplicitCongestionNotificationEcho; }
         }
 
-        public bool IsUrg
+        public bool IsUrgent
         {
-            get { return (Flags & TcpFlags.Urg) == TcpFlags.Urg; }
+            get { return (Flags & TcpFlags.Urgent) == TcpFlags.Urgent; }
         }
 
-        public bool IsAck
+        public bool IsAcknowledgment
         {
-            get { return (Flags & TcpFlags.Ack) == TcpFlags.Ack; }
+            get { return (Flags & TcpFlags.Acknowledgment) == TcpFlags.Acknowledgment; }
         }
 
         public bool IsPush
         {
-            get { return (Flags & TcpFlags.Psh) == TcpFlags.Psh; }
+            get { return (Flags & TcpFlags.Push) == TcpFlags.Push; }
         }
 
         public bool IsReset
         {
-            get { return (Flags & TcpFlags.Rst) == TcpFlags.Rst; }
+            get { return (Flags & TcpFlags.Reset) == TcpFlags.Reset; }
         }
 
-        public bool IsSyn
+        public bool IsSynchronize
         {
-            get { return (Flags & TcpFlags.Syn) == TcpFlags.Syn; }
+            get { return (Flags & TcpFlags.Synchronize) == TcpFlags.Synchronize; }
         }
 
         public bool IsFin
         {
             get { return (Flags & TcpFlags.Fin) == TcpFlags.Fin; }
+        }
+
+        internal override int ChecksumOffset
+        {
+            get { return Offset.Checksum; }
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,
