@@ -6,13 +6,20 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
-    public class OptionComplexFactory<TOptionType>
+    public class OptionComplexFactoryBase
     {
         /// <summary>
         /// The header length in bytes for the option (type and size).
         /// </summary>
         public const int OptionHeaderLength = 2;
 
+        protected OptionComplexFactoryBase()
+        {
+        }
+    }
+
+    public sealed class OptionComplexFactory<TOptionType> : OptionComplexFactoryBase
+    {
         internal static Option Read(TOptionType optionType, byte[] buffer, ref int offset, int length)
         {
             if (length < 1)
@@ -24,22 +31,22 @@ namespace PcapDotNet.Packets
 
             IOptionComplexFactory prototype;
             if (!_complexOptions.TryGetValue(optionType, out prototype))
-                return _unkownFactoryOptionPrototype.CreateInstance(optionType, buffer, ref offset, optionValueLength);
+                return UnknownFactoryOptionPrototype.CreateInstance(optionType, buffer, ref offset, optionValueLength);
 
             return prototype.CreateInstance(buffer, ref offset, optionValueLength);
         }
 
-        private static IOptionUnkownFactory<TOptionType> InitializeUnkownOptionPrototype()
+        private static IOptionUnknownFactory<TOptionType> InitializeUnknownOptionPrototype()
         {
-            var unkownOptions =
+            var unknownOptions =
                 from type in Assembly.GetExecutingAssembly().GetTypes()
-                where typeof(IOptionUnkownFactory<TOptionType>).IsAssignableFrom(type)
-                select (IOptionUnkownFactory<TOptionType>)Activator.CreateInstance(type);
+                where typeof(IOptionUnknownFactory<TOptionType>).IsAssignableFrom(type)
+                select (IOptionUnknownFactory<TOptionType>)Activator.CreateInstance(type);
 
-            if (unkownOptions.Count() != 1)
-                throw new InvalidOperationException("Must be only one unkown option for option type " + typeof(TOptionType));
+            if (unknownOptions.Count() != 1)
+                throw new InvalidOperationException("Must be only one unknown option for option type " + typeof(TOptionType));
 
-            return unkownOptions.First();
+            return unknownOptions.First();
         }
 
         private static Dictionary<TOptionType, IOptionComplexFactory> InitializeComplexOptions()
@@ -70,7 +77,11 @@ namespace PcapDotNet.Packets
             return registraionAttributes.First();
         }
 
+        private OptionComplexFactory()
+        {
+        }
+
         private static readonly Dictionary<TOptionType, IOptionComplexFactory> _complexOptions = InitializeComplexOptions();
-        private static readonly IOptionUnkownFactory<TOptionType> _unkownFactoryOptionPrototype = InitializeUnkownOptionPrototype();
+        private static readonly IOptionUnknownFactory<TOptionType> UnknownFactoryOptionPrototype = InitializeUnknownOptionPrototype();
     }
 }

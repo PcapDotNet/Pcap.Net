@@ -24,7 +24,6 @@ namespace PcapDotNet.Packets.Transport
     /// |
     /// |          data octets ...
     /// +---------------- ...
-
     /// </summary>
     public class UdpDatagram : TransportDatagram
     {
@@ -59,11 +58,6 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
-        public override int ChecksumOffset
-        {
-            get { return Offset.Checksum; }
-        }
-
         public override bool IsChecksumOptional
         {
             get { return true; }
@@ -75,6 +69,11 @@ namespace PcapDotNet.Packets.Transport
         public Datagram Payload
         {
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
+        }
+
+        internal override int ChecksumOffset
+        {
+            get { return Offset.Checksum; }
         }
 
         internal UdpDatagram(byte[] buffer, int offset, int length)

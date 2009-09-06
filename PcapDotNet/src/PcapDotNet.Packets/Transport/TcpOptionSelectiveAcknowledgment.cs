@@ -53,6 +53,9 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionMinimumLength = 2;
 
+        /// <summary>
+        /// The minimum number of bytes this option's value take.
+        /// </summary>
         public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
 
         public TcpOptionSelectiveAcknowledgment(IList<TcpOptionSelectiveAcknowledgmentBlock> blocks)

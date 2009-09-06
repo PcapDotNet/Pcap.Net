@@ -10,7 +10,7 @@ namespace PcapDotNet.Packets.Transport
         SelectiveAcknowledgment = 5,
         Echo = 6,
         EchoReply = 7,
-        TimeStamp = 8,
+        Timestamp = 8,
         PartialOrderConnectionPermitted = 9,
         PartialOrderServiceProfile = 10,
         ConnectionCount = 11,

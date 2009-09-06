@@ -77,7 +77,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 500; ++i)
+            for (int i = 0; i != 50; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(200));
@@ -531,19 +531,19 @@ namespace PcapDotNet.Core.Test
                             switch (flagField.Name())
                             {
                                 case "tcp.flags.cwr":
-                                    flagField.AssertShowDecimal(tcpDatagram.IsCwr);
+                                    flagField.AssertShowDecimal(tcpDatagram.IsCongestionWindowReduced);
                                     break;
 
                                 case "tcp.flags.ecn":
-                                    flagField.AssertShowDecimal(tcpDatagram.IsEce);
+                                    flagField.AssertShowDecimal(tcpDatagram.IsExplicitCongestionNotificationEcho);
                                     break;
 
                                 case "tcp.flags.urg":
-                                    flagField.AssertShowDecimal(tcpDatagram.IsUrg);
+                                    flagField.AssertShowDecimal(tcpDatagram.IsUrgent);
                                     break;
 
                                 case "tcp.flags.ack":
-                                    flagField.AssertShowDecimal(tcpDatagram.IsAck);
+                                    flagField.AssertShowDecimal(tcpDatagram.IsAcknowledgment);
                                     break;
 
                                 case "tcp.flags.push":
@@ -555,7 +555,7 @@ namespace PcapDotNet.Core.Test
                                     break;
 
                                 case "tcp.flags.syn":
-                                    flagField.AssertShowDecimal(tcpDatagram.IsSyn);
+                                    flagField.AssertShowDecimal(tcpDatagram.IsSynchronize);
                                     break;
 
                                 case "tcp.flags.fin":
@@ -643,7 +643,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.options.time_stamp":
-                        Assert.IsTrue(option is TcpOptionTimeStamp);
+                        Assert.IsTrue(option is TcpOptionTimestamp);
                         field.AssertShowDecimal(1);
                         break;
 

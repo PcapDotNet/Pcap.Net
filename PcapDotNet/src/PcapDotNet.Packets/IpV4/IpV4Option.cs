@@ -39,9 +39,9 @@ namespace PcapDotNet.Packets.IpV4
         /// Checks whether two options have equivalent type.
         /// Useful to check if an option that must appear at most once appears in the list.
         /// </summary>
-        public override bool Equivalent(Option option)
+        public override bool Equivalent(Option other)
         {
-            return OptionType == ((IpV4Option)option).OptionType;
+            return OptionType == ((IpV4Option)other).OptionType;
         }
 
         /// <summary>

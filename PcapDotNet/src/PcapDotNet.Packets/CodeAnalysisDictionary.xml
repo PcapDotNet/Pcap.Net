@@ -37,6 +37,7 @@
       <Word>unicast</Word>
       <Word>genser</Word>
       <Word>nsa</Word>
+      <Word>md</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->
