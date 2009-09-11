@@ -17,8 +17,8 @@ namespace PcapDotNet.Packets.Transport
     /// When TSecr is not valid, its value must be zero.  
     /// The TSecr value will generally be from the most recent Timestamp option that was received; however, there are exceptions that are explained below.
     /// 
-    /// A TCP may send the Timestamps option (TSopt) in an initial <SYN> segment (i.e., segment containing a SYN bit and no ACK bit), 
-    /// and may send a TSopt in other segments only if it received a TSopt in the initial <SYN> segment for the connection.
+    /// A TCP may send the Timestamps option (TSopt) in an initial &lt;SYN&gt; segment (i.e., segment containing a SYN bit and no ACK bit), 
+    /// and may send a TSopt in other segments only if it received a TSopt in the initial &lt;SYN&gt; segment for the connection.
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Timestamp)]
     public class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>
@@ -28,8 +28,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 10;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option from the given timestamp value and echo reply.
+        /// </summary>
         public TcpOptionTimestamp(uint timestampValue, uint timestampEchoReply)
             : base(TcpOptionType.Timestamp)
         {
@@ -37,12 +43,22 @@ namespace PcapDotNet.Packets.Transport
             TimestampEchoReply = timestampEchoReply;
         }
 
+        /// <summary>
+        /// The default values for the timestamp value and echo reply are 0.
+        /// </summary>
         public TcpOptionTimestamp()
             : this(0, 0)
         {
         }
 
+        /// <summary>
+        /// The timestamp value.
+        /// </summary>
         public uint TimestampValue { get; private set; }
+
+        /// <summary>
+        /// The echo reply value.
+        /// </summary>
         public uint TimestampEchoReply { get; private set; }
 
         /// <summary>
@@ -61,6 +77,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two timestamp options are equal if they have the same timestamp value and echo reply.
+        /// </summary>
         public bool Equals(TcpOptionTimestamp other)
         {
             if (other == null)
@@ -70,6 +89,9 @@ namespace PcapDotNet.Packets.Transport
                    TimestampEchoReply == other.TimestampEchoReply;
         }
 
+        /// <summary>
+        /// Two timestamp options are equal if they have the same timestamp value and echo reply.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionTimestamp);

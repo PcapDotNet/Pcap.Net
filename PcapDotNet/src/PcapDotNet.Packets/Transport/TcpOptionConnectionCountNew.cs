@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Transport
     /// +--------+--------+--------+--------+--------+--------+
     ///  Kind=12  Length=6
     /// 
-    /// This option may be sent instead of a CC option in an initial <SYN> segment (i.e., SYN but not ACK bit), 
+    /// This option may be sent instead of a CC option in an initial &lt;SYN&gt; segment (i.e., SYN but not ACK bit), 
     /// to indicate that the SEG.CC value may not be larger than the previous value.  
     /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
     /// </summary>

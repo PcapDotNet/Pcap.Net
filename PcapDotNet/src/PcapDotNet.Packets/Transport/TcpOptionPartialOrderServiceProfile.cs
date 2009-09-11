@@ -30,8 +30,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 3;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given isStart and isEnd values.
+        /// </summary>
         public TcpOptionPartialOrderServiceProfile(bool isStart, bool isEnd)
             : base(TcpOptionType.PartialOrderServiceProfile)
         {
@@ -39,12 +45,22 @@ namespace PcapDotNet.Packets.Transport
             IsEnd = isEnd;
         }
 
+        /// <summary>
+        /// The default is for service profiles which fit completely in a single segment.
+        /// </summary>
         public TcpOptionPartialOrderServiceProfile()
             : this(true, true)
         {
         }
 
+        /// <summary>
+        /// Indicates that the information in the data section represents the beginning of the service profile.
+        /// </summary>
         public bool IsStart { get; private set; }
+
+        /// <summary>
+        /// Indicates that the information in the data section represents the end of the service profile.
+        /// </summary>
         public bool IsEnd { get; private set; }
 
         /// <summary>
@@ -63,6 +79,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two partial order service profile options are equal if they agree on both IsStart and IsEnd.
+        /// </summary>
         public bool Equals(TcpOptionPartialOrderServiceProfile other)
         {
             if (other == null)
@@ -72,6 +91,9 @@ namespace PcapDotNet.Packets.Transport
                    (IsEnd == other.IsEnd);
         }
 
+        /// <summary>
+        /// Two partial order service profile options are equal if they agree on both IsStart and IsEnd.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionPartialOrderServiceProfile);

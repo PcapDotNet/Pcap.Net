@@ -128,10 +128,17 @@ namespace PcapDotNet.Packets
         /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
         /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
         /// <param name="ipV4Options">The IPv4 options.</param>
-        /// <param name="tcpSourcePort">The source udp port.</param>
-        /// <param name="tcpDestinationPort">The destination udp port.</param>
+        /// <param name="tcpSourcePort">The source TCP port.</param>
+        /// <param name="tcpDestinationPort">The destination TCP port.</param>
+        /// <param name="tcpSequenceNumber">The TCP sequence number.</param>
+        /// <param name="tcpAcknowledgmentNumber">The TCP ack number.</param>
+        /// <param name="tcpControlBits">The TCP flags.</param>
+        /// <param name="tcpWindow">The TCP window size.</param>
+        /// <param name="tcpUrgentPointer">The TCP urgent pointer value.</param>
+        /// <param name="tcpOptions">The TCP options.</param>
         /// <param name="tcpPayload">The payload of UDP datagram.</param>
         /// <returns>A packet with a UDP over IPv4 over Ethernet datagram.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "pointer")]
         public static Packet EthernetIpV4Tcp(DateTime timestamp,
                                              MacAddress ethernetSource, MacAddress ethernetDestination,
                                              byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,

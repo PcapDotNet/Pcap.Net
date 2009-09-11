@@ -28,8 +28,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = OptionHeaderLength + 16;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given signature data.
+        /// </summary>
         public TcpOptionMd5Signature(IList<byte> data)
             : base(TcpOptionType.Md5Signature)
         {
@@ -39,11 +45,17 @@ namespace PcapDotNet.Packets.Transport
             Data = new ReadOnlyCollection<byte>(data);
         }
 
+        /// <summary>
+        /// The default signature is all zeroes.
+        /// </summary>
         public TcpOptionMd5Signature()
             : this(new byte[OptionValueLength])
         {
         }
 
+        /// <summary>
+        /// The signature value.
+        /// </summary>
         public ReadOnlyCollection<byte> Data { get; private set; }
 
         /// <summary>
@@ -62,6 +74,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two MD5 signature options are equal if they have the same signature value.
+        /// </summary>
         public bool Equals(TcpOptionMd5Signature other)
         {
             if (other == null)
@@ -70,6 +85,9 @@ namespace PcapDotNet.Packets.Transport
             return Data.SequenceEqual(other.Data);
         }
 
+        /// <summary>
+        /// Two MD5 signature options are equal if they have the same signature value.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionMd5Signature);
