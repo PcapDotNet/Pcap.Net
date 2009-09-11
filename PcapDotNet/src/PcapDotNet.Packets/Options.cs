@@ -6,6 +6,11 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// A generic Options class.
+    /// Represents a list of options (either IPv4 options or TCP options).
+    /// </summary>
+    /// <typeparam name="T">The Option type this collection contains.</typeparam>
     public abstract class Options<T> : ReadOnlyCollection<T> where T : Option
     {
         /// <summary>
@@ -74,7 +79,7 @@ namespace PcapDotNet.Packets
                 buffer[offset++] = 0;
         }
 
-        protected Options(IList<T> options, T end, int maximumBytesLength)
+        internal Options(IList<T> options, T end, int maximumBytesLength)
             : this(EndOptions(options, end), true)
         {
             if (BytesLength > maximumBytesLength)

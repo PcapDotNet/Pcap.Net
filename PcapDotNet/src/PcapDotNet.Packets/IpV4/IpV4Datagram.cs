@@ -238,6 +238,10 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// Returns the Tranposrt Datagram.
+        /// This is either a TCP Datagram or a UDP Datagram (according to the protocol).
+        /// </summary>
         public TransportDatagram Transport
         {
             get

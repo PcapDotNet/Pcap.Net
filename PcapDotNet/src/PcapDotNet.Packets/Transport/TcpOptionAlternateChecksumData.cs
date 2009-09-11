@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -30,19 +31,31 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionMinimumLength = OptionHeaderLength;
 
+        /// <summary>
+        /// The minimum number of bytes this option's value take.
+        /// </summary>
         public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given data.
+        /// </summary>
         public TcpOptionAlternateChecksumData(IList<byte> data)
             : base(TcpOptionType.AlternateChecksumData)
         {
             Data = new ReadOnlyCollection<byte>(data);
         }
 
+        /// <summary>
+        /// the default option data is no data.
+        /// </summary>
         public TcpOptionAlternateChecksumData()
             : this(new byte[0])
         {
         }
 
+        /// <summary>
+        /// The alternate checksum data.
+        /// </summary>
         public ReadOnlyCollection<byte> Data { get; private set; }
 
         /// <summary>
@@ -61,6 +74,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two alternate checksum data options are equal if they have the same data.
+        /// </summary>
         public bool Equals(TcpOptionAlternateChecksumData other)
         {
             if (other == null)
@@ -68,15 +84,21 @@ namespace PcapDotNet.Packets.Transport
             return Data.SequenceEqual(other.Data);
         }
 
+        /// <summary>
+        /// Two alternate checksum data options are equal if they have the same data.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionAlternateChecksumData);
         }
 
+        /// <summary>
+        /// The hash code of this option is the hash code of the option type xored with the hash code of the data.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Data.GetHashCode();
+                   Data.BytesSequenceGetHashCode();
         }
 
         /// <summary>

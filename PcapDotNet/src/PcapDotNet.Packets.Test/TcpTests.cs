@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Test
                 ushort tcpDestinationPort = random.NextUShort();
                 uint tcpSequenceNumber = random.NextUInt();
                 uint tcpAcknowledgmentNumber = random.NextUInt();
-                TcpFlags tcpFlags = random.NextFlags<TcpFlags>();
+                TcpControlBits tcpControlBits = random.NextFlags<TcpControlBits>();
                 ushort tcpWindow = random.NextUShort();
                 ushort tcpUrgentPointer = random.NextUShort();
                 TcpOptions tcpOptions = random.NextTcpOptions();
@@ -95,7 +95,7 @@ namespace PcapDotNet.Packets.Test
                                                               ethernetSource, ethernetDestination,
                                                               ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
                                                               ipV4Source, ipV4Destination, ipV4Options,
-                                                              tcpSourcePort, tcpDestinationPort, tcpSequenceNumber, tcpAcknowledgmentNumber, tcpFlags, tcpWindow, tcpUrgentPointer,
+                                                              tcpSourcePort, tcpDestinationPort, tcpSequenceNumber, tcpAcknowledgmentNumber, tcpControlBits, tcpWindow, tcpUrgentPointer,
                                                               tcpOptions,
                                                               tcpPayload);
 
@@ -106,7 +106,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(tcpDestinationPort, packet.Ethernet.IpV4.Tcp.DestinationPort, "Destination Port");
                 Assert.AreEqual(tcpSequenceNumber, packet.Ethernet.IpV4.Tcp.SequenceNumber, "Sequence Number");
                 Assert.AreEqual(tcpAcknowledgmentNumber, packet.Ethernet.IpV4.Tcp.AcknowledgmentNumber, "Acknowledgment Number");
-                Assert.AreEqual(tcpFlags, packet.Ethernet.IpV4.Tcp.Flags, "Flags");
+                Assert.AreEqual(tcpControlBits, packet.Ethernet.IpV4.Tcp.ControlBits, "Flags");
                 Assert.AreEqual(tcpWindow, packet.Ethernet.IpV4.Tcp.Window, "Window");
                 Assert.AreEqual(tcpUrgentPointer, packet.Ethernet.IpV4.Tcp.UrgentPointer, "Urgent Pointer");
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
@@ -117,14 +117,14 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsFalse(string.IsNullOrEmpty(option.ToString()));
                 }
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
-                Assert.AreEqual((tcpFlags & TcpFlags.Acknowledgment) == TcpFlags.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
-                Assert.AreEqual((tcpFlags & TcpFlags.CongestionWindowReduced) == TcpFlags.CongestionWindowReduced, packet.Ethernet.IpV4.Tcp.IsCongestionWindowReduced, "IsCongestionWindowReduced");
-                Assert.AreEqual((tcpFlags & TcpFlags.ExplicitCongestionNotificationEcho) == TcpFlags.ExplicitCongestionNotificationEcho, packet.Ethernet.IpV4.Tcp.IsExplicitCongestionNotificationEcho, "IsExplicitCongestionNotificationEcho");
-                Assert.AreEqual((tcpFlags & TcpFlags.Fin) == TcpFlags.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
-                Assert.AreEqual((tcpFlags & TcpFlags.Push) == TcpFlags.Push, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
-                Assert.AreEqual((tcpFlags & TcpFlags.Reset) == TcpFlags.Reset, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
-                Assert.AreEqual((tcpFlags & TcpFlags.Synchronize) == TcpFlags.Synchronize, packet.Ethernet.IpV4.Tcp.IsSynchronize, "IsSynchronize");
-                Assert.AreEqual((tcpFlags & TcpFlags.Urgent) == TcpFlags.Urgent, packet.Ethernet.IpV4.Tcp.IsUrgent, "IsUrgent");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.CongestionWindowReduced) == TcpControlBits.CongestionWindowReduced, packet.Ethernet.IpV4.Tcp.IsCongestionWindowReduced, "IsCongestionWindowReduced");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.ExplicitCongestionNotificationEcho) == TcpControlBits.ExplicitCongestionNotificationEcho, packet.Ethernet.IpV4.Tcp.IsExplicitCongestionNotificationEcho, "IsExplicitCongestionNotificationEcho");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Fin) == TcpControlBits.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Push) == TcpControlBits.Push, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Reset) == TcpControlBits.Reset, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Synchronize) == TcpControlBits.Synchronize, packet.Ethernet.IpV4.Tcp.IsSynchronize, "IsSynchronize");
+                Assert.AreEqual((tcpControlBits & TcpControlBits.Urgent) == TcpControlBits.Urgent, packet.Ethernet.IpV4.Tcp.IsUrgent, "IsUrgent");
                 Assert.IsFalse(packet.Ethernet.IpV4.Tcp.IsChecksumOptional, "IsChecksumOptional");
                 Assert.AreEqual(TcpDatagram.HeaderMinimumLength + tcpOptions.BytesLength + tcpPayload.Length, packet.Ethernet.IpV4.Tcp.Length, "Total Length");
                 Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");

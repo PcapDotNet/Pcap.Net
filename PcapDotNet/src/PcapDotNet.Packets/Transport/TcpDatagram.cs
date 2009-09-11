@@ -22,7 +22,14 @@ namespace PcapDotNet.Packets.Transport
     /// </summary>
     public class TcpDatagram : TransportDatagram
     {
+        /// <summary>
+        /// The minimum number of bytes the header takes.
+        /// </summary>
         public const int HeaderMinimumLength = 20;
+
+        /// <summary>
+        /// The maximum number of bytes the header takes.
+        /// </summary>
         public const int HeaderMaximumLength = 60;
 
         internal static class Offset
@@ -34,11 +41,6 @@ namespace PcapDotNet.Packets.Transport
             public const int Checksum = 16;
             public const int UrgentPointer = 18;
             public const int Options = 20;
-        }
-
-        public TcpDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -70,37 +72,80 @@ namespace PcapDotNet.Packets.Transport
             get { return 4 * (this[Offset.HeaderLengthAndFlags] >> 4); }
         }
 
+        /// <summary>
+        /// Returns the actual header length.
+        /// </summary>
         public int RealHeaderLength
         {
             get { return Math.Min(HeaderLength, Length); }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
-        public TcpFlags Flags
+        /// <summary>
+        /// A collection of bits for the TCP control.
+        /// </summary>
+        public TcpControlBits ControlBits
         {
-            get { return (TcpFlags)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & 0x01FF); }
+            get { return (TcpControlBits)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & 0x01FF); }
         }
 
+        /// <summary>
+        /// The number of data octets beginning with the one indicated in the acknowledgment field which the sender of this segment is willing to accept.
+        /// </summary>
         public ushort Window
         {
             get { return ReadUShort(Offset.Window, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The checksum field is the 16 bit one's complement of the one's complement sum of all 16 bit words in the header and text.  
+        /// If a segment contains an odd number of header and text octets to be checksummed, 
+        /// the last octet is padded on the right with zeros to form a 16 bit word for checksum purposes.  
+        /// The pad is not transmitted as part of the segment.  
+        /// While computing the checksum, the checksum field itself is replaced with zeros.
+        /// 
+        /// The checksum also covers a 96 bit pseudo header conceptually prefixed to the TCP header.  
+        /// This pseudo header contains the Source Address, the Destination Address, the Protocol, and TCP length.
+        /// This gives the TCP protection against misrouted segments.  
+        /// This information is carried in the Internet Protocol and is transferred across the TCP/Network interface in the arguments or results of calls 
+        /// by the TCP on the IP.
+        /// 
+        /// +--------+--------+--------+--------+
+        /// |           Source Address          |
+        /// +--------+--------+--------+--------+
+        /// |         Destination Address       |
+        /// +--------+--------+--------+--------+
+        /// |  zero  |  PTCL  |    TCP Length   |
+        /// +--------+--------+--------+--------+
+        /// 
+        /// The TCP Length is the TCP header length plus the data length in octets (this is not an explicitly transmitted quantity, but is computed), 
+        /// and it does not count the 12 octets of the pseudo header.
+        /// </summary>
         public override ushort Checksum
         {
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
+        /// <summary>
+        /// True iff the checksum for the transport type is optional.
+        /// </summary>
         public override bool IsChecksumOptional
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// This field communicates the current value of the urgent pointer as a positive offset from the sequence number in this segment.  
+        /// The urgent pointer points to the sequence number of the octet following the urgent data.  
+        /// This field is only be interpreted in segments with the URG control bit set.
+        /// </summary>
         public ushort UrgentPointer
         {
             get { return ReadUShort(Offset.UrgentPointer, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Returns the tcp options contained in this TCP Datagram.
+        /// </summary>
         public TcpOptions Options
         {
             get
@@ -119,44 +164,73 @@ namespace PcapDotNet.Packets.Transport
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
         }
 
+        /// <summary>
+        /// True iff the CongestionWindowReduced control bit is turned on.
+        /// </summary>
         public bool IsCongestionWindowReduced
         {
-            get { return (Flags & TcpFlags.CongestionWindowReduced) == TcpFlags.CongestionWindowReduced; }
+            get { return (ControlBits & TcpControlBits.CongestionWindowReduced) == TcpControlBits.CongestionWindowReduced; }
         }
 
+        /// <summary>
+        /// True iff the ExplicitCongestionNotificationEcho control bit is turned on.
+        /// </summary>
         public bool IsExplicitCongestionNotificationEcho
         {
-            get { return (Flags & TcpFlags.ExplicitCongestionNotificationEcho) == TcpFlags.ExplicitCongestionNotificationEcho; }
+            get { return (ControlBits & TcpControlBits.ExplicitCongestionNotificationEcho) == TcpControlBits.ExplicitCongestionNotificationEcho; }
         }
 
+        /// <summary>
+        /// True iff the Urgent control bit is turned on.
+        /// </summary>
         public bool IsUrgent
         {
-            get { return (Flags & TcpFlags.Urgent) == TcpFlags.Urgent; }
+            get { return (ControlBits & TcpControlBits.Urgent) == TcpControlBits.Urgent; }
         }
 
+        /// <summary>
+        /// True iff the Acknowledgment control bit is turned on.
+        /// </summary>
         public bool IsAcknowledgment
         {
-            get { return (Flags & TcpFlags.Acknowledgment) == TcpFlags.Acknowledgment; }
+            get { return (ControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment; }
         }
 
+        /// <summary>
+        /// True iff the Push control bit is turned on.
+        /// </summary>
         public bool IsPush
         {
-            get { return (Flags & TcpFlags.Push) == TcpFlags.Push; }
+            get { return (ControlBits & TcpControlBits.Push) == TcpControlBits.Push; }
         }
 
+        /// <summary>
+        /// True iff the Reset control bit is turned on.
+        /// </summary>
         public bool IsReset
         {
-            get { return (Flags & TcpFlags.Reset) == TcpFlags.Reset; }
+            get { return (ControlBits & TcpControlBits.Reset) == TcpControlBits.Reset; }
         }
 
+        /// <summary>
+        /// True iff the Synchronize control bit is turned on.
+        /// </summary>
         public bool IsSynchronize
         {
-            get { return (Flags & TcpFlags.Synchronize) == TcpFlags.Synchronize; }
+            get { return (ControlBits & TcpControlBits.Synchronize) == TcpControlBits.Synchronize; }
         }
 
+        /// <summary>
+        /// True iff the Fin control bit is turned on.
+        /// </summary>
         public bool IsFin
         {
-            get { return (Flags & TcpFlags.Fin) == TcpFlags.Fin; }
+            get { return (ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin; }
+        }
+
+        internal TcpDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         internal override int ChecksumOffset
@@ -167,7 +241,7 @@ namespace PcapDotNet.Packets.Transport
         internal static void WriteHeader(byte[] buffer, int offset,
                                          ushort sourcePort, ushort destinationPort,
                                          uint sequenceNumber, uint acknowledgmentNumber,
-                                         TcpFlags flags, ushort window, ushort urgentPointer,
+                                         TcpControlBits controlBits, ushort window, ushort urgentPointer,
                                          TcpOptions options)
         {
             int headerLength = HeaderMinimumLength + options.BytesLength;
@@ -175,7 +249,7 @@ namespace PcapDotNet.Packets.Transport
             WriteHeader(buffer, offset, sourcePort, destinationPort);
             buffer.Write(offset + Offset.SequenceNumber, sequenceNumber, Endianity.Big);
             buffer.Write(offset + Offset.AcknowledgmentNumber, acknowledgmentNumber, Endianity.Big);
-            buffer.Write(offset + Offset.HeaderLengthAndFlags, (ushort)(((ushort)((headerLength / 4) << 12)) | (ushort)flags), Endianity.Big);
+            buffer.Write(offset + Offset.HeaderLengthAndFlags, (ushort)(((ushort)((headerLength / 4) << 12)) | (ushort)controlBits), Endianity.Big);
             buffer.Write(offset + Offset.Window, window, Endianity.Big);
             buffer.Write(offset + Offset.UrgentPointer, urgentPointer, Endianity.Big);
             options.Write(buffer, offset + Offset.Options);

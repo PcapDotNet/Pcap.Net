@@ -26,11 +26,23 @@ namespace PcapDotNet.Packets
             Buffer.BlockCopy(source, sourceOffset, destination, destinationOffset, count);
         }
 
+        /// <summary>
+        /// Reads a byte from a specific offset.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the byte from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <returns>The value read from the buffer.</returns>
         public static byte ReadByte(this byte[] buffer, int offset)
         {
             return buffer[offset];
         }
 
+        /// <summary>
+        /// Reads a byte from a specific offset and increments the offset by 1.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the byte from.</param>
+        /// <param name="offset">The offset in the buffer to start reading and to increment.</param>
+        /// <returns>The value read from the buffer.</returns>
         public static byte ReadByte(this byte[] buffer, ref int offset)
         {
             byte result = ReadByte(buffer, offset);
@@ -38,6 +50,13 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        /// <summary>
+        /// Reads bytes from a specific offset.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <returns>The value read from the buffer.</returns>
         public static byte[] ReadBytes(this byte[] buffer, int offset, int length)
         {
             byte[] bytes = new byte[length];
@@ -45,6 +64,13 @@ namespace PcapDotNet.Packets
             return bytes;
         }
 
+        /// <summary>
+        /// Reads bytes from a specific offset and increments the offset by the number of bytes read.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading and to increment.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <returns>The value read from the buffer.</returns>
         public static byte[] ReadBytes(this byte[] buffer, ref int offset, int length)
         {
             byte[] result = buffer.ReadBytes(offset, length);
@@ -258,17 +284,35 @@ namespace PcapDotNet.Packets
             return new IpV4OptionTimeOfDay(buffer.ReadUInt(ref offset, endianity));
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, int offset, byte value)
         {
             buffer[offset] = value;
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer and increments the offset by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, ref int offset, byte value)
         {
             Write(buffer, offset, value);
             offset += sizeof(byte);
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer and increments the offset by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, ref int offset, IEnumerable<byte> value)
         {
             foreach (byte b in value)

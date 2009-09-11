@@ -27,19 +27,31 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 6;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given echo info.
+        /// </summary>
         public TcpOptionEchoReply(uint info)
             : base(TcpOptionType.EchoReply)
         {
             Info = info;
         }
 
+        /// <summary>
+        /// The default echo info is 0.
+        /// </summary>
         public TcpOptionEchoReply()
             : this(0)
         {
         }
 
+        /// <summary>
+        /// The echoed info.
+        /// </summary>
         public uint Info { get; private set; }
 
         /// <summary>
@@ -58,6 +70,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two echo reply options are equal if they have the same info.
+        /// </summary>
         public bool Equals(TcpOptionEchoReply other)
         {
             if (other == null)
@@ -66,6 +81,9 @@ namespace PcapDotNet.Packets.Transport
             return Info == other.Info;
         }
 
+        /// <summary>
+        /// Two echo reply options are equal if they have the same info.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionEchoReply);
