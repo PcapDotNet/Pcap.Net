@@ -7,12 +7,16 @@ namespace PcapDotNet.Packets.Transport
     /// in  the environment of an interconnected set of computer networks.   
     /// This protocol assumes that the Internet Protocol (IP) is used as the underlying protocol.
     /// 
+    /// <para>
     /// This protocol provides a procedure for application programs to send messages  to other programs 
     /// with a minimum of protocol mechanism. 
     /// The protocol is transaction oriented, and delivery and duplicate protection are not guaranteed.  
     /// Applications requiring ordered reliable delivery of streams of data should use the Transmission Control Protocol (TCP).
+    /// </para>
     /// 
+    /// <para>
     /// Format
+    /// <pre>
     ///  0      7 8     15 16    23 24    31
     /// +--------+--------+--------+--------+
     /// |     Source      |   Destination   |
@@ -24,6 +28,8 @@ namespace PcapDotNet.Packets.Transport
     /// |
     /// |          data octets ...
     /// +---------------- ...
+    /// </pre>
+    /// </para>
     /// </summary>
     public class UdpDatagram : TransportDatagram
     {

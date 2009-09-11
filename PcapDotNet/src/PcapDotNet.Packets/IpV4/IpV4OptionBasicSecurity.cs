@@ -7,22 +7,29 @@ namespace PcapDotNet.Packets.IpV4
     /// This option identifies the U.S. classification level at which the datagram is to be protected 
     /// and the authorities whose protection rules apply to each datagram.
     /// 
-    /// This option is used by end systems and intermediate systems of aninternet to:
+    /// <para>
+    ///   This option is used by end systems and intermediate systems of an internet to:
+    ///   <list type="number">
+    ///     <item>Transmit from source to destination in a network standard representation the common security labels required by computer security models.</item>
+    ///     <item>Validate the datagram as appropriate for transmission from the source and delivery to the destination.</item>
+    ///     <item>
+    ///       Ensure that the route taken by the datagram is protected to the level required by all protection authorities indicated on the datagram.
+    ///       In order to provide this facility in a general Internet environment, interior and exterior gateway protocols must be augmented 
+    ///       to include security label information in support of routing control.
+    ///     </item>
+    ///   </list>
+    /// </para>
+    ///
+    /// <para>
+    ///   The DoD Basic Security option must be copied on fragmentation.  
+    ///   This option appears at most once in a datagram.  
+    ///   Some security systems require this to be the first option if more than one option is carried in the IP header, 
+    ///   but this is not a generic requirement levied by this specification.
+    /// </para>
     /// 
-    /// a.  Transmit from source to destination in a network standard representation the common security labels required by computer security models,
-    /// 
-    /// b.  Validate the datagram as appropriate for transmission from the source and delivery to the destination,
-    /// 
-    /// c.  Ensure that the route taken by the datagram is protected to the level required by all protection authorities indicated on the datagram.
-    /// In order to provide this facility in a general Internet environment, interior and exterior gateway protocols must be augmented 
-    /// to include security label information in support of routing control.
-    /// 
-    /// The DoD Basic Security option must be copied on fragmentation.  
-    /// This option appears at most once in a datagram.  
-    /// Some security systems require this to be the first option if more than one option is carried in the IP header, 
-    /// but this is not a generic requirement levied by this specification.
-    /// 
-    /// The format of the DoD Basic Security option is as follows:
+    /// <para>
+    ///   The format of the DoD Basic Security option is as follows:
+    ///   <pre>
     /// +------------+------------+------------+-------------//----------+
     /// |  10000010  |  XXXXXXXX  |  SSSSSSSS  |  AAAAAAA[1]    AAAAAAA0 |
     /// |            |            |            |         [0]             |
@@ -30,6 +37,8 @@ namespace PcapDotNet.Packets.IpV4
     ///   TYPE = 130     LENGTH   CLASSIFICATION         PROTECTION
     ///                                LEVEL              AUTHORITY
     ///                                                     FLAGS
+    ///   </pre>
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.BasicSecurity)]
     public class IpV4OptionBasicSecurity : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>

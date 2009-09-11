@@ -4,21 +4,29 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// TCP Timestamps Option (TSopt):
+    /// <pre>
     /// +-------+-------+---------------------+---------------------+
     /// |Kind=8 |  10   |   TS Value (TSval)  |TS Echo Reply (TSecr)|
     /// +-------+-------+---------------------+---------------------+
     ///     1       1              4                     4
+    /// </pre>
     /// 
+    /// <para>
     /// The Timestamps option carries two four-byte timestamp fields.
     /// The Timestamp Value field (TSval) contains the current value of the timestamp clock of the TCP sending the option.
+    /// </para>
     /// 
+    /// <para>
     /// The Timestamp Echo Reply field (TSecr) is only valid if the ACK bit is set in the TCP header; 
     /// if it is valid, it echos a timestamp value that was sent by the remote TCP in the TSval field of a Timestamps option.  
     /// When TSecr is not valid, its value must be zero.  
     /// The TSecr value will generally be from the most recent Timestamp option that was received; however, there are exceptions that are explained below.
+    /// </para>
     /// 
+    /// <para>
     /// A TCP may send the Timestamps option (TSopt) in an initial &lt;SYN&gt; segment (i.e., segment containing a SYN bit and no ACK bit), 
     /// and may send a TSopt in other segments only if it received a TSopt in the initial &lt;SYN&gt; segment for the connection.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Timestamp)]
     public class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>

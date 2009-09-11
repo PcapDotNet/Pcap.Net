@@ -2,14 +2,18 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// CC.NEW Option (RFC 1644).
+    /// <pre>
     /// +--------+--------+--------+--------+--------+--------+
     /// |00001100|00000110|    Connection Count:  SEG.CC      |
     /// +--------+--------+--------+--------+--------+--------+
     ///  Kind=12  Length=6
+    /// </pre>
     /// 
+    /// <para>
     /// This option may be sent instead of a CC option in an initial &lt;SYN&gt; segment (i.e., SYN but not ACK bit), 
     /// to indicate that the SEG.CC value may not be larger than the previous value.  
     /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
+    /// </para>
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountNew)]

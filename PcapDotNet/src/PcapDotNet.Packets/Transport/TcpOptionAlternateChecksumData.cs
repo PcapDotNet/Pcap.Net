@@ -9,19 +9,29 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// TCP Alternate Checksum Data Option (RFC 1146).
     /// 
+    /// <para>
     /// The format of the TCP Alternate Checksum Data Option is:
+    /// <pre>
     /// +---------+---------+---------+     +---------+
     /// | Kind=15 |Length=N |  data   | ... |  data   |
     /// +---------+---------+---------+     +---------+
+    /// </pre>
+    /// </para>
     /// 
+    /// <para>
     /// This field is used only when the alternate checksum that is negotiated is longer than 16 bits. 
     /// These checksums will not fit in the checksum field of the TCP header and thus at least part of them must be put in an option.  
     /// Whether the checksum is split between the checksum field in the TCP header and the option or the entire checksum is placed in the option 
     /// is determined on a checksum by checksum basis.
+    /// </para>
     /// 
+    /// <para>
     /// The length of this option will depend on the choice of alternate checksum algorithm for this connection.
+    /// </para>
     /// 
+    /// <para>
     /// While computing the alternate checksum, the TCP checksum field and the data portion TCP Alternate Checksum Data Option are replaced with zeros.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.AlternateChecksumData)]
     public class TcpOptionAlternateChecksumData : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumData>

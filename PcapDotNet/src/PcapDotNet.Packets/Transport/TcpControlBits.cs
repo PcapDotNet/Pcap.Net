@@ -3,12 +3,14 @@ using System;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
-    /// TCP Header Format
+    /// TCP control bits format
+    /// <pre>
     /// +-----+-----+----+-----+-----+-----+-----+-----+-----+-----+-----+
     /// | Bit | 0-6 | 7  | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  |
     /// +-----+-----+----+-----+-----+-----+-----+-----+-----+-----+-----+
     /// | 0   |     | NS | CWR | ECE | URG | ACK | PSH | RST | SYN | FIN |
     /// +-----+-----+----+-----+-----+-----+-----+-----+-----+-----+-----+
+    /// </pre>
     /// </summary>
     [Flags]
     public enum TcpControlBits : ushort

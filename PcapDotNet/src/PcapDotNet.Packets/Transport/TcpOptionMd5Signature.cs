@@ -6,6 +6,7 @@ using System.Linq;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// <pre>
     /// +---------+---------+-------------------+
     /// | Kind=19 |Length=18|   MD5 digest...   |
     /// +---------+---------+-------------------+
@@ -17,8 +18,11 @@ namespace PcapDotNet.Packets.Transport
     /// +-------------------+-------------------+
     /// |                   |
     /// +-------------------+
+    /// </pre>
     /// 
+    /// <para>
     /// The MD5 digest is always 16 bytes in length, and the option would appear in every segment of a connection.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Md5Signature)]
     public class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMd5Signature>

@@ -8,6 +8,7 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// The SACK option is to be used to convey extended acknowledgment information from the receiver to the sender over an established TCP connection.
     /// 
+    /// <pre>
     ///                   +--------+--------+
     ///                   | Kind=5 | Length |
     /// +--------+--------+--------+--------+
@@ -23,18 +24,24 @@ namespace PcapDotNet.Packets.Transport
     /// +--------+--------+--------+--------+
     /// |      Right Edge of nth Block      |
     /// +--------+--------+--------+--------+
+    /// </pre>
     /// 
+    /// <para>
     /// The SACK option is to be sent by a data receiver to inform the data sender of non-contiguous blocks of data that have been received and queued.  
     /// The data receiver awaits the receipt of data (perhaps by means of retransmissions) to fill the gaps in sequence space between received blocks.  
     /// When missing segments are received, the data receiver acknowledges the data normally by advancing 
     /// the left window edge in the Acknowledgement Number Field of the TCP header.  
     /// The SACK option does not change the meaning of the Acknowledgement Number field.
+    /// </para>
     /// 
+    /// <para>
     /// This option contains a list of some of the blocks of contiguous sequence space occupied by data that has been received and queued within the window.
     /// Each contiguous block of data queued at the data receiver is defined in the SACK option by two 32-bit unsigned integers in network byte order:
-    /// *    Left Edge of Block - This is the first sequence number of this block.
-    /// *    Right Edge of Block - This is the sequence number immediately following the last sequence number of this block.
-    /// 
+    /// <list type="bullet">
+    ///   <item>Left Edge of Block - This is the first sequence number of this block.</item>
+    ///   <item>Right Edge of Block - This is the sequence number immediately following the last sequence number of this block.</item>
+    /// </list>
+    /// </para>
     /// Each block represents received bytes of data that are contiguous and isolated; 
     /// that is, the bytes just below the block, (Left Edge of Block - 1), and just above the block, (Right Edge of Block), have not been received.
     /// 

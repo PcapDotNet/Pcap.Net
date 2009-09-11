@@ -5,39 +5,53 @@ namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
     /// Record Route
+    /// <pre>
     /// +--------+--------+--------+---------//--------+
     /// |00000111| length | pointer|     route data    |
     /// +--------+--------+--------+---------//--------+
     ///  Type=7
+    /// </pre>
     /// 
+    /// <para>
     /// The record route option provides a means to record the route of an internet datagram.
+    /// </para>
     /// 
+    /// <para>
     /// The option begins with the option type code.  
     /// The second octet is the option length which includes the option type code and the length octet, 
     /// the pointer octet, and length-3 octets of route data.  
     /// The third octet is the pointer into the route data indicating the octet which begins the next area to store a route address.  
     /// The pointer is relative to this option, and the smallest legal value for the pointer is 4.
+    /// </para>
     /// 
+    /// <para>
     /// A recorded route is composed of a series of internet addresses.
     /// Each internet address is 32 bits or 4 octets.  
     /// If the pointer is greater than the length, the recorded route data area is full.
     /// The originating host must compose this option with a large enough route data area to hold all the address expected.  
     /// The size of the option does not change due to adding addresses.  
     /// The intitial contents of the route data area must be zero.
+    /// </para>
     /// 
+    /// <para>
     /// When an internet module routes a datagram it checks to see if the record route option is present.  
     /// If it is, it inserts its own internet address as known in the environment into which this datagram is being forwarded 
     /// into the recorded route begining at the octet indicated by the pointer, 
     /// and increments the pointer by four.
+    /// </para>
     /// 
+    /// <para>
     /// If the route data area is already full (the pointer exceeds the length) 
     /// the datagram is forwarded without inserting the address into the recorded route.  
     /// If there is some room but not enough room for a full address to be inserted, 
     /// the original datagram is considered to be in error and is discarded.  
     /// In either case an ICMP parameter problem message may be sent to the source host.
+    /// </para>
     /// 
+    /// <para>
     /// Not copied on fragmentation, goes in first fragment only.
     /// Appears at most once in a datagram.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.RecordRoute)]
     public class IpV4OptionRecordRoute : IpV4OptionRoute, IOptionComplexFactory

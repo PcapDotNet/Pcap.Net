@@ -4,14 +4,18 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// Maximum Segment Size (RFC 793)
+    /// <pre>
     /// +--------+--------+---------+--------+
     /// |00000010|00000100|   max seg size   |
     /// +--------+--------+---------+--------+
     ///  Kind=2   Length=4
+    /// </pre>
     /// 
+    /// <para>
     /// If this option is present, then it communicates the maximum receive segment size at the TCP which sends this segment.
     /// This field must only be sent in the initial connection request (i.e., in segments with the SYN control bit set).  
     /// If this option is not used, any segment size is allowed.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.MaximumSegmentSize)]
     public class TcpOptionMaximumSegmentSize : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMaximumSegmentSize>
