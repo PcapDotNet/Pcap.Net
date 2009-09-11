@@ -58,17 +58,26 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionValueMinimumLength = OptionMinimumLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option from the given list of selective ack blocks.
+        /// </summary>
         public TcpOptionSelectiveAcknowledgment(IList<TcpOptionSelectiveAcknowledgmentBlock> blocks)
             : base(TcpOptionType.SelectiveAcknowledgment)
         {
             _blocks = new ReadOnlyCollection<TcpOptionSelectiveAcknowledgmentBlock>(blocks);
         }
 
+        /// <summary>
+        /// The default is no blocks.
+        /// </summary>
         public TcpOptionSelectiveAcknowledgment()
             : this(new TcpOptionSelectiveAcknowledgmentBlock[]{})
         {
         }
 
+        /// <summary>
+        /// The collection of selective ack blocks.
+        /// </summary>
         public ReadOnlyCollection<TcpOptionSelectiveAcknowledgmentBlock> Blocks
         {
             get { return _blocks; }
@@ -90,6 +99,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two selective ack options are equal if they have the same selective ack blocks.
+        /// </summary>
         public bool Equals(TcpOptionSelectiveAcknowledgment other)
         {
             if (other == null)
@@ -98,6 +110,9 @@ namespace PcapDotNet.Packets.Transport
             return Blocks.SequenceEqual(other.Blocks);
         }
 
+        /// <summary>
+        /// Two selective ack options are equal if they have the same selective ack blocks.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionSelectiveAcknowledgment);

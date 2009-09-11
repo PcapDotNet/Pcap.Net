@@ -33,19 +33,31 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 3;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Create a scale factor option using the given scale factor log.
+        /// </summary>
         public TcpOptionWindowScale(byte scaleFactorLog)
             : base(TcpOptionType.WindowScale)
         {
             ScaleFactorLog = scaleFactorLog;
         }
 
+        /// <summary>
+        /// The default scale factor log is 0 (scale factor is 1).
+        /// </summary>
         public TcpOptionWindowScale()
             : this(0)
         {
         }
 
+        /// <summary>
+        /// The log of the window scale factor.
+        /// </summary>
         public byte ScaleFactorLog { get; private set; }
 
         /// <summary>
@@ -64,6 +76,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two window scale options are equal if they have the same scale factor.
+        /// </summary>
         public bool Equals(TcpOptionWindowScale other)
         {
             if (other == null)
@@ -71,11 +86,18 @@ namespace PcapDotNet.Packets.Transport
             return ScaleFactorLog == other.ScaleFactorLog;
         }
 
+        /// <summary>
+        /// Two window scale options are equal if they have the same scale factor.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionWindowScale);
         }
 
+        /// <summary>
+        /// The hash code of the window scale option is the hash code of the option type xored with the hash code of the scale factor log.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^

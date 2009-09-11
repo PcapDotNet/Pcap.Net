@@ -20,8 +20,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 2;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates a selective ack permitted option.
+        /// </summary>
         public TcpOptionSelectiveAcknowledgmentPermitted()
             : base(TcpOptionType.SelectiveAcknowledgmentPermitted)
         {
@@ -43,11 +49,17 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two selective ack permitted options are always equal.
+        /// </summary>
         public bool Equals(TcpOptionSelectiveAcknowledgmentPermitted other)
         {
             return other != null;
         }
 
+        /// <summary>
+        /// Two selective ack permitted options are always equal.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionSelectiveAcknowledgmentPermitted);

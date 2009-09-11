@@ -52,17 +52,17 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public abstract bool IsChecksumOptional { get; }
 
+        internal TransportDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
         internal abstract int ChecksumOffset { get; }
 
         internal static void WriteHeader(byte[] buffer, int offset, ushort sourcePort, ushort destinationPort)
         {
             buffer.Write(offset + Offset.SourcePort, sourcePort, Endianity.Big);
             buffer.Write(offset + Offset.DestinationPort, destinationPort, Endianity.Big);
-        }
-
-        protected TransportDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
     }
 }

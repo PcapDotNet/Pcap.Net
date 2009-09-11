@@ -58,6 +58,9 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
+        /// <summary>
+        /// True iff the checksum for the transport type is optional.
+        /// </summary>
         public override bool IsChecksumOptional
         {
             get { return true; }
@@ -87,6 +90,9 @@ namespace PcapDotNet.Packets.Transport
             buffer.Write(offset + Offset.TotalLength, (ushort)(HeaderLength + payloadLength), Endianity.Big);
         }
 
+        /// <summary>
+        /// A udp datagram is valid if it has a full header.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return Length >= HeaderLength;

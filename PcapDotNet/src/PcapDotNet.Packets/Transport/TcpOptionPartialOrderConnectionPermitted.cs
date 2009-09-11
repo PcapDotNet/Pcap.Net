@@ -16,8 +16,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 2;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates a partial order connection permitted option.
+        /// </summary>
         public TcpOptionPartialOrderConnectionPermitted()
             : base(TcpOptionType.PartialOrderConnectionPermitted)
         {
@@ -39,11 +45,17 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two partial order connection permitted options are always equal.
+        /// </summary>
         public bool Equals(TcpOptionPartialOrderConnectionPermitted other)
         {
             return other != null;
         }
 
+        /// <summary>
+        /// Two partial order connection permitted options are always equal.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionPartialOrderConnectionPermitted);

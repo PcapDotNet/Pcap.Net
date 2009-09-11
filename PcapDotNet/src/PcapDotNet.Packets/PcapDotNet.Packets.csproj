@@ -72,7 +72,6 @@
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="IOptionComplexFactory.cs" />
-    <Compile Include="IpV4\IIpv4OptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="IpV4\IpV4Fragmentation.cs" />

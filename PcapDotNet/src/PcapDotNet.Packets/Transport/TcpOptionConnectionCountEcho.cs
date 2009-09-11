@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Transport
     /// if the initial SYN segment contained a CC or CC.NEW option.  
     /// Its SEG.CC value is the SEG.CC value from the initial SYN.
     /// 
-    /// A CC.ECHO option should be sent only in a <SYN,ACK> segment and should be ignored if it is received in any other segment.
+    /// A CC.ECHO option should be sent only in a &lt;SYN,ACK&gt; segment and should be ignored if it is received in any other segment.
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountEcho)]
     public class TcpOptionConnectionCountEcho : TcpOptionConnectionCountBase, IOptionComplexFactory

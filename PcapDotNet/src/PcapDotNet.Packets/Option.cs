@@ -4,6 +4,7 @@ namespace PcapDotNet.Packets
     /// A generic option (for IPv4 and TCP).
     /// The option is read from buffer and can be of different length.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Option")]
     public abstract class Option
     {
         /// <summary>
