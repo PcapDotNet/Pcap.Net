@@ -4,18 +4,28 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// TCP Alternate Checksum Request Option (RFC 1146).
+    /// <pre>
     /// +----------+----------+----------+
     /// |  Kind=14 | Length=3 |  chksum  |
     /// +----------+----------+----------+
+    /// </pre>
     /// 
+    /// <para>
     /// Here chksum is a number identifying the type of checksum to be used.
+    /// </para>
     /// 
+    /// <para>
     /// The currently defined values of chksum are:
-    /// 0  -- TCP checksum.
-    /// 1  -- 8-bit  Fletcher's algorithm.
-    /// 2  -- 16-bit Fletcher's algorithm.
+    /// <list>
+    ///   <item>0  - TCP checksum.</item>
+    ///   <item>1  - 8-bit  Fletcher's algorithm.</item>
+    ///   <item>2  - 16-bit Fletcher's algorithm.</item>
+    /// </list>
+    /// </para>
     /// 
+    /// <para>
     /// Note that the 8-bit Fletcher algorithm gives a 16-bit checksum and the 16-bit algorithm gives a 32-bit checksum.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.AlternateChecksumRequest)]
     public class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumRequest>

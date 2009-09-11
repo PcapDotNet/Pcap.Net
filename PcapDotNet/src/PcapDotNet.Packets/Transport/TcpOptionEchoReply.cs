@@ -4,20 +4,28 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// TCP Echo Reply Option:
+    /// <pre>
     /// +--------+--------+--------+--------+--------+--------+
     /// | Kind=7 | Length |    4 bytes of echoed info         |
     /// +--------+--------+--------+--------+--------+--------+
+    /// </pre>
     /// 
+    /// <para>
     /// A TCP that receives a TCP Echo option containing four information bytes will return these same bytes in a TCP Echo Reply option.
+    /// </para>
     /// 
+    /// <para>
     /// This TCP Echo Reply option must be returned in the next segment (e.g., an ACK segment) that is sent.
     /// If more than one Echo option is received before a reply segment is sent, the TCP must choose only one of the options to echo, 
     /// ignoring the others; specifically, it must choose the newest segment with the oldest sequence number.
+    /// </para>
     /// 
+    /// <para>
     /// To use the TCP Echo and Echo Reply options, a TCP must send a TCP Echo option in its own SYN segment 
     /// and receive a TCP Echo option in a SYN segment from the other TCP.  
     /// A TCP that does not implement the TCP Echo or Echo Reply options must simply ignore any TCP Echo options it receives.  
     /// However, a TCP should not receive one of these options in a non-SYN segment unless it included a TCP Echo option in its own SYN segment.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.EchoReply)]
     public class TcpOptionEchoReply : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEchoReply>

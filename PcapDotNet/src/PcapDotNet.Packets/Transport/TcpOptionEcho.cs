@@ -4,15 +4,21 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// TCP Echo Option:
+    /// <pre>
     /// +--------+--------+--------+--------+--------+--------+
     /// | Kind=6 | Length |   4 bytes of info to be echoed    |
     /// +--------+--------+--------+--------+--------+--------+
+    /// </pre>
     /// 
+    /// <para>
     /// This option carries four bytes of information that the receiving TCP may send back in a subsequent TCP Echo Reply option.  
     /// A TCP may send the TCP Echo option in any segment, but only if a TCP Echo option was received in a SYN segment for the connection.
+    /// </para>
     /// 
+    /// <para>
     /// When the TCP echo option is used for RTT measurement, it will be included in data segments, 
     /// and the four information bytes will define the time at which the data segment was transmitted in any format convenient to the sender.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Echo)]
     public class TcpOptionEcho : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEcho>

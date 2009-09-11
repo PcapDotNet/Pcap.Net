@@ -4,10 +4,12 @@ namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
     /// Stream Identifier option.
+    /// <pre>
     /// +--------+--------+--------+--------+
     /// |10001000|00000010|    Stream ID    |
     /// +--------+--------+--------+--------+
     ///  Type=136 Length=4
+    /// </pre>
     /// 
     /// This option provides a way for the 16-bit SATNET stream identifier to be carried through networks that do not support the stream concept.
     /// 

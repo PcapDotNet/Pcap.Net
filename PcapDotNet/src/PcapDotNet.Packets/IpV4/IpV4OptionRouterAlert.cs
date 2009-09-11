@@ -8,20 +8,28 @@ namespace PcapDotNet.Packets.IpV4
     /// RSVP can cause the message to be intercepted while causing little or no performance 
     /// penalty on the forwarding of normal data packets.
     /// 
+    /// <para>
     /// Routers that support option processing in the fast path already demultiplex processing based on the option type field.  
     /// If all option types are supported in the fast path, then the addition of another option type to process is unlikely to impact performance.  
     /// If some option types are not supported in the fast path, 
     /// this new option type will be unrecognized and cause packets carrying it to be kicked out into the slow path, 
     /// so no change to the fast path is necessary, and no performance penalty will be incurred for regular data packets.
+    /// </para>
     /// 
+    /// <para>
     /// Routers that do not support option processing in the fast path will cause packets carrying this new option 
     /// to be forwarded through the slow path, so no change to the fast path is necessary and no performance penalty 
     /// will be incurred for regular data packets.
+    /// </para>
     /// 
+    /// <para>
     /// The Router Alert option has the following format:
+    /// <pre>
     /// +--------+--------+--------+--------+
     /// |10010100|00000100|  2 octet value  |
     /// +--------+--------+--------+--------+
+    /// </pre>
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.RouterAlert)]
     public class IpV4OptionRouterAlert : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionRouterAlert>

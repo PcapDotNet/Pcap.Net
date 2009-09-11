@@ -40,6 +40,9 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Base.XML</DocumentationFile>
+    <CodeAnalysisRules>-Microsoft.Design#CA1004</CodeAnalysisRules>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

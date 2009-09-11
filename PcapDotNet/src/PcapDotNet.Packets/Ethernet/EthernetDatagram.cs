@@ -6,6 +6,7 @@ namespace PcapDotNet.Packets.Ethernet
     /// <summary>
     /// Represents an Ethernet datagram.
     /// 
+    /// <pre>
     /// +------+-----------------+------------+------------------+
     /// | Byte | 0-5             | 6-11       | 12-13            |
     /// +------+-----------------+------------+------------------+
@@ -13,6 +14,7 @@ namespace PcapDotNet.Packets.Ethernet
     /// +------+-----------------+------------+------------------+
     /// | 14   | Data                                            |
     /// +------+-------------------------------------------------+
+    /// </pre>
     /// </summary>
     public class EthernetDatagram : Datagram
     {

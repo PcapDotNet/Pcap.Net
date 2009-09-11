@@ -2,16 +2,22 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// CC.ECHO Option (RFC 1644).
+    /// <pre>
     /// +--------+--------+--------+--------+--------+--------+
     /// |00001101|00000110|    Connection Count:  SEG.CC      |
     /// +--------+--------+--------+--------+--------+--------+
     ///  Kind=13  Length=6
+    /// </pre>
     /// 
+    /// <para>
     /// This option must be sent (in addition to a CC option) in a segment containing both a SYN and an ACK bit, 
     /// if the initial SYN segment contained a CC or CC.NEW option.  
     /// Its SEG.CC value is the SEG.CC value from the initial SYN.
+    /// </para>
     /// 
+    /// <para>
     /// A CC.ECHO option should be sent only in a &lt;SYN,ACK&gt; segment and should be ignored if it is received in any other segment.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountEcho)]
     public class TcpOptionConnectionCountEcho : TcpOptionConnectionCountBase, IOptionComplexFactory

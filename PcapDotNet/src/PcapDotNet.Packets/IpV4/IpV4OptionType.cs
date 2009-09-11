@@ -2,23 +2,46 @@ namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
     /// The option-type octet is viewed as having 3 fields:
-    /// 1 bit   copied flag,
-    /// 2 bits  option class,
-    /// 5 bits  option number.
-    /// 
-    /// The copied flag indicates that this option is copied into all fragments on fragmentation.
-    /// 0 = not copied
-    /// 1 = copied
-    /// 
-    /// The option classes are:
-    /// 0 = control
-    /// 1 = reserved for future use
-    /// 2 = debugging and measurement
-    /// 3 = reserved for future use
-    /// 
-    /// DoD Extended Security Option (133), RFC 1108, is not supported because it only defines abstract option and no concrete option RFC is available.
-    /// EIP: The Extended Internet Protocol, RFC 1385, is not supported because according iana.org its option type is 145 but according to the RFC its option type is 138 (0x8A).
+    /// <list type="table">
+    ///   <listheader>
+    ///       <term>Bits</term>
+    ///       <description>Description</description>
+    ///   </listheader>
+    ///   <item><term>1 bit</term>
+    ///     <description>
+    ///       Copied flag.
+    ///       <para>
+    ///         The copied flag indicates that this option is copied into all fragments on fragmentation.
+    ///         <list type="bullet">
+    ///           <item>0 = not copied.</item>
+    ///           <item>1 = copied.</item>
+    ///         </list>
+    ///       </para>
+    ///     </description>
+    ///   </item>
+    ///   <item><term>2 bits</term>
+    ///     <description>
+    ///       Option class.
+    ///       <para>
+    ///         The option classes are:
+    ///         <list type="bullet">
+    ///           <item>0 = control.</item>
+    ///           <item>1 = reserved for future use.</item>
+    ///           <item>2 = debugging and measurement.</item>
+    ///           <item>3 = reserved for future use.</item>
+    ///         </list>
+    ///       </para>
+    ///     </description>
+    ///   </item>
+    ///   <item><term>5 bits</term><description>Option number.</description></item>
+    /// </list>
     /// </summary>
+    /// <remarks>
+    /// <list type="bullet">
+    ///   <item>DoD Extended Security Option (133), RFC 1108, is not supported because it only defines abstract option and no concrete option RFC is available.</item>
+    ///   <item>EIP: The Extended Internet Protocol, RFC 1385, is not supported because according iana.org its option type is 145 but according to the RFC its option type is 138 (0x8A).</item>
+    /// </list>
+    /// </remarks>
     public enum IpV4OptionType : byte
     {
         /// <summary>

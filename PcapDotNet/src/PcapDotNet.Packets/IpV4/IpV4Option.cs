@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.IpV4
     public abstract class IpV4Option : Option, IEquatable<IpV4Option>
     {
         ///<summary>
-        /// This option indicates the end of the option list.
+        /// This option indicates the end of the option list.<br/>
         /// This might not coincide with the end of the internet header according to the internet header length.
         /// This is used at the end of all options, not the end of each option, and need only be used if the end of the options would not otherwise coincide with the end of the internet header.
         /// May be copied, introduced, or deleted on fragmentation, or for any other reason.

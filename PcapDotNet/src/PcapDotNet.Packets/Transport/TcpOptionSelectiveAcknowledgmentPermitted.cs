@@ -8,9 +8,11 @@ namespace PcapDotNet.Packets.Transport
     /// the SACK option once the connection has opened.  
     /// It MUST NOT be sent on non-SYN segments.
     /// 
+    /// <pre>
     /// +---------+---------+
     /// | Kind=4  | Length=2|
     /// +---------+---------+
+    /// </pre>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.SelectiveAcknowledgmentPermitted)]
     public class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgmentPermitted>

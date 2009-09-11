@@ -2,14 +2,18 @@ namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// CC Option (RFC 1644).
+    /// <pre>
     /// +--------+--------+--------+--------+--------+--------+
     /// |00001011|00000110|    Connection Count:  SEG.CC      |
     /// +--------+--------+--------+--------+--------+--------+
     ///  Kind=11  Length=6
+    /// </pre>
     /// 
+    /// <para>
     /// This option may be sent in an initial SYN segment, and it may be sent in other segments if a CC or CC.NEW option 
     /// has been received for this incarnation of the connection.  
     /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCount)]
     public class TcpOptionConnectionCount : TcpOptionConnectionCountBase, IOptionComplexFactory

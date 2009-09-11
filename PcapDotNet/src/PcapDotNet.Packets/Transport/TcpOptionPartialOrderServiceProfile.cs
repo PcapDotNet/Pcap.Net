@@ -5,11 +5,14 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// TCP POC-service-profile Option (RFC 1693).
     /// 
+    /// <pre>
     ///                           1 bit        1 bit    6 bits
     /// +----------+----------+------------+----------+--------+
     /// |  Kind=10 | Length=3 | Start_flag | End_flag | Filler |
     /// +----------+----------+------------+----------+--------+
+    /// </pre>
     /// 
+    /// <para>
     /// Contains two 1-bit flags necessary to handle the case where the service profile does not fit in a single TCP segment.  
     /// The "Start_flag" indicates that the information in the data section represents the beginning of the service profile 
     /// and the "End_flag" represents the converse.  
@@ -17,6 +20,7 @@ namespace PcapDotNet.Packets.Transport
     /// Otherwise, the Start_flag is set in the initial segment and the End_flag in the final segment 
     /// allowing the peer entity to reconstrcut the entire service profile (using the normal sequence numbers in the segment header).  
     /// The "Filler" field serves merely to complete the third byte of the option.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.PartialOrderServiceProfile)]
     public class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderServiceProfile>

@@ -10,20 +10,28 @@ namespace PcapDotNet.Packets.Transport
     /// Thus, a TCP that is prepared to scale windows should send the option, even if its own scale factor is 1.  
     /// The scale factor is limited to a power of two and encoded logarithmically, so it may be implemented by binary shift operations.
     /// 
+    /// <pre>
     /// +---------+---------+---------+
     /// | Kind=3  |Length=3 |shift.cnt|
     /// +---------+---------+---------+
+    /// </pre>
     /// 
+    /// <para>
     /// This option is an offer, not a promise; both sides must send Window Scale options in their SYN segments to enable window scaling in either direction.
     /// If window scaling is enabled, then the TCP that sent this option will right-shift its true receive-window values by 'shift.cnt' bits 
     /// for transmission in SEG.WND.  
     /// The value 'shift.cnt' may be zero (offering to scale, while applying a scale factor of 1 to the receive window).
+    /// </para>
     /// 
+    /// <para>
     /// This option may be sent in an initial SYN segment (i.e., a segment with the SYN bit on and the ACK bit off).  
     /// It may also be sent in a SYN,ACK segment, but only if a Window Scale option was received in the initial SYN segment.  
     /// A Window Scale option in a segment without a SYN bit should be ignored.
+    /// </para>
     /// 
+    /// <para>
     /// The Window field in a SYN (i.e., a SYN or SYN,ACK) segment itself is never scaled.
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.WindowScale)]
     public class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionWindowScale>

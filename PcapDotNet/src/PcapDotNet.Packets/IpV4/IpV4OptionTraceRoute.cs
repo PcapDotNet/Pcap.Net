@@ -10,7 +10,9 @@ namespace PcapDotNet.Packets.IpV4
     /// hereinafter refered to as the Return Packet, to be traced 
     /// (provided the Outbound Packet's destination preserves the IP Traceroute option in the Return Packet).
     /// 
+    /// <para>
     /// IP Traceroute option format
+    /// <pre>
     ///  0               8              16              24
     /// +-+---+---------+---------------+-------------------------------+
     /// |F| C |  Number |    Length     |          ID Number            |
@@ -19,10 +21,14 @@ namespace PcapDotNet.Packets.IpV4
     /// +-------------------------------+-------------------------------+
     /// |                     Originator IP Address                     |
     /// +---------------------------------------------------------------+
+    /// </pre>
+    /// </para>
     /// 
+    /// <para>
     /// F (copy to fragments): 0 (do not copy to fragments)
     /// C (class): 2 (Debugging and Measurement)
     /// Number: 18 (F+C+Number = 82)
+    /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.TraceRoute)]
     public class IpV4OptionTraceRoute : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionTraceRoute>
