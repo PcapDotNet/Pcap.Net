@@ -132,7 +132,6 @@ namespace PcapDotNet.Packets
         /// <param name="tcpDestinationPort">The destination udp port.</param>
         /// <param name="tcpPayload">The payload of UDP datagram.</param>
         /// <returns>A packet with a UDP over IPv4 over Ethernet datagram.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "pointer")]
         public static Packet EthernetIpV4Tcp(DateTime timestamp,
                                              MacAddress ethernetSource, MacAddress ethernetDestination,
                                              byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
@@ -141,7 +140,7 @@ namespace PcapDotNet.Packets
                                              IpV4Options ipV4Options,
                                              ushort tcpSourcePort, ushort tcpDestinationPort,
                                              uint tcpSequenceNumber, uint tcpAcknowledgmentNumber,
-                                             TcpFlags tcpFlags, ushort tcpWindow, ushort tcpUrgentPointer,
+                                             TcpControlBits tcpControlBits, ushort tcpWindow, ushort tcpUrgentPointer,
                                              TcpOptions tcpOptions,
                                              Datagram tcpPayload)
 
@@ -163,7 +162,7 @@ namespace PcapDotNet.Packets
             TcpDatagram.WriteHeader(buffer, ethernetIpV4HeadersLength,
                                     tcpSourcePort, tcpDestinationPort,
                                     tcpSequenceNumber, tcpAcknowledgmentNumber,
-                                    tcpFlags, tcpWindow, tcpUrgentPointer,
+                                    tcpControlBits, tcpWindow, tcpUrgentPointer,
                                     tcpOptions);
 
             tcpPayload.Write(buffer, ethernetIpV4HeadersLength + tcpHeaderLength);

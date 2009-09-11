@@ -14,6 +14,7 @@ namespace PcapDotNet.Packets.Transport
         PartialOrderConnectionPermitted = 9,
         PartialOrderServiceProfile = 10,
         ConnectionCount = 11,
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         ConnectionCountNew = 12,
         ConnectionCountEcho = 13,
         AlternateChecksumRequest = 14,

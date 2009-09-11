@@ -11,14 +11,21 @@ namespace PcapDotNet.Packets.Transport
     /// to indicate that the SEG.CC value may not be larger than the previous value.  
     /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountNew)]
     public class TcpOptionConnectionCountNew : TcpOptionConnectionCountBase, IOptionComplexFactory
     {
+        /// <summary>
+        /// Creates the option using the given connection count value.
+        /// </summary>
         public TcpOptionConnectionCountNew(uint connectionCount)
             : base(TcpOptionType.ConnectionCountNew, connectionCount)
         {
         }
 
+        /// <summary>
+        /// The default connection count value is 0.
+        /// </summary>
         public TcpOptionConnectionCountNew()
             : this(0)
         {

@@ -25,19 +25,31 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 3;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given checksum type.
+        /// </summary>
         public TcpOptionAlternateChecksumRequest(TcpOptionAlternateChecksumType checksumType)
             : base(TcpOptionType.AlternateChecksumRequest)
         {
             ChecksumType = checksumType;
         }
 
+        /// <summary>
+        /// The default checksum type is the TCP checksum.
+        /// </summary>
         public TcpOptionAlternateChecksumRequest()
-            : this(0)
+            : this(TcpOptionAlternateChecksumType.TcpChecksum)
         {
         }
 
+        /// <summary>
+        /// The type of the checksum.
+        /// </summary>
         public TcpOptionAlternateChecksumType ChecksumType { get; private set; }
 
         /// <summary>
@@ -56,6 +68,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two alternate checksum request options are equal if they have the same checksum type.
+        /// </summary>
         public bool Equals(TcpOptionAlternateChecksumRequest other)
         {
             if (other == null)
@@ -63,11 +78,17 @@ namespace PcapDotNet.Packets.Transport
             return ChecksumType == other.ChecksumType;
         }
 
+        /// <summary>
+        /// Two alternate checksum request options are equal if they have the same checksum type.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionAlternateChecksumRequest);
         }
 
+        /// <summary>
+        /// The hash code of this option is the hash code of the option type xored with hash code of the checksum type.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^

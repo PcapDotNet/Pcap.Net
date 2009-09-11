@@ -38,6 +38,9 @@ namespace PcapDotNet.Packets.IpV4
         {
         }
 
+        /// <summary>
+        /// Returns the Data of the option.
+        /// </summary>
         public ReadOnlyCollection<byte> Data { get; private set; }
 
         /// <summary>

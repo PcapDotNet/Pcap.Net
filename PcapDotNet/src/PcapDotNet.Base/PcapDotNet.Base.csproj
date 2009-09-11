@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Base.XML</DocumentationFile>
+    <CodeAnalysisRules>-Microsoft.Design#CA1004</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

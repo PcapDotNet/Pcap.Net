@@ -152,7 +152,7 @@ namespace PcapDotNet.Core.Test
                                                                    random.NextByte(),
                                                                    random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
                                                                    random.NextUShort(), random.NextUShort(), random.NextUInt(), random.NextUInt(),
-                                                                   random.NextFlags<TcpFlags>(), 
+                                                                   random.NextFlags<TcpControlBits>(), 
                                                                    random.NextUShort(), random.NextUShort(), 
                                                                    random.NextTcpOptions(),
                                                                    random.NextDatagram(random.Next(100)));
@@ -525,7 +525,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.flags":
-                        field.AssertShowHex((byte)tcpDatagram.Flags);
+                        field.AssertShowHex((byte)tcpDatagram.ControlBits);
                         foreach (var flagField in field.Fields())
                         {
                             switch (flagField.Name())

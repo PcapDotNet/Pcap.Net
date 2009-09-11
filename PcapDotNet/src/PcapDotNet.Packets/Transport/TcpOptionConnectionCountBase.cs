@@ -2,6 +2,9 @@ using System;
 
 namespace PcapDotNet.Packets.Transport
 {
+    /// <summary>
+    /// The base class for connection count TCP options.
+    /// </summary>
     public abstract class TcpOptionConnectionCountBase : TcpOptionComplex, IEquatable<TcpOptionConnectionCountBase>
     {
         /// <summary>
@@ -9,8 +12,14 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 6;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// The connection count value.
+        /// </summary>
         public uint ConnectionCount { get; private set; }
 
         /// <summary>
@@ -29,6 +38,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two connection count options are equal of they are of the same option type and have the same connection count.
+        /// </summary>
         public bool Equals(TcpOptionConnectionCountBase other)
         {
             if (other == null)
@@ -38,6 +50,9 @@ namespace PcapDotNet.Packets.Transport
                    ConnectionCount == other.ConnectionCount;
         }
 
+        /// <summary>
+        /// Two connection count options are equal of they are of the same option type and have the same connection count.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionConnectionCountBase);
@@ -49,12 +64,23 @@ namespace PcapDotNet.Packets.Transport
             buffer.Write(ref offset, ConnectionCount, Endianity.Big);
         }
     
+        /// <summary>
+        /// Creates a connection count option according to the given option type and given connection count value.
+        /// </summary>
         protected TcpOptionConnectionCountBase(TcpOptionType optionType, uint connectionCount)
             : base(optionType)
         {
             ConnectionCount = connectionCount;
         }
 
+        /// <summary>
+        /// Reads the connection count value from the buffer.
+        /// </summary>
+        /// <param name="connectionCount">The result connection count.</param>
+        /// <param name="buffer">The buffer to read the connection count from.</param>
+        /// <param name="offset">The offset to start reading the connection byte from.</param>
+        /// <param name="valueLength">The number of bytes available for read in this buffer.</param>
+        /// <returns>True iff the connection count could be read (there were enough bytes to read).</returns>
         protected static bool TryRead(out uint connectionCount, byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionValueLength)

@@ -14,11 +14,17 @@ namespace PcapDotNet.Packets.Transport
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCount)]
     public class TcpOptionConnectionCount : TcpOptionConnectionCountBase, IOptionComplexFactory
     {
+        /// <summary>
+        /// Create a connection count tcp option by a given connection count.
+        /// </summary>
         public TcpOptionConnectionCount(uint connectionCount)
             : base(TcpOptionType.ConnectionCount, connectionCount)
         {
         }
 
+        /// <summary>
+        /// The default connection count is 0.
+        /// </summary>
         public TcpOptionConnectionCount()
             : this(0)
         {

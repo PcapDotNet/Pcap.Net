@@ -14,6 +14,9 @@ namespace PcapDotNet.Packets
     /// </summary>
     public class Packet : IList<byte>, IEquatable<Packet>
     {
+        /// <summary>
+        /// Creates a packet from a string that represents bytes in a hexadecimal format.
+        /// </summary>
         public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
         {
             byte[] bytes = new byte[value.Length / 2];

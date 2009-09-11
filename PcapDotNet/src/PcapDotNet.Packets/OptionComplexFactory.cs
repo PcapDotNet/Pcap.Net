@@ -6,19 +6,7 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
-    public class OptionComplexFactoryBase
-    {
-        /// <summary>
-        /// The header length in bytes for the option (type and size).
-        /// </summary>
-        public const int OptionHeaderLength = 2;
-
-        protected OptionComplexFactoryBase()
-        {
-        }
-    }
-
-    public sealed class OptionComplexFactory<TOptionType> : OptionComplexFactoryBase
+    internal sealed class OptionComplexFactory<TOptionType> : OptionComplexFactoryBase
     {
         internal static Option Read(TOptionType optionType, byte[] buffer, ref int offset, int length)
         {

@@ -21,19 +21,31 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public const int OptionLength = 4;
 
+        /// <summary>
+        /// The number of bytes this option value take.
+        /// </summary>
         public const int OptionValueLength = OptionLength - OptionHeaderLength;
 
+        /// <summary>
+        /// Creates the option using the given maximum segment size.
+        /// </summary>
         public TcpOptionMaximumSegmentSize(ushort maximumSegmentSize)
             : base(TcpOptionType.MaximumSegmentSize)
         {
             MaximumSegmentSize = maximumSegmentSize;
         }
 
+        /// <summary>
+        /// The default maximum segment size is 0.
+        /// </summary>
         public TcpOptionMaximumSegmentSize()
             : this(0)
         {
         }
 
+        /// <summary>
+        /// The maximum segment size value.
+        /// </summary>
         public ushort MaximumSegmentSize { get; private set; }
 
         /// <summary>
@@ -52,6 +64,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Two maximum segment size options are equal if they have the same maximum segment size.
+        /// </summary>
         public bool Equals(TcpOptionMaximumSegmentSize other)
         {
             if (other == null)
@@ -59,11 +74,18 @@ namespace PcapDotNet.Packets.Transport
             return MaximumSegmentSize == other.MaximumSegmentSize;
         }
 
+        /// <summary>
+        /// Two maximum segment size options are equal if they have the same maximum segment size.
+        /// </summary>
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionMaximumSegmentSize);
         }
 
+        /// <summary>
+        /// The hash code of the option is the hash code of the option type xored with the hash code of the maximum segment size.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
