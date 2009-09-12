@@ -35,13 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Packets, Version=0.1.0.33384, Culture=neutral, PublicKeyToken=58cf32d85728e684, processorArchitecture=MSIL">
+    <Reference Include="PcapDotNet.Base, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58cf32d85728e684, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rdParty\PcapDotNet\Packets.dll</HintPath>
+      <HintPath>..\..\3rdParty\PcapDotNet\PcapDotNet.Base.dll</HintPath>
     </Reference>
     <Reference Include="PcapDotNet.Core, Version=0.1.0.39245, Culture=neutral, PublicKeyToken=58cf32d85728e684, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\3rdParty\PcapDotNet\PcapDotNet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Packets, Version=0.1.1.35517, Culture=neutral, PublicKeyToken=58cf32d85728e684, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\3rdParty\PcapDotNet\PcapDotNet.Packets.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

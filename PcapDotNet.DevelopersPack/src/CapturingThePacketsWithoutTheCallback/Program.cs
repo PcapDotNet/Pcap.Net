@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Packets;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
 
 namespace CapturingThePacketsWithoutTheCallback
 {

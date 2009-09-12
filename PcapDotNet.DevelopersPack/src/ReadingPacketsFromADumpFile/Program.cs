@@ -1,6 +1,6 @@
 ﻿using System;
-using Packets;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
 
 namespace ReadingPacketsFromADumpFile
 {

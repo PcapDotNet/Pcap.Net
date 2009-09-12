@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Packets;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
+using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.Transport;
 
 namespace InterpretingThePackets
 {
@@ -78,12 +80,11 @@ namespace InterpretingThePackets
             // print timestamp and length of the packet
             Console.WriteLine(packet.Timestamp.ToString("yyyy-MM-dd hh:mm:ss.fff") + " length:" + packet.Length);
 
-            // TODO
-            //IpV4Datagram ip = packet.Ethernet.IpV4;
-            //UdpDatagram udp = ip.Udp;
+            IpV4Datagram ip = packet.Ethernet.IpV4;
+            UdpDatagram udp = ip.Udp;
             
             // print ip addresses and udp ports
-            //Console.WriteLine(ip.Source + ":" + udp.Source + " -> " + ip.Destination + ":" + udp.Destination);
+            Console.WriteLine(ip.Source + ":" + udp.SourcePort+ " -> " + ip.Destination + ":" + udp.DestinationPort);
         }
     }
 }
