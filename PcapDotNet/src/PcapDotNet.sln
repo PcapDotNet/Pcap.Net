@@ -24,9 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Base.Test", "Pca
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\PcapDotNet.Core.vcproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Core.Extensions", "PcapDotNet.Core.Extensions\PcapDotNet.Core.Extensions.csproj", "{322040C2-3DC1-4D0C-8E0F-F05290AFE023}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -54,6 +56,9 @@ Global
 		SccProjectUniqueName8 = PcapDotNet.Core\\PcapDotNet.Core.vcproj
 		SccProjectName8 = PcapDotNet.Core
 		SccLocalPath8 = PcapDotNet.Core
+		SccProjectUniqueName9 = PcapDotNet.Core.Extensions\\PcapDotNet.Core.Extensions.csproj
+		SccProjectName9 = PcapDotNet.Core.Extensions
+		SccLocalPath9 = PcapDotNet.Core.Extensions
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi
@@ -159,6 +164,16 @@ Global
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Win32.ActiveCfg = Release|Win32
 		{89C63BE1-AF9A-472E-B256-A4F56B1655A7}.Release|Win32.Build.0 = Release|Win32
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{322040C2-3DC1-4D0C-8E0F-F05290AFE023}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
