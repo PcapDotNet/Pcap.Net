@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Packets;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
 
 namespace SendingPacketsUsingSendBuffer
 {
@@ -96,12 +96,12 @@ namespace SendingPacketsUsingSendBuffer
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
                         long startTimeMs = stopwatch.ElapsedMilliseconds;
-                        Console.WriteLine(startTimeMs);
+                        Console.WriteLine("Start Time: " + startTimeMs);
                         outputCommunicator.Transmit(sendBuffer, isSync);
                         long endTimeMs = stopwatch.ElapsedMilliseconds;
-                        Console.WriteLine(endTimeMs);
+                        Console.WriteLine("End Time: " + endTimeMs);
                         long elapsedTimeMs = endTimeMs - startTimeMs;
-                        Console.WriteLine(elapsedTimeMs);
+                        Console.WriteLine("Elapsed Time: " + elapsedTimeMs);
                         double averagePacketsPerSecond = elapsedTimeMs == 0 ? double.MaxValue : (double)numPackets / elapsedTimeMs * 1000;
 
                         Console.WriteLine("Elapsed time: " + elapsedTimeMs + " ms");

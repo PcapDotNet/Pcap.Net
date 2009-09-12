@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Packets;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ethernet;
 
 namespace SendingASinglePacketWithSendPacket
 {
