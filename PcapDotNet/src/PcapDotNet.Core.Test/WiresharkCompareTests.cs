@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
@@ -103,6 +104,7 @@ namespace PcapDotNet.Core.Test
         private enum PacketType
         {
             Ethernet,
+            Arp,
             IpV4,
             Udp,
             Tcp
@@ -114,13 +116,22 @@ namespace PcapDotNet.Core.Test
             for (int i = 0; i != numPackets; ++i)
             {
                 DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
-//                switch (PacketType.Tcp)
                 switch (random.NextEnum<PacketType>())
                 {
                     case PacketType.Ethernet:
                         yield return PacketBuilder.Ethernet(packetTimestamp,
                                                             random.NextMacAddress(), random.NextMacAddress(), random.NextEnum<EthernetType>(),
                                                             random.NextDatagram(random.Next(100)));
+                        break;
+
+                    case PacketType.Arp:
+                        byte hardwareAddressLength = random.NextByte();
+                        byte protocolAddressLength = random.NextByte();
+                        yield return PacketBuilder.EthernetArp(packetTimestamp,
+                                                               random.NextMacAddress(),
+                                                               random.NextEnum<EthernetType>(), random.NextEnum<ArpOperation>(),
+                                                               random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength),
+                                                               random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength));
                         break;
 
                     case PacketType.IpV4:
@@ -244,6 +255,14 @@ namespace PcapDotNet.Core.Test
                         CompareEtherent(layer, (EthernetDatagram)currentDatagram);
                         break;
 
+                    case "arp":
+                        PropertyInfo arpProperty = currentDatagram.GetType().GetProperty("Arp");
+                        if (arpProperty == null)
+                            break;
+                        currentDatagram = arpProperty.GetValue(currentDatagram);
+                        CompareArp(layer, (ArpDatagram)currentDatagram);
+                        break;
+
                     case "ip":
                         PropertyInfo ipV4Property = currentDatagram.GetType().GetProperty("IpV4");
                         if (ipV4Property == null)
@@ -320,6 +339,55 @@ namespace PcapDotNet.Core.Test
 
                     case "eth.type":
                         field.AssertShowHex((ushort)ethernetDatagram.EtherType);
+                        break;
+                }
+            }
+        }
+
+        private static void CompareArp(XElement arp, ArpDatagram arpDatagram)
+        {
+            foreach (var field in arp.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "arp.hw.type":
+                        field.AssertShowHex((ushort)arpDatagram.HardwareType);
+                        break;
+
+                    case "arp.proto.type":
+                        field.AssertShowHex((ushort)arpDatagram.ProtocolType);
+                        break;
+
+                    case "arp.hw.size":
+                        field.AssertShowDecimal(arpDatagram.HardwareLength);
+                        break;
+
+                    case "arp.proto.size":
+                        field.AssertShowDecimal(arpDatagram.ProtocolLength);
+                        break;
+
+                    case "arp.opcode":
+                        field.AssertShowHex((ushort)arpDatagram.Operation);
+                        break;
+
+//                    case "arp.isgratuitous":
+//                        field.AssertShowDecimal(false);
+//                        break;
+
+                    case "arp.src.hw":
+                        field.AssertShow(arpDatagram.SenderHardwareAddress.BytesSequenceToHexadecimalString(":"));
+                        break;
+
+                    case "arp.src.proto":
+                        field.AssertShow(arpDatagram.SenderProtocolAddress.BytesSequenceToHexadecimalString(":"));
+                        break;
+
+                    case "arp.dst.hw":
+                        field.AssertShow(arpDatagram.TargetHardwareAddress.BytesSequenceToHexadecimalString(":"));
+                        break;
+
+                    case "arp.dst.proto":
+                        field.AssertShow(arpDatagram.TargetProtocolAddress.BytesSequenceToHexadecimalString(":"));
                         break;
                 }
             }

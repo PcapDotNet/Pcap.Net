@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
@@ -26,6 +27,31 @@ namespace PcapDotNet.Packets
             byte[] buffer = new byte[EthernetDatagram.HeaderLength + ethernetPayload.Length];
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, ethernetType);
             ethernetPayload.Write(buffer, EthernetDatagram.HeaderLength);
+            return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
+        }
+
+        public static Packet EthernetArp(DateTime timestamp,
+                                         MacAddress ethernetSource,
+                                         EthernetType arpProtocolType, ArpOperation arpOperation,
+                                         byte[] arpSenderHardwareAddress, byte[] arpSenderProtocolAddress,
+                                         byte[] arpTargetHardwareAddress, byte[] arpTargetProtocolAddress)
+        {
+            if (arpSenderHardwareAddress.Length != arpTargetHardwareAddress.Length)
+            {
+                throw new ArgumentException("Sender hardware address length is " + arpSenderHardwareAddress.Length + " bytes " +
+                                            "while target hardware address length is " + arpTargetHardwareAddress.Length + " bytes");
+            }
+            if (arpSenderProtocolAddress.Length != arpTargetProtocolAddress.Length)
+            {
+                throw new ArgumentException("Sender protocol address length is " + arpSenderProtocolAddress.Length + " bytes " +
+                                            "while target protocol address length is " + arpTargetProtocolAddress.Length + " bytes");
+            }
+            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ArpDatagram.GetHeaderLength(arpSenderHardwareAddress.Length, arpSenderProtocolAddress.Length)];
+
+            EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, EthernetDatagram.BroadcastAddress, EthernetType.Arp);
+            ArpDatagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
+                                    ArpHardwareType.Ethernet, arpProtocolType, arpOperation,
+                                    arpSenderHardwareAddress, arpSenderProtocolAddress, arpTargetHardwareAddress, arpTargetProtocolAddress);
             return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
         }
 

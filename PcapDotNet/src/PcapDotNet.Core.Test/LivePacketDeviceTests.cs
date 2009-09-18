@@ -8,6 +8,7 @@ using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {

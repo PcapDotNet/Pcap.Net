@@ -97,6 +97,11 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionEchoReply);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^ Info.GetHashCode();
+        }
+
         /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>

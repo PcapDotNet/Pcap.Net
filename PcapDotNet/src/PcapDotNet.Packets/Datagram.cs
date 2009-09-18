@@ -152,6 +152,11 @@ namespace PcapDotNet.Packets
             return true;
         }
 
+        protected byte[] ReadBytes(int offset, int length)
+        {
+            return Buffer.ReadBytes(StartOffset + offset, length);
+        }
+
         /// <summary>
         /// Reads 2 bytes from a specific offset in the datagram as a ushort with a given endianity.
         /// </summary>

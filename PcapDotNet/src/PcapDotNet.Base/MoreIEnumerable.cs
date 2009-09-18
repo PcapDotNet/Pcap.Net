@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -91,6 +92,23 @@ namespace PcapDotNet.Base
         public static string SequenceToString<T>(this IEnumerable<T> sequence)
         {
             return sequence.SequenceToString(string.Empty);
+        }
+
+        /// <summary>
+        /// Returns a hash code by xoring all the bytes.
+        /// Each byte is xored with the next 8 bits of the integer.
+        /// </summary>
+        /// <param name="sequence">The bytes to xor.</param>
+        /// <returns>The hash code resulted by xoring all the bytes.</returns>
+        public static string BytesSequenceToHexadecimalString(this IEnumerable<byte> sequence, string separator)
+        {
+            return sequence.Aggregate(string.Empty,
+                                      delegate(string result, byte value)
+                                      {
+                                          if (!string.IsNullOrEmpty(result))
+                                              result = result + separator;
+                                          return result + string.Format(CultureInfo.InvariantCulture, "{0:x2}", value);
+                                      });
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {

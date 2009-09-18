@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -95,6 +96,11 @@ namespace PcapDotNet.Packets.Transport
         public override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionMd5Signature);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^ Data.BytesSequenceGetHashCode();
         }
 
         /// <summary>

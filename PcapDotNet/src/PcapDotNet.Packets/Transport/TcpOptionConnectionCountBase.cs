@@ -58,6 +58,11 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionConnectionCountBase);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^ ConnectionCount.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
