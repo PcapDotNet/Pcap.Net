@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Ethernet
@@ -29,6 +30,11 @@ namespace PcapDotNet.Packets.Ethernet
         /// Ethernet header length in bytes.
         /// </summary>
         public const int HeaderLength = 14;
+
+        public static MacAddress BroadcastAddress
+        {
+            get { return _broadcastAddress; }
+        }
 
         /// <summary>
         /// The Ethernet payload.
@@ -92,6 +98,16 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        public ArpDatagram Arp
+        {
+            get
+            {
+                if (_arp == null && Length >= HeaderLength)
+                    _arp = new ArpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                return _arp;
+            }
+        }
+
         internal EthernetDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -121,6 +137,8 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");
         private IpV4Datagram _ipV4;
+        private ArpDatagram _arp;
     }
 }

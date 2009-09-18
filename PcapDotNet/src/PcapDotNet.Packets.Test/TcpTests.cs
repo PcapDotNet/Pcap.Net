@@ -115,6 +115,7 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(option, option);
                     Assert.AreEqual(option.GetHashCode(), option.GetHashCode());
                     Assert.IsFalse(string.IsNullOrEmpty(option.ToString()));
+                    
                 }
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
                 Assert.AreEqual((tcpControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {

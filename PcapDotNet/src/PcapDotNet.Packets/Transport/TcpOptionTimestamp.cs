@@ -105,6 +105,11 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionTimestamp);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^ TimestampEchoReply.GetHashCode();
+        }
+
         /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>

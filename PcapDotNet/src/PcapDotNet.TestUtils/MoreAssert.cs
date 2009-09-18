@@ -5,9 +5,9 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Core.Test
+namespace PcapDotNet.TestUtils
 {
-    internal static class MoreAssert
+    public static class MoreAssert
     {
         public static void IsBigger<T>(T expectedMinimum, T actual) where T : IComparable<T>
         {
@@ -63,11 +63,16 @@ namespace PcapDotNet.Core.Test
             Assert.IsTrue(Regex.IsMatch(actualValue, expectedPattern), "Expected pattern: <" + expectedPattern + ">. Actual value: <" + actualValue + ">.");
         }
 
-        public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence)
+        public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence, string message)
         {
             Assert.IsTrue(expectedSequence.SequenceEqual(actualSequence),
                           "Expected sequence: <" + expectedSequence.SequenceToString(",") + ">. Actual sequence: <" +
-                          actualSequence.SequenceToString(",") + ">.");
+                          actualSequence.SequenceToString(",") + ">. " + message);
+        }
+
+        public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence)
+        {
+            AreSequenceEqual(expectedSequence, actualSequence, string.Empty);
         }
     }
 }

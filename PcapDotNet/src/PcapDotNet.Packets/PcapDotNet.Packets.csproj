@@ -60,6 +60,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arp\ArpDatagram.cs" />
+    <Compile Include="Arp\ArpHardwareType.cs" />
+    <Compile Include="Arp\ArpOperation.cs" />
     <Compile Include="Datagram.cs" />
     <Compile Include="DataLink.cs" />
     <Compile Include="DataLinkKind.cs" />
