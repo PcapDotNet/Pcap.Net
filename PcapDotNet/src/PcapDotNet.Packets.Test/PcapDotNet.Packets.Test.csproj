@@ -61,13 +61,13 @@
       <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
       <Name>PcapDotNet.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PcapDotNet.Packets\PcapDotNet.Packets.csproj">
-      <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
-      <Name>PcapDotNet.Packets</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Packets.TestUtils\PcapDotNet.Packets.TestUtils.csproj">
       <Project>{194D3B9A-AD99-44ED-991A-73C4A7EE550F}</Project>
       <Name>PcapDotNet.Packets.TestUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PcapDotNet.Packets\PcapDotNet.Packets.csproj">
+      <Project>{8A184AF5-E46C-482C-81A3-76D8CE290104}</Project>
+      <Name>PcapDotNet.Packets</Name>
     </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.TestUtils\PcapDotNet.TestUtils.csproj">
       <Project>{540F21A8-CD9F-4288-ADCA-DB17027FF309}</Project>

@@ -147,27 +147,26 @@ namespace PcapDotNet.Core.Test
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
         }
 
-//        [TestMethod]
-//        public void ReceivePacketsEnumerableTest()
-//        {
-//            const int NumPacketsToSend = 100;
-//            const int PacketSize = 100;
-//
-//            // Normal
-//            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, NumPacketsToSend, 0, 0.02);
-//
-//            // Wait for less packets
-//            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.02);
-//
-//            // Wait for more packets
-//            TestReceivePacketsEnumerable(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
-//            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
-//            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
-//
-//            // Break loop
-//            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.02);
-//            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, NumPacketsToSend / 2, 0, 0.02);
-//        }
+        [TestMethod]
+        public void ReceivePacketsEnumerableTest()
+        {
+            const int NumPacketsToSend = 100;
+            const int PacketSize = 100;
+
+            // Normal
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, NumPacketsToSend, 0, 0.05);
+
+            // Wait for less packets
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.02);
+
+            // Wait for more packets
+            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
+
+            // Break loop
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.02);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, NumPacketsToSend / 2, 0, 0.02);
+        }
 
         [TestMethod]
         [Timeout(10 * 1000)]
@@ -297,7 +296,7 @@ namespace PcapDotNet.Core.Test
 
             // Wait for less statistics
             TestGetStatistics(SourceMac, DestinationMac, NumPacketsToSend, NumStatisticsToGather / 2, int.MaxValue, 5, PacketSize,
-                              PacketCommunicatorReceiveResult.Ok, NumStatisticsToGather / 2, NumPacketsToSend, NumStatisticsToGather / 2, NumStatisticsToGather / 2 + 0.04);
+                              PacketCommunicatorReceiveResult.Ok, NumStatisticsToGather / 2, NumPacketsToSend, NumStatisticsToGather / 2, NumStatisticsToGather / 2 + 0.05);
 
             // Wait for more statistics
             TestGetStatistics(SourceMac, DestinationMac, NumPacketsToSend, 0, int.MaxValue, 5.5, PacketSize,
@@ -765,7 +764,10 @@ namespace PcapDotNet.Core.Test
                 {
                     if (numPacketsToBreakLoop == 0)
                         communicator.Break();
-                    foreach (Packet packet in communicator.ReceivePackets(numPacketsToWait))
+                    IEnumerable<Packet> packets = numPacketsToWait == -1
+                                                      ? communicator.ReceivePackets()
+                                                      : communicator.ReceivePackets(numPacketsToWait);
+                    foreach (Packet packet in packets)
                     {
                         Assert.AreEqual(sentPacket, packet);
                         ++actualPacketsReceived;

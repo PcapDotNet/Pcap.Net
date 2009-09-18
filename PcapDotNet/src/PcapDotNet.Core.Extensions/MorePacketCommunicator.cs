@@ -28,7 +28,7 @@ namespace PcapDotNet.Core.Extensions
         /// </remarks>
         public static IEnumerable<Packet> ReceivePackets(this PacketCommunicator communicator, int count)
         {
-            List<Packet> packets = new List<Packet>();
+            List<Packet> packets = new List<Packet>(Math.Min(Math.Max(0, count), 128));
 
             while (count != 0)
             {
