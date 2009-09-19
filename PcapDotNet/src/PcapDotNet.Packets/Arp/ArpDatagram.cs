@@ -44,6 +44,11 @@ namespace PcapDotNet.Packets.Arp
 
         public const int HeaderBaseLength = 8;
 
+        public int HeaderLength
+        {
+            get { return GetHeaderLength(HardwareLength, ProtocolLength); }
+        }
+
         /// <summary>
         /// Each data link layer protocol is assigned a number used in this field.
         /// </summary>
@@ -115,6 +120,11 @@ namespace PcapDotNet.Packets.Arp
         public byte[] TargetProtocolAddress
         {
             get { return ReadBytes(OffsetTargetProtocolAddress, ProtocolLength); }
+        }
+
+        protected override bool CalculateIsValid()
+        {
+            return Length >= HeaderBaseLength && Length == HeaderLength;
         }
 
         internal ArpDatagram(byte[] buffer, int offset, int length)

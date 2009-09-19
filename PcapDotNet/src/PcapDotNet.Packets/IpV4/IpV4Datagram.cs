@@ -329,8 +329,6 @@ namespace PcapDotNet.Packets.IpV4
 
             switch (Protocol)
             {
-//                case IpV4Protocol.Tcp:
-//                    return Tcp.IsValid; //&& IsTransportChecksumCorrect;
                 case IpV4Protocol.Tcp:
                 case IpV4Protocol.Udp:
                     return Transport.IsValid && (Transport.IsChecksumOptional && Transport.Checksum == 0 ||
