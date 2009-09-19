@@ -23,9 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatheringStatisticsOnTheNet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsingLinq", "UsingLinq\UsingLinq.csproj", "{8E6F9FAC-0C41-49D9-8F90-B1DC61858BCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureInvalidPackets", "CaptureInvalidPackets\CaptureInvalidPackets.csproj", "{ED16F17F-1AFA-496A-9CB7-404405FD998C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
+		SccNumberOfProjects = 13
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -62,6 +64,9 @@ Global
 		SccProjectUniqueName11 = UsingLinq\\UsingLinq.csproj
 		SccProjectName11 = UsingLinq
 		SccLocalPath11 = UsingLinq
+		SccProjectUniqueName12 = CaptureInvalidPackets\\CaptureInvalidPackets.csproj
+		SccProjectName12 = CaptureInvalidPackets
+		SccLocalPath12 = CaptureInvalidPackets
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +117,10 @@ Global
 		{8E6F9FAC-0C41-49D9-8F90-B1DC61858BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E6F9FAC-0C41-49D9-8F90-B1DC61858BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E6F9FAC-0C41-49D9-8F90-B1DC61858BCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED16F17F-1AFA-496A-9CB7-404405FD998C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED16F17F-1AFA-496A-9CB7-404405FD998C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED16F17F-1AFA-496A-9CB7-404405FD998C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED16F17F-1AFA-496A-9CB7-404405FD998C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
