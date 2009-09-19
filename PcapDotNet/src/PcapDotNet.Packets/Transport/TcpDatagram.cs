@@ -230,6 +230,9 @@ namespace PcapDotNet.Packets.Transport
             get { return (ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin; }
         }
 
+        /// <summary>
+        /// The default validity check always returns true.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return Length >= HeaderMinimumLength && Length >= HeaderLength && Options.IsValid;

@@ -1,7 +1,15 @@
 namespace PcapDotNet.Packets.Arp
 {
+    /// <summary>
+    /// The data link layer protocol of the ARP protocol.
+    /// </summary>
     public enum ArpHardwareType : ushort
     {
+        /// <summary>
+        /// Invalid hardware type
+        /// </summary>
+        None = 0,
+
         /// <summary>
         /// Ethernet (10Mb)
         /// </summary>
@@ -35,17 +43,17 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// ARCNET
         /// </summary>
-        Arcnet = 7,
+        AttachedResourceComputerNetwork = 7,
 
         /// <summary>
         /// Hyperchannel
         /// </summary>
-        Hyperchannel = 8,
+        HyperChannel = 8,
 
         /// <summary>
         /// Lanstar
         /// </summary>
-        Lanstar = 9,
+        LanStar = 9,
 
         /// <summary>
         /// Autonet Short Address
@@ -70,7 +78,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// SMDS
         /// </summary>
-        Smds = 14,
+        SwitchedMultimegabitDataService = 14,
 
         /// <summary>
         /// Frame Relay
@@ -85,7 +93,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// HDLC
         /// </summary>
-        Hdlc = 17,
+        HighLevelDataLinkControl = 17,
 
         /// <summary>
         /// Fibre Channel
@@ -110,7 +118,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// MIL-STD-188-220
         /// </summary>
-        MilStd188_220 = 22,
+        MilStd188Hyphen220 = 22,
 
         /// <summary>
         /// Metricom
@@ -120,12 +128,12 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// IEEE 1394.1995
         /// </summary>
-        Ieee1394_1995 = 24,
+        Ieee1394Dot1995 = 24,
 
         /// <summary>
         /// MAPOS
         /// </summary>
-        Mapos = 25,
+        MultipleAccessOverSynchronousOpticalNetworkingOrSynchronousDigitalHierarchy = 25,
 
         /// <summary>
         /// Twinaxial
@@ -135,7 +143,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// EUI-64
         /// </summary>
-        Eui64 = 27,
+        ExtendedUniqueIdentifier64 = 27,
 
         /// <summary>
         /// HIPARP
@@ -145,7 +153,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// IP and ARP over ISO 7816-3
         /// </summary>
-        IpAndArpOverIso7816_3 = 29,
+        IpAndArpOverIso7816Hyphen3 = 29,
 
         /// <summary>
         /// ARPSec

@@ -152,6 +152,12 @@ namespace PcapDotNet.Packets
             return true;
         }
 
+        /// <summary>
+        /// Reads a requested number of bytes from a specific offset in the datagram.
+        /// </summary>
+        /// <param name="offset">The offset in the datagram to start reading.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <returns>The bytes read from the datagram starting from the given offset and in the given length.</returns>
         protected byte[] ReadBytes(int offset, int length)
         {
             return Buffer.ReadBytes(StartOffset + offset, length);

@@ -105,6 +105,9 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionTimestamp);
         }
 
+        /// <summary>
+        /// The hash code of the timestamp option is the hash code of the option type xored with the hash code of the timestamp echo reply.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^ TimestampEchoReply.GetHashCode();
