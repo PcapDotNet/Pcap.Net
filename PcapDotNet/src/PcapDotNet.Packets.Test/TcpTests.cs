@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -115,7 +116,8 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(option, option);
                     Assert.AreEqual(option.GetHashCode(), option.GetHashCode());
                     Assert.IsFalse(string.IsNullOrEmpty(option.ToString()));
-                    
+                    Assert.IsFalse(option.Equals(null));
+                    Assert.IsFalse(option.Equals(2));
                 }
                 Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
                 Assert.AreEqual((tcpControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
@@ -131,6 +133,55 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
                 Assert.AreEqual(tcpPayload, packet.Ethernet.IpV4.Tcp.Payload, "Payload");
             }
+        }
+
+        [TestMethod]
+        public void TcpOptionSelectiveAcknowledgmentBlockTest()
+        {
+            TcpOptionSelectiveAcknowledgmentBlock block1 = new TcpOptionSelectiveAcknowledgmentBlock();
+            Assert.AreEqual<uint>(0, block1.LeftEdge);
+            Assert.AreEqual<uint>(0, block1.RightEdge);
+
+            block1 = new TcpOptionSelectiveAcknowledgmentBlock(1, 2);
+            Assert.AreEqual<uint>(1, block1.LeftEdge);
+            Assert.AreEqual<uint>(2, block1.RightEdge);
+
+            TcpOptionSelectiveAcknowledgmentBlock block2 = new TcpOptionSelectiveAcknowledgmentBlock();
+            Assert.AreNotEqual(block1, block2);
+            Assert.IsTrue(block1 != block2);
+            Assert.IsFalse(block1 == block2);
+
+            block2 = new TcpOptionSelectiveAcknowledgmentBlock(1, 2);
+            Assert.AreEqual(block1, block2);
+            Assert.IsFalse(block1 != block2);
+            Assert.IsTrue(block1 == block2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TcpOptionMd5SignatureConstructorErrorDataLengthTest()
+        {
+            new TcpOptionMd5Signature(new byte[10]);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TcpOptionMd5SignatureCreateInstanceErrorDataLengthTest()
+        {
+            Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
+                                                          new MacAddress(), new MacAddress(),
+                                                          0, 0, new IpV4Fragmentation(), 0, new IpV4Address(), new IpV4Address(), new IpV4Options(),
+                                                          0, 0, 0, 0, new TcpControlBits(), 0, 0,
+                                                          new TcpOptions(new TcpOptionMd5Signature(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16})), Datagram.Empty);
+
+            Assert.IsTrue(packet.IsValid);
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Options.IsValid);
+
+            byte[] buffer = packet.Buffer;
+            buffer[buffer.Length - packet.Ethernet.IpV4.Tcp.Length + TcpDatagram.HeaderMinimumLength + 1] = 2;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Options.IsValid);
         }
     }
 }

@@ -230,6 +230,11 @@ namespace PcapDotNet.Packets.Transport
             get { return (ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin; }
         }
 
+        protected override bool CalculateIsValid()
+        {
+            return Length >= HeaderMinimumLength && Length >= HeaderLength && Options.IsValid;
+        }
+
         internal TcpDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {

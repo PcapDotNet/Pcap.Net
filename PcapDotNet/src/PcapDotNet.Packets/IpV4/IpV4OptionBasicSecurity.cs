@@ -79,6 +79,14 @@ namespace PcapDotNet.Packets.IpV4
                                             "protectionAuthorities");
             }
 
+            if (classificationLevel != IpV4OptionSecurityClassificationLevel.Confidential &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.Secret &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.TopSecret &&
+                classificationLevel != IpV4OptionSecurityClassificationLevel.Unclassified)
+            {
+                throw new ArgumentException("Invalid classification level " + classificationLevel);
+            }
+
             _classificationLevel = classificationLevel;
             _protectionAuthorities = protectionAuthorities;
             _length = length;

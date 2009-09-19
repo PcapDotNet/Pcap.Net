@@ -71,6 +71,8 @@ namespace PcapDotNet.Packets.Test
                                                           arpSenderHardwareAddress, arpSenderProtocolAddress,
                                                           arpTargetHardwareAddress, arpTargetProtocolAddress);
 
+                Assert.IsTrue(packet.IsValid, "IsValid");
+
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
 

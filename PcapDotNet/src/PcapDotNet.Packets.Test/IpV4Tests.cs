@@ -168,8 +168,9 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsNotNull(packet.Ethernet.IpV4.Options.ToString());
                 for (int optionIndex = 0; optionIndex != ipV4Options.Count; ++optionIndex)
                 {
-                    Assert.AreEqual(ipV4Options[optionIndex], packet.Ethernet.IpV4.Options[optionIndex]);
-                    Assert.AreNotEqual(null, packet.Ethernet.IpV4.Options[optionIndex]);
+                    IpV4Option option = ipV4Options[optionIndex];
+                    Assert.AreEqual(option, packet.Ethernet.IpV4.Options[optionIndex]);
+                    Assert.IsFalse(option.Equals(null));
                 }
 
                 if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.Tcp)
@@ -204,6 +205,49 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void IpV4OptionTimestampFactoryCreateInstanceErrorTest()
+        {
+            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                       new MacAddress(), new MacAddress(),
+                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+                                                       new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
+                                                       Datagram.Empty);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Bad Length
+            byte[] buffer = packet.Buffer;
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 2;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 4;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 5;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 4;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Bad Pointer
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 1;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 5;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 6;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IpV4OptionRoutePointedAddressIndexErrorTest()
         {
@@ -211,6 +255,49 @@ namespace PcapDotNet.Packets.Test
             IpV4Option option = new IpV4OptionRecordRoute(random.NextByte(IpV4OptionRecordRoute.PointedAddressIndexMaxValue + 1, byte.MaxValue + 1));
             Assert.IsNotNull(option);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        public void IpV4OptionRouteTryReadErrorTest()
+        {
+            // Small Length
+            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                       new MacAddress(), new MacAddress(),
+                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+                                                       new IpV4Options(new IpV4OptionLooseSourceRouting()),
+                                                       Datagram.Empty);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+            byte[] buffer = packet.Buffer;
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 2;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 3;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Bad Length
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 4;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 3;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Bad Pointer
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 0;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 4;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 5;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
         }
 
         [TestMethod]
@@ -270,7 +357,7 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void IpV4OptionBasicSecurtiyBadLengthTest()
+        public void IpV4OptionBasicSecurityConstructorBadLengthTest()
         {
             IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.None, 1);
             Assert.IsNotNull(option);
@@ -279,11 +366,71 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void IpV4OptionBasicSecurtiyNoProtectionAuthoritiesButWithValueTest()
+        public void IpV4OptionBasicSecurityConstructorNoProtectionAuthoritiesButWithValueTest()
         {
             IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.Nsa, 3);
             Assert.IsNotNull(option);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4OptionBasicSecurityConstructorBadClassificationLevelTest()
+        {
+            IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.None);
+            Assert.IsNotNull(option);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void IpV4OptionBasicSecurityCreateInstanceErrorTest()
+        {
+            // Invalid Length
+            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                       new MacAddress(), new MacAddress(),
+                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+                                                       new IpV4Options(new IpV4OptionBasicSecurity()),
+                                                       Datagram.Empty);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+            byte[] buffer = packet.Buffer;
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 2;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Invalid classification level
+            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                new MacAddress(), new MacAddress(),
+                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
+                                                Datagram.Empty);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+            buffer = packet.Buffer;
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 0;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            // Invalid protection authorities bytes
+            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                new MacAddress(), new MacAddress(),
+                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
+                                                Datagram.Empty);
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+            buffer = packet.Buffer;
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 3] = 0;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 3] = 1;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
+
+            buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 4] = 1;
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+            Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
         }
 
         [TestMethod]
@@ -336,6 +483,23 @@ namespace PcapDotNet.Packets.Test
             packet.Buffer.BlockCopy(0, badPacketBuffer, 0, badPacketBuffer.Length);
             Packet badPacket = new Packet(badPacketBuffer, DateTime.Now, packet.DataLink);
             Assert.IsFalse(badPacket.IsValid, "badPacket.IsValid");
+        }
+
+        [TestMethod]
+        public void IpV4DatagramInvalidHeaderChecksumTest()
+        {
+            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+                                                       new MacAddress(), new MacAddress(),
+                                                       0, 0, new IpV4Fragmentation(), 0, 0, IpV4Address.Zero, IpV4Address.Zero, IpV4Options.None,
+                                                       Datagram.Empty);
+
+            Assert.IsTrue(packet.IsValid);
+
+            byte[] buffer = packet.Buffer;
+            ++buffer[packet.Length - packet.Ethernet.IpV4.Length + 1];
+            packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
+
+            Assert.IsFalse(packet.IsValid);
         }
 
         [TestMethod]
