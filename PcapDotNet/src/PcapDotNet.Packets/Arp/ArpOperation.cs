@@ -1,7 +1,15 @@
 namespace PcapDotNet.Packets.Arp
 {
+    /// <summary>
+    /// Specifies the operation the ARP sender is performing.
+    /// </summary>
     public enum ArpOperation : ushort
     {
+        /// <summary>
+        /// Invalid operation.
+        /// </summary>
+        None = 0,
+
         /// <summary>
         /// [RFC826][RFC5227]
         /// </summary>
@@ -68,7 +76,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// [RFC2176]
         /// </summary>
-        MultipleAccessOverSonetOrSdhUnarp = 23,
+        MultipleAccessOverSynchronousOpticalNetworkingOrSynchronousDigitalHierarchyUnsolicitedArp  = 23,
 
         /// <summary>
         /// [RFC5494]

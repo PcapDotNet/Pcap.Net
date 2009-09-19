@@ -90,6 +90,9 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionEcho);
         }
 
+        /// <summary>
+        /// The hash code of the echo option is the hash code of the option type xored with the hash code info.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^ Info.GetHashCode();

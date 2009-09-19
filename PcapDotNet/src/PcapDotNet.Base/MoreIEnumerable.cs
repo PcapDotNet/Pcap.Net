@@ -95,11 +95,11 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
-        /// Returns a hash code by xoring all the bytes.
-        /// Each byte is xored with the next 8 bits of the integer.
+        /// Returns a string by converting all the bytes to a hexadecimal string.
         /// </summary>
-        /// <param name="sequence">The bytes to xor.</param>
-        /// <returns>The hash code resulted by xoring all the bytes.</returns>
+        /// <param name="sequence">The bytes to convert to a string.</param>
+        /// <param name="separator">The string to put between every two bytes.</param>
+        /// <returns>The string resulted by converting all the bytes to hexadecimal strings and putting the separator between them.</returns>
         public static string BytesSequenceToHexadecimalString(this IEnumerable<byte> sequence, string separator)
         {
             return sequence.Aggregate(string.Empty,

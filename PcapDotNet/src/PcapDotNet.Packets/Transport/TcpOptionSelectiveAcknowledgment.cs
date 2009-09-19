@@ -126,6 +126,9 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionSelectiveAcknowledgment);
         }
 
+        /// <summary>
+        /// The hash code of the selective acknowledgement option is the hash code of the option type xored with all the hash codes of the blocks.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^ Blocks.SequenceGetHashCode();

@@ -103,7 +103,10 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionPartialOrderServiceProfile);
         }
 
-        public override int GetHashCode()
+        /// <summary>
+        /// The hash code of the partial order service profile option is the hash code of the option type xored with a combination of the IsStart and IsEnd values.
+        /// </summary>
+       public override int GetHashCode()
         {
             return base.GetHashCode() ^ ((IsStart ? 1 : 0) << 1) ^ (IsEnd ? 1 : 0);
         }

@@ -38,6 +38,15 @@
       <Word>genser</Word>
       <Word>nsa</Word>
       <Word>md</Word>
+      <Word>autonet</Word>
+      <Word>hiparp</Word>
+      <Word>infini</Word>
+      <Word>metricom</Word>
+      <Word>proteon</Word>
+      <Word>twinaxial</Word>
+      <Word>wiegand</Word>
+      <Word>arp</Word>
+      <Word>multimegabit</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->

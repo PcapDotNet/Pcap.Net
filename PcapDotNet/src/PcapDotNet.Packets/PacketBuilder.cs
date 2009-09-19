@@ -30,6 +30,21 @@ namespace PcapDotNet.Packets
             return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
         }
 
+
+        /// <summary>
+        /// Builds an ARP over Ethernet packet.
+        /// The ethernet destination will be ethernet broadcast.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The Ethernet source mac address.</param>
+        /// <param name="arpProtocolType">Each protocol is assigned a number used in this field.</param>
+        /// <param name="arpOperation">Specifies the operation the sender is performing.</param>
+        /// <param name="arpSenderHardwareAddress">Hardware address of the sender.</param>
+        /// <param name="arpSenderProtocolAddress">Protocol address of the sender.</param>
+        /// <param name="arpTargetHardwareAddress">Hardware address of the intended receiver. This field is ignored in requests.</param>
+        /// <param name="arpTargetProtocolAddress">Protocol address of the intended receiver.</param>
+        /// <returns>A packet with an ARP over Ethernet datagram.</returns>
+        /// <exception cref="ArgumentException">The sender hardware or protocol addresses have different length.</exception>
         public static Packet EthernetArp(DateTime timestamp,
                                          MacAddress ethernetSource,
                                          EthernetType arpProtocolType, ArpOperation arpOperation,

@@ -98,6 +98,9 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionMd5Signature);
         }
 
+        /// <summary>
+        /// The hash code of the MD5 signature option is the hash code of the option type xored with the hash code of the signature.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^ Data.BytesSequenceGetHashCode();

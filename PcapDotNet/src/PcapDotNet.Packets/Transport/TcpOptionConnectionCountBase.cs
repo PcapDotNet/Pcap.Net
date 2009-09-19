@@ -58,6 +58,9 @@ namespace PcapDotNet.Packets.Transport
             return Equals(other as TcpOptionConnectionCountBase);
         }
 
+        /// <summary>
+        /// The hash code of the connection count option is the hash code of the option type xored with the hash code of the connection count.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^ ConnectionCount.GetHashCode();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.Arp
@@ -9,7 +10,7 @@ namespace PcapDotNet.Packets.Arp
     /// Note that the EtherType (0x0806) is used in the Ethernet header, and should not be used as the PTYPE of the ARP packet. 
     /// The ARP type (0x0806) should never be used in the PTYPE field of an ARP packet, since a hardware protocol address should never be linked to the ARP protocol. 
     /// Note that the packet structure shown in the table has SHA and THA as 48-bit fields and SPA and TPA as 32-bit fields but this is just for convenience — 
-    /// their actual lengths are determined by the hardware & protocol length fields.
+    /// their actual lengths are determined by the hardware &amp; protocol length fields.
     /// <pre>
     /// +-----+------------------------+------------------------+-----------------------------------------------+
     /// | bit | 0-7                    | 8-15                   | 16-31                                         |
@@ -42,8 +43,14 @@ namespace PcapDotNet.Packets.Arp
             public const int SenderHardwareAddress = 8;
         }
 
+        /// <summary>
+        /// The number of bytes in the ARP header without the addresses (that vary in size).
+        /// </summary>
         public const int HeaderBaseLength = 8;
 
+        /// <summary>
+        /// The number of bytes in the ARP header.
+        /// </summary>
         public int HeaderLength
         {
             get { return GetHeaderLength(HardwareLength, ProtocolLength); }
@@ -92,36 +99,39 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// Hardware address of the sender.
         /// </summary>
-        public byte[] SenderHardwareAddress
+        public ReadOnlyCollection<byte> SenderHardwareAddress
         {
-            get { return ReadBytes(Offset.SenderHardwareAddress, HardwareLength); }
+            get { return new ReadOnlyCollection<byte>(ReadBytes(Offset.SenderHardwareAddress, HardwareLength)); }
         }
 
         /// <summary>
         /// Protocol address of the sender.
         /// </summary>
-        public byte[] SenderProtocolAddress
+        public ReadOnlyCollection<byte> SenderProtocolAddress
         {
-            get { return ReadBytes(OffsetSenderProtocolAddress, ProtocolLength); }
+            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetSenderProtocolAddress, ProtocolLength)); }
         }
 
         /// <summary>
         /// Hardware address of the intended receiver. 
         /// This field is ignored in requests.
         /// </summary>
-        public byte[] TargetHardwareAddress
+        public ReadOnlyCollection<byte> TargetHardwareAddress
         {
-            get { return ReadBytes(OffsetTargetHardwareAddress, HardwareLength); }
+            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetTargetHardwareAddress, HardwareLength)); }
         }
 
         /// <summary>
         /// Protocol address of the intended receiver.
         /// </summary>
-        public byte[] TargetProtocolAddress
+        public ReadOnlyCollection<byte> TargetProtocolAddress
         {
-            get { return ReadBytes(OffsetTargetProtocolAddress, ProtocolLength); }
+            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetTargetProtocolAddress, ProtocolLength)); }
         }
 
+        /// <summary>
+        /// The default validity check always returns true.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return Length >= HeaderBaseLength && Length == HeaderLength;

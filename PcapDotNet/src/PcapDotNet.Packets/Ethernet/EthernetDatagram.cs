@@ -31,6 +31,9 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public const int HeaderLength = 14;
 
+        /// <summary>
+        /// The broadcast MAC address (FF:FF:FF:FF:FF:FF).
+        /// </summary>
         public static MacAddress BroadcastAddress
         {
             get { return _broadcastAddress; }
@@ -98,6 +101,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// The Ethernet payload as an ARP datagram.
+        /// </summary>
         public ArpDatagram Arp
         {
             get
