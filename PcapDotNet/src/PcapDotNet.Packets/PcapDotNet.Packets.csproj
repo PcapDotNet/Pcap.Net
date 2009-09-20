@@ -71,6 +71,11 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
+    <Compile Include="Igmp\IgmpDatagram.cs" />
+    <Compile Include="Igmp\IgmpGroupRecordDatagram.cs" />
+    <Compile Include="Igmp\IgmpQueryVersion.cs" />
+    <Compile Include="Igmp\IgmpRecordType.cs" />
+    <Compile Include="Igmp\IgmpType.cs" />
     <Compile Include="IOptionUnknownFactory.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="Option.cs" />

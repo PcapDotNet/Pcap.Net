@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets
 {
@@ -196,6 +197,35 @@ namespace PcapDotNet.Packets
         protected MacAddress ReadMacAddress(int offset, Endianity endianity)
         {
             return Buffer.ReadMacAddress(StartOffset + offset, endianity);
+        }
+
+        protected IpV4Address ReadIpV4Address(int offset, Endianity endianity)
+        {
+            return Buffer.ReadIpV4Address(StartOffset + offset, endianity);
+        }
+
+        protected static ushort Sum16BitsToChecksum(uint sum)
+        {
+            // Take only 16 bits out of the 32 bit sum and add up the carrier.
+            // if the results overflows - do it again.
+            while (sum > 0xFFFF)
+                sum = (sum & 0xFFFF) + (sum >> 16);
+
+            // one's complement the result
+            sum = ~sum;
+
+            return (ushort)sum;
+        }
+
+        protected static uint Sum16Bits(byte[] buffer, int offset, int length)
+        {
+            int endOffset = offset + length;
+            uint sum = 0;
+            while (offset < endOffset - 1)
+                sum += buffer.ReadUShort(ref offset, Endianity.Big);
+            if (offset < endOffset)
+                sum += (ushort)(buffer[offset] << 8);
+            return sum;
         }
 
         private static readonly Datagram _empty = new Datagram(new byte[0], 0, 0);
