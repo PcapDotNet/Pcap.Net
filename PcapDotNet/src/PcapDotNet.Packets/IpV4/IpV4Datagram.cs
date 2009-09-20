@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Packets.IpV4
@@ -161,7 +162,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public IpV4Address Source
         {
-            get { return new IpV4Address(ReadUInt(Offset.Source, Endianity.Big)); }
+            get { return ReadIpV4Address(Offset.Source, Endianity.Big); }
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public IpV4Address Destination
         {
-            get { return new IpV4Address(ReadUInt(Offset.Destination, Endianity.Big)); }
+            get { return ReadIpV4Address(Offset.Destination, Endianity.Big); }
         }
 
         /// <summary>
@@ -210,6 +211,20 @@ namespace PcapDotNet.Packets.IpV4
         public Datagram Payload
         {
             get { return Tcp; }
+        }
+
+        /// <summary>
+        /// The payload of the datagram as an IGMP datagram.
+        /// </summary>
+        public IgmpDatagram Igmp
+        {
+            get
+            {
+                if (_igmp == null && Length >= HeaderLength)
+                    _igmp = new IgmpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _igmp;
+            }
         }
 
         /// <summary>
@@ -333,6 +348,10 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4Protocol.Udp:
                     return Transport.IsValid && (Transport.IsChecksumOptional && Transport.Checksum == 0 ||
                                                  IsTransportChecksumCorrect);
+
+                case IpV4Protocol.InternetGroupManagementProtocol:
+                    return Igmp.IsValid;
+
                 default:
                     // Todo check more protocols
                     return true;
@@ -347,33 +366,10 @@ namespace PcapDotNet.Packets.IpV4
             return Sum16BitsToChecksum(sum);
         }
 
-        private static ushort Sum16BitsToChecksum(uint sum)
-        {
-            // Take only 16 bits out of the 32 bit sum and add up the carrier.
-            // if the results overflows - do it again.
-            while (sum > 0xFFFF)
-                sum = (sum & 0xFFFF) + (sum >> 16);
-
-            // one's complement the result
-            sum = ~sum;
-
-            return (ushort)sum;
-        }
-
-        private static uint Sum16Bits(byte[] buffer, int offset, int length)
-        {
-            int endOffset = offset + length;
-            uint sum = 0;
-            while (offset < endOffset - 1)
-                sum += buffer.ReadUShort(ref offset, Endianity.Big);
-            if (offset < endOffset)
-                sum += (ushort)(buffer[offset] << 8);
-            return sum;
-        }
-
         private bool? _isHeaderChecksumCorrect;
         private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
+        private IgmpDatagram _igmp;
         private TcpDatagram _tcp;
         private UdpDatagram _udp;
     }
