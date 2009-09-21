@@ -3,6 +3,11 @@ namespace PcapDotNet.Packets.Igmp
     public enum IgmpType : byte
     {
         /// <summary>
+        /// Illegal type.
+        /// </summary>
+        None = 0x00,
+
+        /// <summary>
         /// Membership Query (RFC3376).
         /// </summary>
         MembershipQuery = 0x11,

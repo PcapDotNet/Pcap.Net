@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.Igmp
     public enum IgmpRecordType : byte
     {
         /// <summary>
+        /// Illegal record type.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// A "Current-State Record" is sent by a system in response to a Query received on an interface. 
         /// It reports the current reception state of that interface, with respect to a single multicast address.
         /// <para>
@@ -76,6 +81,7 @@ namespace PcapDotNet.Packets.Igmp
         /// If the change was to an INCLUDE source list, these are the addresses that were deleted from  the list; if the change was to an EXCLUDE source list, 
         /// these are the addresses that were added to the list.
         /// </para>
+        /// <para>
         /// If a change of source list results in both allowing new sources and blocking old sources, 
         /// then two Group Records are sent for the same multicast address, one of type ALLOW_NEW_SOURCES and one of type BLOCK_OLD_SOURCES.
         /// </para>

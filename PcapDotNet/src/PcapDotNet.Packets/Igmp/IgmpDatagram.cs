@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Igmp
@@ -87,18 +88,19 @@ namespace PcapDotNet.Packets.Igmp
     public class IgmpDatagram : Datagram
     {
         public const int HeaderLength = 8;
+        public const int QueryVersion3HeaderLength = 12;
 
         private static class Offset
         {
-            public const int Type = 0;
+            public const int MessageType = 0;
             public const int MaxResponseCode = 1;
             public const int Checksum = 2;
             public const int GroupAddress = 4;
 
             // Version 3 query
             public const int IsSuppressRouterSideProcessing = 8;
-            public const int QueriersRobustnessVariable = 8;
-            public const int QueriersQueryIntervalCode = 9;
+            public const int QueryRobustnessVariable = 8;
+            public const int QueryIntervalCode = 9;
             public const int NumberOfSources = 10;
             public const int SourceAddresses = 12;
 
@@ -110,9 +112,9 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public IgmpType Type
+        public IgmpType MessageType
         {
-            get { return (IgmpType)this[Offset.Type]; }
+            get { return (IgmpType)this[Offset.MessageType]; }
         }
 
         /// <summary>
@@ -129,13 +131,13 @@ namespace PcapDotNet.Packets.Igmp
         {
             get
             {
-                if (Type != IgmpType.MembershipQuery)
+                if (MessageType != IgmpType.MembershipQuery)
                     return IgmpQueryVersion.None;
 
-                if (Length >= 12)
+                if (Length >= QueryVersion3HeaderLength)
                     return IgmpQueryVersion.Version3;
 
-                if (Length != 8)
+                if (Length != HeaderLength)
                     return IgmpQueryVersion.Unknown;
 
                 if (MaxResponseCode == 0)
@@ -195,7 +197,7 @@ namespace PcapDotNet.Packets.Igmp
             {
                 byte maxResponseCode = MaxResponseCode;
                 int numTenthOfASecond =
-                    ((maxResponseCode < 128 || Type != IgmpType.MembershipQuery || QueryVersion != IgmpQueryVersion.Version3)
+                    ((maxResponseCode < 128 || MessageType != IgmpType.MembershipQuery || QueryVersion != IgmpQueryVersion.Version3)
                          ? maxResponseCode
                          : CodeToValue(maxResponseCode));
 
@@ -259,9 +261,9 @@ namespace PcapDotNet.Packets.Igmp
         /// <remarks>
         /// Valid only on query of version 3.
         /// </remarks>
-        public byte QueriersRobustnessVariable
+        public byte QueryRobustnessVariable
         {
-            get { return (byte)(this[Offset.QueriersRobustnessVariable] & 0x07); }
+            get { return (byte)(this[Offset.QueryRobustnessVariable] & 0x07); }
         }
 
         /// <summary>
@@ -286,9 +288,9 @@ namespace PcapDotNet.Packets.Igmp
         /// <remarks>
         /// Valid only on query of version 3.
         /// </remarks>
-        public byte QueriersQueryIntervalCode
+        public byte QueryIntervalCode
         {
-            get { return this[Offset.QueriersQueryIntervalCode]; }
+            get { return this[Offset.QueryIntervalCode]; }
         }
 
         /// <summary>
@@ -310,13 +312,13 @@ namespace PcapDotNet.Packets.Igmp
         /// <remarks>
         /// Valid only on query of version 3.
         /// </remarks>
-        public TimeSpan QueriersQueryInterval
+        public TimeSpan QueryInterval
         {
             get 
             {
-                int numSeconds = QueriersQueryIntervalCode < 128
-                                     ? QueriersQueryIntervalCode
-                                     : CodeToValue(QueriersQueryIntervalCode);
+                int numSeconds = QueryIntervalCode < 128
+                                     ? QueryIntervalCode
+                                     : CodeToValue(QueryIntervalCode);
 
                 return TimeSpan.FromSeconds(numSeconds);
             }
@@ -393,15 +395,41 @@ namespace PcapDotNet.Packets.Igmp
             if (Length < HeaderLength || !IsChecksumCorrect)
                 return false;
 
-//            switch (Type)
-//            {
-//                case IgmpType.MembershipQuery:
-//                case IgmpType.LeaveGroupVersion2:
-//                case IgmpType.MembershipReportVersion1:
-//                case IgmpType.MembershipReportVersion2:
-//                case IgmpType.MembershipReportVersion3:
-//            }
-            return true;
+            switch (MessageType)
+            {
+                case IgmpType.MembershipQuery:
+                    switch (QueryVersion)
+                    {
+                        case IgmpQueryVersion.Version1:
+                            return Length == HeaderLength && MaxResponseCode == 0;
+
+                        case IgmpQueryVersion.Version2:
+                            return Length == HeaderLength;
+
+                        case IgmpQueryVersion.Version3:
+                            return Length >= QueryVersion3HeaderLength &&
+                                   Length == QueryVersion3HeaderLength + 4 * NumberOfSources &&
+                                   NumberOfSources == SourceAddresses.Count;
+
+                        default:
+                            return false;
+                    }
+
+                case IgmpType.MembershipReportVersion1:
+                    return Length == HeaderLength && MaxResponseCode == 0;
+
+                case IgmpType.LeaveGroupVersion2:
+                case IgmpType.MembershipReportVersion2:
+                    return Length == HeaderLength;
+
+                case IgmpType.MembershipReportVersion3:
+                    return MaxResponseCode == 0 && NumberOfGroupRecords == GroupRecords.Count &&
+                           Length == HeaderLength + GroupRecords.Sum(record => record.Length) &&
+                           GroupRecords.All(record => record.IsValid);
+
+                default:
+                    return false;
+            }
         }
 
         private ushort CalculateChecksum()

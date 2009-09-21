@@ -33,6 +33,7 @@ namespace PcapDotNet.Packets.Igmp
     /// .     .                                                    .
     /// |     |                                                    |
     /// +-----+----------------------------------------------------+
+    /// </pre>
     /// </summary>
     public class IgmpGroupRecordDatagram : Datagram
     {
@@ -114,6 +115,9 @@ namespace PcapDotNet.Packets.Igmp
         {
         }
 
+        /// <summary>
+        /// The record is valid if the length is correct according to the header fields.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return Length >= HeaderMinimumLength &&

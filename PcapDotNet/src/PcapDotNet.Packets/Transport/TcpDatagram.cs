@@ -231,7 +231,7 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// The default validity check always returns true.
+        /// The datagram is valid if the length is correct according to the header and the options are valid.
         /// </summary>
         protected override bool CalculateIsValid()
         {
