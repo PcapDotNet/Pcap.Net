@@ -130,7 +130,7 @@ namespace PcapDotNet.Packets.Arp
         }
 
         /// <summary>
-        /// The default validity check always returns true.
+        /// The datagram is valid if the length is correct according to the header.
         /// </summary>
         protected override bool CalculateIsValid()
         {
