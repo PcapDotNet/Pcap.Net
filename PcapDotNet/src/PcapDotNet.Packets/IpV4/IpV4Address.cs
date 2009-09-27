@@ -14,6 +14,19 @@ namespace PcapDotNet.Packets.IpV4
         public const int SizeOf = sizeof(uint);
 
         /// <summary>
+        /// The zero address (0.0.0.0).
+        /// </summary>
+        public static IpV4Address Zero
+        {
+            get { return _zero; }
+        }
+
+        public static IpV4Address AllHostsHroupAddress
+        {
+            get { return _allHostsHroupAddress; }
+        }
+
+        /// <summary>
         /// Create an address from a 32 bit integer.
         /// 0 -> 0.0.0.0
         /// 1 -> 0.0.0.1
@@ -34,14 +47,6 @@ namespace PcapDotNet.Packets.IpV4
                             (byte.Parse(values[1], CultureInfo.InvariantCulture) << 16) +
                             (byte.Parse(values[2], CultureInfo.InvariantCulture) << 8) +
                             (byte.Parse(values[3], CultureInfo.InvariantCulture)));
-        }
-
-        /// <summary>
-        /// The zero address (0.0.0.0).
-        /// </summary>
-        public static IpV4Address Zero
-        {
-            get { return _zero; }
         }
 
         /// <summary>
@@ -113,5 +118,6 @@ namespace PcapDotNet.Packets.IpV4
 
         private readonly uint _value;
         private static readonly IpV4Address _zero = new IpV4Address(0);
+        private static readonly IpV4Address _allHostsHroupAddress = new IpV4Address("224.0.0.1");
     }
 }
