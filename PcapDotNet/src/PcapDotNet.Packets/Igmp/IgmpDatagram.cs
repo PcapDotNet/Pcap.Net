@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Packets.IpV4;
@@ -109,12 +110,22 @@ namespace PcapDotNet.Packets.Igmp
             public const int GroupRecords = 8;
         }
 
+        public static TimeSpan MaxVersion3MaxResponseTime
+        {
+            get { return _maxVersion3MaxResponseTime; }
+        }
+
+        public static TimeSpan MaxVersion3QueryInterval
+        {
+            get { return _maxVersion3QueryInterval; }
+        }
+
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public IgmpType MessageType
+        public IgmpMessageType MessageType
         {
-            get { return (IgmpType)this[Offset.MessageType]; }
+            get { return (IgmpMessageType)this[Offset.MessageType]; }
         }
 
         /// <summary>
@@ -131,7 +142,7 @@ namespace PcapDotNet.Packets.Igmp
         {
             get
             {
-                if (MessageType != IgmpType.MembershipQuery)
+                if (MessageType != IgmpMessageType.MembershipQuery)
                     return IgmpQueryVersion.None;
 
                 if (Length >= QueryVersion3HeaderLength)
@@ -197,7 +208,7 @@ namespace PcapDotNet.Packets.Igmp
             {
                 byte maxResponseCode = MaxResponseCode;
                 int numTenthOfASecond =
-                    ((maxResponseCode < 128 || MessageType != IgmpType.MembershipQuery || QueryVersion != IgmpQueryVersion.Version3)
+                    ((maxResponseCode < 128 || MessageType != IgmpMessageType.MembershipQuery || QueryVersion != IgmpQueryVersion.Version3)
                          ? maxResponseCode
                          : CodeToValue(maxResponseCode));
 
@@ -351,10 +362,15 @@ namespace PcapDotNet.Packets.Igmp
         {
             get
             {
-                IpV4Address[] sourceAddresses = new IpV4Address[NumberOfSources];
-                for (int i = 0; i != sourceAddresses.Length; ++i)
-                    sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + 4 * i, Endianity.Big);
-                return new ReadOnlyCollection<IpV4Address>(sourceAddresses);
+                if (_sourceAddresses == null)
+                {
+                    IpV4Address[] sourceAddresses = new IpV4Address[NumberOfSources];
+                    for (int i = 0; i != sourceAddresses.Length; ++i)
+                        sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + IpV4Address.SizeOf * i, Endianity.Big);
+                    _sourceAddresses = new ReadOnlyCollection<IpV4Address>(sourceAddresses);
+                }
+
+                return _sourceAddresses;
             }
         }
 
@@ -369,19 +385,27 @@ namespace PcapDotNet.Packets.Igmp
             get { return ReadUShort(Offset.NumberOfGroupRecords, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Each Group Record is a block of fields containing information pertaining to the sender's membership in a single multicast group on the interface from which the Report is sent.
+        /// </summary>
         public ReadOnlyCollection<IgmpGroupRecordDatagram> GroupRecords
         {
             get
             {
-                IgmpGroupRecordDatagram[] groupRecords = new IgmpGroupRecordDatagram[NumberOfGroupRecords];
-                int offset = StartOffset + Offset.GroupRecords;
-                for (int i = 0; i != groupRecords.Length; ++i)
+                if (_groupRecords == null)
                 {
-                    groupRecords[i] = new IgmpGroupRecordDatagram(Buffer, offset);
-                    offset += groupRecords[i].Length;
+                    IgmpGroupRecordDatagram[] groupRecords = new IgmpGroupRecordDatagram[NumberOfGroupRecords];
+                    int offset = StartOffset + Offset.GroupRecords;
+                    for (int i = 0; i != groupRecords.Length; ++i)
+                    {
+                        groupRecords[i] = new IgmpGroupRecordDatagram(Buffer, offset);
+                        offset += groupRecords[i].Length;
+                    }
+
+                    _groupRecords = new ReadOnlyCollection<IgmpGroupRecordDatagram>(groupRecords);
                 }
 
-                return new ReadOnlyCollection<IgmpGroupRecordDatagram>(groupRecords);
+                return _groupRecords;
             }
         }
 
@@ -390,6 +414,71 @@ namespace PcapDotNet.Packets.Igmp
         {
         }
 
+        internal static int GetQueryVersion3Length(int numSourceAddresses)
+        {
+            return QueryVersion3HeaderLength + IpV4Address.SizeOf * numSourceAddresses;
+        }
+
+        internal static void WriteHeader(byte[] buffer, int offset,
+                                         IgmpMessageType igmpMessageType, TimeSpan maxResponseTime, IpV4Address groupAddress)
+        {
+            buffer.Write(offset + Offset.MessageType, (byte)igmpMessageType);
+
+            double numTenthOfASecond = (maxResponseTime.TotalSeconds * 10);
+            if (numTenthOfASecond >= 256 || numTenthOfASecond < 0)
+                throw new ArgumentOutOfRangeException("maxResponseTime", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + TimeSpan.FromSeconds(255 * 0.1) + "]");
+            buffer.Write(offset + Offset.MaxResponseCode, (byte)numTenthOfASecond);
+
+            buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
+
+            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, HeaderLength)), Endianity.Big);
+        }
+
+        internal static void WriteQueryVersion3(byte[] buffer, int offset,
+                                                TimeSpan maxResponseTime, IpV4Address groupAddress,
+                                                bool isSuppressRouterSideProcessing, byte queryRobustnessVariable, TimeSpan queryInterval,
+                                                IEnumerable<IpV4Address> sourceAddresses)
+        {
+            // MessageType
+            buffer.Write(offset + Offset.MessageType, (byte)IgmpMessageType.MembershipQuery);
+
+            // MaxResponseCode
+            if (maxResponseTime < TimeSpan.Zero || maxResponseTime > MaxVersion3MaxResponseTime)
+                throw new ArgumentOutOfRangeException("maxResponseTime", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + MaxVersion3MaxResponseTime + "]");
+            double maxResponseTimeTenthOfASecond = maxResponseTime.TotalSeconds * 10;
+            byte maxResponseCode = (byte)(maxResponseTimeTenthOfASecond < 128 ? maxResponseTimeTenthOfASecond : ValueToCode((int)maxResponseTimeTenthOfASecond));
+            buffer.Write(offset + Offset.MaxResponseCode, maxResponseCode);
+
+            // GroupAddress
+            buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
+
+            // IsSuppressRouterSideProcessing and QueryRobustnessVariable
+            if (queryRobustnessVariable > 0x07)
+                throw new ArgumentOutOfRangeException("queryRobustnessVariable", queryRobustnessVariable, "must be in range [0, 7]");
+            buffer.Write(offset + Offset.QueryRobustnessVariable, (byte)(queryRobustnessVariable | (isSuppressRouterSideProcessing ? 0x10 : 0x00)));
+
+            // QueryIntervalCode
+            if (queryInterval < TimeSpan.Zero || queryInterval > MaxVersion3QueryInterval)
+                throw new ArgumentOutOfRangeException("queryInterval", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + MaxVersion3QueryInterval + "]");
+            double queryIntervalTenthOfASecond = queryInterval.TotalSeconds;
+            byte queryIntervalCode = (byte)(queryIntervalTenthOfASecond < 128 ? queryIntervalTenthOfASecond : ValueToCode((int)queryIntervalTenthOfASecond));
+            buffer.Write(offset + Offset.QueryIntervalCode, queryIntervalCode);
+
+            // SourceAddresses
+            int numSourceAddresses = 0;
+            foreach (IpV4Address sourceAddress in sourceAddresses)
+            {
+                buffer.Write(offset + Offset.SourceAddresses + IpV4Address.SizeOf * numSourceAddresses, sourceAddress, Endianity.Big);
+                ++numSourceAddresses;
+            }
+
+            // NumberOfSources
+            buffer.Write(offset + Offset.NumberOfSources, (ushort)numSourceAddresses, Endianity.Big);
+
+            // Checksum
+            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, QueryVersion3HeaderLength + IpV4Address.SizeOf * numSourceAddresses)), Endianity.Big);
+        }
+        
         protected override bool CalculateIsValid()
         {
             if (Length < HeaderLength || !IsChecksumCorrect)
@@ -397,7 +486,7 @@ namespace PcapDotNet.Packets.Igmp
 
             switch (MessageType)
             {
-                case IgmpType.MembershipQuery:
+                case IgmpMessageType.MembershipQuery:
                     switch (QueryVersion)
                     {
                         case IgmpQueryVersion.Version1:
@@ -408,21 +497,21 @@ namespace PcapDotNet.Packets.Igmp
 
                         case IgmpQueryVersion.Version3:
                             return Length >= QueryVersion3HeaderLength &&
-                                   Length == QueryVersion3HeaderLength + 4 * NumberOfSources &&
+                                   Length == GetQueryVersion3Length(NumberOfSources) &&
                                    NumberOfSources == SourceAddresses.Count;
 
                         default:
                             return false;
                     }
 
-                case IgmpType.MembershipReportVersion1:
+                case IgmpMessageType.MembershipReportVersion1:
                     return Length == HeaderLength && MaxResponseCode == 0;
 
-                case IgmpType.LeaveGroupVersion2:
-                case IgmpType.MembershipReportVersion2:
+                case IgmpMessageType.LeaveGroupVersion2:
+                case IgmpMessageType.MembershipReportVersion2:
                     return Length == HeaderLength;
 
-                case IgmpType.MembershipReportVersion3:
+                case IgmpMessageType.MembershipReportVersion3:
                     return MaxResponseCode == 0 && NumberOfGroupRecords == GroupRecords.Count &&
                            Length == HeaderLength + GroupRecords.Sum(record => record.Length) &&
                            GroupRecords.All(record => record.IsValid);
@@ -457,6 +546,24 @@ namespace PcapDotNet.Packets.Igmp
             return (mant | 0x10) << (exp + 3);
         }
 
+        private static byte ValueToCode(int value)
+        {
+            int exp = (int)(Math.Log(value, 2) - 7);
+            if (exp > 7 || exp < 0)
+                throw new ArgumentOutOfRangeException("exp", exp, "value " + value + " is out of range");
+
+            int mant = (int)(value * Math.Pow(2, -exp - 3) - 16);
+            if (mant > 15 || mant < 0)
+                throw new ArgumentOutOfRangeException("mant", mant, "value " + value + " is out of range");
+
+            return (byte)(0x80 | (exp << 4) | mant);
+        }
+
+        private static readonly TimeSpan _maxVersion3MaxResponseTime = TimeSpan.FromSeconds(0.1 * CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(0.1) - TimeSpan.FromTicks(1);
+        private static readonly TimeSpan _maxVersion3QueryInterval = TimeSpan.FromSeconds(CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(1) - TimeSpan.FromTicks(1);
+
         private bool? _isChecksumCorrect;
+        private ReadOnlyCollection<IpV4Address> _sourceAddresses;
+        private ReadOnlyCollection<IgmpGroupRecordDatagram> _groupRecords;
     }
 }

@@ -101,6 +101,11 @@ namespace PcapDotNet.TestUtils
             return random.NextDateTime(DateTime.MinValue, DateTime.MaxValue);
         }
 
+        public static TimeSpan NextTimeSpan(this Random random, TimeSpan minimumValue, TimeSpan maximumValue)
+        {
+            return TimeSpan.FromTicks(random.NextLong(minimumValue.Ticks, maximumValue.Ticks + 1));
+        }
+
         public static T NextEnum<T>(this Random random, IEnumerable<T> valuesToIgnore)
         {
             Type type = typeof(T);

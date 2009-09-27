@@ -1,6 +1,6 @@
 namespace PcapDotNet.Packets.Igmp
 {
-    public enum IgmpType : byte
+    public enum IgmpMessageType : byte
     {
         /// <summary>
         /// Illegal type.

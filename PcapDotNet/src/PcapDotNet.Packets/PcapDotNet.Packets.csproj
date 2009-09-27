@@ -75,7 +75,7 @@
     <Compile Include="Igmp\IgmpGroupRecordDatagram.cs" />
     <Compile Include="Igmp\IgmpQueryVersion.cs" />
     <Compile Include="Igmp\IgmpRecordType.cs" />
-    <Compile Include="Igmp\IgmpType.cs" />
+    <Compile Include="Igmp\IgmpMessageType.cs" />
     <Compile Include="IOptionUnknownFactory.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="Option.cs" />

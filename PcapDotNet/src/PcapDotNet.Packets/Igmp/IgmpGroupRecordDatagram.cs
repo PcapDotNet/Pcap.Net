@@ -48,6 +48,9 @@ namespace PcapDotNet.Packets.Igmp
 
         public const int HeaderMinimumLength = 8;
 
+        /// <summary>
+        /// The type of group record included in the report message.
+        /// </summary>
         public IgmpRecordType RecordType
         {
             get { return (IgmpRecordType)this[Offset.RecordType]; }

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 
@@ -87,12 +90,12 @@ namespace PcapDotNet.Packets
         /// <param name="ipV4Payload">The IPv4 payload.</param>
         /// <returns>A packet with an IPv4 over Ethernet datagram.</returns>
         public static Packet EthernetIpV4(DateTime timestamp,
-                                  MacAddress ethernetSource, MacAddress ethernetDestination,
-                                  byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
-                                  byte ipV4Ttl, IpV4Protocol ipV4Protocol,
-                                  IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
-                                  IpV4Options ipV4Options,
-                                  Datagram ipV4Payload)
+                                          MacAddress ethernetSource, MacAddress ethernetDestination,
+                                          byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                          byte ipV4Ttl, IpV4Protocol ipV4Protocol,
+                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                          IpV4Options ipV4Options,
+                                          Datagram ipV4Payload)
         {
             int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
             byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + ipV4Payload.Length];
@@ -103,7 +106,261 @@ namespace PcapDotNet.Packets
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, ipV4Payload.Length);
             ipV4Payload.Write(buffer, EthernetDatagram.HeaderLength + ipHeaderLength);
-            return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
+            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
+        }
+
+        /// <summary>
+        /// Builds an IGMP query version 1 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP query version 1 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpQueryVersion1(DateTime timestamp,
+                                                           MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                           byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                           byte ipV4Ttl,
+                                                           IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                           IpV4Options ipV4Options,
+                                                           IpV4Address igmpGroupAddress)
+        {
+            return EthernetIpV4Igmp(timestamp,
+                                    ethernetSource, ethernetDestination,
+                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                    ipV4Ttl,
+                                    ipV4SourceAddress, ipV4DestinationAddress,
+                                    ipV4Options,
+                                    IgmpMessageType.MembershipQuery, TimeSpan.Zero, igmpGroupAddress);
+        }
+
+        /// <summary>
+        /// Builds an IGMP report version 1 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP report version 1 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpReportVersion1(DateTime timestamp,
+                                                            MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                            byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                            byte ipV4Ttl,
+                                                            IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                            IpV4Options ipV4Options,
+                                                            IpV4Address igmpGroupAddress)
+        {
+            return EthernetIpV4Igmp(timestamp,
+                                    ethernetSource, ethernetDestination,
+                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                    ipV4Ttl,
+                                    ipV4SourceAddress, ipV4DestinationAddress,
+                                    ipV4Options,
+                                    IgmpMessageType.MembershipReportVersion1, TimeSpan.Zero, igmpGroupAddress);
+        }
+
+        /// <summary>
+        /// Builds an IGMP query version 2 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpMaxResponseTime">The actual time allowed.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP query version 2 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpQueryVersion2(DateTime timestamp,
+                                                           MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                           byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                           byte ipV4Ttl,
+                                                           IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                           IpV4Options ipV4Options,
+                                                           TimeSpan igmpMaxResponseTime, IpV4Address igmpGroupAddress)
+        {
+            return EthernetIpV4Igmp(timestamp,
+                                    ethernetSource, ethernetDestination,
+                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                    ipV4Ttl,
+                                    ipV4SourceAddress, ipV4DestinationAddress,
+                                    ipV4Options,
+                                    IgmpMessageType.MembershipQuery, igmpMaxResponseTime, igmpGroupAddress);
+        }
+
+        /// <summary>
+        /// Builds an IGMP report version 2 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpMaxResponseTime">The actual time allowed.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP report version 2 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpReportVersion2(DateTime timestamp,
+                                                            MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                            byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                            byte ipV4Ttl,
+                                                            IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                            IpV4Options ipV4Options,
+                                                            TimeSpan igmpMaxResponseTime, IpV4Address igmpGroupAddress)
+        {
+            return EthernetIpV4Igmp(timestamp,
+                                    ethernetSource, ethernetDestination,
+                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                    ipV4Ttl,
+                                    ipV4SourceAddress, ipV4DestinationAddress,
+                                    ipV4Options,
+                                    IgmpMessageType.MembershipReportVersion2, igmpMaxResponseTime, igmpGroupAddress);
+        }
+
+        /// <summary>
+        /// Builds an IGMP leave group version 2 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpMaxResponseTime">The actual time allowed.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP leave group version 2 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpLeaveGroupVersion2(DateTime timestamp,
+                                                                MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                                byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                                byte ipV4Ttl,
+                                                                IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                                IpV4Options ipV4Options,
+                                                                TimeSpan igmpMaxResponseTime, IpV4Address igmpGroupAddress)
+        {
+            return EthernetIpV4Igmp(timestamp,
+                                    ethernetSource, ethernetDestination,
+                                    ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                    ipV4Ttl,
+                                    ipV4SourceAddress, ipV4DestinationAddress,
+                                    ipV4Options,
+                                    IgmpMessageType.LeaveGroupVersion2, igmpMaxResponseTime, igmpGroupAddress);
+        }
+
+        /// <summary>
+        /// Builds an IGMP query version 3 over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="igmpMaxResponseTime">The actual time allowed.</param>
+        /// <param name="igmpGroupAddress">
+        /// The Group Address field is set to zero when sending a General Query, 
+        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
+        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <returns>A packet with an IGMP query version 3 over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IgmpQueryVersion3(DateTime timestamp,
+                                                           MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                           byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                                           byte ipV4Ttl,
+                                                           IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                           IpV4Options ipV4Options,
+                                                           TimeSpan igmpMaxResponseTime, IpV4Address igmpGroupAddress,
+                                                           bool igmpIsSuppressRouterSideProcessing, byte igmpQueryRobustnessVariable,
+                                                           TimeSpan igmpQueryInterval, IEnumerable<IpV4Address> igmpSourceAddresses)
+        {
+            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
+            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + IgmpDatagram.GetQueryVersion3Length(igmpSourceAddresses.Count())];
+            EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
+            IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
+                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
+                                     ipV4SourceAddress, ipV4DestinationAddress,
+                                     ipV4Options, IgmpDatagram.HeaderLength);
+            IgmpDatagram.WriteQueryVersion3(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
+                                            igmpMaxResponseTime, igmpGroupAddress, igmpIsSuppressRouterSideProcessing, igmpQueryRobustnessVariable,
+                                            igmpQueryInterval, igmpSourceAddresses);
+            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
+        }
+
+        private static Packet EthernetIpV4Igmp(DateTime timestamp,
+                                               MacAddress ethernetSource, MacAddress ethernetDestination,
+                                               byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                                               byte ipV4Ttl,
+                                               IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                               IpV4Options ipV4Options,
+                                               IgmpMessageType igmpMessageType, TimeSpan igmpMaxResponseTime, IpV4Address igmpGroupAddress)
+        {
+            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
+            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + IgmpDatagram.HeaderLength];
+            EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
+            IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
+                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
+                                     ipV4SourceAddress, ipV4DestinationAddress,
+                                     ipV4Options, IgmpDatagram.HeaderLength);
+            IgmpDatagram.WriteHeader(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
+                                     igmpMessageType, igmpMaxResponseTime, igmpGroupAddress);
+            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
 
         /// <summary>
@@ -127,7 +384,7 @@ namespace PcapDotNet.Packets
         public static Packet EthernetIpV4Udp(DateTime timestamp,
                                              MacAddress ethernetSource, MacAddress ethernetDestination,
                                              byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
-                                             byte ipV4Ttl, 
+                                             byte ipV4Ttl,
                                              IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
                                              IpV4Options ipV4Options,
                                              ushort udpSourcePort, ushort udpDestinationPort, bool udpCalculateChecksum,
@@ -153,7 +410,7 @@ namespace PcapDotNet.Packets
             if (udpCalculateChecksum)
                 IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength, UdpDatagram.Offset.Checksum, true);
 
-            return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
+            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
 
         /// <summary>
@@ -191,7 +448,6 @@ namespace PcapDotNet.Packets
                                              TcpControlBits tcpControlBits, ushort tcpWindow, ushort tcpUrgentPointer,
                                              TcpOptions tcpOptions,
                                              Datagram tcpPayload)
-
         {
             int ipV4HeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
             int tcpHeaderLength = TcpDatagram.HeaderMinimumLength + tcpOptions.BytesLength;
@@ -217,7 +473,7 @@ namespace PcapDotNet.Packets
 
             IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength, TcpDatagram.Offset.Checksum, false);
 
-            return new Packet(buffer, timestamp, new DataLink(DataLinkKind.Ethernet));
+            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
     }
 }
