@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.Igmp
             public const int SourceAddresses = 8;
         }
 
-        public const int HeaderMinimumLength = 8;
+        public const int HeaderLength = 8;
 
         /// <summary>
         /// The type of group record included in the report message.
@@ -89,10 +89,15 @@ namespace PcapDotNet.Packets.Igmp
         {
             get
             {
-                IpV4Address[] sourceAddresses = new IpV4Address[NumberOfSources];
-                for (int i = 0; i != sourceAddresses.Length; ++i)
-                    sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + 4 * i, Endianity.Big);
-                return new ReadOnlyCollection<IpV4Address>(sourceAddresses);
+                if (_sourceAddresses == null)
+                {
+                    IpV4Address[] sourceAddresses = new IpV4Address[NumberOfSources];
+                    for (int i = 0; i != sourceAddresses.Length; ++i)
+                        sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + 4 * i, Endianity.Big);
+                    _sourceAddresses = new ReadOnlyCollection<IpV4Address>(sourceAddresses);
+                }
+
+                return _sourceAddresses;
             }
         }
 
@@ -105,17 +110,41 @@ namespace PcapDotNet.Packets.Igmp
         /// </summary>
         public Datagram AuxiliaryData
         {
-            get { return new Datagram(Buffer, StartOffset + Offset.AuxiliaryDataLength, AuxiliaryDataLength); }
+            get { return new Datagram(Buffer, StartOffset + Length - AuxiliaryDataLength, AuxiliaryDataLength); }
+        }
+
+        public IgmpGroupRecord ToGroupRecord()
+        {
+            return new IgmpGroupRecord(RecordType, MulticastAddress, SourceAddresses, AuxiliaryData);
         }
 
         internal IgmpGroupRecordDatagram(byte[] buffer, int offset)
             : base(buffer, offset,
-                   buffer.Length - offset < HeaderMinimumLength
+                   buffer.Length - offset < HeaderLength
                        ? buffer.Length - offset
-                       : Math.Min(buffer.Length - offset, HeaderMinimumLength +
+                       : Math.Min(buffer.Length - offset, HeaderLength +
                                                           4 * buffer.ReadUShort(offset + Offset.NumberOfSources, Endianity.Big) +
                                                           4 * buffer.ReadByte(offset + Offset.AuxiliaryDataLength)))
         {
+        }
+
+        internal static int GetLength(int numSourceAddresses, int auxiliaryDataLength)
+        {
+            return HeaderLength + IpV4Address.SizeOf * numSourceAddresses + auxiliaryDataLength;
+        }
+
+        internal static void Write(byte[] buffer, ref int offset, IgmpRecordType recordType, Datagram auxiliaryData, IpV4Address multicastAddress, ReadOnlyCollection<IpV4Address> sourceAddresses)
+        {
+            buffer.Write(offset + Offset.RecordType, (byte)recordType);
+            buffer.Write(offset + Offset.AuxiliaryDataLength, (byte)(auxiliaryData.Length / 4));
+            int numSourceAddresses = sourceAddresses.Count;
+            buffer.Write(offset + Offset.NumberOfSources, (ushort)numSourceAddresses, Endianity.Big);
+            buffer.Write(offset + Offset.MulticastAddress, multicastAddress, Endianity.Big);
+            for (int i = 0; i != numSourceAddresses; ++i)
+                buffer.Write(offset + Offset.SourceAddresses + IpV4Address.SizeOf * i, sourceAddresses[i], Endianity.Big);
+
+            offset += HeaderLength + numSourceAddresses * IpV4Address.SizeOf;
+            buffer.Write(ref offset, auxiliaryData);
         }
 
         /// <summary>
@@ -123,8 +152,10 @@ namespace PcapDotNet.Packets.Igmp
         /// </summary>
         protected override bool CalculateIsValid()
         {
-            return Length >= HeaderMinimumLength &&
-                   Length == HeaderMinimumLength + 4 * NumberOfSources + AuxiliaryDataLength;
+            return Length >= HeaderLength &&
+                   Length == HeaderLength + IpV4Address.SizeOf * NumberOfSources + AuxiliaryDataLength;
         }
+
+        private ReadOnlyCollection<IpV4Address> _sourceAddresses;
     }
 }

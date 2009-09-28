@@ -65,9 +65,19 @@ namespace PcapDotNet.TestUtils
 
         public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence, string message)
         {
-            Assert.IsTrue(expectedSequence.SequenceEqual(actualSequence),
-                          "Expected sequence: <" + expectedSequence.SequenceToString(",") + ">. Actual sequence: <" +
-                          actualSequence.SequenceToString(",") + ">. " + message);
+            if (expectedSequence.SequenceEqual(actualSequence))
+                return;
+
+//            message = "Expected sequence: <" + expectedSequence.SequenceToString(",") + ">. Actual sequence: <" +
+//                      actualSequence.SequenceToString(",") + ">. " + message;
+
+            Assert.AreEqual(expectedSequence.Count(), actualSequence.Count(), "Different Count. " + message);
+            List<T> expectedList = expectedSequence.ToList();
+            List<T> actualList = actualSequence.ToList();
+            for (int i = 0; i != expectedList.Count; ++i)
+                Assert.AreEqual(expectedList[i], actualList[i], "Element " + (i + 1) + " is different in the sequence. " + message);
+
+            Assert.Fail(message);
         }
 
         public static void AreSequenceEqual<T>(IEnumerable<T> expectedSequence, IEnumerable<T> actualSequence)
