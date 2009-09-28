@@ -72,6 +72,7 @@
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="IDataLink.cs" />
     <Compile Include="Igmp\IgmpDatagram.cs" />
+    <Compile Include="Igmp\IgmpGroupRecord.cs" />
     <Compile Include="Igmp\IgmpGroupRecordDatagram.cs" />
     <Compile Include="Igmp\IgmpQueryVersion.cs" />
     <Compile Include="Igmp\IgmpRecordType.cs" />

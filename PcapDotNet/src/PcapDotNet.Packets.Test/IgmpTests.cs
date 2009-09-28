@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -92,6 +93,7 @@ namespace PcapDotNet.Packets.Test
                 byte? igmpQueryRobustnessVariable = null;
                 TimeSpan? igmpQueryInterval = null;
                 IpV4Address[] igmpSourceAddresses = null;
+                IgmpGroupRecord[] igmpGroupRecords = null;
 
                 Packet packet;
                 switch (igmpMessageType)
@@ -166,6 +168,23 @@ namespace PcapDotNet.Packets.Test
                                                                                   igmpMaxResponseTime, igmpGroupAddress);
                         break;
 
+                    case IgmpMessageType.MembershipReportVersion3:
+                        igmpMaxResponseTime = TimeSpan.Zero;
+                        igmpGroupRecords = new IgmpGroupRecord[random.Next(100)];
+                        for (int groupRecordIndex = 0; groupRecordIndex != igmpGroupRecords.Length; ++groupRecordIndex)
+                        {
+                            IpV4Address[] sourceAddresses = new IpV4Address[random.Next(100)];
+                            for (int sourceAddressIndex = 0; sourceAddressIndex != sourceAddresses.Length; ++sourceAddressIndex)
+                                sourceAddresses[sourceAddressIndex] = random.NextIpV4Address();
+                            igmpGroupRecords[groupRecordIndex] = new IgmpGroupRecord(random.NextEnum<IgmpRecordType>(), random.NextIpV4Address(), sourceAddresses, random.NextDatagram(100));
+                        }
+                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion3(DateTime.Now,
+                                                                                      ethernetSource, ethernetDestination,
+                                                                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+                                                                                      ipV4Source, ipV4Destination, ipV4Options,
+                                                                                      igmpGroupRecords);
+                        break;
+
                     default:
                         continue;
                 }
@@ -178,10 +197,11 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(igmpQueryVersion, packet.Ethernet.IpV4.Igmp.QueryVersion);
                 MoreAssert.IsInRange(igmpMaxResponseTime.Divide(2), igmpMaxResponseTime,
                                      packet.Ethernet.IpV4.Igmp.MaxResponseTime, "MaxResponseTime");
-                Assert.AreEqual(igmpGroupAddress, packet.Ethernet.IpV4.Igmp.GroupAddress);
+                if (igmpMessageType != IgmpMessageType.MembershipReportVersion3)
+                    Assert.AreEqual(igmpGroupAddress, packet.Ethernet.IpV4.Igmp.GroupAddress, "GroupAddress");
 
                 // Query Version 3
-                if (packet.Ethernet.IpV4.Igmp.QueryVersion == IgmpQueryVersion.Version3)
+                if (igmpQueryVersion == IgmpQueryVersion.Version3)
                 {
                     Assert.AreEqual(igmpIsSuppressRouterSideProcessing.Value, packet.Ethernet.IpV4.Igmp.IsSuppressRouterSideProcessing,
                                     "IsSuppressRouterSideProcessing");
@@ -189,6 +209,12 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(igmpQueryRobustnessVariable, packet.Ethernet.IpV4.Igmp.QueryRobustnessVariable);
                     Assert.AreEqual(igmpSourceAddresses.Length, packet.Ethernet.IpV4.Igmp.NumberOfSources);
                     MoreAssert.AreSequenceEqual(igmpSourceAddresses, packet.Ethernet.IpV4.Igmp.SourceAddresses);
+                }
+
+                if (igmpMessageType == IgmpMessageType.MembershipReportVersion3)
+                {
+                    Assert.AreEqual(igmpGroupRecords.Length, packet.Ethernet.IpV4.Igmp.NumberOfGroupRecords);
+                    MoreAssert.AreSequenceEqual(igmpGroupRecords, packet.Ethernet.IpV4.Igmp.GroupRecords.Select(record => record.ToGroupRecord()));
                 }
             }
         }

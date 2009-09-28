@@ -419,6 +419,12 @@ namespace PcapDotNet.Packets.Igmp
             return QueryVersion3HeaderLength + IpV4Address.SizeOf * numSourceAddresses;
         }
 
+        internal static int GetReportVersion3Length(IEnumerable<IgmpGroupRecord> igmpGroupRecords)
+        {
+            return HeaderLength +
+                   igmpGroupRecords.Sum(record => IgmpGroupRecordDatagram.GetLength(record.SourceAddresses.Count, record.AuxiliaryData.Length));
+        }
+
         internal static void WriteHeader(byte[] buffer, int offset,
                                          IgmpMessageType igmpMessageType, TimeSpan maxResponseTime, IpV4Address groupAddress)
         {
@@ -431,7 +437,7 @@ namespace PcapDotNet.Packets.Igmp
 
             buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
 
-            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, HeaderLength)), Endianity.Big);
+            WriteChecksum(buffer, offset, HeaderLength);
         }
 
         internal static void WriteQueryVersion3(byte[] buffer, int offset,
@@ -476,9 +482,30 @@ namespace PcapDotNet.Packets.Igmp
             buffer.Write(offset + Offset.NumberOfSources, (ushort)numSourceAddresses, Endianity.Big);
 
             // Checksum
-            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, QueryVersion3HeaderLength + IpV4Address.SizeOf * numSourceAddresses)), Endianity.Big);
+            WriteChecksum(buffer, offset, QueryVersion3HeaderLength + IpV4Address.SizeOf * numSourceAddresses);
         }
-        
+
+        internal static void WriteReportVersion3(byte[] buffer, int offset,
+                                                 IEnumerable<IgmpGroupRecord> groupRecords)
+        {
+            // MessageType
+            buffer.Write(offset + Offset.MessageType, (byte)IgmpMessageType.MembershipReportVersion3);
+
+            ushort numGroupRecords = 0;
+            int recordOffset = offset + Offset.GroupRecords;
+            foreach (IgmpGroupRecord record in groupRecords)
+            {
+                IgmpGroupRecordDatagram.Write(buffer, ref recordOffset, record.RecordType, record.AuxiliaryData, record.MulticastAddress, record.SourceAddresses);
+                ++numGroupRecords;
+            }
+
+            // NumberOfGroupRecords
+            buffer.Write(offset + Offset.NumberOfGroupRecords, numGroupRecords, Endianity.Big);
+
+            // Checksum
+            WriteChecksum(buffer, offset, recordOffset - offset);
+        }
+
         protected override bool CalculateIsValid()
         {
             if (Length < HeaderLength || !IsChecksumCorrect)
@@ -527,6 +554,11 @@ namespace PcapDotNet.Packets.Igmp
                        Sum16Bits(Buffer, StartOffset + Offset.Checksum + 2, Length - Offset.Checksum - 2);
 
             return Sum16BitsToChecksum(sum);
+        }
+
+        private static void WriteChecksum(byte[] buffer, int offset, int length)
+        {
+            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, length)), Endianity.Big);
         }
 
         /// <summary>
