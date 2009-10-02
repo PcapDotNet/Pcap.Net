@@ -110,6 +110,13 @@ namespace PcapDotNet.Packets.Igmp
             public const int GroupRecords = 8;
         }
 
+        public const byte MaxQueryRobustnessVariable = 0x07;
+
+        public static TimeSpan MaxMaxResponseTime
+        {
+            get { return _maxMaxResponseTime; }
+        }
+
         public static TimeSpan MaxVersion3MaxResponseTime
         {
             get { return _maxVersion3MaxResponseTime; }
@@ -126,6 +133,46 @@ namespace PcapDotNet.Packets.Igmp
         public IgmpMessageType MessageType
         {
             get { return (IgmpMessageType)this[Offset.MessageType]; }
+        }
+
+        public int Version
+        {
+            get
+            {
+                switch (MessageType)
+                {
+                    case IgmpMessageType.MembershipQuery:
+                        switch (QueryVersion)
+                        {
+                            case IgmpQueryVersion.Version1:
+                                return 1;
+
+                            case IgmpQueryVersion.Version2:
+                                return 2;
+
+                            case IgmpQueryVersion.Version3:
+                                return 3;
+
+                            default:
+                                throw new InvalidOperationException("Invalid QueryVersion " + QueryVersion);
+                        }
+
+                    case IgmpMessageType.MembershipReportVersion1:
+                        return 1;
+
+                    case IgmpMessageType.MembershipReportVersion2:
+                        return 2;
+
+                    case IgmpMessageType.MembershipReportVersion3:
+                        return 3; 
+
+                    case IgmpMessageType.LeaveGroupVersion2:
+                        return 2;
+
+                    default:
+                        throw new InvalidOperationException("Invalid MessageType " + MessageType);
+                }
+            }
         }
 
         /// <summary>
@@ -260,7 +307,7 @@ namespace PcapDotNet.Packets.Igmp
         /// </remarks>
         public bool IsSuppressRouterSideProcessing
         {
-            get { return ((this[Offset.IsSuppressRouterSideProcessing] >> 4) & 0x01) == 0x01; }
+            get { return ((this[Offset.IsSuppressRouterSideProcessing] >> 3) & 0x01) == 0x01; }
         }
 
         /// <summary>
@@ -459,9 +506,9 @@ namespace PcapDotNet.Packets.Igmp
             buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
 
             // IsSuppressRouterSideProcessing and QueryRobustnessVariable
-            if (queryRobustnessVariable > 0x07)
+            if (queryRobustnessVariable > MaxQueryRobustnessVariable)
                 throw new ArgumentOutOfRangeException("queryRobustnessVariable", queryRobustnessVariable, "must be in range [0, 7]");
-            buffer.Write(offset + Offset.QueryRobustnessVariable, (byte)(queryRobustnessVariable | (isSuppressRouterSideProcessing ? 0x10 : 0x00)));
+            buffer.Write(offset + Offset.QueryRobustnessVariable, (byte)(queryRobustnessVariable | (isSuppressRouterSideProcessing ? 0x08 : 0x00)));
 
             // QueryIntervalCode
             if (queryInterval < TimeSpan.Zero || queryInterval > MaxVersion3QueryInterval)
@@ -591,6 +638,7 @@ namespace PcapDotNet.Packets.Igmp
             return (byte)(0x80 | (exp << 4) | mant);
         }
 
+        private static readonly TimeSpan _maxMaxResponseTime = TimeSpan.FromSeconds(0.1 * 255) + TimeSpan.FromSeconds(0.1) - TimeSpan.FromTicks(1);
         private static readonly TimeSpan _maxVersion3MaxResponseTime = TimeSpan.FromSeconds(0.1 * CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(0.1) - TimeSpan.FromTicks(1);
         private static readonly TimeSpan _maxVersion3QueryInterval = TimeSpan.FromSeconds(CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(1) - TimeSpan.FromTicks(1);
 

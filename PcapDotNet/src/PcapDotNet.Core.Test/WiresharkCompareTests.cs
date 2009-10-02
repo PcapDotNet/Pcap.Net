@@ -12,6 +12,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
@@ -106,70 +107,167 @@ namespace PcapDotNet.Core.Test
             Ethernet,
             Arp,
             IpV4,
+            Igmp,
             Udp,
             Tcp
+        }
+
+        private static Packet CreateRandomIgmpPacket(DateTime packetTimestamp, Random random)
+        {
+            switch (random.NextEnum(IgmpMessageType.None))
+            {
+                case IgmpMessageType.MembershipQuery:
+                    switch (random.NextEnum(IgmpQueryVersion.None, IgmpQueryVersion.Unknown))
+                    {
+                        case IgmpQueryVersion.Version1:
+                            return PacketBuilder.EthernetIpV4IgmpQueryVersion1(packetTimestamp,
+                                                                               random.NextMacAddress(), random.NextMacAddress(),
+                                                                               random.NextByte(), random.NextUShort(),
+                                                                               IpV4Fragmentation.None, random.NextByte(),
+                                                                               random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                               random.NextIpV4Options(),
+                                                                               random.NextIpV4Address());
+
+                        case IgmpQueryVersion.Version2:
+                            return PacketBuilder.EthernetIpV4IgmpQueryVersion2(packetTimestamp,
+                                                                               random.NextMacAddress(), random.NextMacAddress(),
+                                                                               random.NextByte(), random.NextUShort(),
+                                                                               IpV4Fragmentation.None, random.NextByte(),
+                                                                               random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                               random.NextIpV4Options(),
+                                                                               random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
+                                                                                                   IgmpDatagram.MaxMaxResponseTime),
+                                                                               random.NextIpV4Address());
+
+                        case IgmpQueryVersion.Version3:
+                            return PacketBuilder.EthernetIpV4IgmpQueryVersion3(packetTimestamp,
+                                                                               random.NextMacAddress(), random.NextMacAddress(),
+                                                                               random.NextByte(), random.NextUShort(),
+                                                                               IpV4Fragmentation.None, random.NextByte(),
+                                                                               random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                               random.NextIpV4Options(),
+                                                                               random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
+                                                                                                   IgmpDatagram.MaxVersion3MaxResponseTime),
+                                                                               random.NextIpV4Address(), random.NextBool(),
+                                                                               random.NextByte(IgmpDatagram.MaxQueryRobustnessVariable + 1),
+                                                                               random.NextTimeSpan(TimeSpan.Zero,
+                                                                                                   IgmpDatagram.MaxVersion3QueryInterval),
+                                                                               random.NextIpV4Addresses(random.Next(100)));
+
+                        default:
+                            throw new InvalidOperationException();
+                    }
+
+                case IgmpMessageType.LeaveGroupVersion2:
+                    return PacketBuilder.EthernetIpV4IgmpLeaveGroupVersion2(packetTimestamp,
+                                                                            random.NextMacAddress(), random.NextMacAddress(),
+                                                                            random.NextByte(), random.NextUShort(),
+                                                                            IpV4Fragmentation.None, random.NextByte(),
+                                                                            random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                            random.NextIpV4Options(),
+                                                                            random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
+                                                                                                IgmpDatagram.MaxMaxResponseTime),
+                                                                            random.NextIpV4Address());
+                case IgmpMessageType.MembershipReportVersion1:
+                    return PacketBuilder.EthernetIpV4IgmpReportVersion1(packetTimestamp,
+                                                                        random.NextMacAddress(), random.NextMacAddress(),
+                                                                        random.NextByte(), random.NextUShort(),
+                                                                        IpV4Fragmentation.None, random.NextByte(),
+                                                                        random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                        random.NextIpV4Options(),
+                                                                        random.NextIpV4Address());
+
+                case IgmpMessageType.MembershipReportVersion2:
+                    return PacketBuilder.EthernetIpV4IgmpReportVersion2(packetTimestamp,
+                                                                        random.NextMacAddress(), random.NextMacAddress(),
+                                                                        random.NextByte(), random.NextUShort(),
+                                                                        IpV4Fragmentation.None, random.NextByte(),
+                                                                        random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                        random.NextIpV4Options(),
+                                                                        random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
+                                                                                            IgmpDatagram.MaxMaxResponseTime),
+                                                                        random.NextIpV4Address());
+
+                case IgmpMessageType.MembershipReportVersion3:
+                    return PacketBuilder.EthernetIpV4IgmpReportVersion3(packetTimestamp,
+                                                                        random.NextMacAddress(), random.NextMacAddress(),
+                                                                        random.NextByte(), random.NextUShort(),
+                                                                        IpV4Fragmentation.None, random.NextByte(),
+                                                                        random.NextIpV4Address(), random.NextIpV4Address(),
+                                                                        random.NextIpV4Options(),
+                                                                        random.NextIgmpGroupRecords(random.Next(10)));
+
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        private static Packet CreateRandomPacket(Random random)
+        {
+            DateTime packetTimestamp =
+                random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+
+            switch (random.NextEnum<PacketType>())
+            {
+                case PacketType.Ethernet:
+                    return PacketBuilder.Ethernet(packetTimestamp,
+                                                  random.NextMacAddress(), random.NextMacAddress(), random.NextEnum<EthernetType>(),
+                                                  random.NextDatagram(random.Next(100)));
+
+                case PacketType.Arp:
+                    byte hardwareAddressLength = random.NextByte();
+                    byte protocolAddressLength = random.NextByte();
+                    return PacketBuilder.EthernetArp(packetTimestamp,
+                                                     random.NextMacAddress(),
+                                                     random.NextEnum<EthernetType>(), random.NextEnum<ArpOperation>(),
+                                                     random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength),
+                                                     random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength));
+
+                case PacketType.IpV4:
+                    return PacketBuilder.EthernetIpV4(packetTimestamp,
+                                                      random.NextMacAddress(), random.NextMacAddress(),
+                                                      random.NextByte(), random.NextUShort(), random.NextIpV4Fragmentation(),
+                                                      random.NextByte(),
+                                                      random.NextEnum<IpV4Protocol>(),
+                                                      random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                      random.NextDatagram(random.Next(100)));
+
+                case PacketType.Igmp:
+                    return CreateRandomIgmpPacket(packetTimestamp, random);
+
+                case PacketType.Udp:
+                    return PacketBuilder.EthernetIpV4Udp(packetTimestamp,
+                                                         random.NextMacAddress(), random.NextMacAddress(),
+                                                         random.NextByte(), random.NextUShort(),
+                                                         random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
+                                                         random.NextByte(),
+                                                         random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                         random.NextUShort(), random.NextUShort(), random.NextBool(),
+                                                         random.NextDatagram(random.Next(100)));
+
+                case PacketType.Tcp:
+                    return PacketBuilder.EthernetIpV4Tcp(packetTimestamp,
+                                                         random.NextMacAddress(), random.NextMacAddress(),
+                                                         random.NextByte(), random.NextUShort(),
+                                                         random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
+                                                         random.NextByte(),
+                                                         random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
+                                                         random.NextUShort(), random.NextUShort(), random.NextUInt(), random.NextUInt(),
+                                                         random.NextFlags<TcpControlBits>(),
+                                                         random.NextUShort(), random.NextUShort(),
+                                                         random.NextTcpOptions(),
+                                                         random.NextDatagram(random.Next(100)));
+
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         private static IEnumerable<Packet> CreateRandomPackets(int numPackets)
         {
             Random random = new Random();
             for (int i = 0; i != numPackets; ++i)
-            {
-                DateTime packetTimestamp = random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
-                switch (random.NextEnum<PacketType>())
-                {
-                    case PacketType.Ethernet:
-                        yield return PacketBuilder.Ethernet(packetTimestamp,
-                                                            random.NextMacAddress(), random.NextMacAddress(), random.NextEnum<EthernetType>(),
-                                                            random.NextDatagram(random.Next(100)));
-                        break;
-
-                    case PacketType.Arp:
-                        byte hardwareAddressLength = random.NextByte();
-                        byte protocolAddressLength = random.NextByte();
-                        yield return PacketBuilder.EthernetArp(packetTimestamp,
-                                                               random.NextMacAddress(),
-                                                               random.NextEnum<EthernetType>(), random.NextEnum<ArpOperation>(),
-                                                               random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength),
-                                                               random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength));
-                        break;
-
-                    case PacketType.IpV4:
-                        yield return PacketBuilder.EthernetIpV4(packetTimestamp,
-                                                                random.NextMacAddress(), random.NextMacAddress(),
-                                                                random.NextByte(), random.NextUShort(), random.NextIpV4Fragmentation(),
-                                                                random.NextByte(),
-                                                                random.NextEnum<IpV4Protocol>(),
-                                                                random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
-                                                                random.NextDatagram(random.Next(100)));
-                        break;
-
-                    case PacketType.Udp:
-                        yield return PacketBuilder.EthernetIpV4Udp(packetTimestamp,
-                                                                   random.NextMacAddress(), random.NextMacAddress(),
-                                                                   random.NextByte(), random.NextUShort(),
-                                                                   random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
-                                                                   random.NextByte(),
-                                                                   random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
-                                                                   random.NextUShort(), random.NextUShort(), random.NextBool(),
-                                                                   random.NextDatagram(random.Next(100)));
-                        break;
-
-                    case PacketType.Tcp:
-                        yield return PacketBuilder.EthernetIpV4Tcp(packetTimestamp,
-                                                                   random.NextMacAddress(), random.NextMacAddress(),
-                                                                   random.NextByte(), random.NextUShort(),
-                                                                   random.NextBool() ? IpV4Fragmentation.None : random.NextIpV4Fragmentation(),
-                                                                   random.NextByte(),
-                                                                   random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
-                                                                   random.NextUShort(), random.NextUShort(), random.NextUInt(), random.NextUInt(),
-                                                                   random.NextFlags<TcpControlBits>(), 
-                                                                   random.NextUShort(), random.NextUShort(), 
-                                                                   random.NextTcpOptions(),
-                                                                   random.NextDatagram(random.Next(100)));
-                        break;
-                }
-            }
+                yield return CreateRandomPacket(random);
         }
 
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
@@ -269,6 +367,14 @@ namespace PcapDotNet.Core.Test
                             break;
                         currentDatagram = ipV4Property.GetValue(currentDatagram);
                         CompareIpV4(layer, (IpV4Datagram)currentDatagram);
+                        break;
+
+                    case "igmp":
+                        PropertyInfo igmpProperty = currentDatagram.GetType().GetProperty("Igmp");
+                        if (igmpProperty == null)
+                            break;
+                        currentDatagram = igmpProperty.GetValue(currentDatagram);
+                        CompareIgmp(layer, (IgmpDatagram)currentDatagram);
                         break;
 
                     case "udp":
@@ -518,6 +624,122 @@ namespace PcapDotNet.Core.Test
 
                 var optionShows = from f in field.Fields() select f.Show();
                 MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
+            }
+        }
+
+        private static void CompareIgmp(XElement igmp, IgmpDatagram igmpDatagram)
+        {
+            int groupRecordIndex = 0;
+            int sourceAddressIndex = 0;
+            foreach (var field in igmp.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "igmp.version":
+                        field.AssertShowDecimal(igmpDatagram.Version);
+                        break;
+
+                    case "igmp.type":
+                        field.AssertShowHex((byte)igmpDatagram.MessageType);
+                        break;
+
+                    case "igmp.checksum":
+                        field.AssertShowHex(igmpDatagram.Checksum);
+                        break;
+
+                    case "igmp.maddr":
+                        field.AssertShow(igmpDatagram.GroupAddress.ToString());
+                        break;
+
+                    case "igmp.max_resp":
+                        field.AssertShowDecimal((int)((igmpDatagram.MaxResponseTime.TotalSeconds + 0.05) * 10));
+                        break;
+
+                    case "igmp.checksum_bad":
+                        field.AssertShowDecimal(!igmpDatagram.IsChecksumCorrect);
+                        break;
+
+                    case "igmp.num_grp_recs":
+                        field.AssertShowDecimal(igmpDatagram.NumberOfGroupRecords);
+                        break;
+
+                    case "":
+                        switch (igmpDatagram.MessageType)
+                        {
+                            case IgmpMessageType.MembershipReportVersion3:
+                                CompareIgmpGroupRecord(field, igmpDatagram.GroupRecords[groupRecordIndex++]);
+                                break;
+
+                            case IgmpMessageType.MembershipQuery:
+                                CompareIgmp(field, igmpDatagram);
+                                break;
+
+                            default:
+                                throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
+                        }
+
+                        break;
+
+                    case "igmp.s":
+                        field.AssertShowDecimal(igmpDatagram.IsSuppressRouterSideProcessing);
+                        break;
+
+                    case "igmp.qrv":
+                        field.AssertShowDecimal(igmpDatagram.QueryRobustnessVariable);
+                        break;
+
+                    case "igmp.qqic":
+                        field.AssertShowDecimal(igmpDatagram.QueryIntervalCode);
+                        break;
+
+                    case "igmp.num_src":
+                        field.AssertShowDecimal(igmpDatagram.NumberOfSources);
+                        break;
+
+                    case "igmp.saddr":
+                        field.AssertShow(igmpDatagram.SourceAddresses[sourceAddressIndex++].ToString());
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid field name " + field.Name());
+                }
+            }
+        }
+
+        private static void CompareIgmpGroupRecord(XElement groupRecord, IgmpGroupRecordDatagram groupRecordDatagram)
+        {
+            int sourceAddressIndex = 0;
+            foreach (var field in groupRecord.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "igmp.record_type":
+                        field.AssertShowDecimal((byte)groupRecordDatagram.RecordType);
+                        break;
+
+                    case "igmp.aux_data_len":
+                        field.AssertShowDecimal(groupRecordDatagram.AuxiliaryDataLength / 4);
+                        break;
+
+                    case "igmp.num_src":
+                        field.AssertShowDecimal(groupRecordDatagram.NumberOfSources);
+                        break;
+
+                    case "igmp.maddr":
+                        field.AssertShow(groupRecordDatagram.MulticastAddress.ToString());
+                        break;
+
+                    case "igmp.saddr":
+                        field.AssertShow(groupRecordDatagram.SourceAddresses[sourceAddressIndex++].ToString());
+                        break;
+
+                    case "igmp.aux_data":
+                        field.AssertShow(groupRecordDatagram.AuxiliaryData.BytesSequenceToHexadecimalString(":"));
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid field name " + field.Name());
+                }
             }
         }
 

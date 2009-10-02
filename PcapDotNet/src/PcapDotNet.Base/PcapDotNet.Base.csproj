@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MoreFunc.cs" />
     <Compile Include="MoreIEnumerable.cs" />
     <Compile Include="MoreIList.cs" />
     <Compile Include="MorePropertyInfo.cs" />
