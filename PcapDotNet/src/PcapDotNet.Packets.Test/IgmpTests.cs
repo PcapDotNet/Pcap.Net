@@ -76,9 +76,7 @@ namespace PcapDotNet.Packets.Test
             byte ipV4TypeOfService = random.NextByte();
             ushort ipV4Identification = random.NextUShort();
             byte ipV4Ttl = random.NextByte();
-            IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
-            ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
-            IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
+            IpV4Fragmentation ipV4Fragmentation = random.NextIpV4Fragmentation();
             IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
             IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
             IpV4Options ipV4Options = random.NextIpV4Options();
@@ -125,9 +123,7 @@ namespace PcapDotNet.Packets.Test
                                 igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
                                                                           IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
                                 igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxVersion3QueryInterval - TimeSpan.FromTicks(1));
-                                igmpSourceAddresses = new IpV4Address[random.Next(1000)];
-                                for (int sourceAddressIndex = 0; sourceAddressIndex != igmpSourceAddresses.Length; ++sourceAddressIndex)
-                                    igmpSourceAddresses[sourceAddressIndex] = random.NextIpV4Address();
+                                igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
                                 packet = PacketBuilder.EthernetIpV4IgmpQueryVersion3(DateTime.Now,
                                                                                      ethernetSource, ethernetDestination,
                                                                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
@@ -170,19 +166,12 @@ namespace PcapDotNet.Packets.Test
 
                     case IgmpMessageType.MembershipReportVersion3:
                         igmpMaxResponseTime = TimeSpan.Zero;
-                        igmpGroupRecords = new IgmpGroupRecord[random.Next(100)];
-                        for (int groupRecordIndex = 0; groupRecordIndex != igmpGroupRecords.Length; ++groupRecordIndex)
-                        {
-                            IpV4Address[] sourceAddresses = new IpV4Address[random.Next(100)];
-                            for (int sourceAddressIndex = 0; sourceAddressIndex != sourceAddresses.Length; ++sourceAddressIndex)
-                                sourceAddresses[sourceAddressIndex] = random.NextIpV4Address();
-                            igmpGroupRecords[groupRecordIndex] = new IgmpGroupRecord(random.NextEnum<IgmpRecordType>(), random.NextIpV4Address(), sourceAddresses, random.NextDatagram(100));
-                        }
+                        igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
                         packet = PacketBuilder.EthernetIpV4IgmpReportVersion3(DateTime.Now,
-                                                                                      ethernetSource, ethernetDestination,
-                                                                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                                      ipV4Source, ipV4Destination, ipV4Options,
-                                                                                      igmpGroupRecords);
+                                                                              ethernetSource, ethernetDestination,
+                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+                                                                              ipV4Source, ipV4Destination, ipV4Options,
+                                                                              igmpGroupRecords);
                         break;
 
                     default:

@@ -329,13 +329,14 @@ namespace PcapDotNet.Packets
                                                            TimeSpan igmpQueryInterval, IEnumerable<IpV4Address> igmpSourceAddresses)
         {
             int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
-            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + IgmpDatagram.GetQueryVersion3Length(igmpSourceAddresses.Count())];
+            int igmpLength = IgmpDatagram.GetQueryVersion3Length(igmpSourceAddresses.Count());
+            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + igmpLength];
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
                                      ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
                                      ipV4SourceAddress, ipV4DestinationAddress,
-                                     ipV4Options, IgmpDatagram.HeaderLength);
+                                     ipV4Options, igmpLength);
             IgmpDatagram.WriteQueryVersion3(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
                                             igmpMaxResponseTime, igmpGroupAddress, igmpIsSuppressRouterSideProcessing, igmpQueryRobustnessVariable,
                                             igmpQueryInterval, igmpSourceAddresses);
@@ -372,13 +373,14 @@ namespace PcapDotNet.Packets
                                                             IEnumerable<IgmpGroupRecord> igmpGroupRecords)
         {
             int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
-            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + IgmpDatagram.GetReportVersion3Length(igmpGroupRecords)];
+            int igmpLength = IgmpDatagram.GetReportVersion3Length(igmpGroupRecords);
+            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + igmpLength];
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
                                      ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
                                      ipV4SourceAddress, ipV4DestinationAddress,
-                                     ipV4Options, IgmpDatagram.HeaderLength);
+                                     ipV4Options, igmpLength);
             IgmpDatagram.WriteReportVersion3(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
                                             igmpGroupRecords);
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);

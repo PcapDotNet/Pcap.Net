@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
@@ -73,6 +75,11 @@ namespace PcapDotNet.Packets.TestUtils
         public static IpV4Address NextIpV4Address(this Random random)
         {
             return new IpV4Address(random.NextUInt());
+        }
+
+        public static IpV4Address[] NextIpV4Addresses(this Random random, int count)
+        {
+            return ((Func<IpV4Address>)random.NextIpV4Address).GenerateArray(count);
         }
 
         public static IpV4Fragmentation NextIpV4Fragmentation(this Random random)
@@ -151,9 +158,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV4OptionType.StrictSourceRouting:
                 case IpV4OptionType.RecordRoute:
                     int numAddresses = random.Next((maximumOptionLength - IpV4OptionRoute.OptionMinimumLength) / 4 + 1);
-                    IpV4Address[] addresses = new IpV4Address[numAddresses];
-                    for (int addressIndex = 0; addressIndex != numAddresses; ++addressIndex)
-                        addresses[addressIndex] = random.NextIpV4Address();
+                    IpV4Address[] addresses = random.NextIpV4Addresses(numAddresses);
 
                     byte pointedAddressIndex;
                     if (random.NextBool())
@@ -192,9 +197,7 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         case IpV4OptionTimestampType.TimestampOnly:
                             int numTimestamps = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 4 + 1);
-                            IpV4OptionTimeOfDay[] timestamps = new IpV4OptionTimeOfDay[numTimestamps];
-                            for (int i = 0; i != numTimestamps; ++i)
-                                timestamps[i] = random.NextIpV4OptionTimeOfDay();
+                            IpV4OptionTimeOfDay[] timestamps = ((Func<IpV4OptionTimeOfDay>)random.NextIpV4OptionTimeOfDay).GenerateArray(numTimestamps);
                             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
 
                         case IpV4OptionTimestampType.AddressAndTimestamp:
@@ -260,8 +263,7 @@ namespace PcapDotNet.Packets.TestUtils
                 unknownOptionType = (TcpOptionType)unknownOptionTypeValue;
             } while (unknownOptionType.ToString() != unknownOptionTypeValue.ToString());
 
-            Byte[] unknownOptionData = new byte[random.Next(maximumOptionLength - TcpOptionUnknown.OptionMinimumLength + 1)];
-            random.NextBytes(unknownOptionData);
+            byte[] unknownOptionData = random.NextBytes(maximumOptionLength - TcpOptionUnknown.OptionMinimumLength + 1);
 
             return new TcpOptionUnknown(unknownOptionType, unknownOptionData);
         }
@@ -371,6 +373,21 @@ namespace PcapDotNet.Packets.TestUtils
                     throw new InvalidOperationException("optionType = " + optionType);
             }
         }
+
+        // IGMP
+
+        public static IgmpGroupRecord NextIgmpGroupRecord(this Random random)
+        {
+            IpV4Address[] sourceAddresses = random.NextIpV4Addresses(random.Next(10));
+            return new IgmpGroupRecord(random.NextEnum<IgmpRecordType>(), random.NextIpV4Address(), sourceAddresses, random.NextDatagram(random.Next(10) * 4));
+        }
+
+        public static IgmpGroupRecord[] NextIgmpGroupRecords(this Random random, int count)
+        {
+            return ((Func<IgmpGroupRecord>)random.NextIgmpGroupRecord).GenerateArray(count);
+        }
+
+        // TCP
 
         public static TcpOptions NextTcpOptions(this Random random)
         {
