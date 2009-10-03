@@ -446,6 +446,13 @@ namespace PcapDotNet.Core.Test
                     case "eth.type":
                         field.AssertShowHex((ushort)ethernetDatagram.EtherType);
                         break;
+
+                    case "eth.trailer":
+                    case "":
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid etherent field " + field.Name());
                 }
             }
         }
@@ -476,25 +483,38 @@ namespace PcapDotNet.Core.Test
                         field.AssertShowHex((ushort)arpDatagram.Operation);
                         break;
 
-//                    case "arp.isgratuitous":
-//                        field.AssertShowDecimal(false);
-//                        break;
-
                     case "arp.src.hw":
+                    case "arp.src.hw_mac":
                         field.AssertShow(arpDatagram.SenderHardwareAddress.BytesSequenceToHexadecimalString(":"));
                         break;
+
 
                     case "arp.src.proto":
                         field.AssertShow(arpDatagram.SenderProtocolAddress.BytesSequenceToHexadecimalString(":"));
                         break;
 
+                    case "arp.src.proto_ipv4":
+                        field.AssertShow(arpDatagram.SenderProtocolIpV4Address.ToString());
+                        break;
+
                     case "arp.dst.hw":
+                    case "arp.dst.hw_mac":
                         field.AssertShow(arpDatagram.TargetHardwareAddress.BytesSequenceToHexadecimalString(":"));
                         break;
 
                     case "arp.dst.proto":
                         field.AssertShow(arpDatagram.TargetProtocolAddress.BytesSequenceToHexadecimalString(":"));
                         break;
+
+                    case "arp.dst.proto_ipv4":
+                        field.AssertShow(arpDatagram.TargetProtocolIpV4Address.ToString());
+                        break;
+
+                    case "arp.isgratuitous":
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid arp field " + field.Name());
                 }
             }
         }
@@ -508,6 +528,13 @@ namespace PcapDotNet.Core.Test
                     case "eth.addr":
                         field.AssertShow(address.ToString().ToLower());
                         break;
+
+                    case "eth.ig":
+                    case "eth.lg":
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid ethernet address field " + field.Name());
                 }
             }
         }
@@ -576,16 +603,27 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "ip.src":
+                    case "ip.src_host":
                         field.AssertShow(ipV4Datagram.Source.ToString());
                         break;
 
                     case "ip.dst":
+                    case "ip.dst_host":
                         field.AssertShow(ipV4Datagram.Destination.ToString());
+                        break;
+
+                    case "ip.addr":
+                    case "ip.host":
+                        Assert.IsTrue(field.Show() == ipV4Datagram.Source.ToString() ||
+                                      field.Show() == ipV4Datagram.Destination.ToString());
                         break;
 
                     case "":
                         CompareIpV4Options(field, ipV4Datagram.Options);
                         break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid ip field " + field.Name());
                 }
             }
         }
@@ -701,7 +739,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     default:
-                        throw new InvalidOperationException("Invalid field name " + field.Name());
+                        throw new InvalidOperationException("Invalid igmp field " + field.Name());
                 }
             }
         }
@@ -738,7 +776,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     default:
-                        throw new InvalidOperationException("Invalid field name " + field.Name());
+                        throw new InvalidOperationException("Invalid igmp group record field " + field.Name());
                 }
             }
         }
@@ -757,6 +795,11 @@ namespace PcapDotNet.Core.Test
 
                     case "udp.dstport":
                         field.AssertShowDecimal(udpDatagram.DestinationPort);
+                        break;
+
+                    case "udp.port":
+                        Assert.IsTrue(ushort.Parse(field.Show()) == udpDatagram.SourcePort ||
+                                      ushort.Parse(field.Show()) == udpDatagram.DestinationPort);
                         break;
 
                     case "udp.length":
@@ -782,6 +825,13 @@ namespace PcapDotNet.Core.Test
                             }
                         }
                         break;
+
+                    case "udp.checksum_coverage":
+                        field.AssertShowDecimal(udpDatagram.Length);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid udp field " + field.Name());
                 }
             }
         }
@@ -794,6 +844,10 @@ namespace PcapDotNet.Core.Test
             {
                 switch (field.Name())
                 {
+                    case "tcp.len":
+                        field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                        break;
+
                     case "tcp.srcport":
                         field.AssertShowDecimal(tcpDatagram.SourcePort);
                         break;
@@ -802,8 +856,18 @@ namespace PcapDotNet.Core.Test
                         field.AssertShowDecimal(tcpDatagram.DestinationPort);
                         break;
 
+                    case "tcp.port":
+                        Assert.IsTrue(ushort.Parse(field.Show()) == tcpDatagram.SourcePort ||
+                                      ushort.Parse(field.Show()) == tcpDatagram.DestinationPort);
+                        break;
+
+
                     case "tcp.seq":
                         field.AssertShowDecimal(tcpDatagram.SequenceNumber);
+                        break;
+
+                    case "tcp.nxtseq":
+                        field.AssertShowDecimal(tcpDatagram.NextSequenceNumber);
                         break;
 
                     case "tcp.ack":
@@ -883,6 +947,14 @@ namespace PcapDotNet.Core.Test
                     case "tcp.options":
                         CompareTcpOptions(field, tcpDatagram.Options);
                         break;
+
+                    case "tcp.stream":
+                    case "tcp.pdu.size":
+                    case "":
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid tcp field " + field.Name());
                 }
             }
         }
@@ -958,9 +1030,9 @@ namespace PcapDotNet.Core.Test
                     case "tcp.options.snack.size":
                         Assert.AreEqual((TcpOptionType)21, option.OptionType);
                         break;
-  
+
                     default:
-                        throw new InvalidOperationException(field.Name());
+                        throw new InvalidOperationException("Invalid tcp options field " + field.Name());
                 }
 
                 if ((option is TcpOptionUnknown))

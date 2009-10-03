@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Arp
 {
@@ -113,6 +114,14 @@ namespace PcapDotNet.Packets.Arp
         }
 
         /// <summary>
+        /// Protocol IPv4 address of the sender.
+        /// </summary>
+        public IpV4Address SenderProtocolIpV4Address
+        {
+            get { return ReadIpV4Address(OffsetSenderProtocolAddress, Endianity.Big); }
+        }
+
+        /// <summary>
         /// Hardware address of the intended receiver. 
         /// This field is ignored in requests.
         /// </summary>
@@ -127,6 +136,14 @@ namespace PcapDotNet.Packets.Arp
         public ReadOnlyCollection<byte> TargetProtocolAddress
         {
             get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetTargetProtocolAddress, ProtocolLength)); }
+        }
+
+        /// <summary>
+        /// Protocol IPv4 address of the intended receiver.
+        /// </summary>
+        public IpV4Address TargetProtocolIpV4Address
+        {
+            get { return ReadIpV4Address(OffsetTargetProtocolAddress, Endianity.Big); }
         }
 
         /// <summary>

@@ -54,6 +54,11 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUInt(Offset.SequenceNumber, Endianity.Big); }
         }
 
+        public uint NextSequenceNumber
+        {
+            get { return (uint)(SequenceNumber + PayloadLength); }
+        }
+
         /// <summary>
         /// If the ACK control bit is set this field contains the value of the next sequence number 
         /// the sender of the segment is expecting to receive.  
@@ -163,7 +168,12 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public Datagram Payload
         {
-            get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
+            get { return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength); }
+        }
+
+        public int PayloadLength
+        {
+            get { return Length - HeaderLength; }
         }
 
         /// <summary>
