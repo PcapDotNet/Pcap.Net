@@ -2,6 +2,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 
@@ -92,6 +93,19 @@ namespace PcapDotNet.Packets.Test
                 MoreAssert.AreSequenceEqual(arpTargetHardwareAddress, packet.Ethernet.Arp.TargetHardwareAddress, "Arp TargetHardwareAddress");
                 MoreAssert.AreSequenceEqual(arpTargetProtocolAddress, packet.Ethernet.Arp.TargetProtocolAddress, "Arp TargetProtocolAddress");
             }
+        }
+
+        [TestMethod]
+        public void ArpProtocolIpV4Address()
+        {
+            Packet packet = PacketBuilder.EthernetArp(DateTime.Now,
+                                          new MacAddress(), 
+                                          EthernetType.QInQ, ArpOperation.Request,
+                                          new byte[8], new byte[] {1,2,3,4}, 
+                                          new byte[8], new byte[] {11,22,33,44});
+
+            Assert.AreEqual(new IpV4Address("1.2.3.4"), packet.Ethernet.Arp.SenderProtocolIpV4Address);
+            Assert.AreEqual(new IpV4Address("11.22.33.44"), packet.Ethernet.Arp.TargetProtocolIpV4Address);
         }
 
         [TestMethod]

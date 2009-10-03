@@ -301,7 +301,7 @@ namespace PcapDotNet.Core.Test
 
             // Wait for more statistics
             TestGetStatistics(SourceMac, DestinationMac, NumPacketsToSend, 0, int.MaxValue, 5.5, PacketSize,
-                              PacketCommunicatorReceiveResult.None, 5, NumPacketsToSend, 5.5, 5.54);
+                              PacketCommunicatorReceiveResult.None, 5, NumPacketsToSend, 5.5, 5.85);
 
             // Break loop
             TestGetStatistics(SourceMac, DestinationMac, NumPacketsToSend, NumStatisticsToGather, 0, 5, PacketSize,
