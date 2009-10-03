@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Igmp
 {
+    /// <summary>
+    /// The type of the IGMP message.
+    /// </summary>
     public enum IgmpMessageType : byte
     {
         /// <summary>

@@ -88,7 +88,16 @@ namespace PcapDotNet.Packets.Igmp
     /// </summary>
     public class IgmpDatagram : Datagram
     {
+        /// <summary>
+        /// The number of bytes the IGMP header takes for all messages but query version 3.
+        /// All the bytes but the records of the report version 3.
+        /// </summary>
         public const int HeaderLength = 8;
+
+        /// <summary>
+        /// The number of bytes the query version 3 IGMP message header takes.
+        /// All the bytes but the source addresses.
+        /// </summary>
         public const int QueryVersion3HeaderLength = 12;
 
         private static class Offset
@@ -110,21 +119,33 @@ namespace PcapDotNet.Packets.Igmp
             public const int GroupRecords = 8;
         }
 
+        /// <summary>
+        /// The maximum value for the query robustness varialbe.
+        /// </summary>
         public const byte MaxQueryRobustnessVariable = 0x07;
 
+        /// <summary>
+        /// The Max Resp Code field specifies the maximum time allowed before sending a responding report.  
+        /// </summary>
         public static TimeSpan MaxMaxResponseTime
         {
             get { return _maxMaxResponseTime; }
         }
 
+        /// <summary>
+        /// The maximum value for the max response time in version 3 messages.
+        /// </summary>
         public static TimeSpan MaxVersion3MaxResponseTime
         {
             get { return _maxVersion3MaxResponseTime; }
         }
 
-        public static TimeSpan MaxVersion3QueryInterval
+        /// <summary>
+        /// The maximum value for the query interval.
+        /// </summary>
+        public static TimeSpan MaxQueryInterval
         {
-            get { return _maxVersion3QueryInterval; }
+            get { return _maxQueryInterval; }
         }
 
         /// <summary>
@@ -135,6 +156,9 @@ namespace PcapDotNet.Packets.Igmp
             get { return (IgmpMessageType)this[Offset.MessageType]; }
         }
 
+        /// <summary>
+        /// The version of the IGMP protocol for this datagram.
+        /// </summary>
         public int Version
         {
             get
@@ -511,8 +535,8 @@ namespace PcapDotNet.Packets.Igmp
             buffer.Write(offset + Offset.QueryRobustnessVariable, (byte)(queryRobustnessVariable | (isSuppressRouterSideProcessing ? 0x08 : 0x00)));
 
             // QueryIntervalCode
-            if (queryInterval < TimeSpan.Zero || queryInterval > MaxVersion3QueryInterval)
-                throw new ArgumentOutOfRangeException("queryInterval", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + MaxVersion3QueryInterval + "]");
+            if (queryInterval < TimeSpan.Zero || queryInterval > MaxQueryInterval)
+                throw new ArgumentOutOfRangeException("queryInterval", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + MaxQueryInterval + "]");
             double queryIntervalTenthOfASecond = queryInterval.TotalSeconds;
             byte queryIntervalCode = (byte)(queryIntervalTenthOfASecond < 128 ? queryIntervalTenthOfASecond : ValueToCode((int)queryIntervalTenthOfASecond));
             buffer.Write(offset + Offset.QueryIntervalCode, queryIntervalCode);
@@ -553,6 +577,9 @@ namespace PcapDotNet.Packets.Igmp
             WriteChecksum(buffer, offset, recordOffset - offset);
         }
 
+        /// <summary>
+        /// IGMP is valid if the checksum is correct, the length fits the message type and data and the MaxResponseCode is 0 in messages where it is not used.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             if (Length < HeaderLength || !IsChecksumCorrect)
@@ -636,7 +663,7 @@ namespace PcapDotNet.Packets.Igmp
 
         private static readonly TimeSpan _maxMaxResponseTime = TimeSpan.FromSeconds(0.1 * 255) + TimeSpan.FromSeconds(0.1) - TimeSpan.FromTicks(1);
         private static readonly TimeSpan _maxVersion3MaxResponseTime = TimeSpan.FromSeconds(0.1 * CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(0.1) - TimeSpan.FromTicks(1);
-        private static readonly TimeSpan _maxVersion3QueryInterval = TimeSpan.FromSeconds(CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(1) - TimeSpan.FromTicks(1);
+        private static readonly TimeSpan _maxQueryInterval = TimeSpan.FromSeconds(CodeToValue(byte.MaxValue)) + TimeSpan.FromSeconds(1) - TimeSpan.FromTicks(1);
 
         private bool? _isChecksumCorrect;
         private ReadOnlyCollection<IpV4Address> _sourceAddresses;

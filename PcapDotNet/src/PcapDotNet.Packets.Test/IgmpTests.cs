@@ -122,7 +122,7 @@ namespace PcapDotNet.Packets.Test
                                 igmpQueryRobustnessVariable = random.NextByte(8);
                                 igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
                                                                           IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
-                                igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxVersion3QueryInterval - TimeSpan.FromTicks(1));
+                                igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
                                 igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
                                 packet = PacketBuilder.EthernetIpV4IgmpQueryVersion3(DateTime.Now,
                                                                                      ethernetSource, ethernetDestination,
