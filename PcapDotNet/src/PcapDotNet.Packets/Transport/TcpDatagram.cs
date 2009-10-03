@@ -54,6 +54,9 @@ namespace PcapDotNet.Packets.Transport
             get { return ReadUInt(Offset.SequenceNumber, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The sequence number of the data that will come after this data.
+        /// </summary>
         public uint NextSequenceNumber
         {
             get { return (uint)(SequenceNumber + PayloadLength); }
@@ -171,6 +174,9 @@ namespace PcapDotNet.Packets.Transport
             get { return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength); }
         }
 
+        /// <summary>
+        /// The length of the TCP payload.
+        /// </summary>
         public int PayloadLength
         {
             get { return Length - HeaderLength; }
