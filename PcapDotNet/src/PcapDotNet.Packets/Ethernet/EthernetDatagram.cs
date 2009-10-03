@@ -136,8 +136,12 @@ namespace PcapDotNet.Packets.Ethernet
 
             switch (EtherType)
             {
+                case EthernetType.Arp:
+                    return Arp.IsValid;
+
                 case EthernetType.IpV4:
                     return IpV4.IsValid;
+
                 default:
                     return true;
             }
