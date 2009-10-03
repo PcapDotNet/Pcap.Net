@@ -150,7 +150,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The record is valid if the length is correct according to the header fields.
         /// </summary>
-        protected override bool CalculateIsValid()
+        protected override bool  CalculateIsValid()
         {
             return Length >= HeaderLength &&
                    Length == HeaderLength + IpV4Address.SizeOf * NumberOfSources + AuxiliaryDataLength;

@@ -563,16 +563,12 @@ namespace PcapDotNet.Packets.Igmp
                 case IgmpMessageType.MembershipQuery:
                     switch (QueryVersion)
                     {
-                        case IgmpQueryVersion.Version1:
-                            return Length == HeaderLength && MaxResponseCode == 0;
-
+                        case IgmpQueryVersion.Version1: // Version 1 actually means that the MaxResponseCode is 0.
                         case IgmpQueryVersion.Version2:
                             return Length == HeaderLength;
 
                         case IgmpQueryVersion.Version3:
-                            return Length >= QueryVersion3HeaderLength &&
-                                   Length == GetQueryVersion3Length(NumberOfSources) &&
-                                   NumberOfSources == SourceAddresses.Count;
+                            return Length == GetQueryVersion3Length(NumberOfSources);
 
                         default:
                             return false;
@@ -586,7 +582,7 @@ namespace PcapDotNet.Packets.Igmp
                     return Length == HeaderLength;
 
                 case IgmpMessageType.MembershipReportVersion3:
-                    return MaxResponseCode == 0 && NumberOfGroupRecords == GroupRecords.Count &&
+                    return MaxResponseCode == 0 &&
                            Length == HeaderLength + GroupRecords.Sum(record => record.Length) &&
                            GroupRecords.All(record => record.IsValid);
 
@@ -629,11 +625,11 @@ namespace PcapDotNet.Packets.Igmp
         {
             int exp = (int)(Math.Log(value, 2) - 7);
             if (exp > 7 || exp < 0)
-                throw new ArgumentOutOfRangeException("exp", exp, "value " + value + " is out of range");
+                throw new ArgumentOutOfRangeException("value", value, "exp " + exp + " is out of range");
 
             int mant = (int)(value * Math.Pow(2, -exp - 3) - 16);
             if (mant > 15 || mant < 0)
-                throw new ArgumentOutOfRangeException("mant", mant, "value " + value + " is out of range");
+                throw new ArgumentOutOfRangeException("value", value, "mant " + mant + " is out of range");
 
             return (byte)(0x80 | (exp << 4) | mant);
         }
