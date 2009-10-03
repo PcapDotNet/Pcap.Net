@@ -64,6 +64,8 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4AddressRandomTest()
         {
+            Assert.AreEqual(IpV4Address.AllHostsHroupAddress, new IpV4Address("224.0.0.1"));
+
             Random random = new Random();
 
             for (int i = 0; i != 1000; ++i)
@@ -82,6 +84,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreNotEqual(address.GetHashCode(), random.NextIpV4Address().GetHashCode());
 
                 Assert.AreNotEqual(2, address);
+                Assert.IsFalse(address.Equals(null));
             }
         }
 

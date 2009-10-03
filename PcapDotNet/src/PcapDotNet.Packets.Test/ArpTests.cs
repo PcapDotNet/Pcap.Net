@@ -93,5 +93,25 @@ namespace PcapDotNet.Packets.Test
                 MoreAssert.AreSequenceEqual(arpTargetProtocolAddress, packet.Ethernet.Arp.TargetProtocolAddress, "Arp TargetProtocolAddress");
             }
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ArpIncosistentSenderAddressSizeTest()
+        {
+            Packet packet = PacketBuilder.EthernetArp(DateTime.Now, new MacAddress(), EthernetType.IpV4, ArpOperation.Request,
+                                                      new byte[4], new byte[6], new byte[5], new byte[6]);
+            Assert.IsNull(packet);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ArpIncosistentTargetAddressSizeTest()
+        {
+            Packet packet = PacketBuilder.EthernetArp(DateTime.Now, new MacAddress(), EthernetType.IpV4, ArpOperation.Request,
+                                                      new byte[4], new byte[6], new byte[4], new byte[7]);
+            Assert.IsNull(packet);
+            Assert.Fail();
+        }
     }
 }
