@@ -21,9 +21,14 @@ namespace PcapDotNet.Packets.IpV4
             get { return _zero; }
         }
 
-        public static IpV4Address AllHostsHroupAddress
+        /// <summary>
+        /// The all-hosts group. 
+        /// If you ping that group, all multicast capable hosts on the network should answer, 
+        /// as every multicast capable host must join that group at start-up on all it's multicast capable interfaces. 
+        /// </summary>
+        public static IpV4Address AllHostsGroupAddress
         {
-            get { return _allHostsHroupAddress; }
+            get { return _allHostsGroupAddress; }
         }
 
         /// <summary>
@@ -118,6 +123,6 @@ namespace PcapDotNet.Packets.IpV4
 
         private readonly uint _value;
         private static readonly IpV4Address _zero = new IpV4Address(0);
-        private static readonly IpV4Address _allHostsHroupAddress = new IpV4Address("224.0.0.1");
+        private static readonly IpV4Address _allHostsGroupAddress = new IpV4Address("224.0.0.1");
     }
 }

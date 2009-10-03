@@ -314,8 +314,22 @@ namespace PcapDotNet.Packets
         /// <param name="igmpGroupAddress">
         /// The Group Address field is set to zero when sending a General Query, 
         /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
-        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
-        /// In a Membership Report of version 3 this field is meaningless.
+        /// </param>
+        /// <param name="igmpIsSuppressRouterSideProcessing">
+        /// When set to one, the S Flag indicates to any receiving multicast routers that they are to suppress the normal timer updates they perform upon hearing a Query.  
+        /// It does not, however, suppress the querier election or the normal "host-side" processing of a Query 
+        /// that a router may be required to perform as a consequence of itself being a group member.
+        /// </param>
+        /// <param name="igmpQueryRobustnessVariable">
+        /// If non-zero, the QRV field contains the [Robustness Variable] value used by the querier, i.e., the sender of the Query.  
+        /// If the querier's [Robustness Variable] exceeds 7, the maximum value of the QRV field, the QRV is set to zero.  
+        /// Routers adopt the QRV value from the most recently received Query as their own [Robustness Variable] value, 
+        /// unless that most recently received QRV was zero, in which case the receivers use the default [Robustness Variable] value or a statically configured value.
+        /// </param>
+        /// <param name="igmpQueryInterval">Interval, called the Querier's Query Interval (QQI).</param>
+        /// <param name="igmpSourceAddresses">
+        /// The Source Address [i] fields are a vector of n IP unicast addresses,
+        /// where n is the value in the Number of Sources (N) field.
         /// </param>
         /// <returns>A packet with an IGMP query version 3 over IPv4 over Ethernet datagram.</returns>
         public static Packet EthernetIpV4IgmpQueryVersion3(DateTime timestamp,
@@ -356,13 +370,7 @@ namespace PcapDotNet.Packets
         /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
         /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
         /// <param name="ipV4Options">The IPv4 options.</param>
-        /// <param name="igmpMaxResponseTime">The actual time allowed.</param>
-        /// <param name="igmpGroupAddress">
-        /// The Group Address field is set to zero when sending a General Query, 
-        /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
-        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
-        /// In a Membership Report of version 3 this field is meaningless.
-        /// </param>
+        /// <param name="igmpGroupRecords">Each Group Record is a block of fields containing information pertaining to the sender's membership in a single multicast group on the interface from which the Report is sent.</param>
         /// <returns>A packet with an IGMP report version 3 over IPv4 over Ethernet datagram.</returns>
         public static Packet EthernetIpV4IgmpReportVersion3(DateTime timestamp,
                                                             MacAddress ethernetSource, MacAddress ethernetDestination,

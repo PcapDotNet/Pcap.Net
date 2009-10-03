@@ -199,11 +199,24 @@ namespace PcapDotNet.Packets
             return Buffer.ReadMacAddress(StartOffset + offset, endianity);
         }
 
+        /// <summary>
+        /// Reads 4 bytes from a specific offset in the datagram as an IpV4Address with a given endianity.
+        /// </summary>
+        /// <param name="offset">The offset in the datagram to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
         protected IpV4Address ReadIpV4Address(int offset, Endianity endianity)
         {
             return Buffer.ReadIpV4Address(StartOffset + offset, endianity);
         }
 
+        /// <summary>
+        /// Converts the given 16 bits sum to a checksum.
+        /// Sums the two 16 bits in the 32 bits value and if the result is bigger than a 16 bits value repeat.
+        /// The result is one's complemented and the least significant 16 bits are taken.
+        /// </summary>
+        /// <param name="sum"></param>
+        /// <returns></returns>
         protected static ushort Sum16BitsToChecksum(uint sum)
         {
             // Take only 16 bits out of the 32 bit sum and add up the carrier.
@@ -217,6 +230,15 @@ namespace PcapDotNet.Packets
             return (ushort)sum;
         }
 
+        /// <summary>
+        /// Sums bytes in a buffer as 16 bits big endian values.
+        /// If the number of bytes is odd then a 0x00 value is assumed after the last byte.
+        /// Used to calculate checksum.
+        /// </summary>
+        /// <param name="buffer">The buffer to take the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading the bytes.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <returns>A value equals to the sum of all 16 bits big endian values of the given bytes.</returns>
         protected static uint Sum16Bits(byte[] buffer, int offset, int length)
         {
             int endOffset = offset + length;

@@ -151,7 +151,7 @@ namespace PcapDotNet.Core.Test
                                                                                random.NextIpV4Address(), random.NextBool(),
                                                                                random.NextByte(IgmpDatagram.MaxQueryRobustnessVariable + 1),
                                                                                random.NextTimeSpan(TimeSpan.Zero,
-                                                                                                   IgmpDatagram.MaxVersion3QueryInterval),
+                                                                                                   IgmpDatagram.MaxQueryInterval),
                                                                                random.NextIpV4Addresses(random.Next(100)));
 
                         default:

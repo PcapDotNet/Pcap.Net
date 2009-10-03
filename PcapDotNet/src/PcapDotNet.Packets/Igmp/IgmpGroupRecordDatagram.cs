@@ -46,6 +46,9 @@ namespace PcapDotNet.Packets.Igmp
             public const int SourceAddresses = 8;
         }
 
+        /// <summary>
+        /// The number of bytes the group record header takes (without the source addresses and auxiliary data).
+        /// </summary>
         public const int HeaderLength = 8;
 
         /// <summary>
@@ -113,6 +116,10 @@ namespace PcapDotNet.Packets.Igmp
             get { return new Datagram(Buffer, StartOffset + Length - AuxiliaryDataLength, AuxiliaryDataLength); }
         }
 
+        /// <summary>
+        /// Creates an IGMP group record from the given datagram.
+        /// Useful to create a new IGMP packet with group records.
+        /// </summary>
         public IgmpGroupRecord ToGroupRecord()
         {
             return new IgmpGroupRecord(RecordType, MulticastAddress, SourceAddresses, AuxiliaryData);
