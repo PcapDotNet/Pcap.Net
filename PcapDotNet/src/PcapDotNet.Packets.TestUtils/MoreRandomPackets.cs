@@ -89,9 +89,9 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
         }
 
-        public static IpV4OptionTimeOfDay NextIpV4OptionTimeOfDay(this Random random)
+        public static IpV4TimeOfDay NextIpV4OptionTimeOfDay(this Random random)
         {
-            return new IpV4OptionTimeOfDay(random.NextUInt());
+            return new IpV4TimeOfDay(random.NextUInt());
         }
 
         public static IpV4OptionUnknown NextIpV4OptionUnknown(this Random random, int maximumOptionLength)
@@ -197,7 +197,7 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         case IpV4OptionTimestampType.TimestampOnly:
                             int numTimestamps = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 4 + 1);
-                            IpV4OptionTimeOfDay[] timestamps = ((Func<IpV4OptionTimeOfDay>)random.NextIpV4OptionTimeOfDay).GenerateArray(numTimestamps);
+                            IpV4TimeOfDay[] timestamps = ((Func<IpV4TimeOfDay>)random.NextIpV4OptionTimeOfDay).GenerateArray(numTimestamps);
                             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
 
                         case IpV4OptionTimestampType.AddressAndTimestamp:

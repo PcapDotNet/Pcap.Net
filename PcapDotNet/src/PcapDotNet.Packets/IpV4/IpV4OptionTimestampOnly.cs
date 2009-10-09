@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="overflow">The number of IP modules that cannot register timestamps due to lack of space. Maximum value is 15.</param>
         /// <param name="pointedIndex">The index in the timestamp that points to the for next timestamp.</param>
         /// <param name="timestamps">The timestamps as time passed since midnight UT.</param>
-        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, IList<IpV4OptionTimeOfDay> timestamps)
+        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, IList<IpV4TimeOfDay> timestamps)
             : base(IpV4OptionTimestampType.TimestampOnly, overflow, pointedIndex)
         {
             _timestamps = timestamps.AsReadOnly();
@@ -29,8 +29,8 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="overflow">The number of IP modules that cannot register timestamps due to lack of space. Maximum value is 15.</param>
         /// <param name="pointedIndex">The index in the timestamp that points to the for next timestamp.</param>
         /// <param name="timestamps">The timestamps as time passed since midnight UT.</param>
-        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params IpV4OptionTimeOfDay[] timestamps)
-            : this(overflow, pointedIndex, (IList<IpV4OptionTimeOfDay>)timestamps)
+        public IpV4OptionTimestampOnly(byte overflow, byte pointedIndex, params IpV4TimeOfDay[] timestamps)
+            : this(overflow, pointedIndex, (IList<IpV4TimeOfDay>)timestamps)
         {
         }
 
@@ -45,7 +45,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The timestamps as time passed since midnight UT.
         /// </summary>
-        public ReadOnlyCollection<IpV4OptionTimeOfDay> Timestamps
+        public ReadOnlyCollection<IpV4TimeOfDay> Timestamps
         {
             get { return _timestamps; }
         }
@@ -60,9 +60,9 @@ namespace PcapDotNet.Packets.IpV4
 
         internal static IpV4OptionTimestampOnly Read(byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)
         {
-            IpV4OptionTimeOfDay[] timestamps = new IpV4OptionTimeOfDay[numValues];
+            IpV4TimeOfDay[] timestamps = new IpV4TimeOfDay[numValues];
             for (int i = 0; i != numValues; ++i)
-                timestamps[i] = buffer.ReadIpV4OptionTimeOfDay(ref offset, Endianity.Big);
+                timestamps[i] = buffer.ReadIpV4TimeOfDay(ref offset, Endianity.Big);
 
             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
         }
@@ -88,10 +88,10 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         protected override void WriteValues(byte[] buffer, ref int offset)
         {
-            foreach (IpV4OptionTimeOfDay timestamp in Timestamps)
+            foreach (IpV4TimeOfDay timestamp in Timestamps)
                 buffer.Write(ref offset, timestamp.MillisecondsSinceMidnightUniversalTime, Endianity.Big);
         }
 
-        private readonly ReadOnlyCollection<IpV4OptionTimeOfDay> _timestamps;
+        private readonly ReadOnlyCollection<IpV4TimeOfDay> _timestamps;
     }
 }

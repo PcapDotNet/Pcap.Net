@@ -117,7 +117,7 @@ namespace PcapDotNet.Core.Test
                         case IpV4OptionTimestampType.TimestampOnly:
                             yield return "Flag: Time stamps only";
                             IpV4OptionTimestampOnly timestampOnlyOption = (IpV4OptionTimestampOnly)option;
-                            foreach (IpV4OptionTimeOfDay timeOfDay in timestampOnlyOption.Timestamps)
+                            foreach (IpV4TimeOfDay timeOfDay in timestampOnlyOption.Timestamps)
                                 yield return "Time stamp = " + timeOfDay.MillisecondsSinceMidnightUniversalTime;
                             break;
 
