@@ -70,6 +70,9 @@
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
+    <Compile Include="Icmp\IcmpDatagram.cs" />
+    <Compile Include="Icmp\IcmpType.cs" />
+    <Compile Include="Icmp\IcmpTypeAndCode.cs" />
     <Compile Include="IDataLink.cs" />
     <Compile Include="Igmp\IgmpDatagram.cs" />
     <Compile Include="Igmp\IgmpGroupRecord.cs" />
