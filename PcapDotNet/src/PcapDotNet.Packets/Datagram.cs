@@ -211,6 +211,17 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// Reads 4 bytes from a specific offset in the datagram as an IpV4TimeOfDay with a given endianity.
+        /// </summary>
+        /// <param name="offset">The offset in the datagram to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        protected IpV4TimeOfDay ReadIpV4TimeOfDay(int offset, Endianity endianity)
+        {
+            return Buffer.ReadIpV4TimeOfDay(StartOffset + offset, endianity);
+        }
+
+        /// <summary>
         /// Converts the given 16 bits sum to a checksum.
         /// Sums the two 16 bits in the 32 bits value and if the result is bigger than a 16 bits value repeat.
         /// The result is one's complemented and the least significant 16 bits are taken.

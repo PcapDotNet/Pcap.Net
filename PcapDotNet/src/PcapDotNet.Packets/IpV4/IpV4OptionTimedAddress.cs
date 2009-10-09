@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         /// <param name="address">The address in the pair.</param>
         /// <param name="timeOfDay">The time passed since midnight UT.</param>
-        public IpV4OptionTimedAddress(IpV4Address address, IpV4OptionTimeOfDay timeOfDay)
+        public IpV4OptionTimedAddress(IpV4Address address, IpV4TimeOfDay timeOfDay)
         {
             _address = address;
             _timeOfDay = timeOfDay;
@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The time passed since midnight UT.
         /// </summary>
-        public IpV4OptionTimeOfDay TimeOfDay
+        public IpV4TimeOfDay TimeOfDay
         {
             get { return _timeOfDay; }
         }
@@ -78,6 +78,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         private readonly IpV4Address _address;
-        private readonly IpV4OptionTimeOfDay _timeOfDay;
+        private readonly IpV4TimeOfDay _timeOfDay;
     }
 }

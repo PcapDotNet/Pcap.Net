@@ -2,6 +2,20 @@ using System;
 
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// <pre>
+    /// +-----+------+------+-----------+
+    /// | Bit | 0-7  | 8-15 | 16-31     |
+    /// +-----+------+------+-----------+
+    /// | 0   | Type | Code | Checksum  |
+    /// +-----+------+------+-----------+
+    /// | 32  | Value according to Type |
+    /// +-----+-------------------------+
+    /// | 64  | Payload                 |
+    /// | ... |                         |
+    /// +-----+-------------------------+
+    /// </pre>
+    /// </summary>
     public class IcmpDatagram : Datagram
     {
         /// <summary>
@@ -58,14 +72,90 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        public uint Variable
-        {
-            get { return ReadUInt(Offset.Variable, Endianity.Big); }
-        }
-
         public Datagram Payload
         {
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
+        }
+
+        public IcmpIpV4PayloadDatagram DestinationUncreachable
+        {
+            get { return IpV4Payload; }
+        }
+
+        public IcmpIpV4PayloadDatagram TimeExceeded
+        {
+            get { return IpV4Payload; }
+        }
+
+        public IcmpParameterProblemDatagram ParameterProblem
+        {
+            get
+            {
+                if (_parameterProblem == null && Length >= Offset.Variable)
+                    _parameterProblem = new IcmpParameterProblemDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _parameterProblem;
+            }
+        }
+
+        public IcmpIpV4PayloadDatagram SourceQuench
+        {
+            get { return IpV4Payload; }
+        }
+
+
+        public IcmpRedirectDatagram Redirect
+        {
+            get
+            {
+                if (_redirect == null && Length >= Offset.Variable)
+                    _redirect = new IcmpRedirectDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _redirect;
+            }
+        }
+
+        public IcmpEchoDatagram Echo
+        {
+            get
+            {
+                if (_echo == null && Length >= Offset.Variable)
+                    _echo = new IcmpEchoDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _echo;
+            }
+        }
+
+        public IcmpEchoDatagram EchoReply
+        {
+            get { return Echo; }
+        }
+
+        public IcmpTimestampDatagram Timestamp
+        {
+            get
+            {
+                if (_timestamp == null && Length >= Offset.Variable)
+                    _timestamp = new IcmpTimestampDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _timestamp;
+            }
+        }
+
+        public IcmpTimestampDatagram TimestampReply
+        {
+            get { return Timestamp; }
+        }
+
+        public IcmpIdentifiedDatagram InformationRequest
+        {
+            get
+            {
+                if (_identified == null && Length >= Offset.Variable)
+                    _identified = new IcmpIdentifiedDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _identified;
+            }
+        }
+
+        public IcmpIdentifiedDatagram InformationReply
+        {
+            get { return InformationRequest; }
         }
 
         internal IcmpDatagram(byte[] buffer, int offset, int length)
@@ -93,6 +183,22 @@ namespace PcapDotNet.Packets.Icmp
             return Sum16BitsToChecksum(sum);
         }
 
+        private IcmpIpV4PayloadDatagram IpV4Payload
+        {
+            get
+            {
+                if (_ipV4Payload == null && Length >= Offset.Variable)
+                    _ipV4Payload = new IcmpIpV4PayloadDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _ipV4Payload;
+            }
+        }
+
         private bool? _isChecksumCorrect;
+        private IcmpIpV4PayloadDatagram _ipV4Payload;
+        private IcmpParameterProblemDatagram _parameterProblem;
+        private IcmpRedirectDatagram _redirect;
+        private IcmpEchoDatagram _echo;
+        private IcmpTimestampDatagram _timestamp;
+        private IcmpIdentifiedDatagram _identified;
     }
 }

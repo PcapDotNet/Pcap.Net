@@ -309,11 +309,11 @@ namespace PcapDotNet.Packets.Test
         {
             IpV4Options options = new IpV4Options(
                 new IpV4OptionTimestampOnly(1, 2,
-                                            new IpV4OptionTimeOfDay(3), new IpV4OptionTimeOfDay(4), new IpV4OptionTimeOfDay(5),
-                                            new IpV4OptionTimeOfDay(6), new IpV4OptionTimeOfDay(7), new IpV4OptionTimeOfDay(8),
-                                            new IpV4OptionTimeOfDay(9), new IpV4OptionTimeOfDay(10), new IpV4OptionTimeOfDay(11),
-                                            new IpV4OptionTimeOfDay(12), new IpV4OptionTimeOfDay(13), new IpV4OptionTimeOfDay(14),
-                                            new IpV4OptionTimeOfDay(15), new IpV4OptionTimeOfDay(16), new IpV4OptionTimeOfDay(17)));
+                                            new IpV4TimeOfDay(3), new IpV4TimeOfDay(4), new IpV4TimeOfDay(5),
+                                            new IpV4TimeOfDay(6), new IpV4TimeOfDay(7), new IpV4TimeOfDay(8),
+                                            new IpV4TimeOfDay(9), new IpV4TimeOfDay(10), new IpV4TimeOfDay(11),
+                                            new IpV4TimeOfDay(12), new IpV4TimeOfDay(13), new IpV4TimeOfDay(14),
+                                            new IpV4TimeOfDay(15), new IpV4TimeOfDay(16), new IpV4TimeOfDay(17)));
             Assert.IsNotNull(options);
             Assert.Fail();
         }
@@ -340,7 +340,7 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionTimeOfDayTest()
         {
             TimeSpan timeOfDay = new TimeSpan(1, 2, 3);
-            IpV4OptionTimeOfDay timeSinceMidnight = new IpV4OptionTimeOfDay(timeOfDay);
+            IpV4TimeOfDay timeSinceMidnight = new IpV4TimeOfDay(timeOfDay);
             Assert.AreEqual(timeOfDay, timeSinceMidnight.TimeSinceMidnightUniversalTime);
             Assert.AreEqual<object>(timeSinceMidnight, timeSinceMidnight);
             Assert.IsTrue(timeSinceMidnight == timeSinceMidnight);
@@ -350,8 +350,8 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4OptionTimedAddressTest()
         {
-            IpV4OptionTimedAddress timedAddress1 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4OptionTimeOfDay(new TimeSpan(1, 2, 3)));
-            IpV4OptionTimedAddress timedAddress2 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4OptionTimeOfDay(new TimeSpan(1, 2, 3)));
+            IpV4OptionTimedAddress timedAddress1 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4TimeOfDay(new TimeSpan(1, 2, 3)));
+            IpV4OptionTimedAddress timedAddress2 = new IpV4OptionTimedAddress(new IpV4Address("1.2.3.4"), new IpV4TimeOfDay(new TimeSpan(1, 2, 3)));
 
             Assert.AreEqual(timedAddress1, timedAddress2);
             Assert.IsTrue(timedAddress1 == timedAddress2);

@@ -75,7 +75,7 @@ namespace PcapDotNet.Packets.IpV4
             for (int i = 0; i != numValues / 2; ++i)
             {
                 addressesAndTimestamps[i] = new IpV4OptionTimedAddress(buffer.ReadIpV4Address(ref offset, Endianity.Big),
-                                                                       buffer.ReadIpV4OptionTimeOfDay(ref offset, Endianity.Big));
+                                                                       buffer.ReadIpV4TimeOfDay(ref offset, Endianity.Big));
             }
 
             return new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, addressesAndTimestamps);
