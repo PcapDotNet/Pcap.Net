@@ -621,7 +621,7 @@ namespace PcapDotNet.Packets.Igmp
         private ushort CalculateChecksum()
         {
             uint sum = Sum16Bits(Buffer, StartOffset, Math.Min(Offset.Checksum, Length)) +
-                       Sum16Bits(Buffer, StartOffset + Offset.Checksum + 2, Length - Offset.Checksum - 2);
+                       Sum16Bits(Buffer, StartOffset + Offset.Checksum + sizeof(ushort), Length - Offset.Checksum - sizeof(ushort));
 
             return Sum16BitsToChecksum(sum);
         }
