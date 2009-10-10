@@ -238,5 +238,80 @@ namespace PcapDotNet.Packets.Icmp
         /// </para>
         /// </summary>
         InformationReply = 0x10,
+
+        /// <summary>
+        /// RFC 1256.
+        /// </summary>
+        RouterAdvertisement = 0x09,
+
+        /// <summary>
+        /// RFC 1256.
+        /// </summary>
+        RouterSolicitation = 0x0A,
+
+        /// <summary>
+        /// RFC 950.
+        /// 
+        /// <para>
+        /// A gateway receiving an address mask request should return it with the address mask field set to the 32-bit mask of the bits identifying the subnet and network, 
+        /// for the subnet on which the request was received.
+        /// </para>
+        /// 
+        /// <para>
+        /// If the requesting host does not know its own IP address, it may leave the source field zero; the reply should then be broadcast.  
+        /// However, this approach should be avoided if at all possible, since it increases the superfluous broadcast load on the network.  
+        /// Even when the replies are broadcast, since there is only one possible address mask for a subnet, there is no need to match requests with replies.  
+        /// The "Identifier" and "Sequence Number" fields can be ignored.
+        /// </para>
+        /// </summary>
+        AddressMaskRequest = 0xA1,
+
+        /// <summary>
+        /// RFC 950.
+        /// 
+        /// <para>
+        /// A gateway receiving an address mask request should return it with the address mask field set to the 32-bit mask of the bits identifying the subnet and network, 
+        /// for the subnet on which the request was received.
+        /// </para>
+        /// 
+        /// <para>
+        /// If the requesting host does not know its own IP address, it may leave the source field zero; the reply should then be broadcast.  
+        /// However, this approach should be avoided if at all possible, since it increases the superfluous broadcast load on the network.  
+        /// Even when the replies are broadcast, since there is only one possible address mask for a subnet, there is no need to match requests with replies.  
+        /// The "Identifier" and "Sequence Number" fields can be ignored.
+        /// </para>
+        /// </summary>
+        AddressMaskReply = 0xA2,
+
+        /// <summary>
+        /// RFC 1393.
+        /// </summary>
+        Traceroute = 0x1E,
+
+        /// <summary>
+        /// RFC 1475.
+        /// The introduction of network layer conversion requires a new message type, to report conversion errors.  
+        /// Note that an invalid datagram should result in the sending of some other ICMP message (e.g., parameter problem) or the silent discarding of the datagram.  
+        /// This message is only sent when a valid datagram cannot be converted.
+        /// </summary>
+        ConversionFailed = 0x1F,
+
+        /// <summary>
+        /// RFC 1788.
+        /// </summary>
+        DomainNameRequest = 0x25,
+
+        /// <summary>
+        /// RFC 1788.
+        /// Parsing of this datagram isn't supported because its parsing is not clear from the RFC.
+        /// </summary>
+        DomainNameReply = 0x26,
+
+
+        /// <summary>
+        /// RFC 2521.
+        /// </summary>
+        SecurityFailures = 0x28,
+
     }
 }

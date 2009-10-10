@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------+
     /// </pre>
     /// </summary>
-    public class IcmpParameterProblemDatagram : IcmpIpV4PayloadDatagram
+    public class IcmpParameterProblemDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         private class Offset
         {
