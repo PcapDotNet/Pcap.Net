@@ -77,14 +77,14 @@ namespace PcapDotNet.Packets.Icmp
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
         }
 
-        public IcmpIpV4PayloadDatagram DestinationUncreachable
+        public IcmpIpV4HeaderPlus64BitsPayloadDatagram DestinationUncreachable
         {
-            get { return IpV4Payload; }
+            get { return IpV4HeaderPlus64BitsPayload; }
         }
 
-        public IcmpIpV4PayloadDatagram TimeExceeded
+        public IcmpIpV4HeaderPlus64BitsPayloadDatagram TimeExceeded
         {
-            get { return IpV4Payload; }
+            get { return IpV4HeaderPlus64BitsPayload; }
         }
 
         public IcmpParameterProblemDatagram ParameterProblem
@@ -97,9 +97,9 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        public IcmpIpV4PayloadDatagram SourceQuench
+        public IcmpIpV4HeaderPlus64BitsPayloadDatagram SourceQuench
         {
-            get { return IpV4Payload; }
+            get { return IpV4HeaderPlus64BitsPayload; }
         }
 
 
@@ -145,17 +145,77 @@ namespace PcapDotNet.Packets.Icmp
 
         public IcmpIdentifiedDatagram InformationRequest
         {
-            get
-            {
-                if (_identified == null && Length >= Offset.Variable)
-                    _identified = new IcmpIdentifiedDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
-                return _identified;
-            }
+            get { return Identified; }
         }
 
         public IcmpIdentifiedDatagram InformationReply
         {
-            get { return InformationRequest; }
+            get { return Identified; }
+        }
+
+        public IcmpRouterAdvertisementDatagram RouterAdvertisement
+        {
+            get
+            {
+                if (_routerAdvertisement == null && Length >= Offset.Variable)
+                    _routerAdvertisement = new IcmpRouterAdvertisementDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _routerAdvertisement;
+            }
+        }
+
+        public IcmpTypedDatagram RouterSolicitation
+        {
+            get { return Typed; }
+        }
+
+        public IcmpAddressMaskDatagram AddressMaskRequest
+        {
+            get
+            {
+                if (_addressMask == null && Length >= Offset.Variable)
+                    _addressMask = new IcmpAddressMaskDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _addressMask;
+            }
+        }
+
+        public IcmpAddressMaskDatagram AddressMaskReply
+        {
+            get { return AddressMaskRequest; }
+        }
+
+        public IcmpTracerouteDatagram Traceroute
+        {
+            get
+            {
+                if (_traceroute == null && Length >= Offset.Variable)
+                    _traceroute = new IcmpTracerouteDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _traceroute;
+            }
+        }
+
+        public IcmpConversionFailedDatagram ConversionFailed
+        {
+            get
+            {
+                if (_conversionFailed == null && Length >= Offset.Variable)
+                    _conversionFailed = new IcmpConversionFailedDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _conversionFailed;
+            }
+        }
+
+        public IcmpIdentifiedDatagram DomainNameRequest
+        {
+            get { return Identified; }
+        }
+
+        public IcmpSecurityFailuresDatagram SecurityFailures
+        {
+            get
+            {
+                if (_securityFailures == null && Length >= Offset.Variable)
+                    _securityFailures = new IcmpSecurityFailuresDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _securityFailures;
+            }
         }
 
         internal IcmpDatagram(byte[] buffer, int offset, int length)
@@ -183,22 +243,49 @@ namespace PcapDotNet.Packets.Icmp
             return Sum16BitsToChecksum(sum);
         }
 
-        private IcmpIpV4PayloadDatagram IpV4Payload
+        private IcmpTypedDatagram Typed
         {
             get
             {
-                if (_ipV4Payload == null && Length >= Offset.Variable)
-                    _ipV4Payload = new IcmpIpV4PayloadDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
-                return _ipV4Payload;
+                if (_typed == null && Length >= Offset.Variable)
+                    _typed = new IcmpTypedDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _typed;
             }
         }
 
+        private IcmpIdentifiedDatagram Identified
+        {
+            get
+            {
+                if (_identified == null && Length >= Offset.Variable)
+                    _identified = new IcmpIdentifiedDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _identified;
+            }
+        }
+
+        private IcmpIpV4HeaderPlus64BitsPayloadDatagram IpV4HeaderPlus64BitsPayload
+        {
+            get
+            {
+                if (_ipV4HeaderPlus64BitsPayload == null && Length >= Offset.Variable)
+                    _ipV4HeaderPlus64BitsPayload = new IcmpIpV4HeaderPlus64BitsPayloadDatagram(Buffer, StartOffset + Offset.Variable, Length - Offset.Variable);
+                return _ipV4HeaderPlus64BitsPayload;
+            }
+        }
+
+
         private bool? _isChecksumCorrect;
-        private IcmpIpV4PayloadDatagram _ipV4Payload;
+        private IcmpIpV4HeaderPlus64BitsPayloadDatagram _ipV4HeaderPlus64BitsPayload;
         private IcmpParameterProblemDatagram _parameterProblem;
         private IcmpRedirectDatagram _redirect;
         private IcmpEchoDatagram _echo;
         private IcmpTimestampDatagram _timestamp;
         private IcmpIdentifiedDatagram _identified;
+        private IcmpRouterAdvertisementDatagram _routerAdvertisement;
+        private IcmpTypedDatagram _typed;
+        private IcmpAddressMaskDatagram _addressMask;
+        private IcmpTracerouteDatagram _traceroute;
+        private IcmpConversionFailedDatagram _conversionFailed;
+        private IcmpSecurityFailuresDatagram _securityFailures;
     }
 }
