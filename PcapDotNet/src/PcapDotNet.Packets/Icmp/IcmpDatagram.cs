@@ -34,9 +34,9 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// The value of this field determines the format of the remaining data.
         /// </summary>
-        public IcmpType Type
+        public IcmpMessageType MessageType
         {
-            get { return (IcmpType)this[Offset.Type]; }
+            get { return (IcmpMessageType)this[Offset.Type]; }
         }
 
         public byte Code
@@ -44,9 +44,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return this[Offset.Code]; }
         }
 
-        public IcmpTypeAndCode TypeAndCode
+        public IcmpMessageTypeAndCode MessageTypeAndCode
         {
-            get { return (IcmpTypeAndCode)ReadUShort(Offset.Type, Endianity.Big); }
+            get { return (IcmpMessageTypeAndCode)ReadUShort(Offset.Type, Endianity.Big); }
         }
 
         /// <summary>
@@ -223,12 +223,26 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
+        internal static void WriteHeader(byte[] buffer, int offset,
+                                         IcmpMessageType messageType, byte code, uint valueAccordingToType)
+        {
+            buffer.Write(offset + Offset.Type, (byte)messageType);
+            buffer.Write(offset + Offset.Code, code);
+            buffer.Write(offset + Offset.Variable, valueAccordingToType, Endianity.Big);
+        }
+
+        internal static void WriteChecksum(byte[] buffer, int offset, int length)
+        {
+            ushort checksum = CalculateChecksum(buffer, offset, length);
+            buffer.Write(offset + Offset.Checksum, checksum, Endianity.Big);
+        }
+
         protected override bool CalculateIsValid()
         {
             if (Length < HeaderLength || !IsChecksumCorrect)
                 return false;
 
-            switch (Type)
+            switch (MessageType)
             {
                 default:
                     return false;
@@ -237,8 +251,13 @@ namespace PcapDotNet.Packets.Icmp
 
         private ushort CalculateChecksum()
         {
-            uint sum = Sum16Bits(Buffer, StartOffset, Math.Min(Offset.Checksum, Length)) +
-                       Sum16Bits(Buffer, StartOffset + Offset.Checksum + sizeof(ushort), Length - Offset.Checksum - sizeof(ushort));
+            return CalculateChecksum(Buffer, StartOffset, Length);
+        }
+
+        private static ushort CalculateChecksum(byte[] buffer, int offset, int length)
+        {
+            uint sum = Sum16Bits(buffer, offset, Math.Min(Offset.Checksum, length)) +
+                       Sum16Bits(buffer, offset + Offset.Checksum + sizeof(ushort), length - Offset.Checksum - sizeof(ushort));
 
             return Sum16BitsToChecksum(sum);
         }
