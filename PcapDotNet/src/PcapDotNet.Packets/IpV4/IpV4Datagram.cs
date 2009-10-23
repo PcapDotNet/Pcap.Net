@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.Transport;
 
@@ -213,6 +214,17 @@ namespace PcapDotNet.Packets.IpV4
             get { return Tcp; }
         }
 
+        public IcmpDatagram Icmp
+        {
+            get
+            {
+                if (_icmp == null && Length >= HeaderLength)
+                    _icmp = new IcmpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _icmp;
+            }
+        }
+
         /// <summary>
         /// The payload of the datagram as an IGMP datagram.
         /// </summary>
@@ -369,6 +381,7 @@ namespace PcapDotNet.Packets.IpV4
         private bool? _isHeaderChecksumCorrect;
         private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
+        private IcmpDatagram _icmp;
         private IgmpDatagram _igmp;
         private TcpDatagram _tcp;
         private UdpDatagram _udp;

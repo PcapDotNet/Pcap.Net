@@ -13,7 +13,7 @@ using PcapDotNet.TestUtils;
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for UdpTests
+    /// Summary description for IgmpTests
     /// </summary>
     [TestClass]
     public class IgmpTests

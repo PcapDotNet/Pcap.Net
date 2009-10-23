@@ -83,8 +83,8 @@
     <Compile Include="Icmp\IcmpSecurityFailuresDatagram.cs" />
     <Compile Include="Icmp\IcmpTimestampDatagram.cs" />
     <Compile Include="Icmp\IcmpTracerouteDatagram.cs" />
-    <Compile Include="Icmp\IcmpType.cs" />
-    <Compile Include="Icmp\IcmpTypeAndCode.cs" />
+    <Compile Include="Icmp\IcmpMessageType.cs" />
+    <Compile Include="Icmp\IcmpMessageTypeAndCode.cs" />
     <Compile Include="Icmp\IcmpTypedDatagram.cs" />
     <Compile Include="IDataLink.cs" />
     <Compile Include="Igmp\IgmpDatagram.cs" />

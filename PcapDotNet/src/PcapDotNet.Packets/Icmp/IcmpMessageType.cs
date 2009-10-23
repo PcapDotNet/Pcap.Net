@@ -1,6 +1,6 @@
 namespace PcapDotNet.Packets.Icmp
 {
-    public enum IcmpType : byte
+    public enum IcmpMessageType : byte
     {
         /// <summary>
         /// RFC 792
