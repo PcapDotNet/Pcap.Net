@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TestRunConfiguration name="Local Test Run" id="be17286c-6d1c-43dd-b068-e83867abf9c5" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
   <Description>This is a default test run configuration for a local test run.</Description>
-  <CodeCoverage enabled="true" keyFile="PcapDotNet.snk">
-    <Regular>
-      <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Base.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Base.pdb" instrumentInPlace="true" />
-      <CodeCoverageItem binaryFile="c:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.dll" pdbFile="c:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.pdb" instrumentInPlace="true" />
-      <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Packets.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Packets.pdb" instrumentInPlace="true" />
-      <CodeCoverageItem binaryFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.Extensions.dll" pdbFile="C:\TFS\tfs06.codeplex.com\PcapDotNet\PcapDotNet\bin\Debug\PcapDotNet.Core.Extensions.pdb" instrumentInPlace="true" />
-    </Regular>
-  </CodeCoverage>
+  <CodeCoverage keyFile="PcapDotNet.snk" />
   <TestTypeSpecific>
     <WebTestRunConfiguration testTypeId="4e7599fa-5ecb-43e9-a887-cd63cf72d207">
       <Browser name="Internet Explorer 7.0">

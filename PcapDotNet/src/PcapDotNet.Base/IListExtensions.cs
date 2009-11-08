@@ -6,7 +6,7 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for IList of type T.
     /// </summary>
-    public static class MoreIList
+    public static class IListExtensions
     {
         /// <summary>
         /// Wraps a list with a ReadOnlyCollection.

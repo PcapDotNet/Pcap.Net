@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -30,6 +30,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Base.XML</DocumentationFile>
     <CodeAnalysisRules>-Microsoft.Design#CA1004</CodeAnalysisRules>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -59,13 +60,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoreFunc.cs" />
-    <Compile Include="MoreIEnumerable.cs" />
-    <Compile Include="MoreIList.cs" />
-    <Compile Include="MorePropertyInfo.cs" />
-    <Compile Include="MoreTimeSpan.cs" />
-    <Compile Include="MoreType.cs" />
+    <Compile Include="FuncExtensions.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
+    <Compile Include="IListExtensions.cs" />
+    <Compile Include="PropertyInfoExtensions.cs" />
+    <Compile Include="TimeSpanExtensions.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Tuple.cs" />
+    <Compile Include="UInt128.cs" />
     <Compile Include="UInt24.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UInt48.cs" />
@@ -86,7 +88,7 @@
   -->
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(SolutionDir)$(SolutionName).snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</PreBuildEvent>
-    <PostBuildEvent>cd $(OutDir)
-zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

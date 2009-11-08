@@ -25,7 +25,7 @@ namespace PcapDotNet.Base
         /// </summary>
         /// <param name="value">A string representing the number to convert.</param>
         /// <param name="style">
-        /// A bitwise combination of NumberStyles values that indicates the permitted format of s. 
+        /// A bitwise combination of NumberStyles values that indicates the permitted format of value. 
         /// A typical value to specify is NumberStyles.Integer.
         /// </param>
         /// <param name="provider">An System.IFormatProvider that supplies culture-specific formatting information about value.</param>
@@ -187,6 +187,5 @@ namespace PcapDotNet.Base
 
         private readonly uint _leastSignificant;
         private readonly ushort _mostSignificant;
-
     }
 }

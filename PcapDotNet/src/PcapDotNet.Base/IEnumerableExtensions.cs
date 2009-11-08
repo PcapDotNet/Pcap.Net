@@ -10,7 +10,7 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for IEnumerable of type T.
     /// </summary>
-    public static class MoreIEnumerable
+    public static class IEnumerableExtensions
     {
         /// <summary>
         /// True iff the sequence has no elements.
@@ -132,6 +132,11 @@ namespace PcapDotNet.Base
         {
             int i = 0;
             return sequence.Aggregate(0, (value, b) => value ^ (b << (8 * (i++ % 4))));
+        }
+
+        public static int Count<T>(this IEnumerable<T> sequence, T value)
+        {
+            return sequence.Count(element => element.Equals(value));
         }
     }
 }

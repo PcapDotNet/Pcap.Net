@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A184AF5-E46C-482C-81A3-76D8CE290104}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -95,6 +95,7 @@
     <Compile Include="Igmp\IgmpMessageType.cs" />
     <Compile Include="IOptionUnknownFactory.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
+    <Compile Include="IpV6\IpV6Address.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="IOptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
@@ -184,7 +185,7 @@
   -->
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(SolutionDir)$(SolutionName).snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</PreBuildEvent>
-    <PostBuildEvent>cd $(OutDir)
-zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

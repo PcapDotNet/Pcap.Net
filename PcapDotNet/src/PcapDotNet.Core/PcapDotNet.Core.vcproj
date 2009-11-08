@@ -16,6 +16,9 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -102,8 +105,93 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Build Release Files"
-				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml&#x0D;&#x0A;"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)\..\bin\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			ManagedExtensions="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="Create Public/Private Key Pair"
+				CommandLine="if not exist &quot;$(SolutionDir)$(SolutionName).snk&quot; (&quot;%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe&quot; -k &quot;$(SolutionDir)$(SolutionName).snk&quot;)"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;..\..\3rdParty\WpdPack\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;CODE_ANALYSIS"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				GenerateXMLDocumentationFiles="true"
+				WarningLevel="4"
+				DebugInformationFormat="3"
+				ForcedIncludeFiles="CodeAnalysis\SourceAnnotations.h"
+				EnablePREfast="false"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wpcap.lib $(NOINHERIT)"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\3rdParty\WpdPack\Lib\x64"
+				AddModuleNamesToAssembly=""
+				GenerateDebugInformation="true"
+				AssemblyDebug="1"
+				TargetMachine="17"
+				KeyFile="&quot;$(SolutionDir)$(SolutionName).snk&quot;"
+				Profile="true"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Reliability#CA2004"
+				EnableFxCop="true"
+				Dictionaries="CodeAnalysisDictionary.xml"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -185,8 +273,90 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Build Release Files"
-				CommandLine="cd $(OutDir)&#x0D;&#x0A;zip Pcap.Net.Binary.zip $(TargetFileName) $(ProjectName).pdb $(ProjectName).xml&#x0D;&#x0A;"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)\..\bin\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			ManagedExtensions="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="Create Public/Private Key Pair"
+				CommandLine="if not exist &quot;$(SolutionDir)$(SolutionName).snk&quot; (&quot;%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe&quot; -k &quot;$(SolutionDir)$(SolutionName).snk&quot;)"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;..\..\3rdParty\WpdPack\Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;CODE_ANALYSIS"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				GenerateXMLDocumentationFiles="true"
+				WarningLevel="4"
+				DebugInformationFormat="3"
+				ForcedIncludeFiles="CodeAnalysis\SourceAnnotations.h"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wpcap.lib $(NOINHERIT)"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\3rdParty\WpdPack\Lib\x64"
+				AddModuleNamesToAssembly=""
+				GenerateDebugInformation="true"
+				TargetMachine="17"
+				KeyFile="&quot;$(SolutionDir)$(SolutionName).snk&quot;"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+				Rules="-Microsoft.Design#CA1021;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Reliability#CA2004"
+				EnableFxCop="true"
+				Dictionaries="CodeAnalysisDictionary.xml"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -245,6 +415,14 @@
 			</File>
 			<File
 				RelativePath=".\IpV4SocketAddress.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IpV6SocketAddress.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IpV6SocketAddress.h"
 				>
 			</File>
 			<File
