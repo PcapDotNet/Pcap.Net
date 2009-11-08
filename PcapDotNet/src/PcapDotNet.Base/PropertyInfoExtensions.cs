@@ -5,7 +5,7 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for PropertyInfo.
     /// </summary>
-    public static class MorePropertyInfo
+    public static class PropertyInfoExtensions
     {
         /// <summary>
         /// Returns the value of the given instance's non-indexed property.

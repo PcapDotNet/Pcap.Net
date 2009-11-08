@@ -1,5 +1,6 @@
 #include "DeviceAddress.h"
 #include "IpV4SocketAddress.h"
+#include "IpV6SocketAddress.h"
 #include "Pcap.h"
 
 using namespace System;
@@ -56,6 +57,17 @@ DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
         if (pcapAddress->dstaddr)
             _destination = gcnew IpV4SocketAddress(pcapAddress->dstaddr);
         break;
+
+	case SocketAddressFamily::Internet6:
+        if (pcapAddress->addr)
+            _address = gcnew IpV6SocketAddress(pcapAddress->addr);
+        if (pcapAddress->netmask)
+            _netmask = gcnew IpV6SocketAddress(pcapAddress->netmask);
+        if (pcapAddress->broadaddr)
+            _broadcast = gcnew IpV6SocketAddress(pcapAddress->broadaddr);
+        if (pcapAddress->dstaddr)
+            _destination = gcnew IpV6SocketAddress(pcapAddress->dstaddr);
+		break;
 
     default:
         throw gcnew NotImplementedException(gcnew String("Device of family ") + family.ToString() + gcnew String(" is unsupported"));

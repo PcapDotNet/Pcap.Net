@@ -23,7 +23,7 @@ ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
         &alldevs, errbuf) == -1)
     {
         String^ errorString = gcnew String(errbuf);
-        throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. Error: %s", errorString));
+		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. Error: {0}", errorString));
     }
     
     try

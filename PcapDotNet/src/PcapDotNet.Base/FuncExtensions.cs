@@ -7,7 +7,7 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for Func of type T.
     /// </summary>
-    public static class MoreFunc
+    public static class FuncExtensions
     {
         /// <summary>
         /// Generates an array of a given size by generating elements using the given delegate.

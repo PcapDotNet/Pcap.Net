@@ -7,7 +7,7 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for TimeSpan.
     /// </summary>
-    public static class MoreTimeSpan
+    public static class TimeSpanExtensions
     {
         /// <summary>
         /// Divides the TimeSpan by a given value.
