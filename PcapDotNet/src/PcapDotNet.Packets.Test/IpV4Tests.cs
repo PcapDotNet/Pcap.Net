@@ -123,11 +123,33 @@ namespace PcapDotNet.Packets.Test
                 random.NextBytes(ipV4PayloadBuffer);
                 Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
 
-                Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                           ethernetSource, ethernetDestination,
-                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
-                                                           ipV4Source, ipV4Destination, ipV4Options,
-                                                           ipV4Payload);
+                Packet packet =
+                    new PacketBuilder2(new EthernetLayer
+                                           {
+                                               Source = ethernetSource,
+                                               Destination = ethernetDestination,
+                                           },
+                                       new IpV4Layer
+                                           {
+                                               TypeOfService = ipV4TypeOfService,
+                                               Identification = ipV4Identification,
+                                               Fragmentation = ipV4Fragmentation,
+                                               Ttl = ipV4Ttl,
+                                               Protocol = ipV4Protocol,
+                                               Source = ipV4Source,
+                                               Destination = ipV4Destination,
+                                               Options = ipV4Options,
+                                           },
+                                       new PayloadLayer
+                                           {
+                                               Data = ipV4Payload
+                                           }
+                        ).Build(DateTime.Now);
+//                Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                           ethernetSource, ethernetDestination,
+//                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
+//                                                           ipV4Source, ipV4Destination, ipV4Options,
+//                                                           ipV4Payload);
 
 
                 Assert.IsTrue(ipV4Protocol == IpV4Protocol.Udp ||

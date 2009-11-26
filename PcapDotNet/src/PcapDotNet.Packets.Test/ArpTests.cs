@@ -66,11 +66,25 @@ namespace PcapDotNet.Packets.Test
                 byte[] arpTargetHardwareAddress = random.NextBytes(hardwareAddressLength);
                 byte[] arpTargetProtocolAddress = random.NextBytes(protocolAddressLength);
 
-                Packet packet = PacketBuilder.EthernetArp(DateTime.Now,
-                                                          ethernetSource,
-                                                          ethernetType, arpOperation,
-                                                          arpSenderHardwareAddress, arpSenderProtocolAddress,
-                                                          arpTargetHardwareAddress, arpTargetProtocolAddress);
+                Packet packet = new PacketBuilder2(new EthernetLayer
+                                                       {
+                                                           Source = ethernetSource,
+                                                       },
+                                                   new ArpLayer
+                                                       {
+                                                           ProtocolType = ethernetType, 
+                                                           Operation=arpOperation,
+                                                           SenderHardwareAddress = arpSenderHardwareAddress,
+                                                           SenderProtocolAddress = arpSenderProtocolAddress,
+                                                           TargetHardwareAddress = arpTargetHardwareAddress,
+                                                           TargetProtocolAddress = arpTargetProtocolAddress
+                                                       })
+                    .Build(DateTime.Now);
+//                Packet packet = PacketBuilder.EthernetArp(DateTime.Now,
+//                                                          ethernetSource,
+//                                                          ethernetType, arpOperation,
+//                                                          arpSenderHardwareAddress, arpSenderProtocolAddress,
+//                                                          arpTargetHardwareAddress, arpTargetProtocolAddress);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 

@@ -134,6 +134,7 @@
     <Compile Include="OptionTypeRegistrationAttribute.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
+    <Compile Include="PacketBuilder2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transport\TcpDatagram.cs" />
     <Compile Include="Transport\TcpControlBits.cs" />

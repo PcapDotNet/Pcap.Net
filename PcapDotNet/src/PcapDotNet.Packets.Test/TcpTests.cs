@@ -92,13 +92,44 @@ namespace PcapDotNet.Packets.Test
                 TcpOptions tcpOptions = random.NextTcpOptions();
                 Datagram tcpPayload = random.NextDatagram(random.Next(60000));
 
-                Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
-                                                              ethernetSource, ethernetDestination,
-                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                              ipV4Source, ipV4Destination, ipV4Options,
-                                                              tcpSourcePort, tcpDestinationPort, tcpSequenceNumber, tcpAcknowledgmentNumber, tcpControlBits, tcpWindow, tcpUrgentPointer,
-                                                              tcpOptions,
-                                                              tcpPayload);
+                Packet packet = new PacketBuilder2(new EthernetLayer
+                                                       {
+                                                           Source = ethernetSource,
+                                                           Destination = ethernetDestination
+                                                       },
+                                                   new IpV4Layer
+                                                       {
+                                                           TypeOfService = ipV4TypeOfService,
+                                                           Identification = ipV4Identification,
+                                                           Fragmentation = ipV4Fragmentation,
+                                                           Ttl = ipV4Ttl,
+                                                           Source = ipV4Source,
+                                                           Destination = ipV4Destination,
+                                                           Options = ipV4Options,
+                                                       },
+                                                   new TcpLayer
+                                                       {
+                                                           SourcePort = tcpSourcePort,
+                                                           DestinationPort = tcpDestinationPort,
+                                                           SequenceNumber = tcpSequenceNumber,
+                                                           AcknowledgmentNumber = tcpAcknowledgmentNumber,
+                                                           ControlBits = tcpControlBits,
+                                                           Window = tcpWindow,
+                                                           UrgentPointer = tcpUrgentPointer,
+                                                           Options = tcpOptions,
+                                                       },
+                                                   new PayloadLayer
+                                                       {
+                                                           Data = tcpPayload
+                                                       }
+                    ).Build(DateTime.Now);
+//                Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
+//                                                              ethernetSource, ethernetDestination,
+//                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                              ipV4Source, ipV4Destination, ipV4Options,
+//                                                              tcpSourcePort, tcpDestinationPort, tcpSequenceNumber, tcpAcknowledgmentNumber, tcpControlBits, tcpWindow, tcpUrgentPointer,
+//                                                              tcpOptions,
+//                                                              tcpPayload);
 
                 Assert.IsTrue(packet.IsValid);
 
