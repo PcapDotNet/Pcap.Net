@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A184AF5-E46C-482C-81A3-76D8CE290104}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -71,6 +71,7 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="Icmp\IcmpAddressMaskDatagram.cs" />
+    <Compile Include="Icmp\IcmpCodeDestinationUnrechable.cs" />
     <Compile Include="Icmp\IcmpConversionFailedDatagram.cs" />
     <Compile Include="Icmp\IcmpDatagram.cs" />
     <Compile Include="Icmp\IcmpEchoDatagram.cs" />

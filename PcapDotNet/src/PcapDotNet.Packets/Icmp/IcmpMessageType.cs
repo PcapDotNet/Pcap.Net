@@ -312,6 +312,5 @@ namespace PcapDotNet.Packets.Icmp
         /// RFC 2521.
         /// </summary>
         SecurityFailures = 0x28,
-
     }
 }

@@ -123,7 +123,17 @@ namespace PcapDotNet.Packets
         /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
         /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
         /// <param name="ipV4Options">The IPv4 options.</param>
-        /// <returns>A packet with an IPv4 over Ethernet datagram.</returns>
+        /// <param name="icmpCode">The ICMP code.</param>
+        /// <param name="icmpIpV4TypeOfService">The IPv4 over the ICMP's Type of Service.</param>
+        /// <param name="icmpIpV4Identification">The IPv4 over the ICMP's Identification.</param>
+        /// <param name="icmpIpV4Fragmentation">The IPv4 over the ICMP's Fragmentation.</param>
+        /// <param name="icmpIpV4Ttl">The IPv4 over the ICMP's TTL.</param>
+        /// <param name="icmpIpV4Protocol">The IPv4 over the ICMP's Protocol.</param>
+        /// <param name="icmpIpV4SourceAddress">The IPv4 over the ICMP's source address.</param>
+        /// <param name="icmpIpV4DestinationAddress">The IPv4 over the ICMP's destination address.</param>
+        /// <param name="icmpIpV4Options">The IPv4 over the ICMP's options.</param>
+        /// <param name="icmpIpV4Payload">The IPv4 over the ICMP's payload.</param>
+        /// <returns>A packet with an ICMP Destination Unreachable over IPv4 over Ethernet datagram.</returns>
         public static Packet EthernetIpV4IcmpDestinationUnreachable(DateTime timestamp,
                                                                     MacAddress ethernetSource, MacAddress ethernetDestination,
                                                                     byte ipV4TypeOfService, ushort ipV4Identification,
@@ -139,6 +149,92 @@ namespace PcapDotNet.Packets
                                                                     IpV4Options icmpIpV4Options,
                                                                     Datagram icmpIpV4Payload)
         {
+            return EthernetIpV4IcmpWithIpV4Payload(timestamp,
+                                                   ethernetSource, ethernetDestination,
+                                                   ipV4TypeOfService, ipV4Identification,
+                                                   ipV4Fragmentation,
+                                                   ipV4Ttl,
+                                                   ipV4SourceAddress, ipV4DestinationAddress,
+                                                   ipV4Options,
+                                                   (byte)icmpCode, 0,
+                                                   icmpIpV4TypeOfService, icmpIpV4Identification,
+                                                   icmpIpV4Fragmentation,
+                                                   icmpIpV4Ttl, icmpIpV4Protocol,
+                                                   icmpIpV4SourceAddress, icmpIpV4DestinationAddress,
+                                                   icmpIpV4Options,
+                                                   icmpIpV4Payload);
+        }
+
+        /// <summary>
+        /// Builds an ICMP over IPv4 over Ethernet packet.
+        /// </summary>
+        /// <param name="timestamp">The packet timestamp.</param>
+        /// <param name="ethernetSource">The ethernet source mac address.</param>
+        /// <param name="ethernetDestination">The ethernet destination mac address.</param>
+        /// <param name="ipV4TypeOfService">The IPv4 Type of Service.</param>
+        /// <param name="ipV4Identification">The IPv4 Identification.</param>
+        /// <param name="ipV4Fragmentation">The IPv4 Fragmentation.</param>
+        /// <param name="ipV4Ttl">The IPv4 TTL.</param>
+        /// <param name="ipV4SourceAddress">The IPv4 source address.</param>
+        /// <param name="ipV4DestinationAddress">The IPv4 destination address.</param>
+        /// <param name="ipV4Options">The IPv4 options.</param>
+        /// <param name="icmpCode">The ICMP code.</param>
+        /// <param name="icmpIpV4TypeOfService">The IPv4 over the ICMP's Type of Service.</param>
+        /// <param name="icmpIpV4Identification">The IPv4 over the ICMP's Identification.</param>
+        /// <param name="icmpIpV4Fragmentation">The IPv4 over the ICMP's Fragmentation.</param>
+        /// <param name="icmpIpV4Ttl">The IPv4 over the ICMP's TTL.</param>
+        /// <param name="icmpIpV4Protocol">The IPv4 over the ICMP's Protocol.</param>
+        /// <param name="icmpIpV4SourceAddress">The IPv4 over the ICMP's source address.</param>
+        /// <param name="icmpIpV4DestinationAddress">The IPv4 over the ICMP's destination address.</param>
+        /// <param name="icmpIpV4Options">The IPv4 over the ICMP's options.</param>
+        /// <param name="icmpIpV4Payload">The IPv4 over the ICMP's payload.</param>
+        /// <returns>A packet with an ICMP Destination Unreachable over IPv4 over Ethernet datagram.</returns>
+        public static Packet EthernetIpV4IcmpTimeExceeded(DateTime timestamp,
+                                                          MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                          byte ipV4TypeOfService, ushort ipV4Identification,
+                                                          IpV4Fragmentation ipV4Fragmentation,
+                                                          byte ipV4Ttl,
+                                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                          IpV4Options ipV4Options,
+                                                          IcmpCodeDestinationUnrechable icmpCode,
+                                                          byte icmpIpV4TypeOfService, ushort icmpIpV4Identification,
+                                                          IpV4Fragmentation icmpIpV4Fragmentation,
+                                                          byte icmpIpV4Ttl, IpV4Protocol icmpIpV4Protocol,
+                                                          IpV4Address icmpIpV4SourceAddress, IpV4Address icmpIpV4DestinationAddress,
+                                                          IpV4Options icmpIpV4Options,
+                                                          Datagram icmpIpV4Payload)
+        {
+            return EthernetIpV4IcmpWithIpV4Payload(timestamp,
+                                                   ethernetSource, ethernetDestination,
+                                                   ipV4TypeOfService, ipV4Identification,
+                                                   ipV4Fragmentation,
+                                                   ipV4Ttl,
+                                                   ipV4SourceAddress, ipV4DestinationAddress,
+                                                   ipV4Options,
+                                                   (byte)icmpCode, 0,
+                                                   icmpIpV4TypeOfService, icmpIpV4Identification,
+                                                   icmpIpV4Fragmentation,
+                                                   icmpIpV4Ttl, icmpIpV4Protocol,
+                                                   icmpIpV4SourceAddress, icmpIpV4DestinationAddress,
+                                                   icmpIpV4Options,
+                                                   icmpIpV4Payload);
+        }
+
+        private static Packet EthernetIpV4IcmpWithIpV4Payload(DateTime timestamp,
+                                                              MacAddress ethernetSource, MacAddress ethernetDestination,
+                                                              byte ipV4TypeOfService, ushort ipV4Identification,
+                                                              IpV4Fragmentation ipV4Fragmentation,
+                                                              byte ipV4Ttl,
+                                                              IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                                                              IpV4Options ipV4Options,
+                                                              byte icmpCode, uint icmpValueAccordingToType,
+                                                              byte icmpIpV4TypeOfService, ushort icmpIpV4Identification,
+                                                              IpV4Fragmentation icmpIpV4Fragmentation,
+                                                              byte icmpIpV4Ttl, IpV4Protocol icmpIpV4Protocol,
+                                                              IpV4Address icmpIpV4SourceAddress, IpV4Address icmpIpV4DestinationAddress,
+                                                              IpV4Options icmpIpV4Options,
+                                                              Datagram icmpIpV4Payload)
+        {
             int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
             int icmpIpHeaderLength = IpV4Datagram.HeaderMinimumLength + icmpIpV4Options.BytesLength;
             int ipPayloadLength = IcmpDatagram.HeaderLength + icmpIpHeaderLength + icmpIpV4Payload.Length;
@@ -151,7 +247,7 @@ namespace PcapDotNet.Packets
                                      ipV4Ttl, IpV4Protocol.InternetControlMessageProtocol,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, ipPayloadLength);
-            IcmpDatagram.WriteHeader(buffer, icmpOffset, IcmpMessageType.DestinationUnreachable, (byte)icmpCode, 0);
+            IcmpDatagram.WriteHeader(buffer, icmpOffset, IcmpMessageType.DestinationUnreachable, icmpCode, icmpValueAccordingToType);
             IpV4Datagram.WriteHeader(buffer, icmpOffset + IcmpDatagram.HeaderLength,
                                      icmpIpV4TypeOfService, icmpIpV4Identification,
                                      icmpIpV4Fragmentation,
@@ -162,7 +258,6 @@ namespace PcapDotNet.Packets
             IcmpDatagram.WriteChecksum(buffer, icmpOffset, ipPayloadLength);
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
-
 
         /// <summary>
         /// Builds an IGMP query version 1 over IPv4 over Ethernet packet.
@@ -578,7 +673,8 @@ namespace PcapDotNet.Packets
 
             tcpPayload.Write(buffer, ethernetIpV4HeadersLength + tcpHeaderLength);
 
-            IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength, TcpDatagram.Offset.Checksum, false);
+            IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength,
+                                                TcpDatagram.Offset.Checksum, false);
 
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
