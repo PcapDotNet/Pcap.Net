@@ -14,6 +14,11 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public const int SizeOf = UInt48.SizeOf;
 
+        public static MacAddress Zero 
+        {
+            get { return _zero; }
+        }
+
         /// <summary>
         /// Constructs the address from a 48 bit integer.
         /// </summary>
@@ -105,6 +110,7 @@ namespace PcapDotNet.Packets.Ethernet
                                  (byte)(_value));
         }
 
+        private static readonly MacAddress _zero;
         private readonly UInt48 _value;
     }
 }
