@@ -13,6 +13,7 @@ namespace PcapDotNet { namespace Core
     {
         /// <summary>
         /// A string giving a name for the device.
+        /// The name of the device is returned directly by the network card driver.
         /// </summary>
         property System::String^ Name { System::String^ get(); };
 
