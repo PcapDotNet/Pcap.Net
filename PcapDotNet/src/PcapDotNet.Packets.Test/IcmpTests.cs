@@ -86,10 +86,6 @@ namespace PcapDotNet.Packets.Test
                 IcmpMessageType icmpMessageType = random.NextEnum<IcmpMessageType>();
 
                 Packet packet;
-                switch (icmpMessageType)
-                {
-                    case IcmpMessageType.DestinationUnreachable:
-                        IcmpCodeDestinationUnrechable code = random.NextEnum<IcmpCodeDestinationUnrechable>();
                         byte icmpIpV4TypeOfService = random.NextByte();
                         ushort icmpIpV4Identification = random.NextUShort();
                         byte icmpIpV4Ttl = random.NextByte();
@@ -99,6 +95,10 @@ namespace PcapDotNet.Packets.Test
                         IpV4Address icmpIpV4Destination = new IpV4Address(random.NextUInt());
                         IpV4Options icmpIpV4Options = random.NextIpV4Options();
                         Datagram icmpIpV4Payload = random.NextDatagram(random.Next(200));
+                switch (icmpMessageType)
+                {
+                    case IcmpMessageType.DestinationUnreachable:
+                        IcmpCodeDestinationUnrechable code = random.NextEnum<IcmpCodeDestinationUnrechable>();
 
                         packet = PacketBuilder.EthernetIpV4IcmpDestinationUnreachable(DateTime.Now,
                                                                                       ethernetSource, ethernetDestination,
@@ -112,6 +112,37 @@ namespace PcapDotNet.Packets.Test
                                                                                       icmpIpV4Destination,
                                                                                       icmpIpV4Options, icmpIpV4Payload);
                         break;
+
+//                    case IcmpMessageType.TimeExceeded:
+//                        PacketBuilder.EthernetIpV4IcmpTimeExceeded(DateTime.Now,
+//                                                                                      ethernetSource, ethernetDestination,
+//                                                                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+//                                                                                      ipV4Ttl,
+//                                                                                      ipV4Source, ipV4Destination, ipV4Options,
+//                                                                                      code,
+//                                                                                      icmpIpV4TypeOfService, icmpIpV4Identification,
+//                                                                                      icmpIpV4Fragmentation,
+//                                                                                      icmpIpV4Ttl, icmpIpV4Protocol, icmpIpV4Source,
+//                                                                                      icmpIpV4Destination,
+//                                                                                      icmpIpV4Options, icmpIpV4Payload);
+//                        case IcmpMessageType.ParameterProblem:
+//                        case IcmpMessageType.SourceQuench:
+//                        case IcmpMessageType.Redirect:
+//                        case IcmpMessageType.Echo:
+//                        case IcmpMessageType.EchoReply:
+//                        case IcmpMessageType.Timestamp:
+//                        case IcmpMessageType.TimestampReply:
+//                        case IcmpMessageType.InformationRequest:
+//                        case IcmpMessageType.InformationReply:
+//                        case IcmpMessageType.RouterAdvertisement:
+//                        case IcmpMessageType.RouterSolicitation:
+//                        case IcmpMessageType.AddressMaskRequest:
+//                        case IcmpMessageType.AddressMaskReply:
+//                        case IcmpMessageType.Traceroute:
+//                        case IcmpMessageType.ConversionFailed:
+//                        case IcmpMessageType.DomainNameRequest:
+//                        case IcmpMessageType.DomainNameReply:
+//                        case IcmpMessageType.SecurityFailures:
 
                     default:
                         throw new InvalidOperationException("Invalid icmpMessageType " + icmpMessageType);
