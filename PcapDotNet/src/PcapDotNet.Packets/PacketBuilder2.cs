@@ -53,6 +53,17 @@ namespace PcapDotNet.Packets
         {
             get { return null; }
         }
+
+        public virtual bool Equals(Layer other)
+        {
+            return other != null &&
+                   Length == other.Length && DataLink == other.DataLink;
+        }
+
+        public override sealed bool Equals(object obj)
+        {
+            return Equals(obj as Layer);
+        }
     }
 
     public abstract class SimpleLayer : Layer
@@ -115,6 +126,17 @@ namespace PcapDotNet.Packets
         {
             get { return ArpHardwareType.Ethernet; }
         }
+
+        public bool Equals(EthernetLayer other)
+        {
+            return other != null &&
+                   Source == other.Source && Destination == other.Destination && EtherType == other.EtherType;
+        }
+
+        public override sealed bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as EthernetLayer);
+        }
     }
 
     public class PayloadLayer : SimpleLayer
@@ -129,6 +151,17 @@ namespace PcapDotNet.Packets
         public override int Length
         {
             get { return Data.Length; }
+        }
+
+        public bool Equals(PayloadLayer other)
+        {
+            return other != null &&
+                   Data.Equals(other.Data);
+        }
+
+        public override sealed bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as PayloadLayer);
         }
 
         protected override void Write(byte[] buffer, int offset)
@@ -212,7 +245,21 @@ namespace PcapDotNet.Packets
 
             IpV4Datagram.WriteTransportChecksum(buffer, offset, Length, (ushort)payloadLength,
                                                 nextTransportLayer.NextLayerChecksumOffset, nextTransportLayer.NextLayerIsChecksumOptional);
-            
+        }
+
+        public bool Equals(IpV4Layer other)
+        {
+            return other != null &&
+                   TypeOfService == other.TypeOfService && Identification == other.Identification &&
+                   Fragmentation == other.Fragmentation && Ttl == other.Ttl &&
+                   Protocol == other.Protocol &&
+                   Source == other.Source && Destination == other.Destination &&
+                   Options.Equals(other.Options);
+        }
+
+        public override sealed bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as IpV4Layer);
         }
     }
 
@@ -226,6 +273,18 @@ namespace PcapDotNet.Packets
         public abstract int NextLayerChecksumOffset { get; }
         public abstract bool NextLayerIsChecksumOptional { get; }
         public abstract bool NextLayerCalculateChecksum { get; }
+
+        public virtual bool Equals(TransportLayer other)
+        {
+            return other != null &&
+                   PreviousLayerProtocol == other.PreviousLayerProtocol &&
+                   SourcePort == other.SourcePort && DestinationPort == other.DestinationPort;
+        }
+
+        public override sealed bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as TransportLayer);
+        }
     }
 
     public class TcpLayer : TransportLayer
@@ -275,6 +334,20 @@ namespace PcapDotNet.Packets
                                     ControlBits, Window, UrgentPointer,
                                     Options);
         }
+
+        public bool Equals(TcpLayer other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && AcknowledgmentNumber == other.AcknowledgmentNumber &&
+                   ControlBits == other.ControlBits &&
+                   Window == other.Window && UrgentPointer == other.UrgentPointer &&
+                   Options == other.Options;
+        }
+
+        public override sealed bool Equals(TransportLayer other)
+        {
+            return base.Equals(other) && Equals(other as TcpLayer);
+        }
     }
 
     public class UdpLayer : TransportLayer
@@ -304,7 +377,7 @@ namespace PcapDotNet.Packets
         public override int Length
         {
             get { return UdpDatagram.HeaderLength; }
-            }
+        }
 
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
@@ -365,6 +438,21 @@ namespace PcapDotNet.Packets
                                     arpPreviousLayer.PreviousLayerHardwareType, ProtocolType, Operation,
                                     SenderHardwareAddress, SenderProtocolAddress, TargetHardwareAddress, TargetProtocolAddress);
         }
+
+        public bool Equals(ArpLayer other)
+        {
+            return other != null &&
+                   ProtocolType == other.ProtocolType && Operation == other.Operation &&
+                   SenderHardwareAddress.SequenceEqual(other.SenderHardwareAddress) &&
+                   SenderProtocolAddress.SequenceEqual(other.SenderProtocolAddress) &&
+                   TargetHardwareAddress.SequenceEqual(other.TargetHardwareAddress) &&
+                   TargetProtocolAddress.SequenceEqual(other.TargetProtocolAddress);
+        }
+
+        public override sealed bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as ArpLayer);
+        }
     }
 
     public abstract class IgmpLayer : SimpleLayer, IIpV4NextLayer
@@ -380,6 +468,19 @@ namespace PcapDotNet.Packets
         {
             get { return IpV4Protocol.InternetGroupManagementProtocol; }
         }
+
+        public virtual bool Equals(IgmpLayer other)
+        {
+            return other != null &&
+                   MessageType == other.MessageType &&
+                   QueryVersion == other.QueryVersion &&
+                   MaxResponseTimeValue == other.MaxResponseTimeValue;
+        }
+
+        public sealed override bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as IgmpLayer);
+        }
     }
 
     public interface IIgmpLayerWithGroupAddress
@@ -387,7 +488,7 @@ namespace PcapDotNet.Packets
         IpV4Address GroupAddress { get; set; }
     }
 
-    public abstract class SimpleIgmpLayer : IgmpLayer, IIgmpLayerWithGroupAddress
+    public abstract class IgmpSimpleLayer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         public IpV4Address GroupAddress { get; set; }
         public override int Length
@@ -400,9 +501,20 @@ namespace PcapDotNet.Packets
             IgmpDatagram.WriteHeader(buffer, offset,
                                      MessageType, MaxResponseTimeValue, GroupAddress);
         }
+
+        public bool Equals(IgmpSimpleLayer other)
+        {
+            return other != null &&
+                   GroupAddress == other.GroupAddress;
+        }
+
+        public override sealed bool Equals(IgmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IgmpSimpleLayer);
+        }
     }
 
-    public abstract class IgmpVersion1Layer : SimpleIgmpLayer
+    public abstract class IgmpVersion1Layer : IgmpSimpleLayer
     {
         public override TimeSpan MaxResponseTimeValue
         {
@@ -410,7 +522,7 @@ namespace PcapDotNet.Packets
         }
     }
 
-    public abstract class IgmpVersion2Layer : SimpleIgmpLayer
+    public abstract class IgmpVersion2Layer : IgmpSimpleLayer
     {
         public TimeSpan MaxResponseTime { get; set; }
         public override TimeSpan MaxResponseTimeValue
@@ -492,6 +604,21 @@ namespace PcapDotNet.Packets
         {
             get { return MaxResponseTime; }
         }
+
+        public bool Equals(IgmpQueryVersion3Layer other)
+        {
+            return other != null &&
+                   GroupAddress == other.GroupAddress &&
+                   IsSuppressRouterSideProcessing == other.IsSuppressRouterSideProcessing &&
+                   QueryRobustnessVariable == other.QueryRobustnessVariable &&
+                   QueryInterval == other.QueryInterval &&
+                   SourceAddresses.SequenceEqual(other.SourceAddresses);
+        }
+
+        public override sealed bool Equals(IgmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IgmpQueryVersion3Layer);
+        }
     }
 
     public class IgmpReportVersion1Layer : IgmpVersion1Layer
@@ -541,6 +668,17 @@ namespace PcapDotNet.Packets
         {
             get { return TimeSpan.Zero; }
         }
+
+        public bool Equals(IgmpReportVersion3Layer other)
+        {
+            return other != null &&
+                   GroupRecords.SequenceEqual(other.GroupRecords);
+        }
+
+        public sealed override bool Equals(IgmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IgmpReportVersion3Layer);
+        }
     }
 
     public abstract class IcmpLayer : SimpleLayer, IIpV4NextLayer
@@ -579,6 +717,18 @@ namespace PcapDotNet.Packets
         {
             get { return IpV4Protocol.InternetControlMessageProtocol; }
         }
+
+        public virtual bool Equals(IcmpLayer other)
+        {
+            return other != null &&
+                   MessageType == other.MessageType && CodeValue == other.CodeValue &&
+                   Value == other.Value;
+        }
+
+        public sealed override bool Equals(Layer other)
+        {
+            return base.Equals(other) && Equals(other as IcmpLayer);
+        }
     }
 
     public class IcmpDestinationUnreachableLayer : IcmpLayer
@@ -613,7 +763,7 @@ namespace PcapDotNet.Packets
 
     public class IcmpParameterProblemLayer : IcmpLayer
     {
-        public ushort Pointer { get; set; }
+        public byte Pointer { get; set; }
 
         public override IcmpMessageType MessageType
         {
@@ -624,7 +774,7 @@ namespace PcapDotNet.Packets
         {
             get
             {
-                return (uint)(Pointer << 16);
+                return (uint)(Pointer << 24);
             }
         }
     }
@@ -717,6 +867,19 @@ namespace PcapDotNet.Packets
             IcmpTimestampDatagram.WriteHeaderAdditional(buffer, offset,
                                                         OriginateTimestamp, ReceiveTimestamp, TransmitTimestamp);
         }
+
+        public bool Equals(IcmpTimestampLayer other)
+        {
+            return other != null &&
+                   OriginateTimestamp == other.OriginateTimestamp &&
+                   ReceiveTimestamp == other.ReceiveTimestamp &&
+                   TransmitTimestamp == other.TransmitTimestamp;
+        }
+
+        public sealed override bool Equals(IcmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IcmpTimestampLayer);
+        }
     }
 
     public class IcmpTimestampReplyLayer : IcmpTimestampLayer
@@ -778,6 +941,17 @@ namespace PcapDotNet.Packets
         {
             IcmpRouterAdvertisementDatagram.WriteHeaderAdditional(buffer, offset, Entries);
         }
+
+        public bool Equals(IcmpRouterAdvertisementLayer other)
+        {
+            return other != null &&
+                   Entries.SequenceEqual(other.Entries);
+        }
+
+        public sealed override bool Equals(IcmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IcmpRouterAdvertisementLayer);
+        }
     }
 
     public class IcmpRouterSolicitationLayer : IcmpLayer
@@ -809,6 +983,17 @@ namespace PcapDotNet.Packets
         {
             IcmpAddressMaskDatagram.WriteHeaderAdditional(buffer, offset, AddressMask);
         }
+
+        public bool Equals(IcmpAddressMaskRequestLayer other)
+        {
+            return other != null &&
+                   AddressMask == other.AddressMask;
+        }
+
+        public override sealed bool Equals(IcmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IcmpAddressMaskRequestLayer);
+        }
     }
 
     public class IcmpAddressMaskReplyLayer : IcmpAddressMaskRequestLayer
@@ -836,6 +1021,14 @@ namespace PcapDotNet.Packets
             get
             {
                 return (byte)Code;
+            }
+        }
+
+        protected override uint Value
+        {
+            get
+            {
+                return Pointer;
             }
         }
     }

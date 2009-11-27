@@ -76,6 +76,14 @@ namespace PcapDotNet.Packets
             }
         }
 
+        public virtual ILayer ExtractLayer()
+        {
+            return new PayloadLayer
+                       {
+                           Data = this
+                       };
+        }
+
         /// <summary>
         /// Iterate through all the bytes in the datagram.
         /// </summary>

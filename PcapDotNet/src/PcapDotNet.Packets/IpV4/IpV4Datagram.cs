@@ -206,6 +206,21 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            return new IpV4Layer
+                       {
+                           TypeOfService = TypeOfService,
+                           Identification = Identification,
+                           Fragmentation = Fragmentation,
+                           Ttl = Ttl,
+                           Protocol = Protocol,
+                           Source = Source,
+                           Destination = Destination,
+                           Options = Options,
+                       };
+        }
+
         /// <summary>
         /// The payload of the datagram.
         /// </summary>

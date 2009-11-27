@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -75,9 +76,157 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            switch (MessageType)
+            {
+                case IcmpMessageType.DestinationUnreachable:
+                    return new IcmpDestinationUnreachableLayer
+                    {
+                        Code = (IcmpCodeDestinationUnrechable)Code
+                    };
+
+                case IcmpMessageType.TimeExceeded:
+                    return new IcmpTimeExceededLayer
+                    {
+                        Code = (IcmpCodeTimeExceeded)Code
+                    };
+
+                case IcmpMessageType.ParameterProblem:
+                    return new IcmpParameterProblemLayer
+                               {
+                                   Pointer = ParameterProblem.Pointer
+                               };
+
+                case IcmpMessageType.SourceQuench:
+                    return new IcmpSourceQuenchLayer();
+                
+                case IcmpMessageType.Redirect:
+                    return new IcmpRedirectLayer
+                               {
+                                   Code = (IcmpCodeRedirect)Code,
+                                   GatewayInternetAddress = Redirect.GatewayInternetAddress
+                               };
+
+                case IcmpMessageType.Echo:
+                    return new IcmpEchoLayer
+                               {
+                                   Identifier = Echo.Identifier,
+                                   SequenceNumber = Echo.SequenceNumber
+                               };
+                    
+                case IcmpMessageType.EchoReply:
+                    return new IcmpEchoReplyLayer
+                    {
+                        Identifier = EchoReply.Identifier,
+                        SequenceNumber = EchoReply.SequenceNumber
+                    };
+
+
+                case IcmpMessageType.Timestamp:
+                    return new IcmpTimestampLayer
+                               {
+                                   Identifier = Timestamp.Identifier,
+                                   SequenceNumber = Timestamp.SequenceNumber,
+                                   OriginateTimestamp = Timestamp.OriginateTimestamp,
+                                   ReceiveTimestamp = Timestamp.ReceiveTimestamp,
+                                   TransmitTimestamp = Timestamp.TransmitTimestamp
+                               };
+                                        
+                case IcmpMessageType.TimestampReply:
+                    return new IcmpTimestampReplyLayer
+                               {
+                                   Identifier = TimestampReply.Identifier,
+                                   SequenceNumber = TimestampReply.SequenceNumber,
+                                   OriginateTimestamp = TimestampReply.OriginateTimestamp,
+                                   ReceiveTimestamp = TimestampReply.ReceiveTimestamp,
+                                   TransmitTimestamp = TimestampReply.TransmitTimestamp,
+                               };
+                                 
+                case IcmpMessageType.InformationRequest:
+                    return new IcmpInformationRequestLayer
+                               {
+                                   Identifier = InformationRequest.Identifier,
+                                   SequenceNumber = InformationRequest.SequenceNumber
+                               };
+                    
+                case IcmpMessageType.InformationReply:
+                    return new IcmpInformationReplyLayer
+                               {
+                                   Identifier = InformationReply.Identifier,
+                                   SequenceNumber = InformationReply.SequenceNumber
+                               };
+
+
+                case IcmpMessageType.RouterAdvertisement:
+                    return new IcmpRouterAdvertisementLayer
+                               {
+                                   Lifetime = RouterAdvertisement.Lifetime,
+                                   Entries = RouterAdvertisement.Entries.ToList()
+                               };
+
+                case IcmpMessageType.RouterSolicitation:
+                    return new IcmpRouterSolicitationLayer();
+
+                case IcmpMessageType.AddressMaskRequest:
+                    return new IcmpAddressMaskRequestLayer
+                               {
+                                   Identifier = AddressMaskRequest.Identifier,
+                                   SequenceNumber = AddressMaskRequest.SequenceNumber,
+                                   AddressMask = AddressMaskRequest.AddressMask
+                               };
+
+                case IcmpMessageType.AddressMaskReply:
+                    return new IcmpAddressMaskReplyLayer
+                               {
+                                   Identifier = AddressMaskReply.Identifier,
+                                   SequenceNumber = AddressMaskReply.SequenceNumber,
+                                   AddressMask = AddressMaskReply.AddressMask
+                               };
+                
+                case IcmpMessageType.Traceroute:
+                    return new IcmpTracerouteLayer
+                               {
+                                   Code = (IcmpCodeTraceroute)Code,
+                                   Identification = Traceroute.Identification,
+                                   OutboundHopCount = Traceroute.OutboundHopCount,
+                                   ReturnHopCount = Traceroute.ReturnHopCount,
+                                   OutputLinkSpeed = Traceroute.OutputLinkSpeed,
+                                   OutputLinkMtu = Traceroute.OutputLinkMtu
+                               };
+
+                case IcmpMessageType.ConversionFailed:
+                    return new IcmpConversionFailedLayer
+                               {
+                                   Code = (IcmpCodeConversionFailed)Code,
+                                   Pointer = ConversionFailed.Pointer
+                               };
+
+                case IcmpMessageType.DomainNameRequest:
+                    return new IcmpDomainNameRequestLayer
+                               {
+                                   Identifier = DomainNameRequest.Identifier,
+                                   SequenceNumber = DomainNameRequest.SequenceNumber
+                               };
+
+                case IcmpMessageType.DomainNameReply:
+                    throw new NotSupportedException("Message Type " + MessageType + " is not supported");
+
+                case IcmpMessageType.SecurityFailures:
+                    return new IcmpSecurityFailuresLayer
+                               {
+                                   Code = (IcmpCodeSecurityFailures)Code,
+                                   Pointer = SecurityFailures.Pointer
+                               };
+
+                default:
+                    throw new InvalidOperationException("Invalid icmpMessageType " + MessageType);
+            }
+        }
+
         public Datagram Payload
         {
-            get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
+            get { return Typed; }
         }
 
         public IcmpIpV4HeaderPlus64BitsPayloadDatagram DestinationUncreachable

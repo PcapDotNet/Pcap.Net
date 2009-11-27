@@ -90,28 +90,88 @@ namespace PcapDotNet.Packets.Test
 
             for (int i = 0; i != 1000; ++i)
             {
-                IpV4Layer icmpIpV4Layer = new IpV4Layer
-                                              {
-                                                  TypeOfService = random.NextByte(),
-                                                  Identification = random.NextUShort(),
-                                                  Fragmentation = random.NextIpV4Fragmentation(),
-                                                  Ttl = random.NextByte(),
-                                                  Protocol = random.NextEnum<IpV4Protocol>(),
-                                                  Source = random.NextIpV4Address(),
-                                                  Destination = random.NextIpV4Address(),
-                                                  Options = random.NextIpV4Options(),
-                                              };
-
-                PayloadLayer icmpIpV4PayloadLayer = new PayloadLayer
-                                                    {
-                                                        Data = random.NextDatagram(random.Next(200))
-                                                    };
-
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
 
-                Packet packet = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer, icmpIpV4PayloadLayer).Build(DateTime.Now);
+                bool isIpV4Payload;
+                switch (icmpLayer.MessageType)
+                {
+                    case IcmpMessageType.DestinationUnreachable:
+                    case IcmpMessageType.TimeExceeded:
+                    case IcmpMessageType.ParameterProblem:
+                    case IcmpMessageType.SourceQuench:
+                    case IcmpMessageType.Redirect:
+                    case IcmpMessageType.ConversionFailed:
+                        isIpV4Payload = true;
+                        break;
+
+                    case IcmpMessageType.Echo:
+                    case IcmpMessageType.EchoReply:
+                    case IcmpMessageType.Timestamp:
+                    case IcmpMessageType.TimestampReply:
+                    case IcmpMessageType.InformationRequest:
+                    case IcmpMessageType.InformationReply:
+                    case IcmpMessageType.RouterAdvertisement:
+                    case IcmpMessageType.RouterSolicitation:
+                    case IcmpMessageType.AddressMaskRequest:
+                    case IcmpMessageType.AddressMaskReply:
+                    case IcmpMessageType.Traceroute:
+                    case IcmpMessageType.DomainNameRequest:
+                    case IcmpMessageType.SecurityFailures:
+                        isIpV4Payload = false;
+                        break;
+
+                    case IcmpMessageType.DomainNameReply:
+                    default:
+                        throw new InvalidOperationException("Invalid icmpMessageType " + icmpLayer.MessageType);
+                }
+                PacketBuilder2 packetBuilder2;
+                IpV4Layer icmpIpV4Layer = null;
+                PayloadLayer icmpIpV4PayloadLayer = null; 
+                if (isIpV4Payload)
+                {
+                    icmpIpV4Layer = new IpV4Layer
+                                                  {
+                                                      TypeOfService = random.NextByte(),
+                                                      Identification = random.NextUShort(),
+                                                      Fragmentation = random.NextIpV4Fragmentation(),
+                                                      Ttl = random.NextByte(),
+                                                      Protocol = random.NextEnum<IpV4Protocol>(),
+                                                      Source = random.NextIpV4Address(),
+                                                      Destination = random.NextIpV4Address(),
+                                                      Options = random.NextIpV4Options(),
+                                                  };
+
+                    icmpIpV4PayloadLayer = new PayloadLayer
+                                                            {
+                                                                Data = random.NextDatagram(random.Next(200))
+                                                            };
+
+                    packetBuilder2 = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer, icmpIpV4PayloadLayer);
+                }
+                else
+                    packetBuilder2 = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer);
+
+                Packet packet = packetBuilder2.Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
+
+                // Ethernet
+                ethernetLayer.EtherType = EthernetType.IpV4;
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+
+                // IPv4
+                ipV4Layer.Protocol = IpV4Protocol.InternetControlMessageProtocol;
+                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer());
+                Assert.AreEqual(ipV4Layer.Length, packet.Ethernet.IpV4.HeaderLength);
+                Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
+                Assert.AreEqual(ipV4Layer.Length + icmpLayer.Length + (isIpV4Payload ? icmpIpV4Layer.Length + icmpIpV4PayloadLayer.Length : 0),
+                                packet.Ethernet.IpV4.TotalLength);
+                Assert.AreEqual(IpV4Datagram.DefaultVersion, packet.Ethernet.IpV4.Version);
+                
+                // ICMP
+                IcmpLayer actualIcmpLayer = (IcmpLayer)packet.Ethernet.IpV4.Icmp.ExtractLayer();
+                Assert.AreEqual(icmpLayer, actualIcmpLayer);
+                Assert.IsTrue(packet.Ethernet.IpV4.Icmp.IsChecksumCorrect);
             }
         }
     }

@@ -476,12 +476,7 @@ namespace PcapDotNet.Packets.TestUtils
                         
         public static IcmpLayer NextIcmpLayer(this Random random)
         {
-            IcmpMessageType icmpMessageType = random.NextValue(new[]
-                                                                   {
-                                                                       IcmpMessageType.DestinationUnreachable,
-                                                                       IcmpMessageType.TimeExceeded
-                                                                   });
-                //random.NextEnum<IcmpMessageType>();
+            IcmpMessageType icmpMessageType = random.NextEnum<IcmpMessageType>(IcmpMessageType.DomainNameReply);
 
             switch (icmpMessageType)
             {
@@ -500,7 +495,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.ParameterProblem:
                     return new IcmpParameterProblemLayer
                                {
-                                   Pointer = random.NextUShort()
+                                   Pointer = random.NextByte()
                                };
 
                 case IcmpMessageType.SourceQuench:
