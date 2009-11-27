@@ -50,5 +50,19 @@ namespace PcapDotNet.Packets
         {
             IcmpTracerouteDatagram.WriteHeaderAdditional(buffer, offset, OutboundHopCount, ReturnHopCount, OutputLinkSpeed, OutputLinkMtu);
         }
+
+        public bool Equals(IcmpTracerouteLayer other)
+        {
+            return other != null &&
+                   OutboundHopCount == other.OutboundHopCount &&
+                   ReturnHopCount == other.ReturnHopCount &&
+                   OutputLinkSpeed == other.OutputLinkSpeed &&
+                   OutputLinkMtu == other.OutputLinkMtu;
+        }
+
+        public override sealed bool Equals(IcmpLayer other)
+        {
+            return base.Equals(other) && Equals(other as IcmpTracerouteLayer);
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Icmp
 
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4Address addressMask)
         {
-            buffer.Write(offset + Offset.AddressMask, addressMask, Endianity.Big);
+            buffer.Write(offset, addressMask, Endianity.Big);
         }
     }
 }

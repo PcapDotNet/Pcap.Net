@@ -88,6 +88,16 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            return new EthernetLayer()
+                       {
+                           Source = Source,
+                           Destination = Destination,
+                           EtherType = EtherType,
+                       };
+        }
+
         /// <summary>
         /// The Ethernet payload as an IPv4 datagram.
         /// </summary>

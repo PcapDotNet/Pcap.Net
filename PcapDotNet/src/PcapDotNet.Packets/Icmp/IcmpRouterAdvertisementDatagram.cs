@@ -23,6 +23,18 @@ namespace PcapDotNet.Packets.Icmp
             get {return _routerAddressPreference; }
         }
 
+        public bool Equals(IcmpRouterAdvertisementEntry other)
+        {
+            return other != null &&
+                   RouterAddress == other.RouterAddress &&
+                   RouterAddressPreference == other.RouterAddressPreference;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IcmpRouterAdvertisementEntry);
+        }
+
         private readonly IpV4Address _routerAddress;
         private readonly int _routerAddressPreference;
     }
