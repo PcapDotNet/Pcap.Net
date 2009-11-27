@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -18,6 +20,8 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpTracerouteDatagram : IcmpTypedDatagram
     {
+        public const int HeaderAdditionalLength = 12;
+
         private class Offset
         {
             public const int Identifier = 0;
@@ -75,6 +79,14 @@ namespace PcapDotNet.Packets.Icmp
         internal IcmpTracerouteDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
+        }
+
+        internal static void WriteHeaderAdditional(byte[] buffer, int offset, ushort outboundHopCount, ushort returnHopCount, uint outputLinkSpeed, uint outputLinkMtu)
+        {
+            buffer.Write(ref offset, outboundHopCount, Endianity.Big);
+            buffer.Write(ref offset, returnHopCount, Endianity.Big);
+            buffer.Write(ref offset, outputLinkSpeed, Endianity.Big);
+            buffer.Write(offset, outputLinkMtu, Endianity.Big);
         }
     }
 }

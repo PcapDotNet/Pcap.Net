@@ -70,6 +70,7 @@
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
+    <Compile Include="IcmpTracerouteLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskDatagram.cs" />
     <Compile Include="Icmp\IcmpCodeDestinationUnrechable.cs" />
     <Compile Include="Icmp\IcmpConversionFailedDatagram.cs" />
