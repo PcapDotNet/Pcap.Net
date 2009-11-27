@@ -5,6 +5,28 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
 {
+    public class IcmpRouterAdvertisementEntry
+    {
+        public IcmpRouterAdvertisementEntry(IpV4Address routerAddress, int routerAddressPreference)
+        {
+            _routerAddress = routerAddress;
+            _routerAddressPreference = routerAddressPreference;
+        }
+
+        public IpV4Address RouterAddress
+        {
+            get { return _routerAddress;}
+        }
+
+        public int RouterAddressPreference
+        {
+            get {return _routerAddressPreference; }
+        }
+
+        private readonly IpV4Address _routerAddress;
+        private readonly int _routerAddressPreference;
+    }
+
     /// <summary>
     /// RFC 1256.
     /// <pre>
@@ -28,6 +50,8 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpRouterAdvertisementDatagram : IcmpTypedDatagram
     {
+        public const int DefaultAddressEntrySize = 2;
+
         private class Offset
         {
             public const int NumAddresses = 0;
@@ -69,49 +93,28 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         /// <summary>
-        /// The sending router's IP address(es) on the interface from which this message is sent.
-        /// </summary>
-        public ReadOnlyCollection<IpV4Address> RouterAddresses
-        {
-            get
-            {
-                if (_routerAddresses == null)
-                {
-                    IpV4Address[] addresses = new IpV4Address[NumAddresses];
-                    int currentOffset = Offset.Addresses;
-                    for (int i = 0; i != addresses.Length && currentOffset + IpV4Address.SizeOf <= Length; ++i)
-                    {
-                        addresses[i] = ReadIpV4Address(currentOffset, Endianity.Big);
-                        currentOffset += AddressEntrySize * IpV4Address.SizeOf;
-                    }
-                    _routerAddresses = new ReadOnlyCollection<IpV4Address>(addresses);
-                }
-
-                return _routerAddresses;
-            }
-        }
-
-        /// <summary>
-        /// The preferability of each Router Address[i] as a default router address, relative to other router addresses on the same subnet.
+        /// The pairs of sending router's IP address(es) on the interface from which this message is sent
+        /// and the preferability of each Router Address[i] as a default router address, relative to other router addresses on the same subnet.
         /// A signed, twos-complement value; higher values mean more preferable.
         /// </summary>
-        public ReadOnlyCollection<int> RouterAddressesPreferences
+        public ReadOnlyCollection<IcmpRouterAdvertisementEntry> Entries
         {
             get
             {
-                if (_routerAddressesPreferences == null)
+                if (_entries == null)
                 {
-                    int[] addressesPreferences = new int[NumAddresses];
+                    IcmpRouterAdvertisementEntry[] entries = new IcmpRouterAdvertisementEntry[NumAddresses];
                     int currentOffset = Offset.Addresses;
-                    for (int i = 0; i != addressesPreferences.Length && currentOffset + sizeof(int) <= Length; ++i)
+                    for (int i = 0; i != entries.Length && currentOffset + IpV4Address.SizeOf <= Length; ++i)
                     {
-                        addressesPreferences[i] = ReadInt(currentOffset, Endianity.Big);
+                        entries[i] = new IcmpRouterAdvertisementEntry(ReadIpV4Address(currentOffset, Endianity.Big),
+                                                                      ReadInt(currentOffset + IpV4Address.SizeOf, Endianity.Big));
                         currentOffset += AddressEntrySize * IpV4Address.SizeOf;
                     }
-                    _routerAddressesPreferences = new ReadOnlyCollection<int>(addressesPreferences);
+                    _entries = new ReadOnlyCollection<IcmpRouterAdvertisementEntry>(entries);
                 }
 
-                return _routerAddressesPreferences;
+                return _entries;
             }
         }
 
@@ -120,7 +123,21 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
-        private ReadOnlyCollection<IpV4Address> _routerAddresses;
-        private ReadOnlyCollection<int> _routerAddressesPreferences;
+        internal static int GetHeaderAdditionalLength(int numEntries)
+        {
+            return numEntries * DefaultAddressEntrySize * IpV4Address.SizeOf;
+        }
+
+        internal static void WriteHeaderAdditional(byte[] buffer, int offset,
+                                                   IEnumerable<IcmpRouterAdvertisementEntry> entries)
+        {
+            foreach (IcmpRouterAdvertisementEntry entry in entries)
+            {
+                buffer.Write(ref offset, entry.RouterAddress, Endianity.Big);
+                buffer.Write(ref offset, entry.RouterAddressPreference, Endianity.Big);
+            }
+        }
+
+        private ReadOnlyCollection<IcmpRouterAdvertisementEntry> _entries;
     }
 }

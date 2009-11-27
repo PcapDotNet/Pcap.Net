@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
@@ -368,17 +369,27 @@ namespace PcapDotNet.Packets
 
     public abstract class IgmpLayer : SimpleLayer, IIpV4NextLayer
     {
+        public abstract IgmpMessageType MessageType { get; }
+        public virtual IgmpQueryVersion QueryVersion
+        {
+            get { return IgmpQueryVersion.None; }
+        }
+        public abstract TimeSpan MaxResponseTimeValue { get; }
+
         public IpV4Protocol PreviousLayerProtocol
         {
             get { return IpV4Protocol.InternetGroupManagementProtocol; }
         }
     }
 
-    public abstract class SimpleIgmpLayer : IgmpLayer
+    public interface IIgmpLayerWithGroupAddress
+    {
+        IpV4Address GroupAddress { get; set; }
+    }
+
+    public abstract class SimpleIgmpLayer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         public IpV4Address GroupAddress { get; set; }
-        public abstract IgmpMessageType MessageType { get; }
-        public abstract TimeSpan MaxResponseTimeValue { get; }
         public override int Length
         {
             get { return IgmpDatagram.HeaderLength; }
@@ -414,6 +425,14 @@ namespace PcapDotNet.Packets
         {
             get { return IgmpMessageType.MembershipQuery; }
         }
+
+        public override IgmpQueryVersion QueryVersion
+        {
+            get
+            {
+                return IgmpQueryVersion.Version1;
+            }
+        }
     }
 
     public class IgmpQueryVersion2Layer : IgmpVersion2Layer
@@ -422,9 +441,17 @@ namespace PcapDotNet.Packets
         {
             get { return IgmpMessageType.MembershipQuery; }
         }
+
+        public override IgmpQueryVersion QueryVersion
+        {
+            get
+            {
+                return IgmpQueryVersion.Version2;
+            }
+        }
     }
 
-    public class IgmpQueryVersion3Layer : IgmpLayer
+    public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         public TimeSpan MaxResponseTime { get; set; }
         public IpV4Address GroupAddress { get; set; }
@@ -446,6 +473,24 @@ namespace PcapDotNet.Packets
             IgmpDatagram.WriteQueryVersion3(buffer, offset,
                                             MaxResponseTime, GroupAddress, IsSuppressRouterSideProcessing, QueryRobustnessVariable,
                                             QueryInterval, SourceAddresses);
+        }
+
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipQuery; }
+        }
+
+        public override IgmpQueryVersion QueryVersion
+        {
+            get
+            {
+                return IgmpQueryVersion.Version3;
+            }
+        }
+
+        public override TimeSpan MaxResponseTimeValue
+        {
+            get { return MaxResponseTime; }
         }
     }
 
@@ -485,6 +530,347 @@ namespace PcapDotNet.Packets
         protected override void Write(byte[] buffer, int offset)
         {
             IgmpDatagram.WriteReportVersion3(buffer, offset, GroupRecords);
+        }
+
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipReportVersion3; }
+        }
+
+        public override TimeSpan MaxResponseTimeValue
+        {
+            get { return TimeSpan.Zero; }
+        }
+    }
+
+    public abstract class IcmpLayer : SimpleLayer, IIpV4NextLayer
+    {
+        public abstract IcmpMessageType MessageType { get; }
+        public virtual byte CodeValue
+        {
+            get { return 0; }
+        }
+        protected virtual uint Value 
+        { 
+            get { return 0; }
+        }
+
+        public override int Length
+        {
+            get { return IcmpDatagram.HeaderLength; } 
+        }
+
+        protected override sealed void Write(byte[] buffer, int offset)
+        {
+            IcmpDatagram.WriteHeader(buffer, offset, MessageType, CodeValue, Value);
+            WriteHeaderAdditional(buffer, offset + IcmpDatagram.HeaderLength);
+        }
+
+        protected virtual void WriteHeaderAdditional(byte[] buffer, int offset)
+        {
+        }
+
+        public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
+        {
+            IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength);
+        }
+
+        public IpV4Protocol PreviousLayerProtocol
+        {
+            get { return IpV4Protocol.InternetControlMessageProtocol; }
+        }
+    }
+
+    public class IcmpDestinationUnreachableLayer : IcmpLayer
+    {
+        public IcmpCodeDestinationUnrechable Code { get; set; }
+
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.DestinationUnreachable; }
+        }
+
+        public override byte CodeValue
+        {
+            get { return (byte)Code; }
+        }
+    }
+
+    public class IcmpTimeExceededLayer : IcmpLayer
+    {
+        public IcmpCodeTimeExceeded Code { get; set; }
+
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.TimeExceeded; }
+        }
+
+        public override byte CodeValue
+        {
+            get { return (byte)Code; }
+        }
+    }
+
+    public class IcmpParameterProblemLayer : IcmpLayer
+    {
+        public ushort Pointer { get; set; }
+
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.ParameterProblem; }
+        }
+
+        protected override uint Value
+        {
+            get
+            {
+                return (uint)(Pointer << 16);
+            }
+        }
+    }
+
+    public class IcmpSourceQuenchLayer : IcmpLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.SourceQuench; }
+        }
+    }
+
+    public class IcmpRedirectLayer : IcmpLayer
+    {
+        public IcmpCodeRedirect Code { get; set; }
+        public IpV4Address GatewayInternetAddress{get;set;}
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.Redirect; }
+        }
+
+        public override byte CodeValue
+        {
+            get
+            {
+                return (byte)Code;
+            }
+        }
+
+        protected override uint Value
+        {
+            get
+            {
+                return GatewayInternetAddress.ToValue();
+            }
+        }
+    }
+
+    public abstract class IcmpIdentifiedLayer : IcmpLayer
+    {
+        public ushort Identifier { get; set; }
+
+        public ushort SequenceNumber { get; set; }
+
+        protected override sealed uint Value
+        {
+            get
+            {
+                return (uint)((Identifier << 16) | SequenceNumber);
+            }
+        }
+    }
+
+    public class IcmpEchoLayer : IcmpIdentifiedLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.Echo; }
+        }
+    }
+
+    public class IcmpEchoReplyLayer : IcmpIdentifiedLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.EchoReply; }
+        }
+    }
+
+    public class IcmpTimestampLayer : IcmpIdentifiedLayer
+    {
+        public IpV4TimeOfDay OriginateTimestamp { get; set; }
+        public IpV4TimeOfDay ReceiveTimestamp { get; set; }
+        public IpV4TimeOfDay TransmitTimestamp { get; set; }
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.Timestamp; }
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return base.Length + IcmpTimestampDatagram.HeaderAdditionalLength;
+            }
+        }
+
+        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        {
+            IcmpTimestampDatagram.WriteHeaderAdditional(buffer, offset,
+                                                        OriginateTimestamp, ReceiveTimestamp, TransmitTimestamp);
+        }
+    }
+
+    public class IcmpTimestampReplyLayer : IcmpTimestampLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get
+            {
+                return IcmpMessageType.TimestampReply;
+            }
+        }
+    }
+
+    public class IcmpInformationRequestLayer : IcmpIdentifiedLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.InformationRequest; }
+        }
+    }
+
+    public class IcmpInformationReplyLayer : IcmpIdentifiedLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.InformationReply; }
+        }
+    }
+
+    public class IcmpRouterAdvertisementLayer : IcmpLayer
+    {
+        public TimeSpan Lifetime { get; set; }
+        public List<IcmpRouterAdvertisementEntry> Entries { get; set; }
+        
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.RouterAdvertisement; }
+        }
+
+        protected override uint Value
+        {
+            get
+            {
+                return (uint)(((byte)Entries.Count << 24) |
+                              (IcmpRouterAdvertisementDatagram.DefaultAddressEntrySize << 16) |
+                              ((ushort)Lifetime.TotalSeconds));
+            }
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return base.Length + IcmpRouterAdvertisementDatagram.GetHeaderAdditionalLength(Entries.Count);
+            }
+        }
+
+        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        {
+            IcmpRouterAdvertisementDatagram.WriteHeaderAdditional(buffer, offset, Entries);
+        }
+    }
+
+    public class IcmpRouterSolicitationLayer : IcmpLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.RouterSolicitation; }
+        }
+    }
+
+    public class IcmpAddressMaskRequestLayer : IcmpIdentifiedLayer
+    {
+        public IpV4Address AddressMask { get; set; }
+
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.AddressMaskRequest; }
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return base.Length + IcmpAddressMaskDatagram.HeaderAdditionalLength;
+            }
+        }
+
+        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        {
+            IcmpAddressMaskDatagram.WriteHeaderAdditional(buffer, offset, AddressMask);
+        }
+    }
+
+    public class IcmpAddressMaskReplyLayer : IcmpAddressMaskRequestLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get
+            {
+                return IcmpMessageType.AddressMaskReply;
+            }
+        }
+    }
+
+    public class IcmpConversionFailedLayer : IcmpLayer
+    {
+        public IcmpCodeConversionFailed Code { get; set; }
+        public uint Pointer { get; set; }
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.ConversionFailed; }
+        }
+
+        public override byte CodeValue
+        {
+            get
+            {
+                return (byte)Code;
+            }
+        }
+    }
+
+    public class IcmpDomainNameRequestLayer : IcmpIdentifiedLayer
+    {
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.DomainNameRequest; }
+        }
+    }
+
+    public class IcmpSecurityFailuresLayer : IcmpLayer
+    {
+        public IcmpCodeSecurityFailures Code{get; set ;}
+        public ushort Pointer{get; set ;}
+        public override IcmpMessageType MessageType
+        {
+            get { return IcmpMessageType.SecurityFailures; }
+        }
+
+        public override byte CodeValue
+        {
+            get
+            {
+                return (byte)Code;
+            }
+        }
+
+        protected override uint Value
+        {
+            get
+            {
+                return Pointer;
+            }
         }
     }
 
@@ -530,13 +916,13 @@ namespace PcapDotNet.Packets
 
         private void FinalizeLayers(byte[] buffer, int length)
         {
-            int offset = 0;
-            for (int i = 0; i != _layers.Length; ++i)
+            int offset = length;
+            for (int i = _layers.Length - 1; i >= 0; --i)
             {
                 ILayer layer = _layers[i];
                 ILayer nextLayer = i == _layers.Length - 1 ? null : _layers[i + 1];
+                offset -= layer.Length;
                 layer.Finalize(buffer, offset, length - offset - layer.Length, nextLayer);
-                offset += layer.Length;
             }
         }
 

@@ -3,6 +3,7 @@ using System;
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
+    /// Generic
     /// <pre>
     /// +-----+------+------+-----------+
     /// | Bit | 0-7  | 8-15 | 16-31     |
@@ -22,6 +23,8 @@ namespace PcapDotNet.Packets.Icmp
         /// The number of bytes the ICMP header takes.
         /// </summary>
         public const int HeaderLength = 8;
+
+        public const int HeaderWithoutValueLength = HeaderLength - sizeof(uint);
 
         private static class Offset
         {

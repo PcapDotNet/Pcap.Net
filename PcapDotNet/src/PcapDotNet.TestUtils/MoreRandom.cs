@@ -124,7 +124,7 @@ namespace PcapDotNet.TestUtils
             return random.NextEnum((IEnumerable<T>)valuesToIgnore);
         }
 
-        public static object NextValue<T>(this Random random, IList<T> values)
+        public static T NextValue<T>(this Random random, IList<T> values)
         {
             return values[random.Next(values.Count)];
         }

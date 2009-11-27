@@ -5,6 +5,7 @@ using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
@@ -12,7 +13,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
-    public static class MoreRandomPackets
+    public static class RandomPacketsExtensions
     {
         public static Datagram NextDatagram(this Random random, int length)
         {
@@ -89,7 +90,7 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV4Fragmentation(ipV4FragmentationFlags, ipV4FragmentationOffset);
         }
 
-        public static IpV4TimeOfDay NextIpV4OptionTimeOfDay(this Random random)
+        public static IpV4TimeOfDay NextIpV4TimeOfDay(this Random random)
         {
             return new IpV4TimeOfDay(random.NextUInt());
         }
@@ -197,7 +198,7 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         case IpV4OptionTimestampType.TimestampOnly:
                             int numTimestamps = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 4 + 1);
-                            IpV4TimeOfDay[] timestamps = ((Func<IpV4TimeOfDay>)random.NextIpV4OptionTimeOfDay).GenerateArray(numTimestamps);
+                            IpV4TimeOfDay[] timestamps = ((Func<IpV4TimeOfDay>)random.NextIpV4TimeOfDay).GenerateArray(numTimestamps);
                             return new IpV4OptionTimestampOnly(overflow, pointedIndex, timestamps);
 
                         case IpV4OptionTimestampType.AddressAndTimestamp:
@@ -205,7 +206,7 @@ namespace PcapDotNet.Packets.TestUtils
                             int numPairs = random.Next((maximumOptionLength - IpV4OptionTimestamp.OptionMinimumLength) / 8 + 1);
                             IpV4OptionTimedAddress[] pairs = new IpV4OptionTimedAddress[numPairs];
                             for (int i = 0; i != numPairs; ++i)
-                                pairs[i] = new IpV4OptionTimedAddress(random.NextIpV4Address(), random.NextIpV4OptionTimeOfDay());
+                                pairs[i] = new IpV4OptionTimedAddress(random.NextIpV4Address(), random.NextIpV4TimeOfDay());
 
                             return new IpV4OptionTimestampAndAddress(timestampType, overflow, pointedIndex, pairs);
 
@@ -387,6 +388,254 @@ namespace PcapDotNet.Packets.TestUtils
             return ((Func<IgmpGroupRecord>)random.NextIgmpGroupRecord).GenerateArray(count);
         }
 
+        public static IgmpLayer NextIgmpLayer(this Random random)
+        {
+            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None);
+            IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
+            TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
+            IpV4Address igmpGroupAddress = random.NextIpV4Address();
+            bool? igmpIsSuppressRouterSideProcessing = null;
+            byte? igmpQueryRobustnessVariable = null;
+            TimeSpan? igmpQueryInterval = null;
+            IpV4Address[] igmpSourceAddresses = null;
+            IgmpGroupRecord[] igmpGroupRecords = null;
+
+            switch (igmpMessageType)
+            {
+                case IgmpMessageType.MembershipQuery:
+                    igmpQueryVersion = random.NextEnum(IgmpQueryVersion.None, IgmpQueryVersion.Unknown);
+                    switch (igmpQueryVersion)
+                    {
+                        case IgmpQueryVersion.Version1:
+                            return new IgmpQueryVersion1Layer
+                            {
+                                GroupAddress = igmpGroupAddress
+                            };
+
+                        case IgmpQueryVersion.Version2:
+                            return new IgmpQueryVersion2Layer
+                            {
+                                MaxResponseTime = igmpMaxResponseTime,
+                                GroupAddress = igmpGroupAddress
+                            };
+
+                        case IgmpQueryVersion.Version3:
+                            igmpIsSuppressRouterSideProcessing = random.NextBool();
+                            igmpQueryRobustnessVariable = random.NextByte(8);
+                            igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
+                                                                      IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
+                            igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
+                            igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
+                            return new IgmpQueryVersion3Layer
+                            {
+                                MaxResponseTime = igmpMaxResponseTime,
+                                GroupAddress = igmpGroupAddress,
+                                IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing.Value,
+                                QueryRobustnessVariable = igmpQueryRobustnessVariable.Value,
+                                QueryInterval = igmpQueryInterval.Value,
+                                SourceAddresses = igmpSourceAddresses
+                            };
+
+                        default:
+                            throw new InvalidOperationException("Invalid Query Version " + igmpQueryVersion);
+                    }
+
+                case IgmpMessageType.MembershipReportVersion1:
+                    return new IgmpReportVersion1Layer
+                    {
+                        GroupAddress = igmpGroupAddress
+                    };
+
+                case IgmpMessageType.MembershipReportVersion2:
+                    return new IgmpReportVersion2Layer
+                    {
+                        MaxResponseTime = igmpMaxResponseTime,
+                        GroupAddress = igmpGroupAddress
+                    };
+
+                case IgmpMessageType.LeaveGroupVersion2:
+                    return new IgmpLeaveGroupVersion2Layer
+                    {
+                        MaxResponseTime = igmpMaxResponseTime,
+                        GroupAddress = igmpGroupAddress
+                    };
+
+                case IgmpMessageType.MembershipReportVersion3:
+                    igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
+                    return new IgmpReportVersion3Layer
+                    {
+                        GroupRecords = igmpGroupRecords
+                    };
+
+                default:
+                    throw new InvalidOperationException("Invalid message type " + igmpMessageType);
+            }
+        }
+
+        // ICMP
+                        
+        public static IcmpLayer NextIcmpLayer(this Random random)
+        {
+            IcmpMessageType icmpMessageType = random.NextValue(new[]
+                                                                   {
+                                                                       IcmpMessageType.DestinationUnreachable,
+                                                                       IcmpMessageType.TimeExceeded
+                                                                   });
+                //random.NextEnum<IcmpMessageType>();
+
+            switch (icmpMessageType)
+            {
+                case IcmpMessageType.DestinationUnreachable:
+                    return new IcmpDestinationUnreachableLayer
+                    {
+                        Code = random.NextEnum<IcmpCodeDestinationUnrechable>()
+                    };
+
+                case IcmpMessageType.TimeExceeded:
+                    return new IcmpTimeExceededLayer
+                    {
+                        Code = random.NextEnum<IcmpCodeTimeExceeded>()
+                    };
+
+                case IcmpMessageType.ParameterProblem:
+                    return new IcmpParameterProblemLayer
+                               {
+                                   Pointer = random.NextUShort()
+                               };
+
+                case IcmpMessageType.SourceQuench:
+                    return new IcmpSourceQuenchLayer();
+                
+                case IcmpMessageType.Redirect:
+                    return new IcmpRedirectLayer
+                               {
+                                   Code = random.NextEnum<IcmpCodeRedirect>(),
+                                   GatewayInternetAddress = random.NextIpV4Address()
+                               };
+
+                case IcmpMessageType.Echo:
+                    return new IcmpEchoLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort()
+                               };
+                    
+                case IcmpMessageType.EchoReply:
+                    return new IcmpEchoReplyLayer
+                    {
+                        Identifier = random.NextUShort(),
+                        SequenceNumber = random.NextUShort()
+                    };
+
+
+                case IcmpMessageType.Timestamp:
+                    return new IcmpTimestampLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                                   OriginateTimestamp = random.NextIpV4TimeOfDay(),
+                                   ReceiveTimestamp = random.NextIpV4TimeOfDay(),
+                                   TransmitTimestamp = random.NextIpV4TimeOfDay()
+                               };
+                                        
+                case IcmpMessageType.TimestampReply:
+                    return new IcmpTimestampReplyLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                                   OriginateTimestamp = random.NextIpV4TimeOfDay(),
+                                   ReceiveTimestamp = random.NextIpV4TimeOfDay(),
+                                   TransmitTimestamp = random.NextIpV4TimeOfDay()
+                               };
+                                 
+                case IcmpMessageType.InformationRequest:
+                    return new IcmpInformationRequestLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                               };
+                    
+                case IcmpMessageType.InformationReply:
+                    return new IcmpInformationReplyLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                               };
+
+
+                case IcmpMessageType.RouterAdvertisement:
+                    return new IcmpRouterAdvertisementLayer
+                               {
+                                   Lifetime = random.NextTimeSpan(TimeSpan.Zero, TimeSpan.FromSeconds(ushort.MaxValue)),
+                                   Entries = random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList()
+                               };
+
+                case IcmpMessageType.RouterSolicitation:
+                    return new IcmpRouterSolicitationLayer();
+
+                case IcmpMessageType.AddressMaskRequest:
+                    return new IcmpAddressMaskRequestLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                                   AddressMask = random.NextIpV4Address()
+                               };
+
+                case IcmpMessageType.AddressMaskReply:
+                    return new IcmpAddressMaskReplyLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                                   AddressMask = random.NextIpV4Address()
+                               };
+                
+                case IcmpMessageType.Traceroute:
+                    return new IcmpTracerouteLayer
+                               {
+                                   Code = random.NextEnum<IcmpCodeTraceroute>(),
+                                   Identification = random.NextUShort(),
+                                   OutboundHopCount = random.NextUShort(),
+                                   ReturnHopCount = random.NextUShort(),
+                                   OutputLinkSpeed = random.NextUInt(),
+                                   OutputLinkMtu = random.NextUInt(),
+                               };
+
+                case IcmpMessageType.ConversionFailed:
+                    return new IcmpConversionFailedLayer
+                               {
+                                   Code = random.NextEnum<IcmpCodeConversionFailed>(),
+                                   Pointer = random.NextUInt(),
+                               };
+
+                case IcmpMessageType.DomainNameRequest:
+                    return new IcmpDomainNameRequestLayer
+                               {
+                                   Identifier = random.NextUShort(),
+                                   SequenceNumber = random.NextUShort(),
+                               };
+
+                case IcmpMessageType.DomainNameReply:
+                    throw new NotSupportedException("Message Type " + icmpMessageType + " is not supported");
+
+                case IcmpMessageType.SecurityFailures:
+                    return new IcmpSecurityFailuresLayer
+                               {
+                                   Code = random.NextEnum<IcmpCodeSecurityFailures>(),
+                                   Pointer = random.NextUShort()
+                               };
+
+                default:
+                    throw new InvalidOperationException("Invalid icmpMessageType " + icmpMessageType);
+            }
+
+        }
+
+        public static IEnumerable<IcmpRouterAdvertisementEntry> NextIcmpRouterAdvertisementEntries(this Random random, int numEntries)
+        {
+            for (int i = 0; i != numEntries; ++i)
+                yield return new IcmpRouterAdvertisementEntry(random.NextIpV4Address(), random.Next());
+        }
+        
         // TCP
 
         public static TcpOptions NextTcpOptions(this Random random)

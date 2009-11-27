@@ -412,6 +412,12 @@ namespace PcapDotNet.Packets
             Write(buffer, offset, value);
         }
 
+        public static void Write(this byte[] buffer, ref int offset, int value, Endianity endianity)
+        {
+            Write(buffer, offset, value, endianity);
+            offset += sizeof(int);
+        }
+
         /// <summary>
         /// Writes the given value to the buffer using the given endianity.
         /// </summary>
@@ -533,6 +539,11 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, ref int offset, IpV4Address value, Endianity endianity)
         {
             buffer.Write(ref offset, value.ToValue(), endianity);
+        }
+
+        public static void Write(this byte[] buffer, int offset, IpV4TimeOfDay value, Endianity endianity)
+        {
+            buffer.Write(offset, value.MillisecondsSinceMidnightUniversalTime, endianity);
         }
 
         /// <summary>

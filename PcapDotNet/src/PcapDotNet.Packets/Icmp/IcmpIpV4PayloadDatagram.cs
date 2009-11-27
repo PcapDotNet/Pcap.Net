@@ -24,8 +24,8 @@ namespace PcapDotNet.Packets.Icmp
         {
             get
             {
-                if (_ipV4 == null && Length >= HeaderLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                if (_ipV4 == null && Length >= HeaderMinimumLength)
+                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderMinimumLength, Length - HeaderMinimumLength);
                 return _ipV4;
             }
         }

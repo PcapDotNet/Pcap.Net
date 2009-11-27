@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -20,6 +21,9 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpTimestampDatagram : IcmpIdentifiedDatagram
     {
+        public const int HeaderLength = HeaderMinimumLength + HeaderAdditionalLength;
+        public const int HeaderAdditionalLength = 12;
+
         private class Offset
         {
             public const int OriginateTimestamp = 4;
@@ -54,6 +58,13 @@ namespace PcapDotNet.Packets.Icmp
         internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
+        }
+
+        internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4TimeOfDay originateTimestamp, IpV4TimeOfDay receiveTimestamp, IpV4TimeOfDay transmitTimestamp)
+        {
+            buffer.Write(ref offset, originateTimestamp, Endianity.Big);
+            buffer.Write(ref offset, receiveTimestamp, Endianity.Big);
+            buffer.Write(offset, transmitTimestamp, Endianity.Big);
         }
     }
 }
