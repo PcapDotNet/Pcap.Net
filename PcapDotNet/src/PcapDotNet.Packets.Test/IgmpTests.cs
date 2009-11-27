@@ -68,18 +68,24 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomIgmpTest()
         {
-            MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
-            MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
+            EthernetLayer ethernetLayer = new EthernetLayer
+                                              {
+                                                  Source = new MacAddress("00:01:02:03:04:05"),
+                                                  Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
+                                              };
 
             Random random = new Random();
 
-            byte ipV4TypeOfService = random.NextByte();
-            ushort ipV4Identification = random.NextUShort();
-            byte ipV4Ttl = random.NextByte();
-            IpV4Fragmentation ipV4Fragmentation = random.NextIpV4Fragmentation();
-            IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
-            IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
-            IpV4Options ipV4Options = random.NextIpV4Options();
+            IpV4Layer ipV4Layer = new IpV4Layer
+                                      {
+                                          TypeOfService = random.NextByte(),
+                                          Identification = random.NextUShort(),
+                                          Ttl = random.NextByte(),
+                                          Fragmentation = random.NextIpV4Fragmentation(),
+                                          Source = random.NextIpV4Address(),
+                                          Destination = random.NextIpV4Address(),
+                                          Options = random.NextIpV4Options()
+                                      };
 
             for (int i = 0; i != 1000; ++i)
             {
@@ -93,7 +99,7 @@ namespace PcapDotNet.Packets.Test
                 IpV4Address[] igmpSourceAddresses = null;
                 IgmpGroupRecord[] igmpGroupRecords = null;
 
-                Packet packet;
+                IgmpLayer igmpLayer;
                 switch (igmpMessageType)
                 {
                     case IgmpMessageType.MembershipQuery:
@@ -102,19 +108,29 @@ namespace PcapDotNet.Packets.Test
                         {
                             case IgmpQueryVersion.Version1:
                                 igmpMaxResponseTime = TimeSpan.Zero;
-                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion1(DateTime.Now,
-                                                                                     ethernetSource, ethernetDestination,
-                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                                     ipV4Source, ipV4Destination, ipV4Options,
-                                                                                     igmpGroupAddress);
+                                igmpLayer = new IgmpQueryVersion1Layer
+                                                {
+                                                    GroupAddress = igmpGroupAddress
+                                                };
+                                                                
+//                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion1(DateTime.Now,
+//                                                                                     ethernetSource, ethernetDestination,
+//                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                                     ipV4Source, ipV4Destination, ipV4Options,
+//                                                                                     igmpGroupAddress);
                                 break;
 
                             case IgmpQueryVersion.Version2:
-                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion2(DateTime.Now,
-                                                                                     ethernetSource, ethernetDestination,
-                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                                     ipV4Source, ipV4Destination, ipV4Options,
-                                                                                     igmpMaxResponseTime, igmpGroupAddress);
+                                igmpLayer = new IgmpQueryVersion2Layer
+                                                {
+                                                    MaxResponseTime = igmpMaxResponseTime,
+                                                    GroupAddress = igmpGroupAddress
+                                                };
+//                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion2(DateTime.Now,
+//                                                                                     ethernetSource, ethernetDestination,
+//                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                                     ipV4Source, ipV4Destination, ipV4Options,
+//                                                                                     igmpMaxResponseTime, igmpGroupAddress);
                                 break;
 
                             case IgmpQueryVersion.Version3:
@@ -124,14 +140,24 @@ namespace PcapDotNet.Packets.Test
                                                                           IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
                                 igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
                                 igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
-                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion3(DateTime.Now,
-                                                                                     ethernetSource, ethernetDestination,
-                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                                     ipV4Source, ipV4Destination, ipV4Options,
-                                                                                     igmpMaxResponseTime, igmpGroupAddress,
-                                                                                     igmpIsSuppressRouterSideProcessing.Value,
-                                                                                     igmpQueryRobustnessVariable.Value, igmpQueryInterval.Value,
-                                                                                     igmpSourceAddresses);
+                                igmpLayer = new IgmpQueryVersion3Layer
+                                                                {
+                                                                    MaxResponseTime = igmpMaxResponseTime,
+                                                                    GroupAddress = igmpGroupAddress,
+                                                                    IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing.Value,
+                                                                    QueryRobustnessVariable = igmpQueryRobustnessVariable.Value,
+                                                                    QueryInterval = igmpQueryInterval.Value,
+                                                                    SourceAddresses = igmpSourceAddresses
+                                                                };
+
+//                                packet = PacketBuilder.EthernetIpV4IgmpQueryVersion3(DateTime.Now,
+//                                                                                     ethernetSource, ethernetDestination,
+//                                                                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                                     ipV4Source, ipV4Destination, ipV4Options,
+//                                                                                     igmpMaxResponseTime, igmpGroupAddress,
+//                                                                                     igmpIsSuppressRouterSideProcessing.Value,
+//                                                                                     igmpQueryRobustnessVariable.Value, igmpQueryInterval.Value,
+//                                                                                     igmpSourceAddresses);
                                 break;
 
                             default:
@@ -141,42 +167,64 @@ namespace PcapDotNet.Packets.Test
 
                     case IgmpMessageType.MembershipReportVersion1:
                         igmpMaxResponseTime = TimeSpan.Zero;
-                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion1(DateTime.Now,
-                                                                              ethernetSource, ethernetDestination,
-                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                              ipV4Source, ipV4Destination, ipV4Options,
-                                                                              igmpGroupAddress);
+                        igmpLayer = new IgmpReportVersion1Layer
+                                        {
+                                            GroupAddress = igmpGroupAddress
+                                        };
+                        
+//                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion1(DateTime.Now,
+//                                                                              ethernetSource, ethernetDestination,
+//                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                              ipV4Source, ipV4Destination, ipV4Options,
+//                                                                              igmpGroupAddress);
                         break;
 
                     case IgmpMessageType.MembershipReportVersion2:
-                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion2(DateTime.Now,
-                                                                              ethernetSource, ethernetDestination,
-                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                              ipV4Source, ipV4Destination, ipV4Options,
-                                                                              igmpMaxResponseTime, igmpGroupAddress);
+                        igmpLayer = new IgmpReportVersion2Layer
+                                        {
+                                            MaxResponseTime = igmpMaxResponseTime,
+                                            GroupAddress = igmpGroupAddress
+                                        };
+
+//                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion2(DateTime.Now,
+//                                                                              ethernetSource, ethernetDestination,
+//                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                              ipV4Source, ipV4Destination, ipV4Options,
+//                                                                              igmpMaxResponseTime, igmpGroupAddress);
                         break;
 
                     case IgmpMessageType.LeaveGroupVersion2:
-                        packet = PacketBuilder.EthernetIpV4IgmpLeaveGroupVersion2(DateTime.Now,
-                                                                                  ethernetSource, ethernetDestination,
-                                                                                  ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                                  ipV4Source, ipV4Destination, ipV4Options,
-                                                                                  igmpMaxResponseTime, igmpGroupAddress);
+                        igmpLayer = new IgmpLeaveGroupVersion2Layer
+                                        {
+                                            MaxResponseTime = igmpMaxResponseTime,
+                                            GroupAddress = igmpGroupAddress
+                                        };
+                        //                        packet = PacketBuilder.EthernetIpV4IgmpLeaveGroupVersion2(DateTime.Now,
+//                                                                                  ethernetSource, ethernetDestination,
+//                                                                                  ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                                  ipV4Source, ipV4Destination, ipV4Options,
+//                                                                                  igmpMaxResponseTime, igmpGroupAddress);
                         break;
 
                     case IgmpMessageType.MembershipReportVersion3:
                         igmpMaxResponseTime = TimeSpan.Zero;
                         igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
-                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion3(DateTime.Now,
-                                                                              ethernetSource, ethernetDestination,
-                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-                                                                              ipV4Source, ipV4Destination, ipV4Options,
-                                                                              igmpGroupRecords);
+                        igmpLayer = new IgmpReportVersion3Layer
+                                        {
+                                            GroupRecords = igmpGroupRecords
+                                        };
+                        //                        packet = PacketBuilder.EthernetIpV4IgmpReportVersion3(DateTime.Now,
+//                                                                              ethernetSource, ethernetDestination,
+//                                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
+//                                                                              ipV4Source, ipV4Destination, ipV4Options,
+//                                                                              igmpGroupRecords);
                         break;
 
                     default:
                         continue;
                 }
+
+                Packet packet = new PacketBuilder2(ethernetLayer, ipV4Layer, igmpLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 

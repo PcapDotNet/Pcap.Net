@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 
@@ -362,6 +363,128 @@ namespace PcapDotNet.Packets
             ArpDatagram.WriteHeader(buffer, offset,
                                     arpPreviousLayer.PreviousLayerHardwareType, ProtocolType, Operation,
                                     SenderHardwareAddress, SenderProtocolAddress, TargetHardwareAddress, TargetProtocolAddress);
+        }
+    }
+
+    public abstract class IgmpLayer : SimpleLayer, IIpV4NextLayer
+    {
+        public IpV4Protocol PreviousLayerProtocol
+        {
+            get { return IpV4Protocol.InternetGroupManagementProtocol; }
+        }
+    }
+
+    public abstract class SimpleIgmpLayer : IgmpLayer
+    {
+        public IpV4Address GroupAddress { get; set; }
+        public abstract IgmpMessageType MessageType { get; }
+        public abstract TimeSpan MaxResponseTimeValue { get; }
+        public override int Length
+        {
+            get { return IgmpDatagram.HeaderLength; }
+        }
+
+        protected override void Write(byte[] buffer, int offset)
+        {
+            IgmpDatagram.WriteHeader(buffer, offset,
+                                     MessageType, MaxResponseTimeValue, GroupAddress);
+        }
+    }
+
+    public abstract class IgmpVersion1Layer : SimpleIgmpLayer
+    {
+        public override TimeSpan MaxResponseTimeValue
+        {
+            get { return TimeSpan.Zero; }
+        }
+    }
+
+    public abstract class IgmpVersion2Layer : SimpleIgmpLayer
+    {
+        public TimeSpan MaxResponseTime { get; set; }
+        public override TimeSpan MaxResponseTimeValue
+        {
+            get { return MaxResponseTime; }
+        }
+    }
+
+    public class IgmpQueryVersion1Layer : IgmpVersion1Layer
+    {
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipQuery; }
+        }
+    }
+
+    public class IgmpQueryVersion2Layer : IgmpVersion2Layer
+    {
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipQuery; }
+        }
+    }
+
+    public class IgmpQueryVersion3Layer : IgmpLayer
+    {
+        public TimeSpan MaxResponseTime { get; set; }
+        public IpV4Address GroupAddress { get; set; }
+        public bool IsSuppressRouterSideProcessing { get; set; }
+
+        public byte QueryRobustnessVariable{get; set ;}
+
+        public TimeSpan QueryInterval{get; set ;}
+
+        public IpV4Address[] SourceAddresses{get; set ;}
+
+        public override int Length
+        {
+            get { return IgmpDatagram.GetQueryVersion3Length(SourceAddresses.Length); }
+        }
+
+        protected override void Write(byte[] buffer, int offset)
+        {
+            IgmpDatagram.WriteQueryVersion3(buffer, offset,
+                                            MaxResponseTime, GroupAddress, IsSuppressRouterSideProcessing, QueryRobustnessVariable,
+                                            QueryInterval, SourceAddresses);
+        }
+    }
+
+    public class IgmpReportVersion1Layer : IgmpVersion1Layer
+    {
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipReportVersion1; }
+        }
+    }
+
+    public class IgmpReportVersion2Layer : IgmpVersion2Layer
+    {
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.MembershipReportVersion2; }
+        }
+    }
+
+    public class IgmpLeaveGroupVersion2Layer : IgmpVersion2Layer
+    {
+        public override IgmpMessageType MessageType
+        {
+            get { return IgmpMessageType.LeaveGroupVersion2; }
+        }
+    }
+
+    public class IgmpReportVersion3Layer : IgmpLayer
+    {
+        public IgmpGroupRecord[] GroupRecords{get; set ;}
+
+        public override int Length
+        {
+            get { return IgmpDatagram.GetReportVersion3Length(GroupRecords); }
+        }
+
+        protected override void Write(byte[] buffer, int offset)
+        {
+            IgmpDatagram.WriteReportVersion3(buffer, offset, GroupRecords);
         }
     }
 
