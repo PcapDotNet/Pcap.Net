@@ -137,7 +137,9 @@ namespace PcapDotNet.Packets.Test
 
                 // IPv4
                 ipV4Layer.Protocol = IpV4Protocol.InternetControlMessageProtocol;
+                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer());
+                ipV4Layer.HeaderChecksum = null;
                 Assert.AreEqual(ipV4Layer.Length, packet.Ethernet.IpV4.HeaderLength);
                 Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
                 Assert.AreEqual(ipV4Layer.Length + icmpLayer.Length + (isIpV4Payload ? icmpIpV4Layer.Length + icmpIpV4PayloadLayer.Length : 0),

@@ -262,6 +262,7 @@ namespace PcapDotNet.Packets
                    TypeOfService == other.TypeOfService && Identification == other.Identification &&
                    Fragmentation == other.Fragmentation && Ttl == other.Ttl &&
                    Protocol == other.Protocol &&
+                   HeaderChecksum == other.HeaderChecksum &&
                    Source == other.Source && Destination == other.Destination &&
                    Options.Equals(other.Options);
         }

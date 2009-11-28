@@ -94,7 +94,9 @@ namespace PcapDotNet.Packets.Test
 
                 // IpV4
                 ipV4Layer.Protocol = IpV4Protocol.Tcp;
+                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                ipV4Layer.HeaderChecksum = null;
 
                 // TCP
                 Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
