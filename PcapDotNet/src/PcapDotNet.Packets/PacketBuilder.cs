@@ -255,7 +255,7 @@ namespace PcapDotNet.Packets
                                      icmpIpV4SourceAddress, icmpIpV4DestinationAddress,
                                      icmpIpV4Options, icmpIpV4Payload.Length);
             icmpIpV4Payload.Write(buffer, icmpOffset + IcmpDatagram.HeaderLength + icmpIpHeaderLength);
-            IcmpDatagram.WriteChecksum(buffer, icmpOffset, ipPayloadLength);
+            IcmpDatagram.WriteChecksum(buffer, icmpOffset, ipPayloadLength, null);
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
 
@@ -610,7 +610,7 @@ namespace PcapDotNet.Packets
             udpPayload.Write(buffer, ethernetIpV4HeadersLength + UdpDatagram.HeaderLength);
 
             if (udpCalculateChecksum)
-                IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength, UdpDatagram.Offset.Checksum, true);
+                IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength, UdpDatagram.Offset.Checksum, true, null);
 
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }
@@ -674,7 +674,7 @@ namespace PcapDotNet.Packets
             tcpPayload.Write(buffer, ethernetIpV4HeadersLength + tcpHeaderLength);
 
             IpV4Datagram.WriteTransportChecksum(buffer, EthernetDatagram.HeaderLength, ipV4HeaderLength, (ushort)transportLength,
-                                                TcpDatagram.Offset.Checksum, false);
+                                                TcpDatagram.Offset.Checksum, false, null);
 
             return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
         }

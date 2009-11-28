@@ -123,6 +123,7 @@ namespace PcapDotNet.Packets.TestUtils
                     Identification = random.NextUShort(),
                     Ttl = random.NextByte(),
                     Protocol = protocol,
+                    HeaderChecksum = random.NextUShort(),
                     Fragmentation = random.NextIpV4Fragmentation(),
                     Source = random.NextIpV4Address(),
                     Destination = random.NextIpV4Address(),
@@ -314,6 +315,19 @@ namespace PcapDotNet.Packets.TestUtils
                     break;
             }
             return new IpV4Options(options);
+        }
+
+        // UDP
+
+        public static UdpLayer NextUdpLayer(this Random random)
+        {
+            return new UdpLayer
+                       {
+                           Checksum = random.NextUShort(),
+                           SourcePort = random.NextUShort(),
+                           DestinationPort = random.NextUShort(),
+                           CalculateChecksum = random.NextBool()
+                       };
         }
 
         // TCP
@@ -563,34 +577,42 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.DestinationUnreachable:
                     return new IcmpDestinationUnreachableLayer
                     {
-                        Code = random.NextEnum<IcmpCodeDestinationUnrechable>()
+                        Code = random.NextEnum<IcmpCodeDestinationUnrechable>(),
+                        Checksum = random.NextUShort(),
                     };
 
                 case IcmpMessageType.TimeExceeded:
                     return new IcmpTimeExceededLayer
                     {
-                        Code = random.NextEnum<IcmpCodeTimeExceeded>()
+                        Code = random.NextEnum<IcmpCodeTimeExceeded>(),
+                        Checksum = random.NextUShort(),
                     };
 
                 case IcmpMessageType.ParameterProblem:
                     return new IcmpParameterProblemLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Pointer = random.NextByte()
                                };
 
                 case IcmpMessageType.SourceQuench:
-                    return new IcmpSourceQuenchLayer();
+                    return new IcmpSourceQuenchLayer
+                               {
+                                   Checksum = random.NextUShort(),
+                               };
                 
                 case IcmpMessageType.Redirect:
                     return new IcmpRedirectLayer
                                {
                                    Code = random.NextEnum<IcmpCodeRedirect>(),
+                                   Checksum = random.NextUShort(),
                                    GatewayInternetAddress = random.NextIpV4Address()
                                };
 
                 case IcmpMessageType.Echo:
                     return new IcmpEchoLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort()
                                };
@@ -598,6 +620,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.EchoReply:
                     return new IcmpEchoReplyLayer
                     {
+                        Checksum = random.NextUShort(),
                         Identifier = random.NextUShort(),
                         SequenceNumber = random.NextUShort()
                     };
@@ -606,6 +629,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.Timestamp:
                     return new IcmpTimestampLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                    OriginateTimestamp = random.NextIpV4TimeOfDay(),
@@ -616,6 +640,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.TimestampReply:
                     return new IcmpTimestampReplyLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                    OriginateTimestamp = random.NextIpV4TimeOfDay(),
@@ -626,6 +651,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.InformationRequest:
                     return new IcmpInformationRequestLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                };
@@ -633,6 +659,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.InformationReply:
                     return new IcmpInformationReplyLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                };
@@ -641,16 +668,21 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.RouterAdvertisement:
                     return new IcmpRouterAdvertisementLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Lifetime = random.NextTimeSpan(TimeSpan.Zero, TimeSpan.FromSeconds(ushort.MaxValue)),
                                    Entries = random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList()
                                };
 
                 case IcmpMessageType.RouterSolicitation:
-                    return new IcmpRouterSolicitationLayer();
+                    return new IcmpRouterSolicitationLayer
+                               {
+                                   Checksum = random.NextUShort(),
+                               };
 
                 case IcmpMessageType.AddressMaskRequest:
                     return new IcmpAddressMaskRequestLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                    AddressMask = random.NextIpV4Address()
@@ -659,6 +691,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.AddressMaskReply:
                     return new IcmpAddressMaskReplyLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                    AddressMask = random.NextIpV4Address()
@@ -668,6 +701,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IcmpTracerouteLayer
                                {
                                    Code = random.NextEnum<IcmpCodeTraceroute>(),
+                                   Checksum = random.NextUShort(),
                                    Identification = random.NextUShort(),
                                    OutboundHopCount = random.NextUShort(),
                                    ReturnHopCount = random.NextUShort(),
@@ -679,12 +713,14 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IcmpConversionFailedLayer
                                {
                                    Code = random.NextEnum<IcmpCodeConversionFailed>(),
+                                   Checksum = random.NextUShort(),
                                    Pointer = random.NextUInt(),
                                };
 
                 case IcmpMessageType.DomainNameRequest:
                     return new IcmpDomainNameRequestLayer
                                {
+                                   Checksum = random.NextUShort(),
                                    Identifier = random.NextUShort(),
                                    SequenceNumber = random.NextUShort(),
                                };
@@ -696,6 +732,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IcmpSecurityFailuresLayer
                                {
                                    Code = random.NextEnum<IcmpCodeSecurityFailures>(),
+                                   Checksum = random.NextUShort(),
                                    Pointer = random.NextUShort()
                                };
 

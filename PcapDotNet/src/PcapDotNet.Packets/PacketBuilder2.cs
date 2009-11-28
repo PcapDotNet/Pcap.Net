@@ -32,6 +32,8 @@ namespace PcapDotNet.Packets
 
     public interface IIpV4NextTransportLayer : IIpV4NextLayer
     {
+        ushort? Checksum { get; set; }
+        bool CalculateChecksum { get; }
         int NextLayerChecksumOffset { get; }
         bool NextLayerIsChecksumOptional { get; }
         bool NextLayerCalculateChecksum { get; }
@@ -252,8 +254,10 @@ namespace PcapDotNet.Packets
             if (nextTransportLayer == null || !nextTransportLayer.NextLayerCalculateChecksum)
                 return;
 
-            IpV4Datagram.WriteTransportChecksum(buffer, offset, Length, (ushort)payloadLength,
-                                                nextTransportLayer.NextLayerChecksumOffset, nextTransportLayer.NextLayerIsChecksumOptional);
+            if (nextTransportLayer.CalculateChecksum)
+                IpV4Datagram.WriteTransportChecksum(buffer, offset, Length, (ushort)payloadLength,
+                                                    nextTransportLayer.NextLayerChecksumOffset, nextTransportLayer.NextLayerIsChecksumOptional,
+                                                    nextTransportLayer.Checksum);
         }
 
         public bool Equals(IpV4Layer other)
@@ -280,11 +284,18 @@ namespace PcapDotNet.Packets
 
     public abstract class TransportLayer : Layer, IIpV4NextTransportLayer
     {
+        public ushort? Checksum { get; set; }
+
         public ushort SourcePort { get; set; }
 
         public ushort DestinationPort { get; set; }
 
         public abstract IpV4Protocol PreviousLayerProtocol { get; }
+        public bool CalculateChecksum
+        {
+            get { return true; }
+        }
+
         public abstract int NextLayerChecksumOffset { get; }
         public abstract bool NextLayerIsChecksumOptional { get; }
         public abstract bool NextLayerCalculateChecksum { get; }
@@ -293,6 +304,7 @@ namespace PcapDotNet.Packets
         {
             return other != null &&
                    PreviousLayerProtocol == other.PreviousLayerProtocol &&
+                   Checksum == other.Checksum &&
                    SourcePort == other.SourcePort && DestinationPort == other.DestinationPort;
         }
 
@@ -703,6 +715,7 @@ namespace PcapDotNet.Packets
         {
             get { return 0; }
         }
+        public ushort? Checksum { get; set; }
         protected virtual uint Value 
         { 
             get { return 0; }
@@ -725,7 +738,7 @@ namespace PcapDotNet.Packets
 
         public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
-            IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength);
+            IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength, Checksum);
         }
 
         public IpV4Protocol PreviousLayerProtocol
@@ -737,6 +750,7 @@ namespace PcapDotNet.Packets
         {
             return other != null &&
                    MessageType == other.MessageType && CodeValue == other.CodeValue &&
+                   Checksum == other.Checksum &&
                    Value == other.Value;
         }
 

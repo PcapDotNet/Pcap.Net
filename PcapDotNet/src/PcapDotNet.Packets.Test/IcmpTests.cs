@@ -77,9 +77,12 @@ namespace PcapDotNet.Packets.Test
             Random random = new Random();
 
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+            ipV4Layer.HeaderChecksum = null;
+
             for (int i = 0; i != 1000; ++i)
             {
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
+                icmpLayer.Checksum = null;
 
                 bool isIpV4Payload;
                 switch (icmpLayer.MessageType)
@@ -148,6 +151,7 @@ namespace PcapDotNet.Packets.Test
                 
                 // ICMP
                 IcmpLayer actualIcmpLayer = (IcmpLayer)packet.Ethernet.IpV4.Icmp.ExtractLayer();
+                icmpLayer.Checksum = actualIcmpLayer.Checksum;
                 Assert.AreEqual(icmpLayer, actualIcmpLayer);
                 Assert.IsTrue(packet.Ethernet.IpV4.Icmp.IsChecksumCorrect);
             }

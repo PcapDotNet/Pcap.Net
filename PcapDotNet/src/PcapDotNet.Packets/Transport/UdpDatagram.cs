@@ -72,6 +72,17 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            return new UdpLayer
+                       {
+                           Checksum = Checksum,
+                           SourcePort = SourcePort,
+                           DestinationPort = DestinationPort,
+                           CalculateChecksum = (Checksum != 0)
+                       };
+        }
+
         /// <summary>
         /// The payload of the UDP datagram.
         /// </summary>

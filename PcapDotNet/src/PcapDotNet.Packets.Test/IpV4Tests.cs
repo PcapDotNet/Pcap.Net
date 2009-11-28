@@ -116,6 +116,7 @@ namespace PcapDotNet.Packets.Test
             for (int i = 0; i != 1000; ++i)
             {
                 IpV4Layer ipV4Layer = random.NextIpV4Layer();
+                ipV4Layer.HeaderChecksum = null;
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(0, 50 * 1024));
 
