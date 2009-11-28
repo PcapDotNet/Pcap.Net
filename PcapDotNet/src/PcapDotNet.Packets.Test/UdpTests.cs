@@ -64,71 +64,46 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomUdpTest()
         {
-            MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
-            MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
+            EthernetLayer ethernetLayer = new EthernetLayer
+                                              {
+                                                  Source = new MacAddress("00:01:02:03:04:05"),
+                                                  Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
+                                              };
 
             Random random = new Random();
 
-            byte ipV4TypeOfService = random.NextByte();
-            ushort ipV4Identification = random.NextUShort();
-            byte ipV4Ttl = random.NextByte();
-            IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
-            ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
-            IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
-            IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
-            IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
-            IpV4Options ipV4Options = random.NextIpV4Options();
+            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+            ipV4Layer.HeaderChecksum = null;
 
             for (int i = 0; i != 1000; ++i)
             {
-                ushort udpSourcePort = random.NextUShort();
-                ushort udpDestinationPort = random.NextUShort();
-                bool udpCalculateChecksum = random.NextBool();
-                Datagram udpPayload = random.NextDatagram(random.Next(60000));
+                UdpLayer udpLayer = random.NextUdpLayer();
+                udpLayer.Checksum = null;
 
-                Packet packet = new PacketBuilder2(new EthernetLayer
-                                                       {
-                                                           Source = ethernetSource,
-                                                           Destination = ethernetDestination,
-                                                       },
-                                                   new IpV4Layer
-                                                       {
-                                                           TypeOfService = ipV4TypeOfService,
-                                                           Identification = ipV4Identification,
-                                                           Fragmentation = ipV4Fragmentation,
-                                                           Ttl = ipV4Ttl,
-                                                           Source = ipV4Source,
-                                                           Destination = ipV4Destination,
-                                                           Options = ipV4Options,
-                                                       },
-                                                   new UdpLayer
-                                                       {
-                                                           SourcePort = udpSourcePort,
-                                                           DestinationPort = udpDestinationPort,
-                                                           CalculateChecksum = udpCalculateChecksum,
-                                                       },
-                                                   new PayloadLayer
-                                                       {
-                                                           Data = udpPayload
-                                                       })
-                    .Build(DateTime.Now);
-//                Packet packet = PacketBuilder.EthernetIpV4Udp(DateTime.Now,
-//                                                              ethernetSource, ethernetDestination,
-//                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-//                                                              ipV4Source, ipV4Destination, ipV4Options,
-//                                                              udpSourcePort, udpDestinationPort, udpCalculateChecksum,
-//                                                              udpPayload);
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                Assert.IsTrue(packet.IsValid);
+                Packet packet = PacketBuilder2.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, payloadLayer);
+
+                Assert.IsTrue(packet.IsValid, "IsValid");
+
+                // Ethernet
+                ethernetLayer.EtherType = EthernetType.IpV4;
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+
+                // IpV4
+                ipV4Layer.Protocol = IpV4Protocol.Udp;
+                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
+                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                ipV4Layer.HeaderChecksum = null;
 
                 // UDP
-                Assert.AreEqual(udpSourcePort, packet.Ethernet.IpV4.Udp.SourcePort, "Source Port");
-                Assert.AreEqual(udpDestinationPort, packet.Ethernet.IpV4.Udp.DestinationPort, "Destination Port");
-                Assert.AreEqual(UdpDatagram.HeaderLength + udpPayload.Length, packet.Ethernet.IpV4.Udp.TotalLength, "Total Length");
-                Assert.IsTrue(!udpCalculateChecksum && packet.Ethernet.IpV4.Udp.Checksum == 0 ||
-                              packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
+                udpLayer.Checksum = packet.Ethernet.IpV4.Udp.Checksum;
+                Assert.AreEqual(udpLayer, packet.Ethernet.IpV4.Udp.ExtractLayer(), "UDP Layer");
+                Assert.AreEqual(UdpDatagram.HeaderLength + payloadLayer.Length, packet.Ethernet.IpV4.Udp.TotalLength, "Total Length");
+                Assert.IsTrue(!udpLayer.CalculateChecksum && packet.Ethernet.IpV4.Udp.Checksum == 0 ||
+                              udpLayer.CalculateChecksum && packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
                 Assert.IsTrue(packet.Ethernet.IpV4.Udp.IsChecksumOptional, "IsChecksumOptional");
-                Assert.AreEqual(udpPayload, packet.Ethernet.IpV4.Udp.Payload, "Payload");
+                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Udp.Payload, "Payload");
             }
         }
 

@@ -242,6 +242,7 @@ namespace PcapDotNet.Packets.Transport
         {
             return new TcpLayer
                        {
+                           Checksum = Checksum,
                            SourcePort = SourcePort,
                            DestinationPort = DestinationPort,
                            SequenceNumber = SequenceNumber,

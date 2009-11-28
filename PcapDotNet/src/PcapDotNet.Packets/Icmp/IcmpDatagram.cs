@@ -83,34 +83,42 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.DestinationUnreachable:
                     return new IcmpDestinationUnreachableLayer
                     {
-                        Code = (IcmpCodeDestinationUnrechable)Code
+                        Code = (IcmpCodeDestinationUnrechable)Code,
+                        Checksum = Checksum
                     };
 
                 case IcmpMessageType.TimeExceeded:
                     return new IcmpTimeExceededLayer
                     {
-                        Code = (IcmpCodeTimeExceeded)Code
+                        Code = (IcmpCodeTimeExceeded)Code,
+                        Checksum = Checksum
                     };
 
                 case IcmpMessageType.ParameterProblem:
                     return new IcmpParameterProblemLayer
                                {
+                        Checksum = Checksum,
                                    Pointer = ParameterProblem.Pointer
                                };
 
                 case IcmpMessageType.SourceQuench:
-                    return new IcmpSourceQuenchLayer();
+                    return new IcmpSourceQuenchLayer
+                               {
+                                   Checksum = Checksum
+                               };
                 
                 case IcmpMessageType.Redirect:
                     return new IcmpRedirectLayer
                                {
                                    Code = (IcmpCodeRedirect)Code,
+                        Checksum = Checksum,
                                    GatewayInternetAddress = Redirect.GatewayInternetAddress
                                };
 
                 case IcmpMessageType.Echo:
                     return new IcmpEchoLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = Echo.Identifier,
                                    SequenceNumber = Echo.SequenceNumber
                                };
@@ -126,6 +134,7 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.Timestamp:
                     return new IcmpTimestampLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = Timestamp.Identifier,
                                    SequenceNumber = Timestamp.SequenceNumber,
                                    OriginateTimestamp = Timestamp.OriginateTimestamp,
@@ -136,6 +145,7 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.TimestampReply:
                     return new IcmpTimestampReplyLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = TimestampReply.Identifier,
                                    SequenceNumber = TimestampReply.SequenceNumber,
                                    OriginateTimestamp = TimestampReply.OriginateTimestamp,
@@ -146,6 +156,7 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.InformationRequest:
                     return new IcmpInformationRequestLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = InformationRequest.Identifier,
                                    SequenceNumber = InformationRequest.SequenceNumber
                                };
@@ -161,16 +172,21 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.RouterAdvertisement:
                     return new IcmpRouterAdvertisementLayer
                                {
+                                   Checksum = Checksum,
                                    Lifetime = RouterAdvertisement.Lifetime,
                                    Entries = RouterAdvertisement.Entries.ToList()
                                };
 
                 case IcmpMessageType.RouterSolicitation:
-                    return new IcmpRouterSolicitationLayer();
+                    return new IcmpRouterSolicitationLayer
+                               {
+                                   Checksum = Checksum,
+                               };
 
                 case IcmpMessageType.AddressMaskRequest:
                     return new IcmpAddressMaskRequestLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = AddressMaskRequest.Identifier,
                                    SequenceNumber = AddressMaskRequest.SequenceNumber,
                                    AddressMask = AddressMaskRequest.AddressMask
@@ -179,6 +195,7 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.AddressMaskReply:
                     return new IcmpAddressMaskReplyLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = AddressMaskReply.Identifier,
                                    SequenceNumber = AddressMaskReply.SequenceNumber,
                                    AddressMask = AddressMaskReply.AddressMask
@@ -188,6 +205,7 @@ namespace PcapDotNet.Packets.Icmp
                     return new IcmpTracerouteLayer
                                {
                                    Code = (IcmpCodeTraceroute)Code,
+                                   Checksum = Checksum,
                                    Identification = Traceroute.Identification,
                                    OutboundHopCount = Traceroute.OutboundHopCount,
                                    ReturnHopCount = Traceroute.ReturnHopCount,
@@ -199,12 +217,14 @@ namespace PcapDotNet.Packets.Icmp
                     return new IcmpConversionFailedLayer
                                {
                                    Code = (IcmpCodeConversionFailed)Code,
+                                   Checksum = Checksum,
                                    Pointer = ConversionFailed.Pointer
                                };
 
                 case IcmpMessageType.DomainNameRequest:
                     return new IcmpDomainNameRequestLayer
                                {
+                                   Checksum = Checksum,
                                    Identifier = DomainNameRequest.Identifier,
                                    SequenceNumber = DomainNameRequest.SequenceNumber
                                };
@@ -216,6 +236,7 @@ namespace PcapDotNet.Packets.Icmp
                     return new IcmpSecurityFailuresLayer
                                {
                                    Code = (IcmpCodeSecurityFailures)Code,
+                                   Checksum = Checksum,
                                    Pointer = SecurityFailures.Pointer
                                };
 
@@ -383,10 +404,12 @@ namespace PcapDotNet.Packets.Icmp
             buffer.Write(offset + Offset.Variable, valueAccordingToType, Endianity.Big);
         }
 
-        internal static void WriteChecksum(byte[] buffer, int offset, int length)
+        internal static void WriteChecksum(byte[] buffer, int offset, int length, ushort? checksum)
         {
-            ushort checksum = CalculateChecksum(buffer, offset, length);
-            buffer.Write(offset + Offset.Checksum, checksum, Endianity.Big);
+            ushort checksumValue = checksum == null
+                                       ? CalculateChecksum(buffer, offset, length)
+                                       : checksum.Value;
+            buffer.Write(offset + Offset.Checksum, checksumValue, Endianity.Big);
         }
 
         protected override bool CalculateIsValid()

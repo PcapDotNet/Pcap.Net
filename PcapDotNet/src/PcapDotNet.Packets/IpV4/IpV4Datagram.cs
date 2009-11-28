@@ -338,10 +338,13 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + Offset.HeaderChecksum, headerChecksumValue, Endianity.Big);
         }
 
-        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional)
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, ushort? checksum)
         {
-            ushort checksum = CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional);
-            buffer.Write(offset + headerLength + transportChecksumOffset, checksum, Endianity.Big);
+            ushort checksumValue =
+                checksum == null
+                    ? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional)
+                    : checksum.Value;
+            buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
         }
 
         private ushort CalculateTransportChecksum()

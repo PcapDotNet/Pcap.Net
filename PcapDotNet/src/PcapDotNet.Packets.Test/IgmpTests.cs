@@ -77,6 +77,7 @@ namespace PcapDotNet.Packets.Test
             Random random = new Random();
 
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+            ipV4Layer.HeaderChecksum = null;
 
             for (int i = 0; i != 1000; ++i)
             {

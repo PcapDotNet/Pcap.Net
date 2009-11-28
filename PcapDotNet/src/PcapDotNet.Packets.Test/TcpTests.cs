@@ -77,6 +77,7 @@ namespace PcapDotNet.Packets.Test
             Random random = new Random();
 
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+            ipV4Layer.HeaderChecksum = null;
 
             for (int i = 0; i != 1000; ++i)
             {
@@ -99,6 +100,7 @@ namespace PcapDotNet.Packets.Test
                 ipV4Layer.HeaderChecksum = null;
 
                 // TCP
+                tcpLayer.Checksum = packet.Ethernet.IpV4.Tcp.Checksum;
                 Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
                 foreach (TcpOption option in packet.Ethernet.IpV4.Tcp.Options)
                 {
