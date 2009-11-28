@@ -68,81 +68,37 @@ namespace PcapDotNet.Packets.Test
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
 
+            EthernetLayer ethernetLayer = new EthernetLayer
+                                              {
+                                                  Source = ethernetSource,
+                                                  Destination = ethernetDestination
+                                              };
+
             Random random = new Random();
 
-            byte ipV4TypeOfService = random.NextByte();
-            ushort ipV4Identification = random.NextUShort();
-            byte ipV4Ttl = random.NextByte();
-            IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
-            ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
-            IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
-            IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
-            IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
-            IpV4Options ipV4Options = random.NextIpV4Options();
+            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
 
             for (int i = 0; i != 1000; ++i)
             {
-                ushort tcpSourcePort = random.NextUShort();
-                ushort tcpDestinationPort = random.NextUShort();
-                uint tcpSequenceNumber = random.NextUInt();
-                uint tcpAcknowledgmentNumber = random.NextUInt();
-                TcpControlBits tcpControlBits = random.NextFlags<TcpControlBits>();
-                ushort tcpWindow = random.NextUShort();
-                ushort tcpUrgentPointer = random.NextUShort();
-                TcpOptions tcpOptions = random.NextTcpOptions();
-                Datagram tcpPayload = random.NextDatagram(random.Next(60000));
+                TcpLayer tcpLayer = random.NextTcpLayer();
 
-                Packet packet = new PacketBuilder2(new EthernetLayer
-                                                       {
-                                                           Source = ethernetSource,
-                                                           Destination = ethernetDestination
-                                                       },
-                                                   new IpV4Layer
-                                                       {
-                                                           TypeOfService = ipV4TypeOfService,
-                                                           Identification = ipV4Identification,
-                                                           Fragmentation = ipV4Fragmentation,
-                                                           Ttl = ipV4Ttl,
-                                                           Source = ipV4Source,
-                                                           Destination = ipV4Destination,
-                                                           Options = ipV4Options,
-                                                       },
-                                                   new TcpLayer
-                                                       {
-                                                           SourcePort = tcpSourcePort,
-                                                           DestinationPort = tcpDestinationPort,
-                                                           SequenceNumber = tcpSequenceNumber,
-                                                           AcknowledgmentNumber = tcpAcknowledgmentNumber,
-                                                           ControlBits = tcpControlBits,
-                                                           Window = tcpWindow,
-                                                           UrgentPointer = tcpUrgentPointer,
-                                                           Options = tcpOptions,
-                                                       },
-                                                   new PayloadLayer
-                                                       {
-                                                           Data = tcpPayload
-                                                       }
-                    ).Build(DateTime.Now);
-//                Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
-//                                                              ethernetSource, ethernetDestination,
-//                                                              ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl,
-//                                                              ipV4Source, ipV4Destination, ipV4Options,
-//                                                              tcpSourcePort, tcpDestinationPort, tcpSequenceNumber, tcpAcknowledgmentNumber, tcpControlBits, tcpWindow, tcpUrgentPointer,
-//                                                              tcpOptions,
-//                                                              tcpPayload);
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
+
+                Packet packet = new PacketBuilder2(ethernetLayer,ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid);
 
+                // Ethernet
+                ethernetLayer.EtherType = EthernetType.IpV4;
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+
+                // IpV4
+                ipV4Layer.Protocol = IpV4Protocol.Tcp;
+                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+
                 // TCP
-                Assert.AreEqual(tcpSourcePort, packet.Ethernet.IpV4.Tcp.SourcePort, "Source Port");
-                Assert.AreEqual(tcpDestinationPort, packet.Ethernet.IpV4.Tcp.DestinationPort, "Destination Port");
-                Assert.AreEqual(tcpSequenceNumber, packet.Ethernet.IpV4.Tcp.SequenceNumber, "Sequence Number");
-                Assert.AreEqual(tcpAcknowledgmentNumber, packet.Ethernet.IpV4.Tcp.AcknowledgmentNumber, "Acknowledgment Number");
-                Assert.AreEqual(tcpControlBits, packet.Ethernet.IpV4.Tcp.ControlBits, "Flags");
-                Assert.AreEqual(tcpWindow, packet.Ethernet.IpV4.Tcp.Window, "Window");
-                Assert.AreEqual(tcpUrgentPointer, packet.Ethernet.IpV4.Tcp.UrgentPointer, "Urgent Pointer");
-                Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
-                foreach (TcpOption option in tcpOptions)
+                Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
+                foreach (TcpOption option in packet.Ethernet.IpV4.Tcp.Options)
                 {
                     Assert.AreEqual(option, option);
                     Assert.AreEqual(option.GetHashCode(), option.GetHashCode());
@@ -150,19 +106,20 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsFalse(option.Equals(null));
                     Assert.IsFalse(option.Equals(2));
                 }
-                Assert.AreEqual(tcpOptions, packet.Ethernet.IpV4.Tcp.Options, "Options");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.CongestionWindowReduced) == TcpControlBits.CongestionWindowReduced, packet.Ethernet.IpV4.Tcp.IsCongestionWindowReduced, "IsCongestionWindowReduced");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.ExplicitCongestionNotificationEcho) == TcpControlBits.ExplicitCongestionNotificationEcho, packet.Ethernet.IpV4.Tcp.IsExplicitCongestionNotificationEcho, "IsExplicitCongestionNotificationEcho");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Fin) == TcpControlBits.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Push) == TcpControlBits.Push, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Reset) == TcpControlBits.Reset, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Synchronize) == TcpControlBits.Synchronize, packet.Ethernet.IpV4.Tcp.IsSynchronize, "IsSynchronize");
-                Assert.AreEqual((tcpControlBits & TcpControlBits.Urgent) == TcpControlBits.Urgent, packet.Ethernet.IpV4.Tcp.IsUrgent, "IsUrgent");
+                Assert.AreEqual(tcpLayer.Options, packet.Ethernet.IpV4.Tcp.Options, "Options");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Acknowledgment) == TcpControlBits.Acknowledgment, packet.Ethernet.IpV4.Tcp.IsAcknowledgment, "IsAcknowledgment");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.CongestionWindowReduced) == TcpControlBits.CongestionWindowReduced, packet.Ethernet.IpV4.Tcp.IsCongestionWindowReduced, "IsCongestionWindowReduced");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.ExplicitCongestionNotificationEcho) == TcpControlBits.ExplicitCongestionNotificationEcho, packet.Ethernet.IpV4.Tcp.IsExplicitCongestionNotificationEcho, "IsExplicitCongestionNotificationEcho");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin, packet.Ethernet.IpV4.Tcp.IsFin, "IsFin");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Push) == TcpControlBits.Push, packet.Ethernet.IpV4.Tcp.IsPush, "IsPush");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Reset) == TcpControlBits.Reset, packet.Ethernet.IpV4.Tcp.IsReset, "IsReset");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Synchronize) == TcpControlBits.Synchronize, packet.Ethernet.IpV4.Tcp.IsSynchronize, "IsSynchronize");
+                Assert.AreEqual((tcpLayer.ControlBits & TcpControlBits.Urgent) == TcpControlBits.Urgent, packet.Ethernet.IpV4.Tcp.IsUrgent, "IsUrgent");
                 Assert.IsFalse(packet.Ethernet.IpV4.Tcp.IsChecksumOptional, "IsChecksumOptional");
-                Assert.AreEqual(TcpDatagram.HeaderMinimumLength + tcpOptions.BytesLength + tcpPayload.Length, packet.Ethernet.IpV4.Tcp.Length, "Total Length");
+                Assert.AreEqual(TcpDatagram.HeaderMinimumLength + tcpLayer.Options.BytesLength + payloadLayer.Length, packet.Ethernet.IpV4.Tcp.Length, "Total Length");
                 Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
-                Assert.AreEqual(tcpPayload, packet.Ethernet.IpV4.Tcp.Payload, "Payload");
+
+                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Tcp.Payload, "Payload");
             }
         }
 

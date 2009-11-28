@@ -104,96 +104,56 @@ namespace PcapDotNet.Packets.Test
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
             const EthernetType ethernetType = EthernetType.IpV4;
 
+            EthernetLayer ethernetLayer = new EthernetLayer
+                                              {
+                                                  Source = ethernetSource,
+                                                  Destination = ethernetDestination,
+                                                  EtherType = ethernetType
+                                              };
+
             Random random = new Random();
 
             for (int i = 0; i != 1000; ++i)
             {
-                byte ipV4TypeOfService = random.NextByte();
-                ushort ipV4Identification = random.NextUShort();
-                byte ipV4Ttl = random.NextByte();
-                IpV4FragmentationOptions ipV4FragmentationOptions = random.NextEnum<IpV4FragmentationOptions>();
-                ushort ipV4FragmentationOffset = (ushort)(random.NextUShort(ushort.MaxValue / 8) * 8);
-                IpV4Fragmentation ipV4Fragmentation = new IpV4Fragmentation(ipV4FragmentationOptions, ipV4FragmentationOffset);
-                IpV4Protocol ipV4Protocol = random.NextEnum<IpV4Protocol>();
-                IpV4Address ipV4Source = new IpV4Address(random.NextUInt());
-                IpV4Address ipV4Destination = new IpV4Address(random.NextUInt());
-                IpV4Options ipV4Options = random.NextIpV4Options();
+                IpV4Layer ipV4Layer = random.NextIpV4Layer();
 
-                byte[] ipV4PayloadBuffer = new byte[random.Next(0, 50 * 1024)];
-                random.NextBytes(ipV4PayloadBuffer);
-                Datagram ipV4Payload = new Datagram(ipV4PayloadBuffer);
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(0, 50 * 1024));
 
-                Packet packet =
-                    new PacketBuilder2(new EthernetLayer
-                                           {
-                                               Source = ethernetSource,
-                                               Destination = ethernetDestination,
-                                           },
-                                       new IpV4Layer
-                                           {
-                                               TypeOfService = ipV4TypeOfService,
-                                               Identification = ipV4Identification,
-                                               Fragmentation = ipV4Fragmentation,
-                                               Ttl = ipV4Ttl,
-                                               Protocol = ipV4Protocol,
-                                               Source = ipV4Source,
-                                               Destination = ipV4Destination,
-                                               Options = ipV4Options,
-                                           },
-                                       new PayloadLayer
-                                           {
-                                               Data = ipV4Payload
-                                           }
-                        ).Build(DateTime.Now);
-//                Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                           ethernetSource, ethernetDestination,
-//                                                           ipV4TypeOfService, ipV4Identification, ipV4Fragmentation, ipV4Ttl, ipV4Protocol,
-//                                                           ipV4Source, ipV4Destination, ipV4Options,
-//                                                           ipV4Payload);
+                Packet packet = new PacketBuilder2(ethernetLayer, ipV4Layer, payloadLayer).Build(DateTime.Now);
 
-
-                Assert.IsTrue(ipV4Protocol == IpV4Protocol.Udp ||
-                              ipV4Protocol == IpV4Protocol.Tcp ||
-                              ipV4Protocol == IpV4Protocol.InternetGroupManagementProtocol ||
+                Assert.IsTrue(ipV4Layer.Protocol == IpV4Protocol.Udp ||
+                              ipV4Layer.Protocol == IpV4Protocol.Tcp ||
+                              ipV4Layer.Protocol == IpV4Protocol.InternetGroupManagementProtocol ||
+                              ipV4Layer.Protocol == IpV4Protocol.InternetControlMessageProtocol ||
                               packet.IsValid, "IsValid");
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
-                Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
-                Assert.AreEqual(ethernetDestination, packet.Ethernet.Destination, "Ethernet Destination");
-                Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
 
                 // IpV4
-                Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
-                Assert.AreEqual(ipV4TypeOfService, packet.Ethernet.IpV4.TypeOfService, "IP TypeOfService");
+                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Layer.Options.BytesLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
-                Assert.AreEqual(ipV4Identification, packet.Ethernet.IpV4.Identification, "IP Identification");
-                Assert.AreEqual(ipV4Fragmentation, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.AreNotEqual(2, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
-                Assert.IsTrue(ipV4Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
-                Assert.IsFalse(ipV4Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
-                Assert.AreEqual(ipV4Fragmentation.GetHashCode(), packet.Ethernet.IpV4.Fragmentation.GetHashCode(), "IP Fragmentation");
-                Assert.AreEqual(ipV4Fragmentation.Options, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
-                Assert.AreEqual(ipV4Fragmentation.Offset, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
-                if (ipV4Fragmentation.Equals(IpV4Fragmentation.None))
+                Assert.IsTrue(ipV4Layer.Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.IsFalse(ipV4Layer.Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.AreEqual(ipV4Layer.Fragmentation.GetHashCode(), packet.Ethernet.IpV4.Fragmentation.GetHashCode(), "IP Fragmentation");
+                Assert.AreEqual(ipV4Layer.Fragmentation.Options, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
+                Assert.AreEqual(ipV4Layer.Fragmentation.Offset, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
+                if (ipV4Layer.Fragmentation.Equals(IpV4Fragmentation.None))
                 {
                     Assert.AreEqual(IpV4FragmentationOptions.None, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
                     Assert.AreEqual(0, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
                 }
-                Assert.AreEqual(ipV4Ttl, packet.Ethernet.IpV4.Ttl, "IP Ttl");
-                Assert.AreEqual(ipV4Protocol, packet.Ethernet.IpV4.Protocol, "IP Protocol");
-//                Assert.AreEqual(0x9010, packet.Ethernet.IpV4.HeaderChecksum, "IP HeaderChecksum");
                 Assert.AreEqual(true, packet.Ethernet.IpV4.IsHeaderChecksumCorrect, "IP HeaderChecksumCorrect");
-                Assert.AreEqual(ipV4Source, packet.Ethernet.IpV4.Source, "IP Source");
-                Assert.AreEqual(ipV4Destination, packet.Ethernet.IpV4.Destination, "IP Destination");
-                Assert.AreEqual(ipV4Options, packet.Ethernet.IpV4.Options, "IP Options");
                 Assert.AreNotEqual(null, packet.Ethernet.IpV4.Options, "IP Options");
                 Assert.AreNotEqual(new IpV4Options(new IpV4OptionUnknown(0, new byte[35])), packet.Ethernet.IpV4.Options, "IP Options");
-                Assert.AreEqual(ipV4Options.GetHashCode(), packet.Ethernet.IpV4.Options.GetHashCode(), "IP Options HashCode");
+                Assert.AreEqual(ipV4Layer.Options.GetHashCode(), packet.Ethernet.IpV4.Options.GetHashCode(), "IP Options HashCode");
                 Assert.IsNotNull(packet.Ethernet.IpV4.Options.ToString());
-                for (int optionIndex = 0; optionIndex != ipV4Options.Count; ++optionIndex)
+                for (int optionIndex = 0; optionIndex != ipV4Layer.Options.Count; ++optionIndex)
                 {
-                    IpV4Option option = ipV4Options[optionIndex];
+                    IpV4Option option = ipV4Layer.Options[optionIndex];
                     Assert.AreEqual(option, packet.Ethernet.IpV4.Options[optionIndex]);
                     Assert.IsFalse(option.Equals(null));
                 }
@@ -205,7 +165,7 @@ namespace PcapDotNet.Packets.Test
                 else
                     Assert.IsNull(packet.Ethernet.IpV4.Transport);
 
-                Assert.AreEqual(ipV4Payload, packet.Ethernet.IpV4.Payload, "IP Payload");
+                Assert.AreEqual(payloadLayer, packet.Ethernet.IpV4.Payload.ExtractLayer(), "IP Payload");
             }
         }
 

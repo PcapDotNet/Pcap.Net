@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
@@ -34,7 +35,25 @@ namespace PcapDotNet.Packets.TestUtils
             return new Packet(buffer, DateTime.Now, random.NextDataLinkKind());
         }
 
+        public static PayloadLayer NextPayloadLayer(this Random random, int length)
+        {
+            return new PayloadLayer
+                       {
+                           Data = random.NextDatagram(length)
+                       };
+        }
+
         // Ethernet
+
+        public static EthernetLayer NextEthernetLayer(this Random random)
+        {
+            return new EthernetLayer
+                       {
+                           Source = random.NextMacAddress(),
+                           Destination = random.NextMacAddress(),
+                           EtherType = random.NextEnum(EthernetType.None)
+                       };
+        }
 
         public static MacAddress NextMacAddress(this Random random)
         {
@@ -71,7 +90,45 @@ namespace PcapDotNet.Packets.TestUtils
             return random.NextEthernetPacket(packetSize, DateTime.Now, random.NextMacAddress(), random.NextMacAddress());
         }
 
+        // ARP
+
+        public static ArpLayer NextArpLayer(this Random random)
+        {
+            byte hardwareAddressLength = random.NextByte();
+            byte protocolAddressLength = random.NextByte();
+            return new ArpLayer
+                       {
+                           ProtocolType = random.NextEnum<EthernetType>(),
+                           Operation = random.NextEnum<ArpOperation>(),
+                           SenderHardwareAddress = random.NextBytes(hardwareAddressLength),
+                           SenderProtocolAddress = random.NextBytes(protocolAddressLength),
+                           TargetHardwareAddress = random.NextBytes(hardwareAddressLength),
+                           TargetProtocolAddress = random.NextBytes(protocolAddressLength)
+                       };
+        }
+
         // IPv4
+
+        public static IpV4Layer NextIpV4Layer(this Random random, IpV4Protocol? protocol)
+        {
+            return new IpV4Layer
+                {
+
+                    TypeOfService = random.NextByte(),
+                    Identification = random.NextUShort(),
+                    Ttl = random.NextByte(),
+                    Protocol = protocol,
+                    Fragmentation = random.NextIpV4Fragmentation(),
+                    Source = random.NextIpV4Address(),
+                    Destination = random.NextIpV4Address(),
+                    Options = random.NextIpV4Options()
+                };
+        }
+
+        public static IpV4Layer NextIpV4Layer(this Random random)
+        {
+            return random.NextIpV4Layer(random.NextEnum<IpV4Protocol>());
+        }
 
         public static IpV4Address NextIpV4Address(this Random random)
         {
@@ -253,6 +310,24 @@ namespace PcapDotNet.Packets.TestUtils
             }
             return new IpV4Options(options);
         }
+
+        // TCP
+
+        public static TcpLayer NextTcpLayer(this Random random)
+        {
+            return new TcpLayer
+                       {
+                           SourcePort = random.NextUShort(),
+                           DestinationPort = random.NextUShort(),
+                           SequenceNumber = random.NextUInt(),
+                           AcknowledgmentNumber = random.NextUInt(),
+                           ControlBits = random.NextFlags<TcpControlBits>(),
+                           Window = random.NextUShort(),
+                           UrgentPointer = random.NextUShort(),
+                           Options = random.NextTcpOptions(),
+                       };
+        }
+
 
         public static TcpOptionUnknown NextTcpOptionUnknown(this Random random, int maximumOptionLength)
         {

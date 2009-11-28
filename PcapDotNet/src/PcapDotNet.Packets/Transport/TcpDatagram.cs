@@ -167,14 +167,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// The payload of the TCP datagram.
-        /// </summary>
-        public Datagram Payload
-        {
-            get { return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength); }
-        }
-
-        /// <summary>
         /// The length of the TCP payload.
         /// </summary>
         public int PayloadLength
@@ -244,6 +236,29 @@ namespace PcapDotNet.Packets.Transport
         public bool IsFin
         {
             get { return (ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin; }
+        }
+
+        public override ILayer ExtractLayer()
+        {
+            return new TcpLayer
+                       {
+                           SourcePort = SourcePort,
+                           DestinationPort = DestinationPort,
+                           SequenceNumber = SequenceNumber,
+                           AcknowledgmentNumber = AcknowledgmentNumber,
+                           ControlBits = ControlBits,
+                           Window = Window,
+                           UrgentPointer = UrgentPointer,
+                           Options = Options
+                       };
+        }
+
+        /// <summary>
+        /// The payload of the TCP datagram.
+        /// </summary>
+        public Datagram Payload
+        {
+            get { return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength); }
         }
 
         /// <summary>

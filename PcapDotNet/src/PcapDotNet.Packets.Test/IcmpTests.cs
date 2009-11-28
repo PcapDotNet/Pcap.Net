@@ -76,18 +76,7 @@ namespace PcapDotNet.Packets.Test
 
             Random random = new Random();
 
-            IpV4Layer ipV4Layer = new IpV4Layer
-                                      {
-                                          TypeOfService = random.NextByte(),
-                                          Identification = random.NextUShort(),
-                                          Ttl = random.NextByte(),
-                                          Fragmentation = random.NextIpV4Fragmentation(),
-                                          Source = random.NextIpV4Address(),
-                                          Destination = random.NextIpV4Address(),
-                                          Options = random.NextIpV4Options()
-                                      };
-
-
+            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
             for (int i = 0; i != 1000; ++i)
             {
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
@@ -129,22 +118,9 @@ namespace PcapDotNet.Packets.Test
                 PayloadLayer icmpIpV4PayloadLayer = null; 
                 if (isIpV4Payload)
                 {
-                    icmpIpV4Layer = new IpV4Layer
-                                                  {
-                                                      TypeOfService = random.NextByte(),
-                                                      Identification = random.NextUShort(),
-                                                      Fragmentation = random.NextIpV4Fragmentation(),
-                                                      Ttl = random.NextByte(),
-                                                      Protocol = random.NextEnum<IpV4Protocol>(),
-                                                      Source = random.NextIpV4Address(),
-                                                      Destination = random.NextIpV4Address(),
-                                                      Options = random.NextIpV4Options(),
-                                                  };
+                    icmpIpV4Layer = random.NextIpV4Layer();
 
-                    icmpIpV4PayloadLayer = new PayloadLayer
-                                                            {
-                                                                Data = random.NextDatagram(random.Next(200))
-                                                            };
+                    icmpIpV4PayloadLayer = random.NextPayloadLayer(random.Next(200));
 
                     packetBuilder2 = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer, icmpIpV4PayloadLayer);
                 }

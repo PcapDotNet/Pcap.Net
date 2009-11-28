@@ -19,5 +19,10 @@ namespace PcapDotNet.Base
         {
             return TimeSpan.FromTicks((long)(timeSpan.Ticks / value));
         }
+
+        public static TimeSpan Multiply(this TimeSpan timeSpan, double value)
+        {
+            return TimeSpan.FromTicks((long)(timeSpan.Ticks * value));
+        }
     }
 }

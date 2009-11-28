@@ -66,33 +66,20 @@ namespace PcapDotNet.Packets.Test
 
             for (int i = 0; i != 1000; ++i)
             {
-                MacAddress ethernetSource = random.NextMacAddress();
-                MacAddress ethernetDestination = random.NextMacAddress();
-                EthernetType ethernetType = random.NextEnum(EthernetType.None);
+                EthernetLayer ethernetLayer = random.NextEthernetLayer();
                 int ethernetPayloadLength = random.Next(1500);
-                Datagram ethernetPayload = random.NextDatagram(ethernetPayloadLength);
-
-                Packet packet =
-                    new PacketBuilder2(new EthernetLayer
-                                           {
-                                               Source = ethernetSource,
-                                               Destination = ethernetDestination,
-                                               EtherType = ethernetType
-                                           },
-                                       new PayloadLayer
-                                           {
-                                               Data = ethernetPayload
-                                           })
-                        .Build(DateTime.Now);
+                PayloadLayer payloadLayer = new PayloadLayer
+                                                {
+                                                    Data = random.NextDatagram(ethernetPayloadLength),
+                                                };
+                Packet packet = new PacketBuilder2(ethernetLayer, payloadLayer).Build(DateTime.Now);
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
-                Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
                 Assert.AreNotEqual(2, packet.Ethernet.Source, "Ethernet Source");
-                Assert.AreEqual(ethernetDestination, packet.Ethernet.Destination, "Ethernet Destination");
-                Assert.AreEqual(ethernetType, packet.Ethernet.EtherType, "Ethernet Type");
 
-                Assert.AreEqual(ethernetPayload, packet.Ethernet.Payload);
+                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Payload);
             }
         }
     }
