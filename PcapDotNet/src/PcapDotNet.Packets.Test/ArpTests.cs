@@ -57,34 +57,14 @@ namespace PcapDotNet.Packets.Test
             for (int i = 0; i != 1000; ++i)
             {
                 MacAddress ethernetSource = random.NextMacAddress();
-                EthernetType ethernetType = random.NextEnum<EthernetType>();
-                ArpOperation arpOperation = random.NextEnum<ArpOperation>();
-                byte hardwareAddressLength = random.NextByte();
-                byte protocolAddressLength = random.NextByte();
-                byte[] arpSenderHardwareAddress = random.NextBytes(hardwareAddressLength);
-                byte[] arpSenderProtocolAddress = random.NextBytes(protocolAddressLength);
-                byte[] arpTargetHardwareAddress = random.NextBytes(hardwareAddressLength);
-                byte[] arpTargetProtocolAddress = random.NextBytes(protocolAddressLength);
+                EthernetLayer ethernetLayer = new EthernetLayer
+                                                  {
+                                                      Source = ethernetSource,
+                                                  };
 
-                Packet packet = new PacketBuilder2(new EthernetLayer
-                                                       {
-                                                           Source = ethernetSource,
-                                                       },
-                                                   new ArpLayer
-                                                       {
-                                                           ProtocolType = ethernetType, 
-                                                           Operation=arpOperation,
-                                                           SenderHardwareAddress = arpSenderHardwareAddress,
-                                                           SenderProtocolAddress = arpSenderProtocolAddress,
-                                                           TargetHardwareAddress = arpTargetHardwareAddress,
-                                                           TargetProtocolAddress = arpTargetProtocolAddress
-                                                       })
-                    .Build(DateTime.Now);
-//                Packet packet = PacketBuilder.EthernetArp(DateTime.Now,
-//                                                          ethernetSource,
-//                                                          ethernetType, arpOperation,
-//                                                          arpSenderHardwareAddress, arpSenderProtocolAddress,
-//                                                          arpTargetHardwareAddress, arpTargetProtocolAddress);
+                ArpLayer arpLayer = random.NextArpLayer();
+
+                Packet packet = new PacketBuilder2(ethernetLayer, arpLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
@@ -96,16 +76,9 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(EthernetType.Arp, packet.Ethernet.EtherType, "Ethernet EtherType");
 
                 // Arp
-                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * hardwareAddressLength + 2 * protocolAddressLength, packet.Ethernet.Arp.Length, "Arp length");
+                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count + 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
                 Assert.AreEqual(ArpHardwareType.Ethernet, packet.Ethernet.Arp.HardwareType, "Arp hardware type");
-                Assert.AreEqual(ethernetType, packet.Ethernet.Arp.ProtocolType, "Arp protocol type");
-                Assert.AreEqual(hardwareAddressLength, packet.Ethernet.Arp.HardwareLength, "Arp hardware length");
-                Assert.AreEqual(protocolAddressLength, packet.Ethernet.Arp.ProtocolLength, "Arp protocol length");
-                Assert.AreEqual(arpOperation, packet.Ethernet.Arp.Operation, "Arp operation");
-                MoreAssert.AreSequenceEqual(arpSenderHardwareAddress, packet.Ethernet.Arp.SenderHardwareAddress, "Arp SenderHardwareAddress");
-                MoreAssert.AreSequenceEqual(arpSenderProtocolAddress, packet.Ethernet.Arp.SenderProtocolAddress, "Arp SenderProtocolAddress");
-                MoreAssert.AreSequenceEqual(arpTargetHardwareAddress, packet.Ethernet.Arp.TargetHardwareAddress, "Arp TargetHardwareAddress");
-                MoreAssert.AreSequenceEqual(arpTargetProtocolAddress, packet.Ethernet.Arp.TargetProtocolAddress, "Arp TargetProtocolAddress");
+                Assert.AreEqual(arpLayer, packet.Ethernet.Arp.ExtractLayer(), "ARP Layer");
             }
         }
 

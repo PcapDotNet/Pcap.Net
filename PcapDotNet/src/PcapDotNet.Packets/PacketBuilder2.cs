@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Icmp;
@@ -137,6 +138,11 @@ namespace PcapDotNet.Packets
         {
             return base.Equals(other) && Equals(other as EthernetLayer);
         }
+
+        public override string ToString()
+        {
+            return Source + " -> " + Destination + " (" + EtherType + ")";
+        }
     }
 
     public class PayloadLayer : SimpleLayer
@@ -261,6 +267,11 @@ namespace PcapDotNet.Packets
         {
             return base.Equals(other) && Equals(other as IpV4Layer);
         }
+
+        public override string ToString()
+        {
+            return Source + " -> " + Destination + " (" + Protocol + ")";
+        }
     }
 
     public abstract class TransportLayer : Layer, IIpV4NextTransportLayer
@@ -341,7 +352,7 @@ namespace PcapDotNet.Packets
                    SequenceNumber == other.SequenceNumber && AcknowledgmentNumber == other.AcknowledgmentNumber &&
                    ControlBits == other.ControlBits &&
                    Window == other.Window && UrgentPointer == other.UrgentPointer &&
-                   Options == other.Options;
+                   Options.Equals(other.Options);
         }
 
         public override sealed bool Equals(TransportLayer other)
@@ -391,13 +402,13 @@ namespace PcapDotNet.Packets
 
         public ArpOperation Operation { get; set; }
 
-        public byte[] SenderHardwareAddress { get; set; }
+        public IList<byte> SenderHardwareAddress { get; set; }
 
-        public byte[] SenderProtocolAddress { get; set; }
+        public IList<byte> SenderProtocolAddress { get; set; }
 
-        public byte[] TargetHardwareAddress { get; set; }
+        public IList<byte> TargetHardwareAddress { get; set; }
 
-        public byte[] TargetProtocolAddress { get; set; }
+        public IList<byte> TargetProtocolAddress { get; set; }
 
         public EthernetType PreviousLayerEtherType
         {
@@ -411,7 +422,7 @@ namespace PcapDotNet.Packets
 
         public override int Length
         {
-            get { return ArpDatagram.GetHeaderLength(SenderHardwareAddress.Length, SenderProtocolAddress.Length); }
+            get { return ArpDatagram.GetHeaderLength(SenderHardwareAddress.Count, SenderProtocolAddress.Count); }
         }
 
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
@@ -423,15 +434,15 @@ namespace PcapDotNet.Packets
             if (arpPreviousLayer == null)
                 throw new ArgumentException("The layer before the ARP layer must be an ARP previous layer and can't be " + previousLayer.GetType());
 
-            if (SenderHardwareAddress.Length != TargetHardwareAddress.Length)
+            if (SenderHardwareAddress.Count != TargetHardwareAddress.Count)
             {
-                throw new ArgumentException("Sender hardware address length is " + SenderHardwareAddress.Length + " bytes " +
-                                            "while target hardware address length is " + TargetHardwareAddress.Length + " bytes");
+                throw new ArgumentException("Sender hardware address length is " + SenderHardwareAddress.Count + " bytes " +
+                                            "while target hardware address length is " + TargetHardwareAddress.Count + " bytes");
             }
-            if (SenderProtocolAddress.Length != TargetProtocolAddress.Length)
+            if (SenderProtocolAddress.Count != TargetProtocolAddress.Count)
             {
-                throw new ArgumentException("Sender protocol address length is " + SenderProtocolAddress.Length + " bytes " +
-                                            "while target protocol address length is " + TargetProtocolAddress.Length + " bytes");
+                throw new ArgumentException("Sender protocol address length is " + SenderProtocolAddress.Count + " bytes " +
+                                            "while target protocol address length is " + TargetProtocolAddress.Count + " bytes");
             }
 
             ArpDatagram.WriteHeader(buffer, offset,
@@ -474,7 +485,7 @@ namespace PcapDotNet.Packets
             return other != null &&
                    MessageType == other.MessageType &&
                    QueryVersion == other.QueryVersion &&
-                   MaxResponseTimeValue == other.MaxResponseTimeValue;
+                   MaxResponseTimeValue.Divide(2) <= other.MaxResponseTimeValue && MaxResponseTimeValue.Multiply(2) >= other.MaxResponseTimeValue;
         }
 
         public sealed override bool Equals(Layer other)
@@ -573,11 +584,11 @@ namespace PcapDotNet.Packets
 
         public TimeSpan QueryInterval{get; set ;}
 
-        public IpV4Address[] SourceAddresses{get; set ;}
+        public IList<IpV4Address> SourceAddresses{get; set ;}
 
         public override int Length
         {
-            get { return IgmpDatagram.GetQueryVersion3Length(SourceAddresses.Length); }
+            get { return IgmpDatagram.GetQueryVersion3Length(SourceAddresses.Count); }
         }
 
         protected override void Write(byte[] buffer, int offset)
@@ -611,7 +622,7 @@ namespace PcapDotNet.Packets
                    GroupAddress == other.GroupAddress &&
                    IsSuppressRouterSideProcessing == other.IsSuppressRouterSideProcessing &&
                    QueryRobustnessVariable == other.QueryRobustnessVariable &&
-                   QueryInterval == other.QueryInterval &&
+                   QueryInterval.Divide(2) <= other.QueryInterval && QueryInterval.Multiply(2) >= other.QueryInterval &&
                    SourceAddresses.SequenceEqual(other.SourceAddresses);
         }
 
@@ -647,7 +658,7 @@ namespace PcapDotNet.Packets
 
     public class IgmpReportVersion3Layer : IgmpLayer
     {
-        public IgmpGroupRecord[] GroupRecords{get; set ;}
+        public IList<IgmpGroupRecord> GroupRecords{get; set ;}
 
         public override int Length
         {

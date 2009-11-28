@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 
@@ -146,6 +148,19 @@ namespace PcapDotNet.Packets.Arp
             get { return ReadIpV4Address(OffsetTargetProtocolAddress, Endianity.Big); }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            return new ArpLayer
+                       {
+                           ProtocolType = ProtocolType,
+                           Operation = Operation,
+                           SenderHardwareAddress = SenderHardwareAddress,
+                           SenderProtocolAddress = SenderProtocolAddress,
+                           TargetHardwareAddress = TargetHardwareAddress,
+                           TargetProtocolAddress = TargetProtocolAddress
+                       };
+        }
+
         /// <summary>
         /// The datagram is valid if the length is correct according to the header.
         /// </summary>
@@ -166,13 +181,13 @@ namespace PcapDotNet.Packets.Arp
 
         internal static void WriteHeader(byte[] buffer, int offset,
                                          ArpHardwareType hardwareType, EthernetType protocolType, ArpOperation operation,
-                                         byte[] senderHardwareAddress, byte[] senderProtocolAddress,
-                                         byte[] targetHardwareAddress, byte[] targetProtocolAddress)
+                                         IList<byte> senderHardwareAddress, IList<byte> senderProtocolAddress,
+                                         IList<byte> targetHardwareAddress, IList<byte> targetProtocolAddress)
         {
             buffer.Write(ref offset, (ushort)hardwareType, Endianity.Big);
             buffer.Write(ref offset, (ushort)protocolType, Endianity.Big);
-            buffer.Write(ref offset, (byte)senderHardwareAddress.Length);
-            buffer.Write(ref offset, (byte)senderProtocolAddress.Length);
+            buffer.Write(ref offset, (byte)senderHardwareAddress.Count);
+            buffer.Write(ref offset, (byte)senderProtocolAddress.Count);
             buffer.Write(ref offset, (ushort)operation, Endianity.Big);
             buffer.Write(ref offset, senderHardwareAddress);
             buffer.Write(ref offset, senderProtocolAddress);

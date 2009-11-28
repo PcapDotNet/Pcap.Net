@@ -480,6 +480,83 @@ namespace PcapDotNet.Packets.Igmp
             }
         }
 
+        public override ILayer ExtractLayer()
+        {
+//            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None);
+//            IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
+//            TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
+//            IpV4Address igmpGroupAddress = random.NextIpV4Address();
+//            bool? igmpIsSuppressRouterSideProcessing = null;
+//            byte? igmpQueryRobustnessVariable = null;
+//            TimeSpan? igmpQueryInterval = null;
+//            IpV4Address[] igmpSourceAddresses = null;
+//            IgmpGroupRecord[] igmpGroupRecords = null;
+
+            switch (MessageType)
+            {
+                case IgmpMessageType.MembershipQuery:
+                    switch (QueryVersion)
+                    {
+                        case IgmpQueryVersion.Version1:
+                            return new IgmpQueryVersion1Layer
+                            {
+                                GroupAddress = GroupAddress
+                            };
+
+                        case IgmpQueryVersion.Version2:
+                            return new IgmpQueryVersion2Layer
+                            {
+                                MaxResponseTime = MaxResponseTime,
+                                GroupAddress = GroupAddress
+                            };
+
+                        case IgmpQueryVersion.Version3:
+                            return new IgmpQueryVersion3Layer
+                            {
+                                MaxResponseTime = MaxResponseTime,
+                                GroupAddress = GroupAddress,
+                                IsSuppressRouterSideProcessing = IsSuppressRouterSideProcessing,
+                                QueryRobustnessVariable = QueryRobustnessVariable,
+                                QueryInterval = QueryInterval,
+                                SourceAddresses = SourceAddresses
+                            };
+
+                        default:
+                            throw new InvalidOperationException("Invalid Query Version " + QueryVersion);
+                    }
+
+                case IgmpMessageType.MembershipReportVersion1:
+                    return new IgmpReportVersion1Layer
+                    {
+                        GroupAddress = GroupAddress
+                    };
+
+                case IgmpMessageType.MembershipReportVersion2:
+                    return new IgmpReportVersion2Layer
+                    {
+                        MaxResponseTime = MaxResponseTime,
+                        GroupAddress = GroupAddress
+                    };
+
+                case IgmpMessageType.LeaveGroupVersion2:
+                    return new IgmpLeaveGroupVersion2Layer
+                    {
+                        MaxResponseTime = MaxResponseTime,
+                        GroupAddress = GroupAddress
+                    };
+
+                case IgmpMessageType.MembershipReportVersion3:
+                    return new IgmpReportVersion3Layer
+                    {
+                        GroupRecords = GroupRecords.Select(record => record.ToGroupRecord()).ToList()
+                    };
+
+                default:
+                    throw new InvalidOperationException("Invalid message type " + MessageType);
+            }
+
+        }
+
         internal IgmpDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
