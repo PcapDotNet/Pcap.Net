@@ -92,7 +92,9 @@ namespace PcapDotNet.Packets.Test
 
                 // IPv4
                 ipV4Layer.Protocol = IpV4Protocol.InternetGroupManagementProtocol;
+                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IPv4 Layer");
+                ipV4Layer.HeaderChecksum = null;
 
                 // IGMP
                 Assert.IsTrue(packet.Ethernet.IpV4.Igmp.IsChecksumCorrect);
