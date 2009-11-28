@@ -45,14 +45,19 @@ namespace PcapDotNet.Packets.TestUtils
 
         // Ethernet
 
-        public static EthernetLayer NextEthernetLayer(this Random random)
+        public static EthernetLayer NextEthernetLayer(this Random random, EthernetType etherType)
         {
             return new EthernetLayer
-                       {
-                           Source = random.NextMacAddress(),
-                           Destination = random.NextMacAddress(),
-                           EtherType = random.NextEnum(EthernetType.None)
-                       };
+            {
+                Source = random.NextMacAddress(),
+                Destination = random.NextMacAddress(),
+                EtherType = etherType
+            };
+        }
+
+        public static EthernetLayer NextEthernetLayer(this Random random)
+        {
+            return random.NextEthernetLayer(random.NextEnum(EthernetType.None));
         }
 
         public static MacAddress NextMacAddress(this Random random)

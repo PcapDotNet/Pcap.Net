@@ -185,6 +185,7 @@ namespace PcapDotNet.Packets
             Fragmentation = IpV4Fragmentation.None;
             Ttl = 0;
             Protocol = null;
+            HeaderChecksum = null;
             Source = IpV4Address.Zero;
             Destination = IpV4Address.Zero;
             Options = IpV4Options.None;
@@ -199,6 +200,8 @@ namespace PcapDotNet.Packets
         public byte Ttl { get; set; }
 
         public IpV4Protocol? Protocol { get; set; }
+
+        public ushort? HeaderChecksum { get; set; }
 
         public IpV4Address Source { get; set; }
 
@@ -238,7 +241,7 @@ namespace PcapDotNet.Packets
 
             IpV4Datagram.WriteHeader(buffer, offset,
                                      TypeOfService, Identification, Fragmentation,
-                                     Ttl, protocol,
+                                     Ttl, protocol, HeaderChecksum,
                                      Source, Destination,
                                      Options, payloadLength);
         }
@@ -1080,6 +1083,11 @@ namespace PcapDotNet.Packets
 
     public class PacketBuilder2
     {
+        public static Packet Build(DateTime timestamp, params ILayer[] layers)
+        {
+            return new PacketBuilder2(layers).Build(timestamp);
+        }
+
         public PacketBuilder2(params ILayer[] layers)
         {
             if (layers.Length == 0)
