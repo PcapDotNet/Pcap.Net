@@ -224,13 +224,7 @@ namespace PcapDotNet.Core.Test
                                                      random.NextBytes(hardwareAddressLength), random.NextBytes(protocolAddressLength));
 
                 case PacketType.IpV4:
-                    return PacketBuilder.EthernetIpV4(packetTimestamp,
-                                                      random.NextMacAddress(), random.NextMacAddress(),
-                                                      random.NextByte(), random.NextUShort(), random.NextIpV4Fragmentation(),
-                                                      random.NextByte(),
-                                                      random.NextEnum<IpV4Protocol>(),
-                                                      random.NextIpV4Address(), random.NextIpV4Address(), random.NextIpV4Options(),
-                                                      random.NextDatagram(random.Next(100)));
+                    return PacketBuilder2.Build(packetTimestamp, random.NextEthernetLayer(EthernetType.None), random.NextIpV4Layer(), random.NextPayloadLayer(random.Next(100)));
 
                 case PacketType.Igmp:
                     return CreateRandomIgmpPacket(packetTimestamp, random);

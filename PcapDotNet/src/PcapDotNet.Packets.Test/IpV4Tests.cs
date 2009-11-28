@@ -165,7 +165,7 @@ namespace PcapDotNet.Packets.Test
                 else
                     Assert.IsNull(packet.Ethernet.IpV4.Transport);
 
-                Assert.AreEqual(payloadLayer, packet.Ethernet.IpV4.Payload.ExtractLayer(), "IP Payload");
+                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Payload, "IP Payload");
             }
         }
 
@@ -192,11 +192,27 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4OptionTimestampFactoryCreateInstanceErrorTest()
         {
-            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                       new MacAddress(), new MacAddress(),
-                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-                                                       new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
-                                                       Datagram.Empty);
+            Packet packet = PacketBuilder2.Build(DateTime.Now,
+                                                 new EthernetLayer(),
+                                                 new IpV4Layer
+                                                     {
+                                                         Protocol = IpV4Protocol.Argus,
+                                                         Options = new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
+                                                     });
+
+                //        public static Packet EthernetIpV4(DateTime timestamp,
+                //                                          MacAddress ethernetSource, MacAddress ethernetDestination,
+                //                                          byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+                //                                          byte ipV4Ttl, IpV4Protocol ipV4Protocol,
+                //                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+                //                                          IpV4Options ipV4Options,
+                //                                          Datagram ipV4Payload)
+
+//                PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                       new MacAddress(), new MacAddress(),
+//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+//                                                       new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
+//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
 
@@ -246,11 +262,18 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionRouteTryReadErrorTest()
         {
             // Small Length
-            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                       new MacAddress(), new MacAddress(),
-                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-                                                       new IpV4Options(new IpV4OptionLooseSourceRouting()),
-                                                       Datagram.Empty);
+            Packet packet = PacketBuilder2.Build(DateTime.Now,
+                                                 new EthernetLayer(),
+                                                 new IpV4Layer
+                                                     {
+                                                         Protocol = 0,
+                                                         Options = new IpV4Options(new IpV4OptionLooseSourceRouting())
+                                                     });
+//                PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                       new MacAddress(), new MacAddress(),
+//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+//                                                       new IpV4Options(new IpV4OptionLooseSourceRouting()),
+//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             byte[] buffer = packet.Buffer;
@@ -371,11 +394,19 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionBasicSecurityCreateInstanceErrorTest()
         {
             // Invalid Length
-            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                       new MacAddress(), new MacAddress(),
-                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-                                                       new IpV4Options(new IpV4OptionBasicSecurity()),
-                                                       Datagram.Empty);
+            Packet packet = PacketBuilder2.Build(DateTime.Now,
+                                     new EthernetLayer(),
+                                     new IpV4Layer
+                                     {
+                                         Protocol = 0,
+                                         Options = new IpV4Options(new IpV4OptionBasicSecurity()),
+                                     });
+
+//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                       new MacAddress(), new MacAddress(),
+//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+//                                                       new IpV4Options(new IpV4OptionBasicSecurity()),
+//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             byte[] buffer = packet.Buffer;
@@ -384,11 +415,19 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
 
             // Invalid classification level
-            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                new MacAddress(), new MacAddress(),
-                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
-                                                Datagram.Empty);
+            packet = PacketBuilder2.Build(DateTime.Now,
+                         new EthernetLayer(),
+                         new IpV4Layer
+                         {
+                             Protocol = 0,
+                             Options = new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
+                         });
+
+//            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                new MacAddress(), new MacAddress(),
+//                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+//                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
+//                                                Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             buffer = packet.Buffer;
@@ -397,11 +436,18 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
 
             // Invalid protection authorities bytes
-            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                new MacAddress(), new MacAddress(),
-                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
-                                                Datagram.Empty);
+            packet = PacketBuilder2.Build(DateTime.Now,
+                         new EthernetLayer(),
+                         new IpV4Layer
+                         {
+                             Protocol = 0,
+                             Options = new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
+                         });
+//            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                new MacAddress(), new MacAddress(),
+//                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
+//                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
+//                                                Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             buffer = packet.Buffer;
@@ -457,11 +503,27 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4DatagramInvalidShortTest()
         {
-            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                       new MacAddress(1), new MacAddress(2),
-                                                       0, 1, new IpV4Fragmentation(IpV4FragmentationOptions.MoreFragments, 8), 1,
-                                                       IpV4Protocol.WidebandExpak, new IpV4Address(1), new IpV4Address(2), new IpV4Options(),
-                                                       Datagram.Empty);
+            Packet packet = PacketBuilder2.Build(DateTime.Now,
+                         new EthernetLayer
+                             {
+                                 Source = new MacAddress(1),
+                                 Destination = new MacAddress(2),
+                             },
+                         new IpV4Layer
+                         {
+                             Identification = 1,
+                             Fragmentation = new IpV4Fragmentation(IpV4FragmentationOptions.MoreFragments, 8),
+                             Ttl = 1,
+                             Protocol = IpV4Protocol.WidebandExpak,
+                             Source = new IpV4Address(1),
+                             Destination = new IpV4Address(2),
+                         });
+
+//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                       new MacAddress(1), new MacAddress(2),
+//                                                       0, 1, new IpV4Fragmentation(IpV4FragmentationOptions.MoreFragments, 8), 1,
+//                                                       IpV4Protocol.WidebandExpak, new IpV4Address(1), new IpV4Address(2), new IpV4Options(),
+//                                                       Datagram.Empty);
             Assert.IsTrue(packet.IsValid);
 
             byte[] badPacketBuffer = new byte[packet.Length - 5];
@@ -473,10 +535,14 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4DatagramInvalidHeaderChecksumTest()
         {
-            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-                                                       new MacAddress(), new MacAddress(),
-                                                       0, 0, new IpV4Fragmentation(), 0, 0, IpV4Address.Zero, IpV4Address.Zero, IpV4Options.None,
-                                                       Datagram.Empty);
+            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer
+                                                                                        {
+                                                                                            Protocol = 0,
+                                                                                        });
+//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
+//                                                       new MacAddress(), new MacAddress(),
+//                                                       0, 0, new IpV4Fragmentation(), 0, 0, IpV4Address.Zero, IpV4Address.Zero, IpV4Options.None,
+//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.IsValid);
 

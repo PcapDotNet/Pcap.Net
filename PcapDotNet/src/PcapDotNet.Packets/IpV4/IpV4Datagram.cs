@@ -215,6 +215,7 @@ namespace PcapDotNet.Packets.IpV4
                            Fragmentation = Fragmentation,
                            Ttl = Ttl,
                            Protocol = Protocol,
+                           HeaderChecksum = HeaderChecksum,
                            Source = Source,
                            Destination = Destination,
                            Options = Options,
@@ -312,7 +313,7 @@ namespace PcapDotNet.Packets.IpV4
         internal static void WriteHeader(byte[] buffer, int offset,
                                          byte typeOfService, ushort identification,
                                          IpV4Fragmentation fragmentation,
-                                         byte ttl, IpV4Protocol protocol,
+                                         byte ttl, IpV4Protocol protocol, ushort? checksum,
                                          IpV4Address source, IpV4Address destination,
                                          IpV4Options options, int payloadLength)
         {
@@ -330,7 +331,9 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + Offset.Destination, destination, Endianity.Big);
             options.Write(buffer, offset + Offset.Options);
 
-            buffer.Write(offset + Offset.HeaderChecksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength)), Endianity.Big);
+            if (checksum == null)
+                checksum = Sum16BitsToChecksum(Sum16Bits(buffer, offset, headerLength));
+            buffer.Write(offset + Offset.HeaderChecksum, checksum.Value, Endianity.Big);
         }
 
         internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional)

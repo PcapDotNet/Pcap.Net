@@ -90,25 +90,25 @@ namespace PcapDotNet.Packets
         /// <param name="ipV4Options">The IPv4 options.</param>
         /// <param name="ipV4Payload">The IPv4 payload.</param>
         /// <returns>A packet with an IPv4 over Ethernet datagram.</returns>
-        public static Packet EthernetIpV4(DateTime timestamp,
-                                          MacAddress ethernetSource, MacAddress ethernetDestination,
-                                          byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
-                                          byte ipV4Ttl, IpV4Protocol ipV4Protocol,
-                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
-                                          IpV4Options ipV4Options,
-                                          Datagram ipV4Payload)
-        {
-            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
-            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + ipV4Payload.Length];
-            EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
-            IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
-                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, ipV4Protocol,
-                                     ipV4SourceAddress, ipV4DestinationAddress,
-                                     ipV4Options, ipV4Payload.Length);
-            ipV4Payload.Write(buffer, EthernetDatagram.HeaderLength + ipHeaderLength);
-            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
-        }
+//        public static Packet EthernetIpV4(DateTime timestamp,
+//                                          MacAddress ethernetSource, MacAddress ethernetDestination,
+//                                          byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
+//                                          byte ipV4Ttl, IpV4Protocol ipV4Protocol,
+//                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
+//                                          IpV4Options ipV4Options,
+//                                          Datagram ipV4Payload)
+//        {
+//            int ipHeaderLength = IpV4Datagram.HeaderMinimumLength + ipV4Options.BytesLength;
+//            byte[] buffer = new byte[EthernetDatagram.HeaderLength + ipHeaderLength + ipV4Payload.Length];
+//            EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
+//            IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
+//                                     ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
+//                                     ipV4Ttl, ipV4Protocol,
+//                                     ipV4SourceAddress, ipV4DestinationAddress,
+//                                     ipV4Options, ipV4Payload.Length);
+//            ipV4Payload.Write(buffer, EthernetDatagram.HeaderLength + ipHeaderLength);
+//            return new Packet(buffer, timestamp, DataLinkKind.Ethernet);
+//        }
 
         /// <summary>
         /// Builds an ICMP over IPv4 over Ethernet packet.
@@ -244,14 +244,14 @@ namespace PcapDotNet.Packets
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.InternetControlMessageProtocol,
+                                     ipV4Ttl, IpV4Protocol.InternetControlMessageProtocol, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, ipPayloadLength);
             IcmpDatagram.WriteHeader(buffer, icmpOffset, IcmpMessageType.DestinationUnreachable, icmpCode, icmpValueAccordingToType);
             IpV4Datagram.WriteHeader(buffer, icmpOffset + IcmpDatagram.HeaderLength,
                                      icmpIpV4TypeOfService, icmpIpV4Identification,
                                      icmpIpV4Fragmentation,
-                                     icmpIpV4Ttl, icmpIpV4Protocol,
+                                     icmpIpV4Ttl, icmpIpV4Protocol, null,
                                      icmpIpV4SourceAddress, icmpIpV4DestinationAddress,
                                      icmpIpV4Options, icmpIpV4Payload.Length);
             icmpIpV4Payload.Write(buffer, icmpOffset + IcmpDatagram.HeaderLength + icmpIpHeaderLength);
@@ -498,7 +498,7 @@ namespace PcapDotNet.Packets
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
+                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, igmpLength);
             IgmpDatagram.WriteQueryVersion3(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
@@ -536,7 +536,7 @@ namespace PcapDotNet.Packets
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
+                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, igmpLength);
             IgmpDatagram.WriteReportVersion3(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
@@ -557,7 +557,7 @@ namespace PcapDotNet.Packets
             EthernetDatagram.WriteHeader(buffer, 0, ethernetSource, ethernetDestination, EthernetType.IpV4);
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol,
+                                     ipV4Ttl, IpV4Protocol.InternetGroupManagementProtocol, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, IgmpDatagram.HeaderLength);
             IgmpDatagram.WriteHeader(buffer, EthernetDatagram.HeaderLength + ipHeaderLength,
@@ -601,7 +601,7 @@ namespace PcapDotNet.Packets
 
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.Udp,
+                                     ipV4Ttl, IpV4Protocol.Udp, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, transportLength);
 
@@ -661,7 +661,7 @@ namespace PcapDotNet.Packets
 
             IpV4Datagram.WriteHeader(buffer, EthernetDatagram.HeaderLength,
                                      ipV4TypeOfService, ipV4Identification, ipV4Fragmentation,
-                                     ipV4Ttl, IpV4Protocol.Tcp,
+                                     ipV4Ttl, IpV4Protocol.Tcp, null,
                                      ipV4SourceAddress, ipV4DestinationAddress,
                                      ipV4Options, transportLength);
 
