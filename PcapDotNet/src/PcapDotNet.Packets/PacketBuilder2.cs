@@ -592,6 +592,11 @@ namespace PcapDotNet.Packets
 
     public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
+        public IgmpQueryVersion3Layer()
+        {
+            SourceAddresses = new List<IpV4Address>();
+        }
+
         public TimeSpan MaxResponseTime { get; set; }
         public IpV4Address GroupAddress { get; set; }
         public bool IsSuppressRouterSideProcessing { get; set; }

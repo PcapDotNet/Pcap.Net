@@ -75,9 +75,14 @@ namespace PcapDotNet.Packets.TestUtils
             if (packetSize < EthernetDatagram.HeaderLength)
                 throw new ArgumentOutOfRangeException("packetSize", packetSize, "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLength + ")");
 
-            return PacketBuilder.Ethernet(timestamp,
-                                          ethernetSource, ethernetDestination, random.NextEthernetType(),
-                                          random.NextDatagram(packetSize - EthernetDatagram.HeaderLength));
+            return PacketBuilder2.Build(timestamp,
+                                        new EthernetLayer
+                                            {
+                                                Source = ethernetSource,
+                                                Destination = ethernetDestination,
+                                                EtherType = random.NextEthernetType()
+                                            },
+                                        random.NextPayloadLayer(packetSize - EthernetDatagram.HeaderLength));
         }
 
         public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)
