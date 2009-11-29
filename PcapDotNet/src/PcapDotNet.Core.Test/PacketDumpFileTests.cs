@@ -64,7 +64,7 @@ namespace PcapDotNet.Core.Test
         {
             string filename = Path.GetTempPath() + @"dump.pcap";
 
-            Packet expectedPacket = PacketBuilder2.Build(DateTime.Now,
+            Packet expectedPacket = PacketBuilder.Build(DateTime.Now,
                                                          new EthernetLayer
                                                              {
                                                                  Source = new MacAddress(1),

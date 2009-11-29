@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                Packet packet = PacketBuilder2.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, payloadLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, payloadLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 

@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Test
             {
                 IgmpLayer igmpLayer = random.NextIgmpLayer();
 
-                Packet packet = new PacketBuilder2(ethernetLayer, ipV4Layer, igmpLayer).Build(DateTime.Now);
+                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, igmpLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
@@ -107,7 +107,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion3SmallMaxResponseTimeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                  new IgmpQueryVersion3Layer
                                                  {
                                                      MaxResponseTime = TimeSpan.FromSeconds(-1),
@@ -122,7 +122,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion3BigMaxResponseTimeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                  new IgmpQueryVersion3Layer
                                                      {
                                                          MaxResponseTime = TimeSpan.FromHours(1),
@@ -137,7 +137,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion3SmallQueryIntervalTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                  new IgmpQueryVersion3Layer
                                                  {
                                                      MaxResponseTime = TimeSpan.FromSeconds(1),
@@ -152,7 +152,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion3BigQueryIntervalTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                      new IgmpQueryVersion3Layer
                                      {
                                          MaxResponseTime = TimeSpan.FromSeconds(1),
@@ -167,7 +167,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion2SmallMaxResponseTimeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                                  new EthernetLayer(), new IpV4Layer(),
                                                  new IgmpQueryVersion2Layer
                                                      {
@@ -182,7 +182,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void IgmpQueryVersion2BigMaxResponseTimeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                  new IgmpQueryVersion2Layer
                                                      {
                                                          MaxResponseTime = TimeSpan.FromMinutes(5)
@@ -195,7 +195,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IgmpInvalidTest()
         {
-            Packet queryVersion2 = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet queryVersion2 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                         new IgmpQueryVersion2Layer
                                                             {
                                                                 MaxResponseTime = TimeSpan.FromSeconds(1),
@@ -219,7 +219,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(badChecksumPacket.IsValid);
 
             // Big query version 3
-            Packet queryVersion3 = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet queryVersion3 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                         new IgmpQueryVersion3Layer
                                                             {
                                                                 MaxResponseTime = TimeSpan.FromSeconds(1),
@@ -232,7 +232,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(bigQueryVersion3.IsValid);
 
             // Big report version 1
-            Packet reportVersion1 = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
+            Packet reportVersion1 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
 
             buffer = new byte[reportVersion1.Length + 1];
             reportVersion1.Buffer.BlockCopy(0, buffer, 0, reportVersion1.Length);
@@ -250,7 +250,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(nonZeroMaxResponseCodeReportVersion1.IsValid);
 
             // Big report version 2
-            Packet reportVersion2 = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet reportVersion2 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                          new IgmpReportVersion2Layer
                                                              {
                                                                  MaxResponseTime = TimeSpan.FromSeconds(1)
@@ -263,7 +263,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(bigReportVersion2.IsValid);
 
             // non zero max response code report version 3
-            Packet reportVersion3 = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+            Packet reportVersion3 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                          new IgmpReportVersion3Layer
                                                              {
                                                                  GroupRecords = new[]
@@ -303,7 +303,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void IgmpIllegalReportVersionTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
 
             Assert.IsTrue(packet.IsValid);
             Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);
@@ -321,7 +321,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void IgmpIllegalQueryVersionTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion1Layer());
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion1Layer());
 
             Assert.IsTrue(packet.IsValid);
             Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);

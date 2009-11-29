@@ -116,7 +116,7 @@ namespace PcapDotNet.Packets.Test
                     default:
                         throw new InvalidOperationException("Invalid icmpMessageType " + icmpLayer.MessageType);
                 }
-                PacketBuilder2 packetBuilder2;
+                PacketBuilder packetBuilder;
                 IpV4Layer icmpIpV4Layer = null;
                 PayloadLayer icmpIpV4PayloadLayer = null; 
                 if (isIpV4Payload)
@@ -125,12 +125,12 @@ namespace PcapDotNet.Packets.Test
 
                     icmpIpV4PayloadLayer = random.NextPayloadLayer(random.Next(200));
 
-                    packetBuilder2 = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer, icmpIpV4PayloadLayer);
+                    packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer, icmpIpV4PayloadLayer);
                 }
                 else
-                    packetBuilder2 = new PacketBuilder2(ethernetLayer, ipV4Layer, icmpLayer);
+                    packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer);
 
-                Packet packet = packetBuilder2.Build(DateTime.Now);
+                Packet packet = packetBuilder.Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 

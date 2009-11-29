@@ -120,7 +120,7 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(0, 50 * 1024));
 
-                Packet packet = new PacketBuilder2(ethernetLayer, ipV4Layer, payloadLayer).Build(DateTime.Now);
+                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, payloadLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(ipV4Layer.Protocol == IpV4Protocol.Udp ||
                               ipV4Layer.Protocol == IpV4Protocol.Tcp ||
@@ -194,7 +194,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4OptionTimestampFactoryCreateInstanceErrorTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                                  new EthernetLayer(),
                                                  new IpV4Layer
                                                      {
@@ -264,7 +264,7 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionRouteTryReadErrorTest()
         {
             // Small Length
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                                  new EthernetLayer(),
                                                  new IpV4Layer
                                                      {
@@ -396,7 +396,7 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionBasicSecurityCreateInstanceErrorTest()
         {
             // Invalid Length
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                      new EthernetLayer(),
                                      new IpV4Layer
                                      {
@@ -417,7 +417,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
 
             // Invalid classification level
-            packet = PacketBuilder2.Build(DateTime.Now,
+            packet = PacketBuilder.Build(DateTime.Now,
                          new EthernetLayer(),
                          new IpV4Layer
                          {
@@ -438,7 +438,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(packet.Ethernet.IpV4.Options.IsValid);
 
             // Invalid protection authorities bytes
-            packet = PacketBuilder2.Build(DateTime.Now,
+            packet = PacketBuilder.Build(DateTime.Now,
                          new EthernetLayer(),
                          new IpV4Layer
                          {
@@ -505,7 +505,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4DatagramInvalidShortTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                          new EthernetLayer
                              {
                                  Source = new MacAddress(1),
@@ -537,7 +537,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void IpV4DatagramInvalidHeaderChecksumTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer
                                                                                         {
                                                                                             Protocol = 0,
                                                                                         });

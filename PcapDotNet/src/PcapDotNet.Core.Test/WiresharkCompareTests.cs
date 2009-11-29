@@ -124,33 +124,33 @@ namespace PcapDotNet.Core.Test
             switch (random.NextEnum<PacketType>())
             {
                 case PacketType.Ethernet:
-                    return PacketBuilder2.Build(DateTime.Now, ethernetLayer, payloadLayer);
+                    return PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
 
                 case PacketType.Arp:
                     ethernetLayer.Destination = MacAddress.Zero;
-                    return PacketBuilder2.Build(packetTimestamp, ethernetLayer, random.NextArpLayer());
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, random.NextArpLayer());
 
                 case PacketType.IpV4:
-                    return PacketBuilder2.Build(packetTimestamp, ethernetLayer, ipV4Layer, payloadLayer);
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, payloadLayer);
 
                 case PacketType.Igmp:
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
-                    return PacketBuilder2.Build(packetTimestamp, ipV4Layer, random.NextIgmpLayer());
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextIgmpLayer());
 
                 case PacketType.Udp:
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
                     if (random.NextBool())
                         ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    return PacketBuilder2.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
 
                 case PacketType.Tcp:
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
                     if (random.NextBool())
                         ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    return PacketBuilder2.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
 
                 default:
                     throw new InvalidOperationException();

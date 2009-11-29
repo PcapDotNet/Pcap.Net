@@ -1101,14 +1101,14 @@ namespace PcapDotNet.Packets
         }
     }
 
-    public class PacketBuilder2
+    public class PacketBuilder
     {
         public static Packet Build(DateTime timestamp, params ILayer[] layers)
         {
-            return new PacketBuilder2(layers).Build(timestamp);
+            return new PacketBuilder(layers).Build(timestamp);
         }
 
-        public PacketBuilder2(params ILayer[] layers)
+        public PacketBuilder(params ILayer[] layers)
         {
             if (layers.Length == 0)
                 throw new ArgumentException("At least one layer must be given", "layers");
