@@ -160,11 +160,14 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void TcpOptionMd5SignatureCreateInstanceErrorDataLengthTest()
         {
-            Packet packet = PacketBuilder.EthernetIpV4Tcp(DateTime.Now,
-                                                          new MacAddress(), new MacAddress(),
-                                                          0, 0, new IpV4Fragmentation(), 0, new IpV4Address(), new IpV4Address(), new IpV4Options(),
-                                                          0, 0, 0, 0, new TcpControlBits(), 0, 0,
-                                                          new TcpOptions(new TcpOptionMd5Signature(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16})), Datagram.Empty);
+            Packet packet =
+                PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+                                     new TcpLayer
+                                         {
+                                             Options =
+                                                 new TcpOptions(
+                                                 new TcpOptionMd5Signature(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
+                                         });
 
             Assert.IsTrue(packet.IsValid);
             Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Options.IsValid);

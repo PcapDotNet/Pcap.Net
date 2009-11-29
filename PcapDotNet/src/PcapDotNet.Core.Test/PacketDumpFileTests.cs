@@ -64,8 +64,17 @@ namespace PcapDotNet.Core.Test
         {
             string filename = Path.GetTempPath() + @"dump.pcap";
 
-            Packet expectedPacket = PacketBuilder.Ethernet(DateTime.Now, new MacAddress(1), new MacAddress(2), EthernetType.QInQ,
-                                                           new Datagram(new byte[] {1, 2, 3}));
+            Packet expectedPacket = PacketBuilder2.Build(DateTime.Now,
+                                                         new EthernetLayer
+                                                             {
+                                                                 Source = new MacAddress(1),
+                                                                 Destination = new MacAddress(2),
+                                                                 EtherType = EthernetType.QInQ,
+                                                             },
+                                                         new PayloadLayer
+                                                             {
+                                                                 Data = new Datagram(new byte[] {1, 2, 3})
+                                                             });
             PacketDumpFile.Dump(filename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength,
                                 new[] {expectedPacket});
 
