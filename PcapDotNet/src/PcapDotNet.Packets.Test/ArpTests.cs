@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.Test
 
                 ArpLayer arpLayer = random.NextArpLayer();
 
-                Packet packet = new PacketBuilder2(ethernetLayer, arpLayer).Build(DateTime.Now);
+                Packet packet = new PacketBuilder(ethernetLayer, arpLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void ArpProtocolIpV4Address()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                      new EthernetLayer
                                      {
                                          Source = new MacAddress(),
@@ -108,7 +108,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentException))]
         public void ArpIncosistentSenderAddressSizeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                                  new EthernetLayer
                                                      {
                                                          Source = new MacAddress(),
@@ -130,7 +130,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentException))]
         public void ArpIncosistentTargetAddressSizeTest()
         {
-            Packet packet = PacketBuilder2.Build(DateTime.Now,
+            Packet packet = PacketBuilder.Build(DateTime.Now,
                                                  new EthernetLayer
                                                  {
                                                      Source = new MacAddress(),

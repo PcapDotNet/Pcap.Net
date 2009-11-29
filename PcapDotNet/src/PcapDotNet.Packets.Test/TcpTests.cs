@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                Packet packet = new PacketBuilder2(ethernetLayer,ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
+                Packet packet = new PacketBuilder(ethernetLayer,ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
 
                 Assert.IsTrue(packet.IsValid);
 
@@ -161,7 +161,7 @@ namespace PcapDotNet.Packets.Test
         public void TcpOptionMd5SignatureCreateInstanceErrorDataLengthTest()
         {
             Packet packet =
-                PacketBuilder2.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+                PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                      new TcpLayer
                                          {
                                              Options =

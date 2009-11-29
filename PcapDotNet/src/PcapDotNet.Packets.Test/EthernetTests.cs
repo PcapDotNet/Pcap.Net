@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.Test
                                                 {
                                                     Data = random.NextDatagram(ethernetPayloadLength),
                                                 };
-                Packet packet = new PacketBuilder2(ethernetLayer, payloadLayer).Build(DateTime.Now);
+                Packet packet = new PacketBuilder(ethernetLayer, payloadLayer).Build(DateTime.Now);
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
