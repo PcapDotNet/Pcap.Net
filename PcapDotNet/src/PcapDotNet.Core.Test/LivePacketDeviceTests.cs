@@ -796,7 +796,7 @@ namespace PcapDotNet.Core.Test
             IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
             MoreAssert.IsBiggerOrEqual(1, devices.Count);
             LivePacketDevice device = devices[0];
-            MoreAssert.IsMatch(@"Network adapter '.*\(.*\) ?' on local host", device.Description);
+            MoreAssert.IsMatch(@"Network adapter '.*' on local host", device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             MoreAssert.IsInRange(1, 2, device.Addresses.Count);
             foreach (DeviceAddress address in device.Addresses)

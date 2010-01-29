@@ -460,7 +460,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "ip.flags":
-                        field.AssertShowHex((byte)((ushort)ipV4Datagram.Fragmentation.Options >> 12));
+                        field.AssertShowHex((byte)((ushort)ipV4Datagram.Fragmentation.Options >> 13));
                         break;
 
                     case "ip.frag_offset":
