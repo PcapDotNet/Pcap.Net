@@ -10,7 +10,7 @@ namespace PcapDotNet.Core.Extensions
     /// Different extension methods for PacketCommunicator class.
     /// <seealso cref="PacketCommunicator"/>
     /// </summary>
-    public static class MorePacketCommunicator
+    public static class PacketCommunicatorExtensions
     {
         /// <summary>
         /// Collect a group of packets.

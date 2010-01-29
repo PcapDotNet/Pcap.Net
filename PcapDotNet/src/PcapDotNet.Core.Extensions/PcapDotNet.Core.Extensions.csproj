@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{322040C2-3DC1-4D0C-8E0F-F05290AFE023}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -55,10 +55,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MorePacketCommunicator.cs" />
+    <Compile Include="LivePacketDeviceExtensions.cs" />
+    <Compile Include="PacketCommunicatorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">
+      <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
+      <Name>PcapDotNet.Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Core\PcapDotNet.Core.vcproj">
       <Project>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</Project>
       <Name>PcapDotNet.Core</Name>
