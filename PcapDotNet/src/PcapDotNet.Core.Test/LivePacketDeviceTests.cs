@@ -84,7 +84,7 @@ namespace PcapDotNet.Core.Test
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
-                MoreAssert.IsInRange(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1.02), finishedWaiting - startWaiting);
+                MoreAssert.IsInRange(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1.04), finishedWaiting - startWaiting);
 
                 Packet sentPacket = _random.NextEthernetPacket(24, SourceMac, DestinationMac);
 
@@ -141,7 +141,7 @@ namespace PcapDotNet.Core.Test
 
             // Wait for more packets
             TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.03);
-            TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
+            TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.1);
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.02);
 
             // Break loop
@@ -501,7 +501,7 @@ namespace PcapDotNet.Core.Test
                     DateTime end = DateTime.Now;
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, packet);
-                    MoreAssert.IsSmallerOrEqual(TimeSpan.FromSeconds(0.02), end - start);
+                    MoreAssert.IsSmallerOrEqual(TimeSpan.FromSeconds(0.07), end - start);
                 }
             }
         }
