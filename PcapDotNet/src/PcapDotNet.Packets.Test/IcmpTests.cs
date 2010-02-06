@@ -154,6 +154,43 @@ namespace PcapDotNet.Packets.Test
                 icmpLayer.Checksum = actualIcmpLayer.Checksum;
                 Assert.AreEqual(icmpLayer, actualIcmpLayer);
                 Assert.IsTrue(packet.Ethernet.IpV4.Icmp.IsChecksumCorrect);
+
+                switch (packet.Ethernet.IpV4.Icmp.MessageType)
+                {
+                    case IcmpMessageType.DestinationUnreachable:
+//                        Assert.AreEqual(icmpIpV4Layer, packet.Ethernet.IpV4.Icmp.DestinationUncreachable.IpV4.ExtractLayer());
+                        
+                    case IcmpMessageType.TimeExceeded:
+                    case IcmpMessageType.ParameterProblem:
+                    case IcmpMessageType.SourceQuench:
+                    case IcmpMessageType.Redirect:
+                    case IcmpMessageType.ConversionFailed:
+                        isIpV4Payload = true;
+                        break;
+
+                    case IcmpMessageType.Echo:
+                    case IcmpMessageType.EchoReply:
+                    case IcmpMessageType.Timestamp:
+                    case IcmpMessageType.TimestampReply:
+                    case IcmpMessageType.InformationRequest:
+                    case IcmpMessageType.InformationReply:
+                    case IcmpMessageType.RouterAdvertisement:
+                    case IcmpMessageType.RouterSolicitation:
+//                        packet.Ethernet.IpV4.Icmp.RouterSolicitation
+                    case IcmpMessageType.AddressMaskRequest:
+                    case IcmpMessageType.AddressMaskReply:
+                    case IcmpMessageType.Traceroute:
+                    case IcmpMessageType.DomainNameRequest:
+                    case IcmpMessageType.SecurityFailures:
+                        isIpV4Payload = false;
+                        break;
+
+                    case IcmpMessageType.DomainNameReply:
+
+                     default:
+                        throw new InvalidOperationException("Invalid icmpMessageType " + packet.Ethernet.IpV4.Icmp.MessageType);
+                   
+                }
             }
         }
     }

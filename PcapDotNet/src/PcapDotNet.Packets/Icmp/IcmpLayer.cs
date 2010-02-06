@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -23,14 +24,14 @@ namespace PcapDotNet.Packets.Icmp
         protected override sealed void Write(byte[] buffer, int offset)
         {
             IcmpDatagram.WriteHeader(buffer, offset, MessageType, CodeValue, Value);
-            WriteHeaderAdditional(buffer, offset + IcmpDatagram.HeaderLength);
+            WritePayload(buffer, offset + IcmpDatagram.HeaderLength);
         }
 
-        protected virtual void WriteHeaderAdditional(byte[] buffer, int offset)
+        protected virtual void WritePayload(byte[] buffer, int offset)
         {
         }
 
-        public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
+        public override sealed void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
             IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength, Checksum);
         }
@@ -51,6 +52,11 @@ namespace PcapDotNet.Packets.Icmp
         public sealed override bool Equals(Layer other)
         {
             return base.Equals(other) && Equals(other as IcmpLayer);
+        }
+
+        public override string ToString()
+        {
+            return MessageType + "." + CodeValue + "(" + Value + ")";
         }
     }
 }

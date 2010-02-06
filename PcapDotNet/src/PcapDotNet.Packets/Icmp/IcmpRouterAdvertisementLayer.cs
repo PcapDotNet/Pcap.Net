@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             IcmpRouterAdvertisementDatagram.WriteHeaderAdditional(buffer, offset, Entries);
         }

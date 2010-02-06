@@ -1,7 +1,7 @@
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
-    /// Echo
+    /// Echo Reply
     /// RFC 792.
     /// <pre>
     /// +-----+------+------+-----------------+
@@ -15,11 +15,11 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
-    public class IcmpEchoDatagram : IcmpIdentifiedDatagram
+    public class IcmpEchoReplyDatagram : IcmpIdentifiedDatagram
     {
         public override ILayer ExtractLayer()
         {
-            return new IcmpEchoLayer
+            return new IcmpEchoReplyLayer
                        {
                            Checksum = Checksum,
                            Identifier = Identifier,
@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
-        internal IcmpEchoDatagram(byte[] buffer, int offset, int length)
+        internal IcmpEchoReplyDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }

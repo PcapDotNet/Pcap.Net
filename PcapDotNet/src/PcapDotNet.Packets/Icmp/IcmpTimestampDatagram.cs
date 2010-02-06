@@ -6,29 +6,31 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// <pre>
-    /// +-----+------------+-----------------+
-    /// | Bit | 0-15       | 16-31           |
-    /// +-----+------------+-----------------+
-    /// | 0   | Identifier | Sequence Number |
-    /// +-----+------------+-----------------+
-    /// | 32  | Originate Timestamp          |
-    /// +-----+------------------------------+
-    /// | 64  | Receive Timestamp            |
-    /// +-----+------------------------------+
-    /// | 96  | Transmit Timestamp           |
-    /// +-----+------------------------------+
+    /// +-----+------+------+-----------------+
+    /// | Bit | 0-7  | 8-15 | 16-31           |
+    /// +-----+------+------+-----------------+
+    /// | 0   | Type | Code | Checksum        |
+    /// +-----+------+------+-----------------+
+    /// | 32  | Identifier  | Sequence Number |
+    /// +-----+-------------+-----------------+
+    /// | 64  | Originate Timestamp           |
+    /// +-----+-------------------------------+
+    /// | 96  | Receive Timestamp             |
+    /// +-----+-------------------------------+
+    /// | 128 | Transmit Timestamp            |
+    /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
     public class IcmpTimestampDatagram : IcmpIdentifiedDatagram
     {
-        public const int HeaderLength = HeaderMinimumLength + HeaderAdditionalLength;
-        public const int HeaderAdditionalLength = 12;
+        public const int DatagramLength = HeaderLength + PayloadLength;
+        public const int PayloadLength = 12;
 
         private class Offset
         {
-            public const int OriginateTimestamp = 4;
-            public const int ReceiveTimestamp = 8;
-            public const int TransmitTimestamp = 12;
+            public const int OriginateTimestamp = 8;
+            public const int ReceiveTimestamp = 12;
+            public const int TransmitTimestamp = 16;
         }
 
         /// <summary>
@@ -53,6 +55,19 @@ namespace PcapDotNet.Packets.Icmp
         public IpV4TimeOfDay TransmitTimestamp
         {
             get { return ReadIpV4TimeOfDay(Offset.TransmitTimestamp, Endianity.Big); }
+        }
+
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpTimestampLayer
+                       {
+                           Checksum = Checksum,
+                           Identifier = Identifier,
+                           SequenceNumber = SequenceNumber,
+                           OriginateTimestamp = OriginateTimestamp,
+                           ReceiveTimestamp = ReceiveTimestamp,
+                           TransmitTimestamp = TransmitTimestamp
+                       };
         }
 
         internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)

@@ -15,13 +15,13 @@ namespace PcapDotNet.Packets.Icmp
         {
             get
             {
-                return base.Length + IcmpAddressMaskDatagram.HeaderAdditionalLength;
+                return base.Length + IcmpAddressMaskRequestDatagram.PayloadLength;
             }
         }
 
-        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
-            IcmpAddressMaskDatagram.WriteHeaderAdditional(buffer, offset, AddressMask);
+            IcmpAddressMaskRequestDatagram.WriteHeaderAdditional(buffer, offset, AddressMask);
         }
 
         public bool Equals(IcmpAddressMaskRequestLayer other)

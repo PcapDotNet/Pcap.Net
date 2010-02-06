@@ -16,11 +16,11 @@ namespace PcapDotNet.Packets.Icmp
         {
             get
             {
-                return base.Length + IcmpTimestampDatagram.HeaderAdditionalLength;
+                return base.Length + IcmpTimestampDatagram.PayloadLength;
             }
         }
 
-        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             IcmpTimestampDatagram.WriteHeaderAdditional(buffer, offset,
                                                         OriginateTimestamp, ReceiveTimestamp, TransmitTimestamp);
