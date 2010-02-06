@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arp\ArpLayer.cs" />
     <Compile Include="Arp\ArpDatagram.cs" />
     <Compile Include="Arp\ArpHardwareType.cs" />
     <Compile Include="Arp\ArpOperation.cs" />
@@ -67,10 +68,32 @@
     <Compile Include="DataLink.cs" />
     <Compile Include="DataLinkKind.cs" />
     <Compile Include="Endianity.cs" />
+    <Compile Include="Ethernet\EthernetLayer.cs" />
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
-    <Compile Include="IcmpTracerouteLayer.cs" />
+    <Compile Include="Arp\IArpPreviousLayer.cs" />
+    <Compile Include="Icmp\IcmpAddressMaskReplyLayer.cs" />
+    <Compile Include="Icmp\IcmpAddressMaskRequestLayer.cs" />
+    <Compile Include="Icmp\IcmpConversionFailedLayer.cs" />
+    <Compile Include="Icmp\IcmpDestinationUnreachableLayer.cs" />
+    <Compile Include="Icmp\IcmpDomainNameRequestLayer.cs" />
+    <Compile Include="Icmp\IcmpEchoLayer.cs" />
+    <Compile Include="Icmp\IcmpEchoReplyLayer.cs" />
+    <Compile Include="Icmp\IcmpIdentifiedLayer.cs" />
+    <Compile Include="Icmp\IcmpInformationReplyLayer.cs" />
+    <Compile Include="Icmp\IcmpInformationRequestLayer.cs" />
+    <Compile Include="Icmp\IcmpLayer.cs" />
+    <Compile Include="Icmp\IcmpParameterProblemLayer.cs" />
+    <Compile Include="Icmp\IcmpRedirectLayer.cs" />
+    <Compile Include="Icmp\IcmpRouterAdvertisementLayer.cs" />
+    <Compile Include="Icmp\IcmpRouterSolicitationLayer.cs" />
+    <Compile Include="Icmp\IcmpSecurityFailuresLayer.cs" />
+    <Compile Include="Icmp\IcmpSourceQuenchLayer.cs" />
+    <Compile Include="Icmp\IcmpTimeExceededLayer.cs" />
+    <Compile Include="Icmp\IcmpTimestampLayer.cs" />
+    <Compile Include="Icmp\IcmpTimestampReplyLayer.cs" />
+    <Compile Include="Icmp\IcmpTracerouteLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskDatagram.cs" />
     <Compile Include="Icmp\IcmpCodeDestinationUnrechable.cs" />
     <Compile Include="Icmp\IcmpConversionFailedDatagram.cs" />
@@ -89,15 +112,33 @@
     <Compile Include="Icmp\IcmpMessageTypeAndCode.cs" />
     <Compile Include="Icmp\IcmpTypedDatagram.cs" />
     <Compile Include="IDataLink.cs" />
+    <Compile Include="Ethernet\IEthernetNextLayer.cs" />
+    <Compile Include="Igmp\IgmpLayer.cs" />
+    <Compile Include="Igmp\IgmpLeaveGroupVersion2Layer.cs" />
+    <Compile Include="Igmp\IgmpQueryVersion1Layer.cs" />
+    <Compile Include="Igmp\IgmpQueryVersion2Layer.cs" />
+    <Compile Include="Igmp\IgmpQueryVersion3Layer.cs" />
+    <Compile Include="Igmp\IgmpReportVersion1Layer.cs" />
+    <Compile Include="Igmp\IgmpReportVersion2Layer.cs" />
+    <Compile Include="Igmp\IgmpReportVersion3Layer.cs" />
+    <Compile Include="Igmp\IgmpSimpleLayer.cs" />
+    <Compile Include="Igmp\IgmpVersion1Layer.cs" />
+    <Compile Include="Igmp\IgmpVersion2Layer.cs" />
     <Compile Include="Igmp\IgmpDatagram.cs" />
     <Compile Include="Igmp\IgmpGroupRecord.cs" />
     <Compile Include="Igmp\IgmpGroupRecordDatagram.cs" />
     <Compile Include="Igmp\IgmpQueryVersion.cs" />
     <Compile Include="Igmp\IgmpRecordType.cs" />
     <Compile Include="Igmp\IgmpMessageType.cs" />
+    <Compile Include="Igmp\IIgmpLayerWithGroupAddress.cs" />
+    <Compile Include="IpV4\IIpV4NextLayer.cs" />
+    <Compile Include="IpV4\IIpV4NextTransportLayer.cs" />
+    <Compile Include="ILayer.cs" />
     <Compile Include="IOptionUnknownFactory.cs" />
+    <Compile Include="IpV4\IpV4Layer.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="IpV6\IpV6Address.cs" />
+    <Compile Include="Layer.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="IOptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
@@ -135,7 +176,11 @@
     <Compile Include="OptionTypeRegistrationAttribute.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
+    <Compile Include="PayloadLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleLayer.cs" />
+    <Compile Include="Transport\TcpLayer.cs" />
+    <Compile Include="Transport\TransportLayer.cs" />
     <Compile Include="Transport\TcpDatagram.cs" />
     <Compile Include="Transport\TcpControlBits.cs" />
     <Compile Include="Transport\TcpOption.cs" />
@@ -164,6 +209,7 @@
     <Compile Include="Transport\TcpOptionWindowScale.cs" />
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
+    <Compile Include="Transport\UdpLayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />
