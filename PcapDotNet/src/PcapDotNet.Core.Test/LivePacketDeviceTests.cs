@@ -7,6 +7,7 @@ using System.Threading;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
@@ -798,6 +799,7 @@ namespace PcapDotNet.Core.Test
             LivePacketDevice device = devices[0];
             MoreAssert.IsMatch(@"Network adapter '.*' on local host", device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
+            Assert.AreNotEqual(MacAddress.Zero, device.GetMacAddress());
             MoreAssert.IsInRange(1, 2, device.Addresses.Count);
             foreach (DeviceAddress address in device.Addresses)
             {

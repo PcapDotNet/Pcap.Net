@@ -575,7 +575,7 @@ namespace PcapDotNet.Packets.TestUtils
                         
         public static IcmpLayer NextIcmpLayer(this Random random)
         {
-            IcmpMessageType icmpMessageType = random.NextEnum<IcmpMessageType>(IcmpMessageType.DomainNameReply);
+            IcmpMessageType icmpMessageType = random.NextEnum(IcmpMessageType.DomainNameReply);
 
             switch (icmpMessageType)
             {
