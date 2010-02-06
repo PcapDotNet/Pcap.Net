@@ -1,75 +1,44 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
 {
-    public class IcmpRouterAdvertisementEntry
-    {
-        public IcmpRouterAdvertisementEntry(IpV4Address routerAddress, int routerAddressPreference)
-        {
-            _routerAddress = routerAddress;
-            _routerAddressPreference = routerAddressPreference;
-        }
-
-        public IpV4Address RouterAddress
-        {
-            get { return _routerAddress;}
-        }
-
-        public int RouterAddressPreference
-        {
-            get {return _routerAddressPreference; }
-        }
-
-        public bool Equals(IcmpRouterAdvertisementEntry other)
-        {
-            return other != null &&
-                   RouterAddress == other.RouterAddress &&
-                   RouterAddressPreference == other.RouterAddressPreference;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as IcmpRouterAdvertisementEntry);
-        }
-
-        private readonly IpV4Address _routerAddress;
-        private readonly int _routerAddressPreference;
-    }
-
     /// <summary>
     /// RFC 1256.
     /// <pre>
     /// +-----+-----------+-----------------+----------+
     /// | Bit | 0-7       | 8-15            | 16-31    |
     /// +-----+-----------+-----------------+----------+
-    /// | 0   | Num Addrs | Addr Entry Size | Lifetime |
+    /// | 0   | Type      | Code            | Checksum |
     /// +-----+-----------+-----------------+----------+
-    /// | 32  | Router Address[1]                      |
+    /// | 32  | Num Addrs | Addr Entry Size | Lifetime |
+    /// +-----+-----------+-----------------+----------+
+    /// | 64  | Router Address[1]                      |
     /// +-----+----------------------------------------+
-    /// | 64  | Preference Level[1]                    |
+    /// | 96  | Preference Level[1]                    |
     /// +-----+----------------------------------------+
-    /// | 96  | Router Address[2]                      |
+    /// | 128 | Router Address[2]                      |
     /// +-----+----------------------------------------+
-    /// | 128 | Preference Level[2]                    |
+    /// | 160 | Preference Level[2]                    |
     /// +-----+----------------------------------------+
     /// |  .  |                   .                    |
     /// |  .  |                   .                    |
     /// |  .  |                   .                    |
     /// </pre>
     /// </summary>
-    public class IcmpRouterAdvertisementDatagram : IcmpTypedDatagram
+    public class IcmpRouterAdvertisementDatagram : IcmpDatagram
     {
         public const int DefaultAddressEntrySize = 2;
 
         private class Offset
         {
-            public const int NumAddresses = 0;
-            public const int AddressEntrySize = 1;
-            public const int Lifetime = 2;
-            public const int Addresses = 4;
+            public const int NumAddresses = 4;
+            public const int AddressEntrySize = 5;
+            public const int Lifetime = 6;
+            public const int Addresses = 8;
         }
 
         /// <summary>
@@ -151,5 +120,14 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         private ReadOnlyCollection<IcmpRouterAdvertisementEntry> _entries;
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpRouterAdvertisementLayer
+                       {
+                           Checksum = Checksum,
+                           Lifetime = Lifetime,
+                           Entries = Entries.ToList()
+                       };
+        }
     }
 }

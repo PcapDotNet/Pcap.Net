@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.Icmp
         {
             get
             {
-                return base.Length + IcmpTracerouteDatagram.HeaderAdditionalLength;
+                return base.Length + IcmpTracerouteDatagram.PayloadLength;
             }
         }
 
@@ -45,7 +45,7 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        protected override void WriteHeaderAdditional(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             IcmpTracerouteDatagram.WriteHeaderAdditional(buffer, offset, OutboundHopCount, ReturnHopCount, OutputLinkSpeed, OutputLinkMtu);
         }

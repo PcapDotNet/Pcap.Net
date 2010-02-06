@@ -4,28 +4,30 @@ namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
     /// <pre>
+    /// +-----+------+------+-----------+
+    /// | Bit | 0-7  | 8-15 | 16-31     |
+    /// +-----+------+------+-----------+
+    /// | 0   | Type | Code | Checksum  |
+    /// +-----+------+------+-----------+
+    /// | 32  | unused                  |
     /// +-----+-------------------------+
-    /// | Bit | 0-31                    |
-    /// +-----+-------------------------+
-    /// | 0   | unused                  |
-    /// +-----+-------------------------+
-    /// | 32  | IpV4 datagram           |
+    /// | 64  | IpV4 datagram           |
     /// +-----+-------------------------+
     /// </pre>
     /// </summary>
-    public abstract class IcmpIpV4PayloadDatagram : IcmpTypedDatagram
+    public abstract class IcmpIpV4PayloadDatagram : IcmpDatagram
     {
         internal IcmpIpV4PayloadDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
 
-        protected IpV4Datagram IpV4Payload
+        protected IpV4Datagram IpV4
         {
             get
             {
-                if (_ipV4 == null && Length >= HeaderMinimumLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderMinimumLength, Length - HeaderMinimumLength);
+                if (_ipV4 == null && Length >= HeaderLength)
+                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
                 return _ipV4;
             }
         }

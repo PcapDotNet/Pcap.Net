@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -5,9 +6,11 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// <pre>
-    /// +-----+--------------------------+
-    /// | Bit | 0-31                     |
-    /// +-----+--------------------------+
+    /// +-----+------+------+------------+
+    /// | Bit | 0-7  | 8-15 | 16-31      |
+    /// +-----+------+------+------------+
+    /// | 0   | Type | Code | Checksum   |
+    /// +-----+------+------+------------+
     /// | 0   | Gateway Internet Address |
     /// +-----+--------------------------+
     /// | 32  | Internet Header          |
@@ -20,7 +23,7 @@ namespace PcapDotNet.Packets.Icmp
     {
         private class Offset
         {
-            public const int GatewayInternetAddress = 0;
+            public const int GatewayInternetAddress = 4;
         }
 
         /// <summary>
@@ -34,6 +37,16 @@ namespace PcapDotNet.Packets.Icmp
         internal IcmpRedirectDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
+        }
+
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpRedirectLayer
+                       {
+                           Code = (IcmpCodeRedirect)Code,
+                           Checksum = Checksum,
+                           GatewayInternetAddress = GatewayInternetAddress
+                       };
         }
     }
 }

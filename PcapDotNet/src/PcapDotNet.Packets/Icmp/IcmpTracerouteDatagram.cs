@@ -5,30 +5,32 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 1393.
     /// <pre>
+    /// +-----+------+-------------+------------------+
+    /// | Bit | 0-7  | 8-15        | 16-31            |
+    /// +-----+------+-------------+------------------+
+    /// | 0   | Type | Code        | Checksum         |
+    /// +-----+------+-------------+------------------+
+    /// | 32  | ID Number          | unused           |
     /// +-----+--------------------+------------------+
-    /// | Bit | 0-15               | 16-31            |
+    /// | 64  | Outbound Hop Count | Return Hop Count |
     /// +-----+--------------------+------------------+
-    /// | 0   | ID Number          | unused           |
-    /// +-----+--------------------+------------------+
-    /// | 32  | Outbound Hop Count | Return Hop Count |
-    /// +-----+--------------------+------------------+
-    /// | 64  | Output Link Speed                     |
+    /// | 96  | Output Link Speed                     |
     /// +-----+---------------------------------------+
-    /// | 96  | Output Link MTU                       |
+    /// | 128 | Output Link MTU                       |
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IcmpTracerouteDatagram : IcmpTypedDatagram
+    public class IcmpTracerouteDatagram : IcmpDatagram
     {
-        public const int HeaderAdditionalLength = 12;
+        public const int PayloadLength = 12;
 
         private class Offset
         {
-            public const int Identifier = 0;
-            public const int OutboundHopCount = 4;
-            public const int ReturnHopCount = 6;
-            public const int OutputLinkSpeed = 8;
-            public const int OutputLinkMtu = 12;
+            public const int Identifier = 4;
+            public const int OutboundHopCount = 8;
+            public const int ReturnHopCount = 10;
+            public const int OutputLinkSpeed = 12;
+            public const int OutputLinkMtu = 16;
         }
 
         /// <summary>
@@ -87,6 +89,20 @@ namespace PcapDotNet.Packets.Icmp
             buffer.Write(ref offset, returnHopCount, Endianity.Big);
             buffer.Write(ref offset, outputLinkSpeed, Endianity.Big);
             buffer.Write(offset, outputLinkMtu, Endianity.Big);
+        }
+
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpTracerouteLayer
+                       {
+                           Code = (IcmpCodeTraceroute)Code,
+                           Checksum = Checksum,
+                           Identification = Identification,
+                           OutboundHopCount = OutboundHopCount,
+                           ReturnHopCount = ReturnHopCount,
+                           OutputLinkSpeed = OutputLinkSpeed,
+                           OutputLinkMtu = OutputLinkMtu
+                       };
         }
     }
 }

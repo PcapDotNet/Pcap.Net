@@ -3,19 +3,21 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// <pre>
-    /// +-----+------------+-----------------+
-    /// | Bit | 0-15       | 16-31           |
-    /// +-----+------------+-----------------+
-    /// | 0   | Identifier | Sequence Number |
-    /// +-----+------------+-----------------+
+    /// +-----+------+------+-----------------+
+    /// | Bit | 0-7  | 8-15 | 16-31           |
+    /// +-----+------+------+-----------------+
+    /// | 0   | Type | Code | Checksum        |
+    /// +-----+------+------+-----------------+
+    /// | 32  | Identifier  | Sequence Number |
+    /// +-----+-------------+-----------------+
     /// </pre>
     /// </summary>
-    public class IcmpIdentifiedDatagram : IcmpTypedDatagram
+    public abstract class IcmpIdentifiedDatagram : IcmpDatagram
     {
         private class Offset
         {
-            public const int Identifier = 0;
-            public const int SequenceNumber = 2;
+            public const int Identifier = 4;
+            public const int SequenceNumber = 6;
         }
 
         /// <summary>
