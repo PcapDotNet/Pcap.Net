@@ -1,7 +1,6 @@
 using System;
-using PcapDotNet.Packets.Icmp;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.Icmp
 {
     public class IcmpTracerouteLayer : IcmpLayer
     {
