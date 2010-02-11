@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -22,7 +24,9 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpTracerouteDatagram : IcmpDatagram
     {
+        public const int DatagramLength = HeaderLength + PayloadLength;
         public const int PayloadLength = 12;
+        public const ushort OutboundReturnHopCountValue = 0xFFFF;
 
         private class Offset
         {
@@ -31,6 +35,11 @@ namespace PcapDotNet.Packets.Icmp
             public const int ReturnHopCount = 10;
             public const int OutputLinkSpeed = 12;
             public const int OutputLinkMtu = 16;
+        }
+
+        internal IcmpTracerouteDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         /// <summary>
@@ -78,9 +87,38 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUInt(Offset.OutputLinkMtu, Endianity.Big); }
         }
 
-        internal IcmpTracerouteDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        public bool IsOutbound
         {
+            get { return ReturnHopCount == OutboundReturnHopCountValue; }
+        }
+
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpTracerouteLayer
+            {
+                Code = (IcmpCodeTraceroute)Code,
+                Checksum = Checksum,
+                Identification = Identification,
+                OutboundHopCount = OutboundHopCount,
+                ReturnHopCount = ReturnHopCount,
+                OutputLinkSpeed = OutputLinkSpeed,
+                OutputLinkMtu = OutputLinkMtu
+            };
+        }
+
+        protected override bool CalculateIsValid()
+        {
+            return base.CalculateIsValid() && Length == DatagramLength;
+        }
+
+        protected override byte MinCodeValue
+        {
+            get { return _minCode; }
+        }
+
+        protected override byte MaxCodeValue
+        {
+            get { return _maxCode; }
         }
 
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, ushort outboundHopCount, ushort returnHopCount, uint outputLinkSpeed, uint outputLinkMtu)
@@ -91,18 +129,7 @@ namespace PcapDotNet.Packets.Icmp
             buffer.Write(offset, outputLinkMtu, Endianity.Big);
         }
 
-        public override ILayer ExtractLayer()
-        {
-            return new IcmpTracerouteLayer
-                       {
-                           Code = (IcmpCodeTraceroute)Code,
-                           Checksum = Checksum,
-                           Identification = Identification,
-                           OutboundHopCount = OutboundHopCount,
-                           ReturnHopCount = ReturnHopCount,
-                           OutputLinkSpeed = OutputLinkSpeed,
-                           OutputLinkMtu = OutputLinkMtu
-                       };
-        }
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeTraceroute).GetEnumValues<IcmpCodeTraceroute>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeTraceroute).GetEnumValues<IcmpCodeTraceroute>().Max();
     }
 }

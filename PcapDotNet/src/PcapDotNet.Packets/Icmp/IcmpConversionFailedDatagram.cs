@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -21,6 +24,8 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpConversionFailedDatagram : IcmpIpV4PayloadDatagram
     {
+        public const int OriginalDatagramLengthForUnsupportedTransportProtocol = 256;
+
         private class Offset
         {
             public const int Pointer = 4;
@@ -44,9 +49,46 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        protected override bool CalculateIsValid()
+        {
+            if (!base.CalculateIsValid())
+                return false;
+
+            IpV4Datagram ip = IpV4;
+
+            if ((IcmpCodeConversionFailed)Code == IcmpCodeConversionFailed.UnsupportedTransportProtocol)
+                return ip.Length == OriginalDatagramLengthForUnsupportedTransportProtocol;
+
+            switch (ip.Protocol)
+            {
+                case IpV4Protocol.Udp:
+                    return ip.Udp.Length >= UdpDatagram.HeaderLength;
+
+                case IpV4Protocol.Tcp:
+                    TcpDatagram tcp = ip.Tcp;
+                    return tcp.Length >= TcpDatagram.HeaderMinimumLength && tcp.Length >= tcp.HeaderLength;
+
+                default: // Todo: support more protocols
+                    return true;
+            }
+        }
+
+        protected override byte MinCodeValue
+        {
+            get { return _minCode; }
+        }
+
+        protected override byte MaxCodeValue
+        {
+            get { return _maxCode; }
+        }
+
         internal IcmpConversionFailedDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
+
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeConversionFailed).GetEnumValues<IcmpCodeConversionFailed>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeConversionFailed).GetEnumValues<IcmpCodeConversionFailed>().Max();
     }
 }

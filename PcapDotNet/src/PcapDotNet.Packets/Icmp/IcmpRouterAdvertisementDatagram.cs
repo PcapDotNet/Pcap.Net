@@ -99,6 +99,23 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        public override ILayer ExtractLayer()
+        {
+            return new IcmpRouterAdvertisementLayer
+            {
+                Checksum = Checksum,
+                Lifetime = Lifetime,
+                Entries = Entries.ToList()
+            };
+        }
+
+        protected override bool CalculateIsValid()
+        {
+            return base.CalculateIsValid() &&
+                   AddressEntrySize == DefaultAddressEntrySize &&
+                   Length == HeaderLength + NumAddresses * AddressEntrySize * IpV4Address.SizeOf;
+        }
+
         internal IcmpRouterAdvertisementDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -120,14 +137,5 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         private ReadOnlyCollection<IcmpRouterAdvertisementEntry> _entries;
-        public override ILayer ExtractLayer()
-        {
-            return new IcmpRouterAdvertisementLayer
-                       {
-                           Checksum = Checksum,
-                           Lifetime = Lifetime,
-                           Entries = Entries.ToList()
-                       };
-        }
     }
 }

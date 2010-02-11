@@ -6,6 +6,7 @@
     <CSharp>
       <FormatSettings>
         <ANONYMOUS_METHOD_DECLARATION_BRACES>NEXT_LINE</ANONYMOUS_METHOD_DECLARATION_BRACES>
+        <CASE_BLOCK_BRACES>NEXT_LINE</CASE_BLOCK_BRACES>
         <INDENT_SIZE>4</INDENT_SIZE>
         <MODIFIERS_ORDER IsNull="False">
           <Item>public</Item>
