@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -48,5 +50,18 @@ namespace PcapDotNet.Packets.Icmp
                            GatewayInternetAddress = GatewayInternetAddress
                        };
         }
+
+        protected override byte MinCodeValue
+        {
+            get { return _minCode; }
+        }
+
+        protected override byte MaxCodeValue
+        {
+            get { return _maxCode; }
+        }
+
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeRedirect).GetEnumValues<IcmpCodeRedirect>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeRedirect).GetEnumValues<IcmpCodeRedirect>().Max();
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -25,6 +27,11 @@ namespace PcapDotNet.Packets.Icmp
             public const int Pointer = 6;
         }
 
+        internal IcmpSecurityFailuresDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
         /// <summary>
         /// An offset into the Original Internet Headers that locates the most significant octet of the offending SPI.  
         /// Will be zero when no SPI is present.
@@ -34,19 +41,32 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUShort(Offset.Pointer, Endianity.Big); }
         }
 
-        internal IcmpSecurityFailuresDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         public override ILayer ExtractLayer()
         {
             return new IcmpSecurityFailuresLayer
-                       {
-                           Code = (IcmpCodeSecurityFailures)Code,
-                           Checksum = Checksum,
-                           Pointer = Pointer
-                       };
+            {
+                Code = (IcmpCodeSecurityFailures)Code,
+                Checksum = Checksum,
+                Pointer = Pointer
+            };
         }
+
+        protected override bool CalculateIsValid()
+        {
+            return base.CalculateIsValid() && Pointer < IpV4.Length;
+        }
+
+        protected override byte MinCodeValue
+        {
+            get { return _minCode; }
+        }
+
+        protected override byte MaxCodeValue
+        {
+            get { return _maxCode; }
+        }
+
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeSecurityFailures).GetEnumValues<IcmpCodeSecurityFailures>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeSecurityFailures).GetEnumValues<IcmpCodeSecurityFailures>().Max();
     }
 }

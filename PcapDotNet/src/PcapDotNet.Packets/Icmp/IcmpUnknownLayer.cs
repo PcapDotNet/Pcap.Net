@@ -17,10 +17,7 @@ namespace PcapDotNet.Packets.Icmp
 
         protected override uint Value
         {
-            get
-            {
-                return LayerValue;
-            }
+            get { return LayerValue; }
         }
 
         protected override void WritePayload(byte[] buffer, int offset)

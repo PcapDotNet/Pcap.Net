@@ -33,6 +33,11 @@ namespace PcapDotNet.Packets.Icmp
             public const int TransmitTimestamp = 16;
         }
 
+        internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
         /// <summary>
         /// The time the sender last touched the message before sending it.
         /// </summary>
@@ -70,9 +75,9 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
-        internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        protected override bool CalculateIsValid()
         {
+            return base.CalculateIsValid() && Length == DatagramLength;
         }
 
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4TimeOfDay originateTimestamp, IpV4TimeOfDay receiveTimestamp, IpV4TimeOfDay transmitTimestamp)

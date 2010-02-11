@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PcapDotNet.Packets
@@ -23,6 +24,10 @@ namespace PcapDotNet.Packets
             _dataLink = new DataLink(dataLinkKind.Value);
         }
 
+        public PacketBuilder(IEnumerable<ILayer> layers)
+            :this(layers.ToArray())
+        {
+        }
 
         public Packet Build(DateTime timestamp)
         {

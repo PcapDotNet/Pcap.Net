@@ -47,5 +47,10 @@ namespace PcapDotNet.Packets.Icmp
                            Pointer = Pointer
                        };
         }
+
+        protected override bool CalculateIsValid()
+        {
+            return base.CalculateIsValid() && Pointer < IpV4.Length;
+        }
     }
 }

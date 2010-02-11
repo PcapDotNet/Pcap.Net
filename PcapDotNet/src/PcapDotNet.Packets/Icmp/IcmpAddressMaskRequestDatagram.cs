@@ -40,11 +40,6 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
-        internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4Address addressMask)
-        {
-            buffer.Write(offset, addressMask, Endianity.Big);
-        }
-
         public override ILayer ExtractLayer()
         {
             return new IcmpAddressMaskRequestLayer
@@ -55,24 +50,15 @@ namespace PcapDotNet.Packets.Icmp
                            AddressMask = AddressMask,
                        };
         }
-    }
 
-    public class IcmpAddressMaskReplyDatagram : IcmpAddressMaskRequestDatagram
-    {
-        internal IcmpAddressMaskReplyDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        protected override bool CalculateIsValid()
         {
+            return base.CalculateIsValid() && Length == DatagramLength;
         }
 
-        public override ILayer ExtractLayer()
+        internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4Address addressMask)
         {
-            return new IcmpAddressMaskReplyLayer
-                       {
-                           Checksum = Checksum,
-                           Identifier = Identifier,
-                           SequenceNumber = SequenceNumber,
-                           AddressMask = AddressMask
-                       };
+            buffer.Write(offset, addressMask, Endianity.Big);
         }
     }
 }

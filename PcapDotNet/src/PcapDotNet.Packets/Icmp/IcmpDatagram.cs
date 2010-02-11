@@ -116,14 +116,17 @@ namespace PcapDotNet.Packets.Icmp
 
         protected override bool CalculateIsValid()
         {
-            if (Length < HeaderLength || !IsChecksumCorrect)
-                return false;
+            return Length >= HeaderLength && IsChecksumCorrect && Code >= MinCodeValue && Code <= MaxCodeValue;
+        }
 
-            switch (MessageType)
-            {
-                default:
-                    return false;
-            }
+        protected virtual byte MinCodeValue
+        {
+            get { return 0; }
+        }
+
+        protected virtual byte MaxCodeValue
+        {
+            get { return 0; }
         }
 
         private ushort CalculateChecksum()

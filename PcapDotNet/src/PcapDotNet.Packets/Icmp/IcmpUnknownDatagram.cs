@@ -18,5 +18,15 @@ namespace PcapDotNet.Packets.Icmp
                            Payload = Payload
                        };
         }
+
+        protected override byte MinCodeValue
+        {
+            get { return byte.MinValue; }
+        }
+
+        protected override byte MaxCodeValue
+        {
+            get { return byte.MaxValue; }
+        }
     }
 }

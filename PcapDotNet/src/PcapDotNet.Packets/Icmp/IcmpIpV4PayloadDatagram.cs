@@ -32,6 +32,15 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        protected override bool CalculateIsValid()
+        {
+            if (!base.CalculateIsValid())
+                return false;
+
+            IpV4Datagram ip = IpV4;
+            return (ip.Length >= IpV4Datagram.HeaderMinimumLength && ip.Length >= ip.HeaderLength);
+        }
+
         private IpV4Datagram _ipV4;
     }
 }

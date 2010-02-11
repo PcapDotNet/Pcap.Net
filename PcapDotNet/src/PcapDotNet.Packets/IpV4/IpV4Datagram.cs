@@ -387,6 +387,9 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4Protocol.InternetGroupManagementProtocol:
                     return Igmp.IsValid;
 
+                case IpV4Protocol.InternetControlMessageProtocol:
+                    return Icmp.IsValid;
+
                 default:
                     // Todo check more protocols
                     return true;

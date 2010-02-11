@@ -73,8 +73,14 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="Arp\IArpPreviousLayer.cs" />
+    <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskRequestLayer.cs" />
+    <Compile Include="Icmp\IcmpCodeConversionFailed.cs" />
+    <Compile Include="Icmp\IcmpCodeRedirect.cs" />
+    <Compile Include="Icmp\IcmpCodeSecurityFailures.cs" />
+    <Compile Include="Icmp\IcmpCodeTimeExceeded.cs" />
+    <Compile Include="Icmp\IcmpCodeTraceroute.cs" />
     <Compile Include="Icmp\IcmpConversionFailedLayer.cs" />
     <Compile Include="Icmp\IcmpDestinationUnreachableDatagram.cs" />
     <Compile Include="Icmp\IcmpDestinationUnreachableLayer.cs" />
@@ -119,7 +125,6 @@
     <Compile Include="Icmp\IcmpTracerouteDatagram.cs" />
     <Compile Include="Icmp\IcmpMessageType.cs" />
     <Compile Include="Icmp\IcmpMessageTypeAndCode.cs" />
-    <Compile Include="Icmp\IcmpTypedDatagram.cs" />
     <Compile Include="Icmp\IcmpUnknownDatagram.cs" />
     <Compile Include="Icmp\IcmpUnknownLayer.cs" />
     <Compile Include="IDataLink.cs" />

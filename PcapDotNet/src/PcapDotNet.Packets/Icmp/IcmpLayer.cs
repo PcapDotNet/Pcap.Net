@@ -10,6 +10,14 @@ namespace PcapDotNet.Packets.Icmp
         {
             get { return 0; }
         }
+        public IcmpMessageTypeAndCode MessageTypeAndCode 
+        {
+            get 
+            {
+                return (IcmpMessageTypeAndCode)(((ushort)MessageType << 8) | CodeValue);
+            }
+        }
+
         public ushort? Checksum { get; set; }
         protected virtual uint Value 
         { 
