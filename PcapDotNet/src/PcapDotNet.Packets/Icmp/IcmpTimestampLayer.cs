@@ -12,11 +12,11 @@ namespace PcapDotNet.Packets.Icmp
             get { return IcmpMessageType.Timestamp; }
         }
 
-        public override int Length
+        protected override int PayloadLength
         {
             get
             {
-                return base.Length + IcmpTimestampDatagram.PayloadLength;
+                return IcmpTimestampDatagram.PayloadLength;
             }
         }
 

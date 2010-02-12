@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -30,6 +32,5 @@ namespace PcapDotNet.Packets.Icmp
                            Checksum = Checksum
                        };
         }
-
     }
 }

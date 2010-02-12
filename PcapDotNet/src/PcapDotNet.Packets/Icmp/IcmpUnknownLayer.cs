@@ -15,6 +15,22 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        public override byte CodeValue
+        {
+            get
+            {
+                return LayerCode;
+            }
+        }
+
+        protected override int PayloadLength
+        {
+            get
+            {
+                return Payload.Length;
+            }
+        }
+
         protected override uint Value
         {
             get { return LayerValue; }

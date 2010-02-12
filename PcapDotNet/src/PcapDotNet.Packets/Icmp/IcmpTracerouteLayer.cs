@@ -21,11 +21,11 @@ namespace PcapDotNet.Packets.Icmp
             get { return IcmpMessageType.Traceroute; }
         }
 
-        public override int Length
+        protected override int PayloadLength
         {
             get
             {
-                return base.Length + IcmpTracerouteDatagram.PayloadLength;
+                return IcmpTracerouteDatagram.PayloadLength;
             }
         }
 

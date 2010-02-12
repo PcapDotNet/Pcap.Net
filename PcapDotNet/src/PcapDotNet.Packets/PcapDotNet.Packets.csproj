@@ -99,6 +99,7 @@
     <Compile Include="Icmp\IcmpRedirectLayer.cs" />
     <Compile Include="Icmp\IcmpRouterAdvertisementEntry.cs" />
     <Compile Include="Icmp\IcmpRouterAdvertisementLayer.cs" />
+    <Compile Include="Icmp\IcmpRouterSolicitationDatagram.cs" />
     <Compile Include="Icmp\IcmpRouterSolicitationLayer.cs" />
     <Compile Include="Icmp\IcmpSecurityFailuresLayer.cs" />
     <Compile Include="Icmp\IcmpSourceQuenchDatagram.cs" />

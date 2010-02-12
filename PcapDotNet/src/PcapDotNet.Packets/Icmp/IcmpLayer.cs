@@ -24,9 +24,14 @@ namespace PcapDotNet.Packets.Icmp
             get { return 0; }
         }
 
-        public override int Length
+        public override sealed int Length
         {
-            get { return IcmpDatagram.HeaderLength; } 
+            get { return IcmpDatagram.HeaderLength + PayloadLength; } 
+        }
+
+        protected virtual int PayloadLength
+        {
+            get { return 0; }
         }
 
         protected override sealed void Write(byte[] buffer, int offset)

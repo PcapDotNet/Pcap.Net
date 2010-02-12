@@ -208,6 +208,8 @@ namespace PcapDotNet.Packets.Icmp
                     return new IcmpSecurityFailuresDatagram(buffer, offset, length);
 
                 case IcmpMessageType.RouterSolicitation:
+                    return new IcmpRouterSolicitationDatagram(buffer, offset, length);
+
                 case IcmpMessageType.DomainNameReply: // Domain Name Reply is unsupported
                 default:
                     return new IcmpUnknownDatagram(buffer, offset, length);
