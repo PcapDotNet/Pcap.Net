@@ -121,7 +121,7 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
-        internal static int GetHeaderAdditionalLength(int numEntries)
+        internal static int GetPayloadLength(int numEntries)
         {
             return numEntries * DefaultAddressEntrySize * IpV4Address.SizeOf;
         }

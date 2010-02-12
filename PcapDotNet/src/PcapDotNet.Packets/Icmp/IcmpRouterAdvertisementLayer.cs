@@ -24,11 +24,11 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        public override int Length
+        protected override int PayloadLength
         {
             get
             {
-                return base.Length + IcmpRouterAdvertisementDatagram.GetHeaderAdditionalLength(Entries.Count);
+                return IcmpRouterAdvertisementDatagram.GetPayloadLength(Entries.Count);
             }
         }
 

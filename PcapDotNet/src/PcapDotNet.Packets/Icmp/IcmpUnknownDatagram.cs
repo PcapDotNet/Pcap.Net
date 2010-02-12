@@ -19,14 +19,9 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
-        protected override byte MinCodeValue
+        protected override bool CalculateIsValid()
         {
-            get { return byte.MinValue; }
-        }
-
-        protected override byte MaxCodeValue
-        {
-            get { return byte.MaxValue; }
+            return false;
         }
     }
 }

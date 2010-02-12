@@ -11,11 +11,11 @@ namespace PcapDotNet.Packets.Icmp
             get { return IcmpMessageType.AddressMaskRequest; }
         }
 
-        public override int Length
+        protected override int PayloadLength
         {
             get
             {
-                return base.Length + IcmpAddressMaskRequestDatagram.PayloadLength;
+                return IcmpAddressMaskRequestDatagram.PayloadLength;
             }
         }
 
