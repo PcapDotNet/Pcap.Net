@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6C7326EB-F230-4934-B74B-F99F87204E44}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -54,7 +54,9 @@
     <Compile Include="IpV4Tests.cs" />
     <Compile Include="IpV6AddressTests.cs" />
     <Compile Include="MacAddressTests.cs" />
+    <Compile Include="PacketBuilderTests.cs" />
     <Compile Include="PacketTests.cs" />
+    <Compile Include="PayloadLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IpV4AddressTests.cs" />
     <Compile Include="TcpTests.cs" />

@@ -25,24 +25,12 @@ namespace PcapDotNet.Packets.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
+        public TestContext TestContext{ get; set;}
+        
         #region Additional test attributes
         //
         // You can use the following additional attributes as you write your tests:
@@ -100,6 +88,14 @@ namespace PcapDotNet.Packets.Test
                 // IGMP
                 Assert.IsTrue(packet.Ethernet.IpV4.Igmp.IsChecksumCorrect);
                 Assert.AreEqual(igmpLayer, packet.Ethernet.IpV4.Igmp.ExtractLayer(), "IGMP Layer");
+                Assert.AreNotEqual(igmpLayer, null);
+                Assert.AreNotEqual(igmpLayer, random.NextPayloadLayer(igmpLayer.Length));
+                if (packet.Ethernet.IpV4.Igmp.QueryVersion != IgmpQueryVersion.Version3)
+                    MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.IpV4.Igmp.MaxResponseTime);
+                if (packet.Ethernet.IpV4.Igmp.MessageType != IgmpMessageType.MembershipQuery)
+                    Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.IpV4.Igmp.QueryVersion);
+                foreach (IgmpGroupRecordDatagram groupRecord in packet.Ethernet.IpV4.Igmp.GroupRecords)
+                    Assert.IsNotNull(groupRecord.ToString());
             }
         }
 
@@ -356,6 +352,30 @@ namespace PcapDotNet.Packets.Test
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, new IpV4Address("1.2.3.4"), record.SourceAddresses, record.AuxiliaryData));
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, record.MulticastAddress, new List<IpV4Address>(new[] {new IpV4Address("2.3.4.5")}), record.AuxiliaryData));
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, record.MulticastAddress, record.SourceAddresses, new Datagram(new byte[12])));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void IgmpExtractLayerBadMessageTypeTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
+            Assert.IsNotNull(packet.Ethernet.IpV4.Igmp.ExtractLayer());
+            byte[] buffer = (byte[])packet.Buffer.Clone();
+            buffer[packet.Length - packet.Ethernet.IpV4.Igmp.Length] = 0xFF;
+            packet = new Packet(buffer, DateTime.Now, packet.DataLink);
+            Assert.IsFalse(packet.IsValid);
+            Assert.IsNotNull(packet.Ethernet.IpV4.Igmp.ExtractLayer());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IgmpTooBigQueryRobustnessVariableTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion3Layer
+                                                                                                        {
+                                                                                                            QueryRobustnessVariable = 255
+                                                                                                        });
+            Assert.IsNull(packet);
         }
     }
 }

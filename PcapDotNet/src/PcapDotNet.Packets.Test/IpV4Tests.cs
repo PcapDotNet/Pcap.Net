@@ -24,23 +24,11 @@ namespace PcapDotNet.Packets.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext{ get; set;}
 
         #region Additional test attributes
         //
@@ -135,6 +123,9 @@ namespace PcapDotNet.Packets.Test
                 // IpV4
                 ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                Assert.AreNotEqual(ipV4Layer, null);
+                Assert.AreNotEqual(ipV4Layer, new PayloadLayer());
+                Assert.IsNotNull(ipV4Layer.ToString());
                 Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Layer.Options.BytesLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreNotEqual(2, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
@@ -150,6 +141,7 @@ namespace PcapDotNet.Packets.Test
                 }
                 Assert.AreEqual(true, packet.Ethernet.IpV4.IsHeaderChecksumCorrect, "IP HeaderChecksumCorrect");
                 Assert.AreNotEqual(null, packet.Ethernet.IpV4.Options, "IP Options");
+                Assert.AreNotEqual(packet.Ethernet.IpV4.Options, null, "IP Options");
                 Assert.AreNotEqual(new IpV4Options(new IpV4OptionUnknown(0, new byte[35])), packet.Ethernet.IpV4.Options, "IP Options");
                 Assert.AreEqual(ipV4Layer.Options.GetHashCode(), packet.Ethernet.IpV4.Options.GetHashCode(), "IP Options HashCode");
                 Assert.IsNotNull(packet.Ethernet.IpV4.Options.ToString());
@@ -564,6 +556,44 @@ namespace PcapDotNet.Packets.Test
                     DataLinkKind.Ethernet);
 
             Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
+        }
+
+        [TestMethod]
+        public void IpV4BrokenOptionTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(),
+                                                new IpV4Layer
+                                                    {
+                                                        Options = new IpV4Options(IpV4Option.Nop, IpV4Option.Nop,
+                                                                                  IpV4Option.Nop, IpV4Option.Nop),
+                                                        Protocol = IpV4Protocol.Tcp
+                                                    });
+
+            byte[] buffer = (byte[])packet.Buffer.Clone();
+            buffer[buffer.Length - 1] = (byte)IpV4OptionType.BasicSecurity;
+            packet = new Packet(buffer, DateTime.Now, packet.DataLink);
+            Assert.IsFalse(packet.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4NoNextLayerTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new IpV4Layer());
+            Assert.IsNull(packet);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV4BadNextLayerTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new IpV4Layer(),
+                                                new PayloadLayer());
+            Assert.IsNull(packet);
         }
 
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)

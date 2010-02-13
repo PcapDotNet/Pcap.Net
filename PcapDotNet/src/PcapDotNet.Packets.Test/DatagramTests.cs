@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
 
 namespace PcapDotNet.Packets.Test
@@ -19,23 +20,11 @@ namespace PcapDotNet.Packets.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext{ get; set;}
 
         #region Additional test attributes
         //
@@ -89,6 +78,28 @@ namespace PcapDotNet.Packets.Test
                 foreach (byte b in enumerable)
                     Assert.AreEqual(datagram[offset++], b);
             }
+        }
+
+        [TestMethod]
+        public void DatagramExtractLayerTest()
+        {
+            PayloadLayer payloadLayer = new PayloadLayer
+                                            {
+                                                Data = new Datagram(new byte[] {100, 101, 102})
+                                            };
+
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer
+                                                                  {
+                                                                      EtherType = EthernetType.IpV4
+                                                                  }, payloadLayer);
+            Assert.AreEqual(payloadLayer, packet.Ethernet.Payload.ExtractLayer());
+        }
+
+        [TestMethod]
+        public void DatagramCalculateIsValidTest()
+        {
+            Datagram data = new Datagram(new byte[]{1,2,3});
+            Assert.IsTrue(data.IsValid);
         }
     }
 }

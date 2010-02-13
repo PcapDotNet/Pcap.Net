@@ -199,7 +199,8 @@ namespace PcapDotNet.Packets.IpV4
                 if (_isTransportChecksumCorrect == null)
                 {
                     ushort transportChecksum = Transport.Checksum;
-                    _isTransportChecksumCorrect = (Transport.IsChecksumOptional && transportChecksum == 0) ||
+                    _isTransportChecksumCorrect = Length >= TotalLength &&
+                                                  (Transport.IsChecksumOptional && transportChecksum == 0) ||
                                                   (CalculateTransportChecksum() == transportChecksum);
                 }
                 return _isTransportChecksumCorrect.Value;

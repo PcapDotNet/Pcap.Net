@@ -44,7 +44,12 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public Datagram Payload
         {
-            get { return IpV4; }
+            get
+            {
+                if (_payload == null && Length >= HeaderLength)
+                    _payload = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                return _payload;
+            }
         }
 
         /// <summary>
@@ -158,6 +163,7 @@ namespace PcapDotNet.Packets.Ethernet
         }
 
         private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");
+        private Datagram _payload;
         private IpV4Datagram _ipV4;
         private ArpDatagram _arp;
     }
