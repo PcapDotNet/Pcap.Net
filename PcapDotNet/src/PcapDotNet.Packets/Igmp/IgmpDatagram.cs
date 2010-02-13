@@ -482,16 +482,6 @@ namespace PcapDotNet.Packets.Igmp
 
         public override ILayer ExtractLayer()
         {
-//            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None);
-//            IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
-//            TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
-//            IpV4Address igmpGroupAddress = random.NextIpV4Address();
-//            bool? igmpIsSuppressRouterSideProcessing = null;
-//            byte? igmpQueryRobustnessVariable = null;
-//            TimeSpan? igmpQueryInterval = null;
-//            IpV4Address[] igmpSourceAddresses = null;
-//            IgmpGroupRecord[] igmpGroupRecords = null;
-
             switch (MessageType)
             {
                 case IgmpMessageType.MembershipQuery:

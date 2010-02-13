@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets
 {
-    internal sealed class OptionComplexFactory<TOptionType> : OptionComplexFactoryBase
+    internal static class OptionComplexFactory<TOptionType>// : OptionComplexFactoryBase
     {
+        /// <summary>
+        /// The header length in bytes for the option (type and size).
+        /// </summary>
+        public const int OptionHeaderLength = 2;
+
         internal static Option Read(TOptionType optionType, byte[] buffer, ref int offset, int length)
         {
             if (length < 1)
@@ -65,9 +71,11 @@ namespace PcapDotNet.Packets
             return registraionAttributes.First();
         }
 
-        private OptionComplexFactory()
-        {
-        }
+//        [DebuggerHidden]
+//        private OptionComplexFactory()
+//        {
+//            throw new NotImplementedException();
+//        }
 
         private static readonly Dictionary<TOptionType, IOptionComplexFactory> _complexOptions = InitializeComplexOptions();
         private static readonly IOptionUnknownFactory<TOptionType> UnknownFactoryOptionPrototype = InitializeUnknownOptionPrototype();

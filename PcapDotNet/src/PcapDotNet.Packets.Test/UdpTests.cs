@@ -21,23 +21,11 @@ namespace PcapDotNet.Packets.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext{ get; set;}
 
         #region Additional test attributes
         //
@@ -115,6 +103,24 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now, DataLinkKind.Ethernet);
 
             Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect);
+        }
+
+        [TestMethod]
+        public void UdpZeroChecksumTest()
+        {
+            byte[] payload = new byte[2];
+            payload.Write(0, (ushort)65498, Endianity.Big);
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
+                                                new UdpLayer
+                                                    {
+                                                        CalculateChecksum = true
+                                                    },
+                                                new PayloadLayer
+                                                    {
+                                                        Data = new Datagram(payload)
+                                                    });
+            Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect);
+            Assert.AreEqual(0xFFFF, packet.Ethernet.IpV4.Udp.Checksum);
         }
     }
 }

@@ -38,23 +38,11 @@ namespace PcapDotNet.Core.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext{ get; set;}
 
         #region Additional test attributes
         //
@@ -825,7 +813,8 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     default:
-                        if (!field.Name().StartsWith("lt2p."))
+                        if (!field.Name().StartsWith("lt2p.") &&
+                            !field.Name().StartsWith("pweth."))
                             throw new InvalidOperationException("Invalid icmp field " + field.Name());
                         break;
                 }
@@ -900,7 +889,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "udp.checksum_coverage":
-                        field.AssertShowDecimal(udpDatagram.Length);
+                        field.AssertShowDecimal(udpDatagram.TotalLength);
                         break;
 
                     default:

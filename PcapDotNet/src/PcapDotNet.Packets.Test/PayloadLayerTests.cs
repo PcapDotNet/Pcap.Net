@@ -1,17 +1,18 @@
 using System;
-using System.Globalization;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.TestUtils;
+using PcapDotNet.Base;
+using PcapDotNet.Packets.TestUtils;
 
-namespace PcapDotNet.Base.Test
+namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for UInt24Tests
+    /// Summary description for PayloadLayerTests
     /// </summary>
     [TestClass]
-    public class UInt24Tests
+    public class PayloadLayerTests
     {
-        public UInt24Tests()
+        public PayloadLayerTests()
         {
             //
             // TODO: Add constructor logic here
@@ -22,7 +23,7 @@ namespace PcapDotNet.Base.Test
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext{ get; set;}
+        public TestContext TestContext { get; set;}
 
         #region Additional test attributes
         //
@@ -47,18 +48,29 @@ namespace PcapDotNet.Base.Test
         #endregion
 
         [TestMethod]
-        public void UInt24Test()
+        public void PayloadLayerEqualsTest()
         {
             Random random = new Random();
+
             for (int i = 0; i != 1000; ++i)
             {
-                UInt24 value = random.NextUInt24();
-
-                Assert.AreEqual(value, value);
-                Assert.IsTrue(value == value);
-                Assert.IsFalse(value != value);
-                Assert.IsNotNull(value.GetHashCode());
-                Assert.AreEqual(((int)value).ToString(), value.ToString());
+                PayloadLayer layer = random.NextPayloadLayer(random.Next(100));
+                Assert.AreNotEqual(layer, null);
+                Assert.AreEqual(layer, new PayloadLayer
+                                           {
+                                               Data = layer.Data
+                                           });
+                Assert.AreNotEqual(layer, new PayloadLayer
+                                              {
+                                                  Data = new Datagram(layer.Data.Concat<byte>(1).ToArray())
+                                              });
+                if (layer.Length != 0)
+                {
+                    Assert.AreNotEqual(layer, new PayloadLayer
+                                                  {
+                                                      Data = random.NextDatagram(layer.Length)
+                                                  });
+                }
             }
         }
     }
