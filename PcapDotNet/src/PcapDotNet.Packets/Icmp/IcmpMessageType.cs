@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Icmp
         /// Codes 2 and 3 may be received from a host.
         /// </para>
         /// </summary>
-        DestinationUnreachable = 3,
+        DestinationUnreachable = 0x03,
 
         /// <summary>
         /// RFC 792.
