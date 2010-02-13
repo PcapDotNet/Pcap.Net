@@ -28,6 +28,7 @@ void PacketCommunicator::DataLink::set(PcapDataLink value)
 ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
     throw gcnew NotSupportedException("Supported DataLinks is unsupported to avoid winpcap memory leak");
+//	pcap_free_datalinks(NULL);
 /*
     int* dataLinks;
     int numDatalinks = pcap_list_datalinks(_pcapDescriptor, &dataLinks);

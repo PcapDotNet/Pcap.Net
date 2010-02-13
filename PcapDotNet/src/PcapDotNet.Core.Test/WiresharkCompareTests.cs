@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
@@ -108,6 +110,7 @@ namespace PcapDotNet.Core.Test
             Arp,
             IpV4,
             Igmp,
+            Icmp,
             Udp,
             Tcp
         }
@@ -137,6 +140,13 @@ namespace PcapDotNet.Core.Test
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextIgmpLayer());
+
+                case PacketType.Icmp:
+                    ethernetLayer.EtherType = EthernetType.None;
+                    ipV4Layer.Protocol = null;
+                    IcmpLayer icmpLayer = random.NextIcmpLayer();
+                    IEnumerable<ILayer> icmpPayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
+                    return PacketBuilder.Build(packetTimestamp, new ILayer[]{ethernetLayer, ipV4Layer, icmpLayer}.Concat(icmpPayloadLayers));
 
                 case PacketType.Udp:
                     ethernetLayer.EtherType = EthernetType.None;
@@ -220,7 +230,14 @@ namespace PcapDotNet.Core.Test
                 packetEnumerator.MoveNext();
                 Packet packet = packetEnumerator.Current;
 
-                ComparePacket(packet, documentPacket);
+                try
+                {
+                    ComparePacket(packet, documentPacket);
+                }
+                catch (Exception e)
+                {
+                    throw new AssertFailedException("Failed comparing packet " + i + ". " + e.Message, e);
+                }
                 ++i;
             }
         }
@@ -228,7 +245,12 @@ namespace PcapDotNet.Core.Test
         private static void ComparePacket(Packet packet, XElement documentPacket)
         {
             object currentDatagram = packet;
-            foreach (var layer in documentPacket.Elements("proto"))
+            CompareProtocols(currentDatagram, documentPacket);
+        }
+
+        private static void CompareProtocols(object currentDatagram, XElement layersContainer)
+        {
+            foreach (var layer in layersContainer.Protocols())
             {
                 switch (layer.Name())
                 {
@@ -236,7 +258,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "frame":
-                        CompareFrame(layer, packet);
+                        CompareFrame(layer, (Packet)currentDatagram);
                         break;
 
                     case "eth":
@@ -269,6 +291,14 @@ namespace PcapDotNet.Core.Test
                             break;
                         currentDatagram = igmpProperty.GetValue(currentDatagram);
                         CompareIgmp(layer, (IgmpDatagram)currentDatagram);
+                        break;
+
+                    case "icmp":
+                        PropertyInfo icmpProperty = currentDatagram.GetType().GetProperty("Icmp");
+                        if (icmpProperty == null)
+                            break;
+                        currentDatagram = icmpProperty.GetValue(currentDatagram);
+                        CompareIcmp(layer, (IcmpDatagram)currentDatagram);
                         break;
 
                     case "udp":
@@ -379,12 +409,12 @@ namespace PcapDotNet.Core.Test
 
                     case "arp.src.hw":
                     case "arp.src.hw_mac":
-                        field.AssertShow(arpDatagram.SenderHardwareAddress.BytesSequenceToHexadecimalString(":"));
+                        field.AssertShow(arpDatagram.SenderHardwareAddress);
                         break;
 
 
                     case "arp.src.proto":
-                        field.AssertShow(arpDatagram.SenderProtocolAddress.BytesSequenceToHexadecimalString(":"));
+                        field.AssertShow(arpDatagram.SenderProtocolAddress);
                         break;
 
                     case "arp.src.proto_ipv4":
@@ -393,11 +423,11 @@ namespace PcapDotNet.Core.Test
 
                     case "arp.dst.hw":
                     case "arp.dst.hw_mac":
-                        field.AssertShow(arpDatagram.TargetHardwareAddress.BytesSequenceToHexadecimalString(":"));
+                        field.AssertShow(arpDatagram.TargetHardwareAddress);
                         break;
 
                     case "arp.dst.proto":
-                        field.AssertShow(arpDatagram.TargetProtocolAddress.BytesSequenceToHexadecimalString(":"));
+                        field.AssertShow(arpDatagram.TargetProtocolAddress);
                         break;
 
                     case "arp.dst.proto_ipv4":
@@ -607,7 +637,12 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             default:
-                                throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
+                                if (typeof(IgmpMessageType).GetEnumValues<IgmpMessageType>().Contains(igmpDatagram.MessageType))
+                                    throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
+
+                                field.AssertValue(igmpDatagram.Skip(1));
+//                                field.AssertShow(igmpDatagram.Skip(1));
+                                break;
                         }
 
                         break;
@@ -666,13 +701,154 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "igmp.aux_data":
-                        field.AssertShow(groupRecordDatagram.AuxiliaryData.BytesSequenceToHexadecimalString(":"));
+                        field.AssertShow(groupRecordDatagram.AuxiliaryData);
                         break;
 
                     default:
                         throw new InvalidOperationException("Invalid igmp group record field " + field.Name());
                 }
             }
+        }
+
+        private static void CompareIcmp(XElement icmp, IcmpDatagram icmpDatagram)
+        {
+            int routerIndex = 0;
+            foreach (var field in icmp.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "icmp.type":
+                        field.AssertShowDecimal((byte)icmpDatagram.MessageType);
+                        break;
+
+                    case "icmp.code":
+                        field.AssertShowHex(icmpDatagram.Code);
+                        break;
+
+                    case "icmp.checksum_bad":
+                        field.AssertShowDecimal(!icmpDatagram.IsChecksumCorrect);
+                        break;
+
+                    case "icmp.checksum":
+                        field.AssertShowHex(icmpDatagram.Checksum);
+                        break;
+
+                    case "data":
+                        field.AssertValue(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload);
+                        break;
+
+                    case "data.data":
+                        field.AssertShow(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload);
+                        break;
+
+                    case "data.len":
+                        field.AssertShowDecimal(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload.Length);
+                        break;
+
+                    case "":
+                        switch (icmpDatagram.MessageType)
+                        {
+                            case IcmpMessageType.ParameterProblem:
+                                if (field.Show() != "Unknown session type")
+                                    field.AssertShow("Pointer: " + ((IcmpParameterProblemDatagram)icmpDatagram).Pointer);
+                                break;
+
+                            case IcmpMessageType.RouterAdvertisement:
+                                IcmpRouterAdvertisementDatagram routerAdvertisementDatagram = (IcmpRouterAdvertisementDatagram)icmpDatagram;
+                                string fieldName = field.Show().Split(':')[0];
+                                switch (fieldName)
+                                {
+                                    case "Number of addresses":
+                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.NumAddresses);
+                                        break;
+
+                                    case "Address entry size":
+                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.AddressEntrySize);
+                                        break;
+
+                                    case "Lifetime":
+                                        TimeSpan actualLifetime = routerAdvertisementDatagram.Lifetime;
+                                        StringBuilder actualLifetimeString = new StringBuilder(fieldName + ": ");
+                                        if (actualLifetime.Hours != 0)
+                                        {
+                                            actualLifetimeString.Append(actualLifetime.Hours + " hour");
+                                            if (actualLifetime.Hours != 1)
+                                                actualLifetimeString.Append('s');
+                                        }
+                                        if (actualLifetime.Minutes != 0)
+                                        {
+                                            if (actualLifetime.Hours != 0)
+                                                actualLifetimeString.Append(", ");
+                                            actualLifetimeString.Append(actualLifetime.Minutes + " minute");
+                                            if (actualLifetime.Minutes != 1)
+                                                actualLifetimeString.Append('s');
+                                        }
+                                        if (actualLifetime.Seconds != 0)
+                                        {
+                                            if (actualLifetime.Hours != 0 || actualLifetime.Minutes != 0)
+                                                actualLifetimeString.Append(", ");
+                                            actualLifetimeString.Append(actualLifetime.Seconds + " second");
+                                            if (actualLifetime.Seconds != 1)
+                                                actualLifetimeString.Append('s');
+                                        }
+                                        break;
+
+                                    case "Router address":
+                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.Entries[routerIndex].RouterAddress);
+                                        break;
+
+                                    case "Preference level":
+                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.Entries[routerIndex++].RouterAddressPreference);
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException("Invalid icmp " + icmpDatagram.MessageType + " field " + fieldName);
+                                }
+                                break;
+                        }
+                        break;
+
+                    case "icmp.ident":
+                        field.AssertShowHex(((IcmpIdentifiedDatagram)icmpDatagram).Identifier);
+                        break;
+
+                    case "icmp.seq":
+                        field.AssertShowDecimal(((IcmpIdentifiedDatagram)icmpDatagram).SequenceNumber);
+                        break;
+
+                    case "icmp.redir_gw":
+                        field.AssertShow(((IcmpRedirectDatagram)icmpDatagram).GatewayInternetAddress.ToString());
+                        break;
+
+                    case "icmp.mtu":
+                        field.AssertShowDecimal(((IcmpDestinationUnreachableDatagram)icmpDatagram).NextHopMtu);
+                        break;
+
+                    default:
+                        if (!field.Name().StartsWith("lt2p."))
+                            throw new InvalidOperationException("Invalid icmp field " + field.Name());
+                        break;
+                }
+            }
+
+            CompareProtocols(icmpDatagram, icmp);
+//            object currentDatagram = icmpDatagram;
+//            foreach (var layer in icmp.Protocols())
+//            {
+//                switch (layer.Name())
+//                {
+//                    case "ip":
+//                        PropertyInfo ipV4Property = currentDatagram.GetType().GetProperty("IpV4");
+//                        if (ipV4Property == null)
+//                            break;
+//                        currentDatagram = ipV4Property.GetValue(currentDatagram);
+//                        CompareIpV4(layer, (IpV4Datagram)currentDatagram);
+//                        break;
+//
+//                    default:
+//                        throw new InvalidOperationException("unexpected layer under icmp: " + layer.Name());
+//                }
+//            }
         }
 
         private static void CompareUdp(XElement udpElement, IpV4Datagram ipV4Datagram)
@@ -713,7 +889,10 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "udp.checksum_bad":
-                                        checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
+                                        if (checksumField.Show() == "1")
+                                            Assert.IsFalse(ipV4Datagram.IsTransportChecksumCorrect);
+                                        else
+                                            checksumField.AssertShowDecimal(0);
                                         break;
                                 }
                             }

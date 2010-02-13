@@ -11,6 +11,11 @@ namespace PcapDotNet.Packets
             return new PacketBuilder(layers).Build(timestamp);
         }
 
+        public static Packet Build(DateTime timestamp, IEnumerable<ILayer> layers)
+        {
+            return new PacketBuilder(layers).Build(timestamp);
+        }
+
         public PacketBuilder(params ILayer[] layers)
         {
             if (layers.Length == 0)

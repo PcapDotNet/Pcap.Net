@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
-        protected IpV4Datagram IpV4
+        public IpV4Datagram IpV4
         {
             get
             {

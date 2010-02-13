@@ -111,6 +111,11 @@ namespace PcapDotNet.Base
                                       });
         }
 
+        public static string BytesSequenceToHexadecimalString(this IEnumerable<byte> sequence)
+        {
+            return sequence.BytesSequenceToHexadecimalString(string.Empty);
+        }
+
         /// <summary>
         /// Creates a hash code by xoring the hash codes of the elements in the sequence.
         /// </summary>

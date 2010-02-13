@@ -83,103 +83,28 @@ namespace PcapDotNet.Packets.Test
             {
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
                 icmpLayer.Checksum = null;
-
-                IpV4Layer icmpIpV4Layer = null;
-                IEnumerable<ILayer> icmpIpV4PayloadLayers = null;
-                switch (icmpLayer.MessageType)
+                if (icmpLayer.MessageType == IcmpMessageType.DestinationUnreachable && 
+                    icmpLayer.MessageTypeAndCode != IcmpMessageTypeAndCode.DestinationUnreachableFragmentationNeededAndDontFragmentSet)
                 {
-                    case IcmpMessageType.DestinationUnreachable:
-                    case IcmpMessageType.TimeExceeded:
-                    case IcmpMessageType.ParameterProblem:
-                    case IcmpMessageType.SourceQuench:
-                    case IcmpMessageType.Redirect:
-                    case IcmpMessageType.SecurityFailures:
-                        icmpIpV4Layer = random.NextIpV4Layer();
-                        icmpIpV4PayloadLayers = new[] {random.NextPayloadLayer(IcmpIpV4HeaderPlus64BitsPayloadDatagram.OriginalDatagramPayloadLength)};
-                        break;
-                    case IcmpMessageType.ConversionFailed:
-                        icmpIpV4Layer = random.NextIpV4Layer();
-                        if (icmpLayer.MessageTypeAndCode == IcmpMessageTypeAndCode.ConversionFailedUnsupportedTransportProtocol)
-                            icmpIpV4PayloadLayers = new[]
-                                                        {
-                                                            random.NextPayloadLayer(
-                                                                IcmpConversionFailedDatagram.OriginalDatagramLengthForUnsupportedTransportProtocol -
-                                                                icmpIpV4Layer.Length)
-                                                        };
-                        else
-                        {
-                            switch (icmpIpV4Layer.Protocol)
-                            {
-                                case IpV4Protocol.Udp:
-                                    icmpIpV4PayloadLayers = new ILayer[]
-                                                                {
-                                                                    random.NextUdpLayer(),
-                                                                    random.NextPayloadLayer(random.Next(100))
-                                                                };
-                                    break;
-
-                                case IpV4Protocol.Tcp:
-                                    icmpIpV4PayloadLayers = new ILayer[]
-                                                                {
-                                                                    random.NextTcpLayer(),
-                                                                    random.NextPayloadLayer(random.Next(100))
-                                                                };
-                                    break;
-
-                                default:
-                                    icmpIpV4PayloadLayers = new[]
-                                                                {
-                                                                    random.NextPayloadLayer(random.Next(200))
-                                                                };
-
-                                    break;
-                            }
-                        }
-                        break;
-
-                    case IcmpMessageType.Echo:
-                    case IcmpMessageType.EchoReply:
-                    case IcmpMessageType.Timestamp:
-                    case IcmpMessageType.TimestampReply:
-                    case IcmpMessageType.InformationRequest:
-                    case IcmpMessageType.InformationReply:
-                    case IcmpMessageType.RouterAdvertisement:
-                    case IcmpMessageType.RouterSolicitation:
-                    case IcmpMessageType.AddressMaskRequest:
-                    case IcmpMessageType.AddressMaskReply:
-                    case IcmpMessageType.Traceroute:
-                    case IcmpMessageType.DomainNameRequest:
-                        break;
-
-                    case IcmpMessageType.DomainNameReply:
-                    default:
-                        throw new InvalidOperationException("Invalid icmpMessageType " + icmpLayer.MessageType);
+                    ((IcmpDestinationUnreachableLayer)icmpLayer).NextHopMtu = 0;
                 }
 
-                int icmpPayloadLength = (icmpIpV4Layer != null ? icmpIpV4Layer.Length + icmpIpV4PayloadLayers.Select(layer => layer.Length).Sum() : 0);
+                IEnumerable<ILayer> icmpPayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
+
+                int icmpPayloadLength = icmpPayloadLayers.Select(layer => layer.Length).Sum();
 
                 switch (icmpLayer.MessageType)
                 {
-                        //                    case IcmpMessageType.DestinationUnreachable:
-                        //                    case IcmpMessageType.TimeExceeded:
                     case IcmpMessageType.ParameterProblem:
                         ((IcmpParameterProblemLayer)icmpLayer).Pointer %= (byte)icmpPayloadLength;
                         break;
-                        //                    case IcmpMessageType.SourceQuench:
-                        //                    case IcmpMessageType.Redirect:
+
                     case IcmpMessageType.SecurityFailures:
                         ((IcmpSecurityFailuresLayer)icmpLayer).Pointer %= (ushort)icmpPayloadLength;
-                        //                        icmpIpV4Layer = random.NextIpV4Layer();
-                        //                        icmpIpV4PayloadLayers = new[] {random.NextPayloadLayer(IcmpIpV4HeaderPlus64BitsPayloadDatagram.OriginalDatagramPayloadLength)};
                         break;
-                        //                    case IcmpMessageType.ConversionFailed:
                 }
 
-                PacketBuilder packetBuilder;
-                if (icmpIpV4Layer != null)
-                    packetBuilder = new PacketBuilder(new ILayer[] {ethernetLayer, ipV4Layer, icmpLayer, icmpIpV4Layer}.Concat(icmpIpV4PayloadLayers));
-                else
-                    packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer);
+                PacketBuilder packetBuilder = new PacketBuilder(new ILayer[] { ethernetLayer, ipV4Layer, icmpLayer }.Concat(icmpPayloadLayers));
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 Assert.IsTrue(packet.IsValid, "IsValid");
@@ -221,7 +146,8 @@ namespace PcapDotNet.Packets.Test
                 IcmpLayer actualIcmpLayer = (IcmpLayer)actualIcmp.ExtractLayer();
                 icmpLayer.Checksum = actualIcmpLayer.Checksum;
                 Assert.AreEqual(icmpLayer, actualIcmpLayer);
-                Assert.AreNotEqual(random.NextIcmpLayer(), actualIcmpLayer);
+                if (actualIcmpLayer.MessageType != IcmpMessageType.RouterSolicitation)
+                    Assert.AreNotEqual(random.NextIcmpLayer(), actualIcmpLayer);
                 Assert.IsTrue(actualIcmp.IsChecksumCorrect);
                 Assert.AreEqual(icmpLayer.MessageType, actualIcmp.MessageType);
                 Assert.AreEqual(icmpLayer.CodeValue, actualIcmp.Code);
@@ -231,13 +157,13 @@ namespace PcapDotNet.Packets.Test
 
                 switch (packet.Ethernet.IpV4.Icmp.MessageType)
                 {
-                    case IcmpMessageType.DestinationUnreachable:
                     case IcmpMessageType.RouterSolicitation:
                     case IcmpMessageType.SourceQuench:
                     case IcmpMessageType.TimeExceeded:
                         Assert.AreEqual<uint>(0, actualIcmp.Variable);
                         break;
 
+                    case IcmpMessageType.DestinationUnreachable:
                     case IcmpMessageType.ParameterProblem:
                     case IcmpMessageType.Redirect:
                     case IcmpMessageType.ConversionFailed:
@@ -256,7 +182,6 @@ namespace PcapDotNet.Packets.Test
                         break;
                     case IcmpMessageType.DomainNameRequest:
                     case IcmpMessageType.SecurityFailures:
-                        break;
                         break;
 
                     case IcmpMessageType.DomainNameReply:
