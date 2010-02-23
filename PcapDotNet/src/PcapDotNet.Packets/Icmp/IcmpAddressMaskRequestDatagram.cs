@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
         public const int DatagramLength = HeaderLength + PayloadLength;
         public const int PayloadLength = 4;
 
-        private class Offset
+        private static class Offset
         {
             public const int AddressMask = 8;
         }

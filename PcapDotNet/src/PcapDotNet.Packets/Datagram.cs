@@ -190,6 +190,7 @@ namespace PcapDotNet.Packets
         /// <param name="offset">The offset in the datagram to start reading.</param>
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
         /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
         protected int ReadInt(int offset, Endianity endianity)
         {
             return Buffer.ReadInt(StartOffset + offset, endianity);

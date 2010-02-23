@@ -18,16 +18,29 @@ namespace PcapDotNet.Base
         /// <summary>
         /// The maximum value of this type.
         /// </summary>
-        public static readonly UInt128 MaxValue = UInt128.Parse("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        public static readonly UInt128 MaxValue = Parse("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
-        public static readonly UInt128 Zero = UInt128.Parse("00000000000000000000000000000000", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        /// <summary>
+        /// A Zero UInt128 value.
+        /// The minimum UInt128 value.
+        /// </summary>
+        public static readonly UInt128 Zero = Parse("00000000000000000000000000000000", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Creates a value using two 64 bit values.
+        /// </summary>
+        /// <param name="mostSignificant">The most significant 64 bits of the value.</param>
+        /// <param name="leastSignificant">The least significant 64 bits of the value.</param>
         public UInt128(ulong mostSignificant, ulong leastSignificant)
         {
             _mostSignificant = mostSignificant;
             _leastSignificant = leastSignificant;
         }
 
+        /// <summary>
+        /// Creates a value using 8 16 bits values.
+        /// </summary>
+        /// <param name="values">The 16 bits values ordered so that the first value is the most significant.</param>
         public UInt128(ushort[] values)
         {
             if (values.Length != 8)
@@ -141,17 +154,51 @@ namespace PcapDotNet.Base
             return !(value1 == value2);
         }
 
-        public static UInt128 operator >> (UInt128 value, int numBits)
+        /// <summary>
+        /// Shifts its first operand right by the number of bits specified by its second operand.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="numberOfBits">The number of bits to shift.</param>
+        /// <returns>The value after it was shifted by the given number of bits.</returns>
+        public static UInt128 operator >> (UInt128 value, int numberOfBits)
         {
-            numBits %= 128;
-            if (numBits >= 64)
-                return new UInt128(0, value._mostSignificant >>  (numBits - 64));
-            if (numBits == 0)
-                return value;
-            return new UInt128(value._mostSignificant >> numBits, (value._leastSignificant >> numBits) + (value._mostSignificant << (64 - numBits)));
+            return RightShift(value, numberOfBits);
         }
 
+        /// <summary>
+        /// Shifts its first operand right by the number of bits specified by its second operand.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="numberOfBits">The number of bits to shift.</param>
+        /// <returns>The value after it was shifted by the given number of bits.</returns>
+        public static UInt128 RightShift(UInt128 value, int numberOfBits)
+        {
+            numberOfBits %= 128;
+            if (numberOfBits >= 64)
+                return new UInt128(0, value._mostSignificant >> (numberOfBits - 64));
+            if (numberOfBits == 0)
+                return value;
+            return new UInt128(value._mostSignificant >> numberOfBits, (value._leastSignificant >> numberOfBits) + (value._mostSignificant << (64 - numberOfBits)));
+        }
+
+        /// <summary>
+        /// Bitwise ands between two values.
+        /// </summary>
+        /// <param name="value1">The first value to do bitwise and.</param>
+        /// <param name="value2">The second value to do bitwise and.</param>
+        /// <returns>The two values after they were bitwise anded.</returns>
         public static UInt128 operator &(UInt128 value1, UInt128 value2)
+        {
+            return BitwiseAnd(value1, value2);
+        }
+
+        /// <summary>
+        /// Bitwise ands between two values.
+        /// </summary>
+        /// <param name="value1">The first value to do bitwise and.</param>
+        /// <param name="value2">The second value to do bitwise and.</param>
+        /// <returns>The two values after they were bitwise anded.</returns>
+        public static UInt128 BitwiseAnd(UInt128 value1, UInt128 value2)
         {
             return new UInt128(value1._mostSignificant & value2._mostSignificant, value1._leastSignificant & value2._leastSignificant);
         }
@@ -175,10 +222,14 @@ namespace PcapDotNet.Base
         {
             if (format != "X32")
                 throw new NotSupportedException("Only X32 format is supported");
-            return _mostSignificant.ToString("X16") + _leastSignificant.ToString("X16");
+            return _mostSignificant.ToString("X16", CultureInfo.InvariantCulture) + _leastSignificant.ToString("X16", CultureInfo.InvariantCulture);
         }
 
-        public string ToString()
+        /// <summary>
+        /// Currently not supported since only X32 string format is supported (and not decimal).
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
             throw new NotSupportedException("Only X32 format is supported");
         }

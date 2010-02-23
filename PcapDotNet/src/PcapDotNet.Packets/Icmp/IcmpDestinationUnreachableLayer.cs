@@ -1,8 +1,11 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// RFC 792 and RFC 1191.
+    /// </summary>
     public class IcmpDestinationUnreachableLayer : IcmpLayer
     {
-        public IcmpCodeDestinationUnrechable Code { get; set; }
+        public IcmpCodeDestinationUnreachable Code { get; set; }
 
         public override IcmpMessageType MessageType
         {
@@ -14,12 +17,12 @@ namespace PcapDotNet.Packets.Icmp
             get { return (byte)Code; }
         }
 
-        public ushort NextHopMtu { get; set; }
+        public ushort NextHopMaximumTransmissionUnit { get; set; }
 
         public bool Equals(IcmpDestinationUnreachableLayer other)
         {
             return other != null &&
-                   NextHopMtu == other.NextHopMtu;
+                   NextHopMaximumTransmissionUnit == other.NextHopMaximumTransmissionUnit;
         }
 
         public override sealed bool Equals(IcmpLayer other)
@@ -29,7 +32,7 @@ namespace PcapDotNet.Packets.Icmp
 
         protected override uint Value
         {
-            get { return NextHopMtu; }
+            get { return NextHopMaximumTransmissionUnit; }
         }
     }
 }

@@ -331,7 +331,7 @@ namespace PcapDotNet.Packets.TestUtils
                            Checksum = random.NextUShort(),
                            SourcePort = random.NextUShort(),
                            DestinationPort = random.NextUShort(),
-                           CalculateChecksum = random.NextBool()
+                           CalculateChecksumValue = random.NextBool()
                        };
         }
 
@@ -583,9 +583,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.DestinationUnreachable:
                     return new IcmpDestinationUnreachableLayer
                     {
-                        Code = random.NextEnum<IcmpCodeDestinationUnrechable>(),
+                        Code = random.NextEnum<IcmpCodeDestinationUnreachable>(),
                         Checksum = checksum,
-                        NextHopMtu = random.NextUShort(),
+                        NextHopMaximumTransmissionUnit = random.NextUShort(),
                     };
 
                 case IcmpMessageType.TimeExceeded:
@@ -704,16 +704,16 @@ namespace PcapDotNet.Packets.TestUtils
                                    AddressMask = random.NextIpV4Address()
                                };
                 
-                case IcmpMessageType.Traceroute:
-                    return new IcmpTracerouteLayer
+                case IcmpMessageType.TraceRoute:
+                    return new IcmpTraceRouteLayer
                                {
-                                   Code = random.NextEnum<IcmpCodeTraceroute>(),
+                                   Code = random.NextEnum<IcmpCodeTraceRoute>(),
                                    Checksum = checksum,
                                    Identification = random.NextUShort(),
                                    OutboundHopCount = random.NextUShort(),
                                    ReturnHopCount = random.NextUShort(),
                                    OutputLinkSpeed = random.NextUInt(),
-                                   OutputLinkMtu = random.NextUInt(),
+                                   OutputLinkMaximumTransmissionUnit = random.NextUInt(),
                                };
 
                 case IcmpMessageType.ConversionFailed:
@@ -738,7 +738,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.SecurityFailures:
                     return new IcmpSecurityFailuresLayer
                                {
-                                   Code = random.NextEnum<IcmpCodeSecurityFailures>(),
+                                   Code = random.NextEnum<IcmpCodeSecurityFailure>(),
                                    Checksum = checksum,
                                    Pointer = random.NextUShort()
                                };
@@ -804,7 +804,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IcmpMessageType.RouterSolicitation:
                 case IcmpMessageType.AddressMaskRequest:
                 case IcmpMessageType.AddressMaskReply:
-                case IcmpMessageType.Traceroute:
+                case IcmpMessageType.TraceRoute:
                 case IcmpMessageType.DomainNameRequest:
                     break;
 

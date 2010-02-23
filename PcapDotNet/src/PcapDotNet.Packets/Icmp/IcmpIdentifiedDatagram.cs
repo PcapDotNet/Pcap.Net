@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public abstract class IcmpIdentifiedDatagram : IcmpDatagram
     {
-        private class Offset
+        private static class Offset
         {
             public const int Identifier = 4;
             public const int SequenceNumber = 6;

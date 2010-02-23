@@ -73,5 +73,12 @@ namespace PcapDotNet.Packets.Arp
         {
             return base.Equals(other) && Equals(other as ArpLayer);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   (((ushort)ProtocolType << 16) + (ushort)Operation);
+
+        }
     }
 }

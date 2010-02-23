@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// The ICMP code values for Code Conversion Failed ICMP type.
+    /// </summary>
     public enum IcmpCodeConversionFailed : byte
     {
         /// <summary>
@@ -16,7 +19,7 @@ namespace PcapDotNet.Packets.Icmp
         /// Note that an invalid datagram should result in the sending of some other ICMP message (e.g., parameter problem) or the silent discarding of the datagram.  
         /// This message is only sent when a valid datagram cannot be converted.
         /// </summary>
-        DontConvertOptionPresent = 0x01,
+        DoNotConvertOptionPresent = 0x01,
 
         /// <summary>
         /// RFC 1475.

@@ -101,6 +101,18 @@ namespace PcapDotNet.Packets.IpV4
             return base.Equals(other) && Equals(other as IpV4Layer);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   ((TypeOfService << 24) + (Identification << 8) + Ttl) ^
+                   Fragmentation.GetHashCode() ^
+                   Protocol.GetHashCode() ^
+                   HeaderChecksum.GetHashCode() ^
+                   Source.GetHashCode() ^ Destination.GetHashCode() ^
+                   Options.GetHashCode();
+
+        }
+
         public override string ToString()
         {
             return Source + " -> " + Destination + " (" + Protocol + ")";

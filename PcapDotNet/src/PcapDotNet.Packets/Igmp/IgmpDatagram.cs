@@ -7,6 +7,7 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Igmp
 {
     /// <summary>
+    /// RFC 1112.
     /// Version 1 (query or report):
     /// <pre>
     /// +-----+---------+------+--------+----------+
@@ -18,6 +19,7 @@ namespace PcapDotNet.Packets.Igmp
     /// +-----+------------------------------------+
     /// </pre>
     /// 
+    /// RFC 2236.
     /// Version 2 (query, report or leave group):
     /// <pre>
     /// +-----+------+---------------+----------+
@@ -29,6 +31,7 @@ namespace PcapDotNet.Packets.Igmp
     /// +-----+---------------------------------+
     /// </pre>
     /// 
+    /// RFC 3376.
     /// Version 3 query:
     /// <pre>
     /// +-----+------+---+-----+---------------+-----------------------+
@@ -53,6 +56,7 @@ namespace PcapDotNet.Packets.Igmp
     /// +-----+--------------------------------------------------------+
     /// </pre>
     /// 
+    /// RFC 3376.
     /// Version 3 report:
     /// <pre>
     /// +-----+-------------+----------+-----------------------------+

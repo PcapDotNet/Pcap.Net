@@ -72,9 +72,9 @@ namespace PcapDotNet.Packets.Test
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
                 icmpLayer.Checksum = null;
                 if (icmpLayer.MessageType == IcmpMessageType.DestinationUnreachable && 
-                    icmpLayer.MessageTypeAndCode != IcmpMessageTypeAndCode.DestinationUnreachableFragmentationNeededAndDontFragmentSet)
+                    icmpLayer.MessageTypeAndCode != IcmpMessageTypeAndCode.DestinationUnreachableFragmentationNeededAndDoNotFragmentSet)
                 {
-                    ((IcmpDestinationUnreachableLayer)icmpLayer).NextHopMtu = 0;
+                    ((IcmpDestinationUnreachableLayer)icmpLayer).NextHopMaximumTransmissionUnit = 0;
                 }
 
                 IEnumerable<ILayer> icmpPayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
@@ -165,8 +165,8 @@ namespace PcapDotNet.Packets.Test
                     case IcmpMessageType.AddressMaskRequest:
                     case IcmpMessageType.AddressMaskReply:
                         break;
-                    case IcmpMessageType.Traceroute:
-                        Assert.AreEqual(((IcmpTracerouteLayer)icmpLayer).OutboundHopCount == 0xFFFF, ((IcmpTracerouteDatagram)actualIcmp).IsOutbound);
+                    case IcmpMessageType.TraceRoute:
+                        Assert.AreEqual(((IcmpTraceRouteLayer)icmpLayer).OutboundHopCount == 0xFFFF, ((IcmpTraceRouteDatagram)actualIcmp).IsOutbound);
                         break;
                     case IcmpMessageType.DomainNameRequest:
                     case IcmpMessageType.SecurityFailures:

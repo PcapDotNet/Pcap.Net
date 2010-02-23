@@ -4,17 +4,17 @@ namespace PcapDotNet.Packets.Transport
 {
     public class TcpLayer : TransportLayer
     {
-        public uint SequenceNumber{get;set;}
+        public uint SequenceNumber { get; set; }
 
-        public uint AcknowledgmentNumber{get;set;}
+        public uint AcknowledgmentNumber { get; set; }
 
-        public TcpControlBits ControlBits{get;set;}
+        public TcpControlBits ControlBits { get; set; }
 
-        public ushort Window{get; set;}
+        public ushort Window { get; set; }
 
-        public ushort UrgentPointer{get; set;}
+        public ushort UrgentPointer { get; set; }
 
-        public TcpOptions Options{get;set;}
+        public TcpOptions Options { get; set; }
 
         public override IpV4Protocol PreviousLayerProtocol
         {

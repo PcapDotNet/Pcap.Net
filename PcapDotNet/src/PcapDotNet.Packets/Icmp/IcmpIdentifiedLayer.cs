@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// Represents an ICMP layer with an Identifier and a Sequence Number.
+    /// </summary>
     public abstract class IcmpIdentifiedLayer : IcmpLayer
     {
         public ushort Identifier { get; set; }

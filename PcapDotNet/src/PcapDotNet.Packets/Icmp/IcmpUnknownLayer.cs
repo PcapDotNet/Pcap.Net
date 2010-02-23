@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// Represents an ICMP layer with an unknown message type.
+    /// </summary>
     public class IcmpUnknownLayer : IcmpLayer
     {
         public byte LayerMessageType { get; set; }

@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpParameterProblemDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        private class Offset
+        private static class Offset
         {
             public const int Pointer = 4;
         }

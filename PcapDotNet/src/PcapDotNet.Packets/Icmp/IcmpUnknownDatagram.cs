@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// Used to represent an ICMP datagram with an unknown message type.
+    /// </summary>
     public class IcmpUnknownDatagram : IcmpDatagram
     {
         public IcmpUnknownDatagram(byte[] buffer, int offset, int length)

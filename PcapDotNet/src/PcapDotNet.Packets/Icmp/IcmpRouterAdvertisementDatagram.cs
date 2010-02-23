@@ -33,9 +33,9 @@ namespace PcapDotNet.Packets.Icmp
     {
         public const int DefaultAddressEntrySize = 2;
 
-        private class Offset
+        private static class Offset
         {
-            public const int NumAddresses = 4;
+            public const int NumberOfAddresses = 4;
             public const int AddressEntrySize = 5;
             public const int Lifetime = 6;
             public const int Addresses = 8;
@@ -44,9 +44,9 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// The number of router addresses advertised in this message.
         /// </summary>
-        public byte NumAddresses
+        public byte NumberOfAddresses
         {
-            get { return this[Offset.NumAddresses]; }
+            get { return this[Offset.NumberOfAddresses]; }
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace PcapDotNet.Packets.Icmp
             {
                 if (_entries == null)
                 {
-                    IcmpRouterAdvertisementEntry[] entries = new IcmpRouterAdvertisementEntry[NumAddresses];
+                    IcmpRouterAdvertisementEntry[] entries = new IcmpRouterAdvertisementEntry[NumberOfAddresses];
                     int currentOffset = Offset.Addresses;
                     for (int i = 0; i != entries.Length && currentOffset + IpV4Address.SizeOf <= Length; ++i)
                     {
@@ -113,7 +113,7 @@ namespace PcapDotNet.Packets.Icmp
         {
             return base.CalculateIsValid() &&
                    AddressEntrySize == DefaultAddressEntrySize &&
-                   Length == HeaderLength + NumAddresses * AddressEntrySize * IpV4Address.SizeOf;
+                   Length == HeaderLength + NumberOfAddresses * AddressEntrySize * IpV4Address.SizeOf;
         }
 
         internal IcmpRouterAdvertisementDatagram(byte[] buffer, int offset, int length)

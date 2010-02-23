@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Igmp
 {
@@ -37,6 +38,12 @@ namespace PcapDotNet.Packets.Igmp
         public sealed override bool Equals(IgmpLayer other)
         {
             return base.Equals(other) && Equals(other as IgmpReportVersion3Layer);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   GroupRecords.SequenceGetHashCode();
         }
     }
 }

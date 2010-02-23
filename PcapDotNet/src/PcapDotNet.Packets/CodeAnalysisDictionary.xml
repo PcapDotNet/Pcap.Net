@@ -48,6 +48,9 @@
       <Word>arp</Word>
       <Word>multimegabit</Word>
       <Word>igmp</Word>
+      <Word>icmp</Word>
+      <Word>ack</Word>
+      <Word>datagrams</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->

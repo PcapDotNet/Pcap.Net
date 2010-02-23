@@ -67,5 +67,14 @@ namespace PcapDotNet.Packets.Igmp
         {
             return base.Equals(other) && Equals(other as IgmpQueryVersion3Layer);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   GroupAddress.GetHashCode() ^
+                   ((IsSuppressRouterSideProcessing ? 0 : (1 << 8)) + QueryRobustnessVariable) ^
+                   SourceAddresses.SequenceGetHashCode();
+
+        }
     }
 }
