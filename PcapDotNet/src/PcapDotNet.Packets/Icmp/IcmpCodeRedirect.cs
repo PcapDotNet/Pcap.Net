@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// The different ICMP code values for Redirect ICMP type.
+    /// </summary>
     public enum IcmpCodeRedirect : byte
     {
         /// <summary>

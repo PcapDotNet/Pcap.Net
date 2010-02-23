@@ -4,7 +4,12 @@ namespace PcapDotNet.Packets.Transport
 {
     public class UdpLayer : TransportLayer
     {
-        public bool CalculateChecksum { get; set; }
+        public override bool CalculateChecksum
+        {
+            get{return CalculateChecksumValue;}
+        }
+
+        public bool CalculateChecksumValue { get; set; }
 
         public override IpV4Protocol PreviousLayerProtocol
         {

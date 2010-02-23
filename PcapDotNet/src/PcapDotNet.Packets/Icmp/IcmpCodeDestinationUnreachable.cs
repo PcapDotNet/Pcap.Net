@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// </summary>
-    public enum IcmpCodeDestinationUnrechable : byte
+    public enum IcmpCodeDestinationUnreachable : byte
     {
         /// <summary>
         /// If, according to the information in the gateway's routing tables, 
@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Icmp
         /// A datagram must be fragmented to be forwarded by a gateway yet the Don't Fragment flag is on.  
         /// In this case the gateway must discard the datagram and may return a destination unreachable message.
         /// </summary>
-        FragmentationNeededAndDontFragmentSet = 0x04,
+        FragmentationNeededAndDoNotFragmentSet = 0x04,
 
         /// <summary>
         /// RFC 792.

@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Icmp
     {
         public const int OriginalDatagramLengthForUnsupportedTransportProtocol = 256;
 
-        private class Offset
+        private static class Offset
         {
             public const int Pointer = 4;
         }

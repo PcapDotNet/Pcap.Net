@@ -30,5 +30,11 @@ namespace PcapDotNet.Packets.Igmp
         {
             return base.Equals(other) && Equals(other as IgmpLayer);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   MessageType.GetHashCode() ^ QueryVersion.GetHashCode();
+        }
     }
 }

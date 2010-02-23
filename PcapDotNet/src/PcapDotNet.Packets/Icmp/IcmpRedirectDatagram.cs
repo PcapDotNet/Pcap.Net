@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpRedirectDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        private class Offset
+        private static class Offset
         {
             public const int GatewayInternetAddress = 4;
         }

@@ -1,8 +1,11 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// RFC 2521.
+    /// </summary>
     public class IcmpSecurityFailuresLayer : IcmpLayer
     {
-        public IcmpCodeSecurityFailures Code{get; set ;}
+        public IcmpCodeSecurityFailure Code{get; set ;}
         public ushort Pointer{get; set ;}
         public override IcmpMessageType MessageType
         {

@@ -26,5 +26,11 @@ namespace PcapDotNet.Packets.Igmp
         {
             return base.Equals(other) && Equals(other as IgmpSimpleLayer);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   GroupAddress.GetHashCode();
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpSecurityFailuresDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        private class Offset
+        private static class Offset
         {
             public const int Pointer = 6;
         }
@@ -45,7 +45,7 @@ namespace PcapDotNet.Packets.Icmp
         {
             return new IcmpSecurityFailuresLayer
             {
-                Code = (IcmpCodeSecurityFailures)Code,
+                Code = (IcmpCodeSecurityFailure)Code,
                 Checksum = Checksum,
                 Pointer = Pointer
             };
@@ -66,7 +66,7 @@ namespace PcapDotNet.Packets.Icmp
             get { return _maxCode; }
         }
 
-        private static readonly byte _minCode = (byte)typeof(IcmpCodeSecurityFailures).GetEnumValues<IcmpCodeSecurityFailures>().Min();
-        private static readonly byte _maxCode = (byte)typeof(IcmpCodeSecurityFailures).GetEnumValues<IcmpCodeSecurityFailures>().Max();
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeSecurityFailure).GetEnumValues<IcmpCodeSecurityFailure>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeSecurityFailure).GetEnumValues<IcmpCodeSecurityFailure>().Max();
     }
 }

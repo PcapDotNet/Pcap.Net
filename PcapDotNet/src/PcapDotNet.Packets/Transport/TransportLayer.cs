@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Transport
         public ushort DestinationPort { get; set; }
 
         public abstract IpV4Protocol PreviousLayerProtocol { get; }
-        public bool CalculateChecksum
+        public virtual bool CalculateChecksum
         {
             get { return true; }
         }
@@ -31,6 +31,13 @@ namespace PcapDotNet.Packets.Transport
         public override sealed bool Equals(Layer other)
         {
             return base.Equals(other) && Equals(other as TransportLayer);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   Checksum.GetHashCode() ^
+                   ((SourcePort << 16) + DestinationPort);
         }
     }
 }

@@ -1,5 +1,9 @@
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// Represents a layer that adds a simple payload.
+    /// Actually can be any buffer of bytes.
+    /// </summary>
     public class PayloadLayer : SimpleLayer
     {
         public Datagram Data { get; set; }

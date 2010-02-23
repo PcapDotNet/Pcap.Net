@@ -1,12 +1,15 @@
 namespace PcapDotNet.Packets.Icmp
 {
-    public enum IcmpCodeSecurityFailures : byte
+    /// <summary>
+    /// The different ICMP code values for Security Failures ICMP type.
+    /// </summary>
+    public enum IcmpCodeSecurityFailure : byte
     {
         /// <summary>
         /// RFC 2521.
         /// Indicates that a received datagram includes a Security Parameters Index (SPI) that is invalid or has expired.
         /// </summary>
-        BadSpi = 0x00,
+        BadSecurityParametersIndex = 0x00,
 
         /// <summary>
         /// RFC 2521.

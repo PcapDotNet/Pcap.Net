@@ -67,6 +67,12 @@ namespace PcapDotNet.Packets.Icmp
             return base.Equals(other) && Equals(other as IcmpLayer);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   MessageTypeAndCode.GetHashCode() ^ Checksum.GetHashCode() ^ Value.GetHashCode();
+        }
+
         public override string ToString()
         {
             return MessageType + "." + CodeValue + "(" + Value + ")";

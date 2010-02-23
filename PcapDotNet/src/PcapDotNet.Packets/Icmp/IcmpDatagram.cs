@@ -198,8 +198,8 @@ namespace PcapDotNet.Packets.Icmp
                 case IcmpMessageType.AddressMaskReply:
                     return new IcmpAddressMaskReplyDatagram(buffer, offset, length);
 
-                case IcmpMessageType.Traceroute:
-                    return new IcmpTracerouteDatagram(buffer, offset, length);
+                case IcmpMessageType.TraceRoute:
+                    return new IcmpTraceRouteDatagram(buffer, offset, length);
 
                 case IcmpMessageType.ConversionFailed:
                     return new IcmpConversionFailedDatagram(buffer, offset, length);

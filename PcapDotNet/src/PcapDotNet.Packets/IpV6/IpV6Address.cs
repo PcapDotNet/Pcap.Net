@@ -54,11 +54,11 @@ namespace PcapDotNet.Packets.IpV6
             {
                 uint lastPartValue = new IpV4Address(lastPart).ToValue();
                 cannonizedValue = cannonizedValue.Substring(0, lastColonIndex + 1) +
-                                  (lastPartValue >> 16).ToString("x") + ":" + (lastPartValue & 0x0000FFFF).ToString("x");
+                                  (lastPartValue >> 16).ToString("x", CultureInfo.InvariantCulture) + ":" + (lastPartValue & 0x0000FFFF).ToString("x");
             }
 
             // Handle ...::...
-            int doubleColonIndex = cannonizedValue.IndexOf("::");
+            int doubleColonIndex = cannonizedValue.IndexOf("::", StringComparison.InvariantCulture);
             if (doubleColonIndex != -1)
             {
                 int numMissingColons = 7 - cannonizedValue.Count(':');
@@ -143,7 +143,7 @@ namespace PcapDotNet.Packets.IpV6
                 string andString = andZerosBefore + "FFFF" + andZerosAfter;
                 UInt128 andValue = UInt128.Parse(andString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 ushort value = (ushort)((_value & andValue) >> (112 - i * 16));
-                stringBuilder.Append(value.ToString("X4"));
+                stringBuilder.Append(value.ToString("X4", CultureInfo.InvariantCulture));
             }
 
             return stringBuilder.ToString();

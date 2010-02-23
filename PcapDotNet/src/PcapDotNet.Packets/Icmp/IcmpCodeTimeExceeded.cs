@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// The different ICMP code values for Time Exceeded ICMP type.
+    /// </summary>
     public enum IcmpCodeTimeExceeded : byte
     {
         /// <summary>

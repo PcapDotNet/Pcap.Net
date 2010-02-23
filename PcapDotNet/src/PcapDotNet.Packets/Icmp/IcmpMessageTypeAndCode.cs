@@ -1,5 +1,9 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// The different ICMP message types and codes.
+    /// Each of the values is a combination of the message type and a code values that is legal with this message type.
+    /// </summary>
     public enum IcmpMessageTypeAndCode : ushort
     {
         /// <summary>
@@ -9,40 +13,40 @@ namespace PcapDotNet.Packets.Icmp
         /// e.g., the distance to the network is infinity, 
         /// the gateway may send a destination unreachable message to the internet source host of the datagram.
         /// </summary>
-        DestinationUnreachableNetUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.NetUnreachable,
+        DestinationUnreachableNetUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.NetUnreachable,
 
         /// <summary>
         /// RFC 792.
         /// In some networks, the gateway may be able to determine if the internet destination host is unreachable.  
         /// Gateways in these networks may send destination unreachable messages to the source host when the destination host is unreachable.
         /// </summary>
-        DestinationUnreachableHostUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.HostUnreachable,
+        DestinationUnreachableHostUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.HostUnreachable,
 
         /// <summary>
         /// RFC 792.
         /// If, in the destination host, the IP module cannot deliver the datagram because the indicated protocol module is not active, 
         /// the destination host may send a destination unreachable message to the source host.
         /// </summary>
-        DestinationUnreachableProtocolUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.ProtocolUnreachable,
+        DestinationUnreachableProtocolUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.ProtocolUnreachable,
 
         /// <summary>
         /// RFC 792.
         /// If, in the destination host, the IP module cannot deliver the datagram because the indicated process port is not active, 
         /// the destination host may send a destination unreachable message to the source host.
         /// </summary>
-        DestinationUnreachablePortUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.PortUnreachable,
+        DestinationUnreachablePortUnreachable = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.PortUnreachable,
 
         /// <summary>
         /// RFC 792.
         /// A datagram must be fragmented to be forwarded by a gateway yet the Don't Fragment flag is on.  
         /// In this case the gateway must discard the datagram and may return a destination unreachable message.
         /// </summary>
-        DestinationUnreachableFragmentationNeededAndDontFragmentSet = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.FragmentationNeededAndDontFragmentSet,
+        DestinationUnreachableFragmentationNeededAndDoNotFragmentSet = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.FragmentationNeededAndDoNotFragmentSet,
 
         /// <summary>
         /// RFC 792.
         /// </summary>
-        DestinationUnreachableSourceRouteFailed = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnrechable.SourceRouteFailed,
+        DestinationUnreachableSourceRouteFailed = (IcmpMessageType.DestinationUnreachable << 8) | IcmpCodeDestinationUnreachable.SourceRouteFailed,
 
         /// <summary>
         /// RFC 792.
@@ -280,12 +284,12 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// RFC 1393.
         /// </summary>
-        TracerouteOutboundPacketSuccessfullyForwarded = (IcmpMessageType.Traceroute << 8) | IcmpCodeTraceroute.OutboundPacketSuccessfullyForwarded,
+        TraceRouteOutboundPacketSuccessfullyForwarded = (IcmpMessageType.TraceRoute << 8) | IcmpCodeTraceRoute.OutboundPacketSuccessfullyForwarded,
 
         /// <summary>
         /// RFC 1393.
         /// </summary>
-        TracerouteNoRouteForOutboundPacketDiscarded = (IcmpMessageType.Traceroute << 8) | IcmpCodeTraceroute.NoRouteForOutboundPacketDiscarded,
+        TraceRouteNoRouteForOutboundPacketDiscarded = (IcmpMessageType.TraceRoute << 8) | IcmpCodeTraceRoute.NoRouteForOutboundPacketDiscarded,
 
         /// <summary>
         /// RFC 1475.
@@ -301,7 +305,7 @@ namespace PcapDotNet.Packets.Icmp
         /// Note that an invalid datagram should result in the sending of some other ICMP message (e.g., parameter problem) or the silent discarding of the datagram.  
         /// This message is only sent when a valid datagram cannot be converted.
         /// </summary>
-        ConversionFailedDontConvertOptionPresent = (IcmpMessageType.ConversionFailed << 8) | IcmpCodeConversionFailed.DontConvertOptionPresent,
+        ConversionFailedDoNotConvertOptionPresent = (IcmpMessageType.ConversionFailed << 8) | IcmpCodeConversionFailed.DoNotConvertOptionPresent,
 
         /// <summary>
         /// RFC 1475.
@@ -398,7 +402,7 @@ namespace PcapDotNet.Packets.Icmp
         /// RFC 2521.
         /// Indicates that a received datagram includes a Security Parameters Index (SPI) that is invalid or has expired.
         /// </summary>
-        SecurityFailuresBadSpi = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.BadSpi,
+        SecurityFailuresBadSecurityParametersIndex = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.BadSecurityParametersIndex,
 
         /// <summary>
         /// RFC 2521.
@@ -408,19 +412,19 @@ namespace PcapDotNet.Packets.Icmp
         /// Note that the SPI may indicate an outer Encapsulating Security Protocol when a separate Authentication Header SPI is hidden inside.
         /// </para>
         /// </summary>
-        SecurityFailuresAuthenticationFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.AuthenticationFailed,
+        SecurityFailuresAuthenticationFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.AuthenticationFailed,
 
         /// <summary>
         /// RFC 2521.
         /// Indicates that a received datagram failed a decompression check for a given SPI.
         /// </summary>
-        SecurityFailuresDecompressionFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.DecompressionFailed,
+        SecurityFailuresDecompressionFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.DecompressionFailed,
 
         /// <summary>
         /// RFC 2521.
         /// Indicates that a received datagram failed a decryption check for a given SPI.
         /// </summary>
-        SecurityFailuresDecryptionFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.DecryptionFailed,
+        SecurityFailuresDecryptionFailed = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.DecryptionFailed,
 
         /// <summary>
         /// RFC 2521.
@@ -431,7 +435,7 @@ namespace PcapDotNet.Packets.Icmp
         /// For example, an encryption SPI without integrity arrives from a secure operating system with mutually suspicious users.
         /// </para>
         /// </summary>
-        SecurityFailuresNeedAuthentication = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.NeedAuthentication,
+        SecurityFailuresNeedAuthentication = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.NeedAuthentication,
         
         /// <summary>
         /// RFC 2521.
@@ -443,6 +447,6 @@ namespace PcapDotNet.Packets.Icmp
         /// For example, the party is authorized for Telnet access, but not for FTP access.
         /// </para>
         /// </summary>
-        SecurityFailuresNeedAuthorization = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailures.NeedAuthorization,
+        SecurityFailuresNeedAuthorization = (IcmpMessageType.SecurityFailures << 8) | IcmpCodeSecurityFailure.NeedAuthorization,
     }
 }

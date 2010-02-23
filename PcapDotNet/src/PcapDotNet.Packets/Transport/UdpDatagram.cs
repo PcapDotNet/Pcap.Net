@@ -79,7 +79,7 @@ namespace PcapDotNet.Packets.Transport
                            Checksum = Checksum,
                            SourcePort = SourcePort,
                            DestinationPort = DestinationPort,
-                           CalculateChecksum = (Checksum != 0)
+                           CalculateChecksumValue = (Checksum != 0)
                        };
         }
 

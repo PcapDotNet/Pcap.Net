@@ -747,7 +747,7 @@ namespace PcapDotNet.Core.Test
                                 switch (fieldName)
                                 {
                                     case "Number of addresses":
-                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.NumAddresses);
+                                        field.AssertShow(fieldName + ": " + routerAdvertisementDatagram.NumberOfAddresses);
                                         break;
 
                                     case "Address entry size":
@@ -809,7 +809,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "icmp.mtu":
-                        field.AssertShowDecimal(((IcmpDestinationUnreachableDatagram)icmpDatagram).NextHopMtu);
+                        field.AssertShowDecimal(((IcmpDestinationUnreachableDatagram)icmpDatagram).NextHopMaximumTransmissionUnit);
                         break;
 
                     default:

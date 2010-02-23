@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// RFC 792.
+    /// </summary>
     public class IcmpParameterProblemLayer : IcmpLayer
     {
         public byte Pointer { get; set; }

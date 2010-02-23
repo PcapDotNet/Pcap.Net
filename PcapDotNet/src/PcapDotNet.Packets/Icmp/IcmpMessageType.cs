@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// The different ICMP message types.
+    /// </summary>
     public enum IcmpMessageType : byte
     {
         /// <summary>
@@ -286,7 +289,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// RFC 1393.
         /// </summary>
-        Traceroute = 0x1E,
+        TraceRoute = 0x1E,
 
         /// <summary>
         /// RFC 1475.

@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Icmp
         public const int DatagramLength = HeaderLength + PayloadLength;
         public const int PayloadLength = 12;
 
-        private class Offset
+        private static class Offset
         {
             public const int OriginateTimestamp = 8;
             public const int ReceiveTimestamp = 12;

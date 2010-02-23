@@ -111,6 +111,11 @@ namespace PcapDotNet.Base
                                       });
         }
 
+        /// <summary>
+        /// Returns a string by converting all the bytes to a hexadecimal string.
+        /// </summary>
+        /// <param name="sequence">The bytes to convert to a string.</param>
+        /// <returns>The string resulted by converting all the bytes to hexadecimal strings.</returns>
         public static string BytesSequenceToHexadecimalString(this IEnumerable<byte> sequence)
         {
             return sequence.BytesSequenceToHexadecimalString(string.Empty);
@@ -139,6 +144,13 @@ namespace PcapDotNet.Base
             return sequence.Aggregate(0, (value, b) => value ^ (b << (8 * (i++ % 4))));
         }
 
+        /// <summary>
+        /// Counts the number of types the given value is contained in the given sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="sequence">The sequence to look for the value in.</param>
+        /// <param name="value">The value to look for in the sequence.</param>
+        /// <returns>The number of types the given value is contained in the given sequence.</returns>
         public static int Count<T>(this IEnumerable<T> sequence, T value)
         {
             return sequence.Count(element => element.Equals(value));

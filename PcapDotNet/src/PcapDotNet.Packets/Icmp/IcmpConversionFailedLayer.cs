@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Icmp
 {
+    /// <summary>
+    /// RFC 1475.
+    /// </summary>
     public class IcmpConversionFailedLayer : IcmpLayer
     {
         public IcmpCodeConversionFailed Code { get; set; }

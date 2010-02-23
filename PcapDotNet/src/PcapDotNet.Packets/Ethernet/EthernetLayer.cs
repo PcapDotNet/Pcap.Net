@@ -65,6 +65,12 @@ namespace PcapDotNet.Packets.Ethernet
             return base.Equals(other) && Equals(other as EthernetLayer);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode() ^
+                   Source.GetHashCode() ^ Destination.GetHashCode() ^ EtherType.GetHashCode();
+        }
+
         public override string ToString()
         {
             return Source + " -> " + Destination + " (" + EtherType + ")";

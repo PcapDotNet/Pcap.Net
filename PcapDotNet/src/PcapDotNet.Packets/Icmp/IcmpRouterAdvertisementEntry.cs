@@ -32,6 +32,11 @@ namespace PcapDotNet.Packets.Icmp
             return Equals(obj as IcmpRouterAdvertisementEntry);
         }
 
+        public override int GetHashCode()
+        {
+            return RouterAddress.GetHashCode() ^ RouterAddressPreference.GetHashCode();
+        }
+
         private readonly IpV4Address _routerAddress;
         private readonly int _routerAddressPreference;
     }

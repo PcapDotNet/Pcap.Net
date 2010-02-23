@@ -113,7 +113,7 @@ namespace PcapDotNet.Packets.Test
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
                                                 new UdpLayer
                                                     {
-                                                        CalculateChecksum = true
+                                                        CalculateChecksumValue = true
                                                     },
                                                 new PayloadLayer
                                                     {

@@ -1,5 +1,12 @@
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// The base class of a layer used to build a Packet.
+    /// Each layer represents the part of the packet relevant to a specific protocol.
+    /// A sequence of layers can represent a packet.
+    /// A packet can be according to a sequence of layers.
+    /// <seealso cref="PacketBuilder"/>
+    /// </summary>
     public abstract class Layer : ILayer
     {
         public abstract int Length { get; }
@@ -22,6 +29,11 @@ namespace PcapDotNet.Packets
         public override sealed bool Equals(object obj)
         {
             return Equals(obj as Layer);
+        }
+
+        public override int GetHashCode()
+        {
+            return Length.GetHashCode() ^ DataLink.GetHashCode();
         }
     }
 }

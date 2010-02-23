@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
-        public ushort NextHopMtu
+        public ushort NextHopMaximumTransmissionUnit
         {
             get { return ReadUShort(Offset.NextHopMtu, Endianity.Big); }
         }
@@ -40,17 +40,17 @@ namespace PcapDotNet.Packets.Icmp
         {
             return new IcmpDestinationUnreachableLayer
                        {
-                           Code = (IcmpCodeDestinationUnrechable)Code,
+                           Code = (IcmpCodeDestinationUnreachable)Code,
                            Checksum = Checksum,
-                           NextHopMtu = NextHopMtu,
+                           NextHopMaximumTransmissionUnit = NextHopMaximumTransmissionUnit,
                        };
         }
 
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() &&
-                   (((IcmpCodeDestinationUnrechable)Code == IcmpCodeDestinationUnrechable.FragmentationNeededAndDontFragmentSet) ||
-                    NextHopMtu == 0);
+                   (((IcmpCodeDestinationUnreachable)Code == IcmpCodeDestinationUnreachable.FragmentationNeededAndDoNotFragmentSet) ||
+                    NextHopMaximumTransmissionUnit == 0);
         }
 
         protected override byte MinCodeValue
@@ -63,7 +63,7 @@ namespace PcapDotNet.Packets.Icmp
             get { return _maxCode; }
         }
 
-        private static readonly byte _minCode = (byte)typeof(IcmpCodeDestinationUnrechable).GetEnumValues<IcmpCodeDestinationUnrechable>().Min();
-        private static readonly byte _maxCode = (byte)typeof(IcmpCodeDestinationUnrechable).GetEnumValues<IcmpCodeDestinationUnrechable>().Max();
+        private static readonly byte _minCode = (byte)typeof(IcmpCodeDestinationUnreachable).GetEnumValues<IcmpCodeDestinationUnreachable>().Min();
+        private static readonly byte _maxCode = (byte)typeof(IcmpCodeDestinationUnreachable).GetEnumValues<IcmpCodeDestinationUnreachable>().Max();
     }
 }
