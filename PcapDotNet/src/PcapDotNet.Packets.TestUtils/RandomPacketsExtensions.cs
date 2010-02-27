@@ -106,14 +106,11 @@ namespace PcapDotNet.Packets.TestUtils
         {
             byte hardwareAddressLength = random.NextByte();
             byte protocolAddressLength = random.NextByte();
-            return new ArpLayer
+            return new ArpLayer(random.NextBytes(hardwareAddressLength).AsReadOnly(), random.NextBytes(protocolAddressLength).AsReadOnly(),
+                random.NextBytes(hardwareAddressLength).AsReadOnly(),random.NextBytes(protocolAddressLength).AsReadOnly())
                        {
                            ProtocolType = random.NextEnum<EthernetType>(),
                            Operation = random.NextEnum<ArpOperation>(),
-                           SenderHardwareAddress = random.NextBytes(hardwareAddressLength),
-                           SenderProtocolAddress = random.NextBytes(protocolAddressLength),
-                           TargetHardwareAddress = random.NextBytes(hardwareAddressLength),
-                           TargetProtocolAddress = random.NextBytes(protocolAddressLength)
                        };
         }
 
@@ -525,14 +522,13 @@ namespace PcapDotNet.Packets.TestUtils
                                                                       IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
                             igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
                             igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
-                            return new IgmpQueryVersion3Layer
+                            return new IgmpQueryVersion3Layer(igmpSourceAddresses)
                             {
                                 MaxResponseTime = igmpMaxResponseTime,
                                 GroupAddress = igmpGroupAddress,
                                 IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing.Value,
                                 QueryRobustnessVariable = igmpQueryRobustnessVariable.Value,
                                 QueryInterval = igmpQueryInterval.Value,
-                                SourceAddresses = igmpSourceAddresses
                             };
 
                         default:
@@ -561,10 +557,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IgmpMessageType.MembershipReportVersion3:
                     igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
-                    return new IgmpReportVersion3Layer
-                    {
-                        GroupRecords = igmpGroupRecords
-                    };
+                    return new IgmpReportVersion3Layer(igmpGroupRecords);
 
                 default:
                     throw new InvalidOperationException("Invalid message type " + igmpMessageType);
@@ -673,11 +666,10 @@ namespace PcapDotNet.Packets.TestUtils
 
 
                 case IcmpMessageType.RouterAdvertisement:
-                    return new IcmpRouterAdvertisementLayer
+                    return new IcmpRouterAdvertisementLayer(random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList())
                                {
                                    Checksum = checksum,
                                    Lifetime = random.NextTimeSpan(TimeSpan.Zero, TimeSpan.FromSeconds(ushort.MaxValue)),
-                                   Entries = random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList()
                                };
 
                 case IcmpMessageType.RouterSolicitation:

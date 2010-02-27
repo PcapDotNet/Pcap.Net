@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A184AF5-E46C-482C-81A3-76D8CE290104}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Maintainability#CA1501;-Microsoft.Naming#CA1710</CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -42,7 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Naming#CA1710</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1045;-Microsoft.Design#CA1028;-Microsoft.Design#CA1027;-Microsoft.Maintainability#CA1501;-Microsoft.Naming#CA1710</CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Packets.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>

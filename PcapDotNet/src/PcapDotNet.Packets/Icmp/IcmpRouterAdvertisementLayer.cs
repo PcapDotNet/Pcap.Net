@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PcapDotNet.Packets.Icmp
 {
     public class IcmpRouterAdvertisementLayer : IcmpLayer
     {
+        public IcmpRouterAdvertisementLayer(IList<IcmpRouterAdvertisementEntry> entries)
+        {
+            _entries = entries;
+        }
+
         public TimeSpan Lifetime { get; set; }
-        public List<IcmpRouterAdvertisementEntry> Entries { get; set; }
+        public IList<IcmpRouterAdvertisementEntry> Entries { get { return _entries;} }
         
         public override IcmpMessageType MessageType
         {
@@ -47,5 +53,7 @@ namespace PcapDotNet.Packets.Icmp
         {
             return base.Equals(other) && Equals(other as IcmpRouterAdvertisementLayer);
         }
+
+        private readonly IList<IcmpRouterAdvertisementEntry> _entries;
     }
 }

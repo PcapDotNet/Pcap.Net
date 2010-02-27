@@ -6,7 +6,15 @@ namespace PcapDotNet.Packets.Ethernet
     /// </summary>
     public interface IEthernetNextLayer : ILayer
     {
+        /// <summary>
+        /// The Ethernet Type the Ethernet layer should write when this layer is the Ethernet payload.
+        /// </summary>
         EthernetType PreviousLayerEtherType { get; }
+
+        /// <summary>
+        /// The default MAC Address value when this layer is the Ethernet payload.
+        /// null means there is no default value.
+        /// </summary>
         MacAddress? PreviousLayerDefaultDestination { get; }
     }
 }
