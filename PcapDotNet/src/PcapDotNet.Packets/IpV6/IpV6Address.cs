@@ -54,11 +54,11 @@ namespace PcapDotNet.Packets.IpV6
             {
                 uint lastPartValue = new IpV4Address(lastPart).ToValue();
                 cannonizedValue = cannonizedValue.Substring(0, lastColonIndex + 1) +
-                                  (lastPartValue >> 16).ToString("x", CultureInfo.InvariantCulture) + ":" + (lastPartValue & 0x0000FFFF).ToString("x");
+                                  (lastPartValue >> 16).ToString("x", CultureInfo.InvariantCulture) + ":" + (lastPartValue & 0x0000FFFF).ToString("x", CultureInfo.InvariantCulture);
             }
 
             // Handle ...::...
-            int doubleColonIndex = cannonizedValue.IndexOf("::", StringComparison.InvariantCulture);
+            int doubleColonIndex = cannonizedValue.IndexOf("::", StringComparison.Ordinal);
             if (doubleColonIndex != -1)
             {
                 int numMissingColons = 7 - cannonizedValue.Count(':');

@@ -76,6 +76,9 @@ namespace PcapDotNet.Packets
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public virtual ILayer ExtractLayer()
         {
             return new PayloadLayer

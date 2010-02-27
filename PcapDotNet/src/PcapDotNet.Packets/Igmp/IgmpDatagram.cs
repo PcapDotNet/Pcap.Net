@@ -505,14 +505,13 @@ namespace PcapDotNet.Packets.Igmp
                             };
 
                         case IgmpQueryVersion.Version3:
-                            return new IgmpQueryVersion3Layer
+                            return new IgmpQueryVersion3Layer(SourceAddresses)
                             {
                                 MaxResponseTime = MaxResponseTime,
                                 GroupAddress = GroupAddress,
                                 IsSuppressRouterSideProcessing = IsSuppressRouterSideProcessing,
                                 QueryRobustnessVariable = QueryRobustnessVariable,
                                 QueryInterval = QueryInterval,
-                                SourceAddresses = SourceAddresses
                             };
 
                         default:
@@ -540,10 +539,7 @@ namespace PcapDotNet.Packets.Igmp
                     };
 
                 case IgmpMessageType.MembershipReportVersion3:
-                    return new IgmpReportVersion3Layer
-                    {
-                        GroupRecords = GroupRecords.Select(record => record.ToGroupRecord()).ToList()
-                    };
+                    return new IgmpReportVersion3Layer(GroupRecords.Select(record => record.ToGroupRecord()).ToList());
 
                 default:
                     throw new InvalidOperationException("Invalid message type " + MessageType);

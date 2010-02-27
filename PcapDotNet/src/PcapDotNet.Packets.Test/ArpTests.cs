@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -76,7 +77,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(EthernetType.Arp, packet.Ethernet.EtherType, "Ethernet EtherType");
 
                 // Arp
-                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count + 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
+                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count+ 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
                 Assert.AreEqual(ArpHardwareType.Ethernet, packet.Ethernet.Arp.HardwareType, "Arp hardware type");
                 Assert.AreEqual(arpLayer, packet.Ethernet.Arp.ExtractLayer(), "ARP Layer");
             }
@@ -91,13 +92,9 @@ namespace PcapDotNet.Packets.Test
                                          Source = new MacAddress(),
                                          EtherType = EthernetType.QInQ
                                      },
-                                     new ArpLayer
+                                     new ArpLayer(new byte[8], new byte[] { 1, 2, 3, 4 }, new byte[8], new byte[] { 11, 22, 33, 44 })
                                      {
                                          Operation = ArpOperation.Request,
-                                         SenderHardwareAddress = new byte[8],
-                                         SenderProtocolAddress = new byte[]{1,2,3,4},
-                                         TargetHardwareAddress = new byte[8],
-                                         TargetProtocolAddress = new byte[]{11,22,33,44}
                                      });
 
             Assert.AreEqual(new IpV4Address("1.2.3.4"), packet.Ethernet.Arp.SenderProtocolIpV4Address);
@@ -114,13 +111,9 @@ namespace PcapDotNet.Packets.Test
                                                          Source = new MacAddress(),
                                                          EtherType = EthernetType.IpV4
                                                      },
-                                                 new ArpLayer
+                                                 new ArpLayer(new byte[4], new byte[6], new byte[5], new byte[6])
                                                      {
                                                          Operation = ArpOperation.Request,
-                                                         SenderHardwareAddress = new byte[4],
-                                                         SenderProtocolAddress = new byte[6],
-                                                         TargetHardwareAddress = new byte[5],
-                                                         TargetProtocolAddress = new byte[6]
                                                      });
             Assert.IsNull(packet);
             Assert.Fail();
@@ -136,13 +129,9 @@ namespace PcapDotNet.Packets.Test
                                                      Source = new MacAddress(),
                                                      EtherType = EthernetType.IpV4
                                                  },
-                                                 new ArpLayer
+                                                 new ArpLayer(new byte[4], new byte[6], new byte[4], new byte[7])
                                                  {
                                                      Operation = ArpOperation.Request,
-                                                     SenderHardwareAddress = new byte[4],
-                                                     SenderProtocolAddress = new byte[6],
-                                                     TargetHardwareAddress = new byte[4],
-                                                     TargetProtocolAddress = new byte[7]
                                                  });
             Assert.IsNull(packet);
             Assert.Fail();

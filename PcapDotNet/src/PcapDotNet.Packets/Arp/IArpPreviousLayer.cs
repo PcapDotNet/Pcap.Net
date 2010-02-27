@@ -6,6 +6,9 @@ namespace PcapDotNet.Packets.Arp
     /// </summary>
     public interface IArpPreviousLayer : ILayer
     {
-        ArpHardwareType PreviousLayerHardwareType { get; }   
+        /// <summary>
+        /// The ARP Hardware Type of the layer before the ARP layer.
+        /// </summary>
+        ArpHardwareType PreviousLayerHardwareType { get; }
     }
 }

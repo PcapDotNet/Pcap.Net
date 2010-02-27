@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -7,7 +8,20 @@ namespace PcapDotNet.Packets.Igmp
 {
     public class IgmpReportVersion3Layer : IgmpLayer
     {
-        public IList<IgmpGroupRecord> GroupRecords{get; set ;}
+        public IgmpReportVersion3Layer()
+            :this(new List<IgmpGroupRecord>())
+        {
+        }
+
+        public IgmpReportVersion3Layer(IList<IgmpGroupRecord> groupRecords)
+        {
+            _groupRecords = groupRecords;
+        }
+
+        public IList<IgmpGroupRecord> GroupRecords
+        {
+            get { return _groupRecords; }
+        }
 
         public override int Length
         {
@@ -45,5 +59,7 @@ namespace PcapDotNet.Packets.Igmp
             return base.GetHashCode() ^
                    GroupRecords.SequenceGetHashCode();
         }
+ 
+        private readonly IList<IgmpGroupRecord> _groupRecords;
     }
 }

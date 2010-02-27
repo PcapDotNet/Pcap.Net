@@ -101,11 +101,10 @@ namespace PcapDotNet.Packets.Icmp
 
         public override ILayer ExtractLayer()
         {
-            return new IcmpRouterAdvertisementLayer
+            return new IcmpRouterAdvertisementLayer(Entries.ToList())
             {
                 Checksum = Checksum,
                 Lifetime = Lifetime,
-                Entries = Entries.ToList()
             };
         }
 

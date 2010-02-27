@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.Ethernet
                                  (byte)(_value));
         }
 
-        private static readonly MacAddress _zero;
+        private static readonly MacAddress _zero = new MacAddress(0);
         private readonly UInt48 _value;
     }
 }

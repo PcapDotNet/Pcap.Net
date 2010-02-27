@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 
@@ -104,7 +105,7 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         public ReadOnlyCollection<byte> SenderHardwareAddress
         {
-            get { return new ReadOnlyCollection<byte>(ReadBytes(Offset.SenderHardwareAddress, HardwareLength)); }
+            get { return ReadBytes(Offset.SenderHardwareAddress, HardwareLength).AsReadOnly(); }
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         public ReadOnlyCollection<byte> SenderProtocolAddress
         {
-            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetSenderProtocolAddress, ProtocolLength)); }
+            get { return ReadBytes(OffsetSenderProtocolAddress, ProtocolLength).AsReadOnly(); }
         }
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         public ReadOnlyCollection<byte> TargetHardwareAddress
         {
-            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetTargetHardwareAddress, HardwareLength)); }
+            get { return ReadBytes(OffsetTargetHardwareAddress, HardwareLength).AsReadOnly(); }
         }
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         public ReadOnlyCollection<byte> TargetProtocolAddress
         {
-            get { return new ReadOnlyCollection<byte>(ReadBytes(OffsetTargetProtocolAddress, ProtocolLength)); }
+            get { return ReadBytes(OffsetTargetProtocolAddress, ProtocolLength).AsReadOnly(); }
         }
 
         /// <summary>
@@ -148,16 +149,15 @@ namespace PcapDotNet.Packets.Arp
             get { return ReadIpV4Address(OffsetTargetProtocolAddress, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
-            return new ArpLayer
+            return new ArpLayer(SenderHardwareAddress, SenderProtocolAddress, TargetHardwareAddress, TargetProtocolAddress)
                        {
                            ProtocolType = ProtocolType,
                            Operation = Operation,
-                           SenderHardwareAddress = SenderHardwareAddress,
-                           SenderProtocolAddress = SenderProtocolAddress,
-                           TargetHardwareAddress = TargetHardwareAddress,
-                           TargetProtocolAddress = TargetProtocolAddress
                        };
         }
 

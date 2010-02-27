@@ -81,7 +81,7 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
-        public abstract ILayer ExtractLayer();
+        public override abstract ILayer ExtractLayer();
 
         public Datagram Payload
         {

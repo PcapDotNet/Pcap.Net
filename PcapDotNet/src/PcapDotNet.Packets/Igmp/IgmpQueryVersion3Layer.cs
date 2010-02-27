@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
@@ -9,8 +10,13 @@ namespace PcapDotNet.Packets.Igmp
     public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         public IgmpQueryVersion3Layer()
+            :this(new List<IpV4Address>())
         {
-            SourceAddresses = new List<IpV4Address>();
+        }
+
+        public IgmpQueryVersion3Layer(IList<IpV4Address> sourceAddresses)
+        {
+            _sourceAddresses = sourceAddresses;
         }
 
         public TimeSpan MaxResponseTime { get; set; }
@@ -21,7 +27,7 @@ namespace PcapDotNet.Packets.Igmp
 
         public TimeSpan QueryInterval{get; set ;}
 
-        public IList<IpV4Address> SourceAddresses{get; set ;}
+        public IList<IpV4Address> SourceAddresses{get { return _sourceAddresses;}}
 
         public override int Length
         {
@@ -76,5 +82,7 @@ namespace PcapDotNet.Packets.Igmp
                    SourceAddresses.SequenceGetHashCode();
 
         }
+
+        private readonly IList<IpV4Address> _sourceAddresses;
     }
 }

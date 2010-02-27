@@ -6,6 +6,9 @@ using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Core.Extensions
 {
+    /// <summary>
+    /// Extension methods for LivePacketDevice class.
+    /// </summary>
     public static class LivePacketDeviceExtensions
     {
         public static NetworkInterface GetNetworkInterface(this LivePacketDevice livePacketDevice)
