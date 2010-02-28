@@ -26,16 +26,24 @@ namespace PcapDotNet.Packets.Icmp
             public const int NextHopMtu = 6;
         }
 
-        public IcmpDestinationUnreachableDatagram(byte[] buffer, int offset, int length)
+        internal IcmpDestinationUnreachableDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
 
+        /// <summary>
+        /// The size in octets of the largest datagram that could be forwarded, 
+        /// along the path of the original datagram, without being fragmented at this router.  
+        /// The size includes the IP header and IP data, and does not include any lower-level headers.
+        /// </summary>
         public ushort NextHopMaximumTransmissionUnit
         {
             get { return ReadUShort(Offset.NextHopMtu, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpDestinationUnreachableLayer
@@ -53,11 +61,17 @@ namespace PcapDotNet.Packets.Icmp
                     NextHopMaximumTransmissionUnit == 0);
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MinCodeValue
         {
             get { return _minCode; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }

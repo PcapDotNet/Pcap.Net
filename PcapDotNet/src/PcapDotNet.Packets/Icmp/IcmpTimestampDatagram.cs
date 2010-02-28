@@ -23,7 +23,14 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpTimestampDatagram : IcmpIdentifiedDatagram
     {
+        /// <summary>
+        /// The number of bytes this datagram should take.
+        /// </summary>
         public const int DatagramLength = HeaderLength + PayloadLength;
+
+        /// <summary>
+        /// The number of bytes this ICMP payload should take.
+        /// </summary>
         public const int PayloadLength = 12;
 
         private static class Offset
@@ -62,6 +69,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadIpV4TimeOfDay(Offset.TransmitTimestamp, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpTimestampLayer

@@ -24,6 +24,9 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpConversionFailedDatagram : IcmpIpV4PayloadDatagram
     {
+        /// <summary>
+        /// The number of bytes that should be taken from the original datagram for an unsupported transport protocol ICMP code.
+        /// </summary>
         public const int OriginalDatagramLengthForUnsupportedTransportProtocol = 256;
 
         private static class Offset
@@ -39,6 +42,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUInt(Offset.Pointer, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpConversionFailedLayer
@@ -73,11 +79,17 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MinCodeValue
         {
             get { return _minCode; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }

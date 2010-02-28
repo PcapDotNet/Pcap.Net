@@ -64,22 +64,16 @@ namespace PcapDotNet.Packets.Ethernet
         /// Ethernet source address.
         /// </summary>
         public MacAddress Source
-        { 
-            get
-            {
-                return ReadMacAddress(Offset.Source, Endianity.Big);
-            }
+        {
+            get { return ReadMacAddress(Offset.Source, Endianity.Big); }
         }
 
         /// <summary>
         /// Ethernet destination address.
         /// </summary>
         public MacAddress Destination
-        { 
-            get
-            {
-                return ReadMacAddress(Offset.Destination, Endianity.Big);
-            }
+        {
+            get { return ReadMacAddress(Offset.Destination, Endianity.Big); }
         }
 
         /// <summary>

@@ -138,7 +138,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The header check sum value.
+        /// The header checksum value.
         /// </summary>
         public ushort HeaderChecksum
         {
@@ -207,6 +207,9 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IpV4Layer

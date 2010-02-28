@@ -5,16 +5,22 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public abstract class IcmpIdentifiedLayer : IcmpLayer
     {
+        /// <summary>
+        /// An identifier to aid in matching requests and replies, may be zero.
+        /// </summary>
         public ushort Identifier { get; set; }
 
+        /// <summary>
+        /// A sequence number to aid in matching requests and replies, may be zero.
+        /// </summary>
         public ushort SequenceNumber { get; set; }
 
-        protected override sealed uint Value
+        /// <summary>
+        /// A value that should be interpreted according to the specific message.
+        /// </summary>
+        protected override sealed uint Variable
         {
-            get
-            {
-                return (uint)((Identifier << 16) | SequenceNumber);
-            }
+            get { return (uint)((Identifier << 16) | SequenceNumber); }
         }
     }
 }

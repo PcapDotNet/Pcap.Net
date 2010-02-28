@@ -20,11 +20,14 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpSourceQuenchDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        public IcmpSourceQuenchDatagram(byte[] buffer, int offset, int length)
+        internal IcmpSourceQuenchDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpSourceQuenchLayer

@@ -17,6 +17,9 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpEchoReplyDatagram : IcmpIdentifiedDatagram
     {
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpEchoReplyLayer

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         /// <summary>
-        /// If code = 0, an identifier to aid in matching requests and replies, may be zero.
+        /// An identifier to aid in matching requests and replies, may be zero.
         /// </summary>
         public ushort Identifier
         {
@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         /// <summary>
-        /// If code = 0, a sequence number to aid in matching requests and replies, may be zero.
+        /// A sequence number to aid in matching requests and replies, may be zero.
         /// </summary>
         public ushort SequenceNumber
         {

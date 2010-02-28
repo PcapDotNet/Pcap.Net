@@ -3,6 +3,7 @@ using System;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// RFC 768.
     /// This User Datagram Protocol (UDP) is defined to make available a datagram mode of packet-switched computer communication  
     /// in  the environment of an interconnected set of computer networks.   
     /// This protocol assumes that the Internet Protocol (IP) is used as the underlying protocol.
@@ -72,6 +73,9 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new UdpLayer
