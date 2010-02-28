@@ -3,6 +3,7 @@ using System;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// RFC 793.
     /// TCP Header Format
     /// <pre>
     /// +-----+-------------+----------+----+-----+-----+-----+-----+-----+-----+-----+-----+------------------+
@@ -154,7 +155,7 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Returns the tcp options contained in this TCP Datagram.
+        /// Returns the TCP options contained in this TCP Datagram.
         /// </summary>
         public TcpOptions Options
         {
@@ -238,6 +239,9 @@ namespace PcapDotNet.Packets.Transport
             get { return (ControlBits & TcpControlBits.Fin) == TcpControlBits.Fin; }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new TcpLayer

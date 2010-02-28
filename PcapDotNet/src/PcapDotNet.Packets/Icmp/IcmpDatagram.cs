@@ -43,11 +43,17 @@ namespace PcapDotNet.Packets.Icmp
             get { return (IcmpMessageType)this[Offset.Type]; }
         }
 
+        /// <summary>
+        /// A sub-type of the message. Specific method of this message type.
+        /// </summary>
         public byte Code
         {
             get { return this[Offset.Code]; }
         }
 
+        /// <summary>
+        /// A combination of the ICMP Message Type and Code.
+        /// </summary>
         public IcmpMessageTypeAndCode MessageTypeAndCode
         {
             get { return (IcmpMessageTypeAndCode)ReadUShort(Offset.Type, Endianity.Big); }
@@ -63,6 +69,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
+        /// <summary>
+        /// A value that should be interpreted according to the specific message.
+        /// </summary>
         public uint Variable
         {
             get { return ReadUInt(Offset.Variable, Endianity.Big); }
@@ -81,6 +90,9 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override abstract ILayer ExtractLayer();
 
         public Datagram Payload
@@ -114,16 +126,25 @@ namespace PcapDotNet.Packets.Icmp
             buffer.Write(offset + Offset.Checksum, checksumValue, Endianity.Big);
         }
 
+        /// <summary>
+        /// ICMP is valid if the datagram's length is OK, the checksum is correct and the code is in the expected range.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return Length >= HeaderLength && IsChecksumCorrect && Code >= MinCodeValue && Code <= MaxCodeValue;
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected virtual byte MinCodeValue
         {
             get { return 0; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected virtual byte MaxCodeValue
         {
             get { return 0; }

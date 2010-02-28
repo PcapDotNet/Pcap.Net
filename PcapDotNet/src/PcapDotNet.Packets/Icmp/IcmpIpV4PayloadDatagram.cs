@@ -22,6 +22,9 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
+        /// <summary>
+        /// The ICMP payload as an IPv4 datagram.
+        /// </summary>
         public IpV4Datagram IpV4
         {
             get
@@ -32,6 +35,10 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        /// <summary>
+        /// ICMP with IPv4 payload is valid if the datagram's length is OK, the checksum is correct, the code is in the expected range,
+        /// and the IPv4 payload contains at least an IPv4 header.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             if (!base.CalculateIsValid())

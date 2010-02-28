@@ -4,6 +4,44 @@ using System.Linq;
 
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// This class is used to build different packets.
+    /// Packets are built from layers.
+    /// This class can be used using static Build methods by giving the Packet's timestamp and layers.
+    /// This class can be instantiated with different layers and then use the Build method by only giving the Packet's timestamp.
+    /// If a layer that an instance of this class holds is modified, the PacketBuilder instance will create different packets.
+    /// <example>This sample shows how to create ICMP Echo Request packets to different servers with different IP ID and ICMP sequence numbers and identifiers.
+    /// <code>
+    ///   EthernetLayer ethernetLayer = new EthernetLayer
+    ///                                     {
+    ///                                         Source = new MacAddress("00:01:02:03:04:05"),
+    ///                                         Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
+    ///                                     };
+    ///
+    ///   IpV4Layer ipV4Layer = new IpV4Layer
+    ///                             {
+    ///                                 Source = new IpV4Address("1.2.3.4"),
+    ///                                 Ttl = 128,
+    ///                             };
+    ///
+    ///   IcmpEchoLayer icmpLayer = new IcmpEchoLayer();
+    ///
+    ///   PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer);
+    ///
+    ///   List&lt;Packet&gt; packets = new List&lt;Packet&gt;();
+    ///
+    ///   for (int i = 0; i != 100; ++i)
+    ///   {
+    ///       ipV4Layer.Destination = new IpV4Address("2.3.4." + i);
+    ///       ipV4Layer.Identification = (ushort)i;
+    ///       icmpLayer.SequenceNumber = (ushort)i;
+    ///       icmpLayer.Identifier = (ushort)i;
+    ///
+    ///       packets.Add(builder.Build(DateTime.Now));
+    ///   }
+    /// </code>
+    /// </example>
+    /// </summary>
     public class PacketBuilder
     {
         public static Packet Build(DateTime timestamp, params ILayer[] layers)

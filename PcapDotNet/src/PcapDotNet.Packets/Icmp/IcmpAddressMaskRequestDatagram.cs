@@ -19,7 +19,14 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpAddressMaskRequestDatagram : IcmpIdentifiedDatagram
     {
+        /// <summary>
+        /// The number of bytes this Datagram should take.
+        /// </summary>
         public const int DatagramLength = HeaderLength + PayloadLength;
+
+        /// <summary>
+        /// The number of bytes this ICMP payload should take.
+        /// </summary>
         public const int PayloadLength = 4;
 
         private static class Offset
@@ -40,6 +47,9 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpAddressMaskRequestLayer

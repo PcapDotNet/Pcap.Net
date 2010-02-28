@@ -3,12 +3,15 @@ using PcapDotNet.Packets.Arp;
 
 namespace PcapDotNet.Packets.Ethernet
 {
+    /// <summary>
+    /// Represents an Ethernet layer.
+    /// <seealso cref="EthernetDatagram"/>
+    /// </summary>
     public class EthernetLayer : Layer, IArpPreviousLayer
     {
-        public MacAddress Source { get; set; }
-        public MacAddress Destination { get; set; }
-        public EthernetType EtherType { get; set; }
-
+        /// <summary>
+        /// Creates an instance with zero values.
+        /// </summary>
         public EthernetLayer()
         {
             Source = MacAddress.Zero;
@@ -16,11 +19,37 @@ namespace PcapDotNet.Packets.Ethernet
             EtherType = EthernetType.None;
         }
 
+        /// <summary>
+        /// Ethernet source address.
+        /// </summary>
+        public MacAddress Source { get; set; }
+
+        /// <summary>
+        /// Ethernet destination address.
+        /// </summary>
+        public MacAddress Destination { get; set; }
+
+        /// <summary>
+        /// Ethernet type (next protocol).
+        /// </summary>
+        public EthernetType EtherType { get; set; }
+
+        /// <summary>
+        /// The number of bytes this layer will take.
+        /// </summary>
         public override int Length
         {
             get { return EthernetDatagram.HeaderLength; }
         }
 
+        /// <summary>
+        /// Writes the layer to the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the layer to.</param>
+        /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
+        /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
+        /// <param name="previousLayer">The layer that comes before this layer. null if this is the first layer.</param>
+        /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
             EthernetType etherType = EtherType;
@@ -44,11 +73,18 @@ namespace PcapDotNet.Packets.Ethernet
             EthernetDatagram.WriteHeader(buffer, 0, Source, destination, etherType);
         }
 
+        /// <summary>
+        /// The kind of the data link of the layer.
+        /// Can be null if this is not the first layer in the packet.
+        /// </summary>
         public override DataLinkKind? DataLink
         {
             get { return DataLinkKind.Ethernet; }
         }
 
+        /// <summary>
+        /// The ARP Hardware Type of the layer before the ARP layer.
+        /// </summary>
         public ArpHardwareType PreviousLayerHardwareType
         {
             get { return ArpHardwareType.Ethernet; }

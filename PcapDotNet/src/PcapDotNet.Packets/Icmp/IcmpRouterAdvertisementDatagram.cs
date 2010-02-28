@@ -31,6 +31,9 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpRouterAdvertisementDatagram : IcmpDatagram
     {
+        /// <summary>
+        /// The default number of 32-bit words of information per each router address.
+        /// </summary>
         public const int DefaultAddressEntrySize = 2;
 
         private static class Offset
@@ -99,6 +102,9 @@ namespace PcapDotNet.Packets.Icmp
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpRouterAdvertisementLayer(Entries.ToList())

@@ -484,6 +484,9 @@ namespace PcapDotNet.Packets.Igmp
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             switch (MessageType)

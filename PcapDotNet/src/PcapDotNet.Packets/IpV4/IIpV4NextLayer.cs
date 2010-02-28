@@ -6,6 +6,9 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public interface IIpV4NextLayer : ILayer
     {
+        /// <summary>
+        /// The protocol that should be written in the previous (IPv4) layer.
+        /// </summary>
         IpV4Protocol PreviousLayerProtocol { get; }
     }
 }

@@ -41,6 +41,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUShort(Offset.Pointer, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpSecurityFailuresLayer
@@ -56,11 +59,17 @@ namespace PcapDotNet.Packets.Icmp
             return base.CalculateIsValid() && Pointer < IpV4.Length;
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MinCodeValue
         {
             get { return _minCode; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }

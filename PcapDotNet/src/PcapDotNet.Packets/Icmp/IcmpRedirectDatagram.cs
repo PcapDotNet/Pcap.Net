@@ -51,11 +51,17 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MinCodeValue
         {
             get { return _minCode; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }

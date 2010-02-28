@@ -24,8 +24,19 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpTraceRouteDatagram : IcmpDatagram
     {
+        /// <summary>
+        /// The number of bytes this datagram should take.
+        /// </summary>
         public const int DatagramLength = HeaderLength + PayloadLength;
+
+        /// <summary>
+        /// The number of bytes this ICMP payload should take.
+        /// </summary>
         public const int PayloadLength = 12;
+
+        /// <summary>
+        /// The value the Return Hop Count should be for an outbound ICMP packet.
+        /// </summary>
         public const ushort OutboundReturnHopCountValue = 0xFFFF;
 
         private static class Offset
@@ -92,6 +103,9 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReturnHopCount == OutboundReturnHopCountValue; }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpTraceRouteLayer
@@ -111,11 +125,17 @@ namespace PcapDotNet.Packets.Icmp
             return base.CalculateIsValid() && Length == DatagramLength;
         }
 
+        /// <summary>
+        /// The minimum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MinCodeValue
         {
             get { return _minCode; }
         }
 
+        /// <summary>
+        /// The maximum valid ICMP code for this type of ICMP datagram.
+        /// </summary>
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }
