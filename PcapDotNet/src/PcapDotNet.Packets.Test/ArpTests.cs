@@ -80,6 +80,9 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count+ 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
                 Assert.AreEqual(ArpHardwareType.Ethernet, packet.Ethernet.Arp.HardwareType, "Arp hardware type");
                 Assert.AreEqual(arpLayer, packet.Ethernet.Arp.ExtractLayer(), "ARP Layer");
+                Assert.AreNotEqual(arpLayer, random.NextArpLayer(), "ARP Layer");
+                Assert.AreEqual(arpLayer.GetHashCode(), packet.Ethernet.Arp.ExtractLayer().GetHashCode(), "ARP Layer");
+                Assert.AreNotEqual(arpLayer.GetHashCode(), random.NextArpLayer().GetHashCode(), "ARP Layer");
             }
         }
 

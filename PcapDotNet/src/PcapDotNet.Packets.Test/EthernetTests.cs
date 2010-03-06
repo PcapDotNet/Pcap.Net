@@ -65,6 +65,10 @@ namespace PcapDotNet.Packets.Test
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+                Assert.AreEqual(ethernetLayer.GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");
+                Assert.AreNotEqual(random.NextEthernetLayer().GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");
+                Assert.AreEqual(ethernetLayer.ToString(), packet.Ethernet.ExtractLayer().ToString(), "Ethernet Layer ToString()");
+                Assert.AreNotEqual(random.NextEthernetLayer().ToString(), packet.Ethernet.ExtractLayer().ToString(), "Ethernet Layer ToString()");
                 Assert.AreNotEqual(2, packet.Ethernet.Source, "Ethernet Source");
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Payload);

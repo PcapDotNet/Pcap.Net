@@ -134,8 +134,12 @@ namespace PcapDotNet.Packets.Test
                 IcmpLayer actualIcmpLayer = (IcmpLayer)actualIcmp.ExtractLayer();
                 icmpLayer.Checksum = actualIcmpLayer.Checksum;
                 Assert.AreEqual(icmpLayer, actualIcmpLayer);
+                Assert.AreEqual(icmpLayer.GetHashCode(), actualIcmpLayer.GetHashCode());
                 if (actualIcmpLayer.MessageType != IcmpMessageType.RouterSolicitation)
+                {
                     Assert.AreNotEqual(random.NextIcmpLayer(), actualIcmpLayer);
+                    Assert.AreNotEqual(random.NextIcmpLayer().GetHashCode(), actualIcmpLayer.GetHashCode());
+                }
                 Assert.IsTrue(actualIcmp.IsChecksumCorrect);
                 Assert.AreEqual(icmpLayer.MessageType, actualIcmp.MessageType);
                 Assert.AreEqual(icmpLayer.CodeValue, actualIcmp.Code);
@@ -178,6 +182,19 @@ namespace PcapDotNet.Packets.Test
 
                 }
             }
+        }
+
+        [TestMethod]
+        public void IcmpRouterAdvertisementEntryTest()
+        {
+            Random random = new Random();
+            IcmpRouterAdvertisementEntry entry1 = new IcmpRouterAdvertisementEntry(random.NextIpV4Address(), random.Next());
+            IcmpRouterAdvertisementEntry entry2 = new IcmpRouterAdvertisementEntry(random.NextIpV4Address(), random.Next());
+
+            Assert.AreEqual(entry1, entry1);
+            Assert.AreEqual(entry1.GetHashCode(), entry1.GetHashCode());
+            Assert.AreNotEqual(entry1, entry2);
+            Assert.AreNotEqual(entry1.GetHashCode(), entry2.GetHashCode());
         }
     }
 }

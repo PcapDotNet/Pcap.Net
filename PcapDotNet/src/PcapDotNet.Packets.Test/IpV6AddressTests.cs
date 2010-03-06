@@ -58,21 +58,21 @@ namespace PcapDotNet.Packets.Test
 
             for (int i = 0; i != 1000; ++i)
             {
-//                IpV4Address address = random.NextIpV6Address();
-//
-//                Assert.AreEqual(address, new IpV4Address(address.ToString()));
-//                Assert.IsTrue(address == new IpV4Address(address.ToString()));
-//                Assert.IsFalse(address != new IpV4Address(address.ToString()));
-//                Assert.AreEqual(address.GetHashCode(), new IpV4Address(address.ToString()).GetHashCode());
-//                Assert.AreEqual(address, new IpV4Address(address.ToValue()));
-//
-//                Assert.AreNotEqual(address, random.NextIpV4Address());
-//                Assert.IsFalse(address == random.NextIpV4Address());
-//                Assert.IsTrue(address != random.NextIpV4Address());
-//                Assert.AreNotEqual(address.GetHashCode(), random.NextIpV4Address().GetHashCode());
-//
-//                Assert.AreNotEqual(2, address);
-//                Assert.IsFalse(address.Equals(null));
+                IpV6Address address = random.NextIpV6Address();
+
+                Assert.AreEqual(address, new IpV6Address(address.ToString()));
+                Assert.IsTrue(address == new IpV6Address(address.ToString()));
+                Assert.IsFalse(address != new IpV6Address(address.ToString()));
+                Assert.AreEqual(address.GetHashCode(), new IpV6Address(address.ToString()).GetHashCode());
+                Assert.AreEqual(address, new IpV6Address(address.ToValue()));
+
+                Assert.AreNotEqual(address, random.NextIpV6Address());
+                Assert.IsFalse(address == random.NextIpV6Address());
+                Assert.IsTrue(address != random.NextIpV6Address());
+                Assert.AreNotEqual(address.GetHashCode(), random.NextIpV6Address().GetHashCode());
+
+                Assert.AreNotEqual(2, address);
+                Assert.IsFalse(address.Equals(null));
             }
         }
 
@@ -152,6 +152,22 @@ namespace PcapDotNet.Packets.Test
         public void IpV6AddressToStringTest()
         {
             Assert.AreEqual("0000:0000:0000:0000:0000:0000:0000:0000", IpV6Address.Zero.ToString());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV6AddressNoColonTest()
+        {
+            IpV6Address ipV6Address = new IpV6Address("123");
+            Assert.AreEqual(ipV6Address,ipV6Address);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IpV6AddressDoubleColonsWithoutMissingColonsTest()
+        {
+            IpV6Address ipV6Address = new IpV6Address("1::2:3:4:5:6:7:8");
+            Assert.AreEqual(ipV6Address, ipV6Address);
         }
     }
 }

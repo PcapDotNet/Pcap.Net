@@ -125,7 +125,6 @@ namespace PcapDotNet.Packets.Igmp
                    GroupAddress.GetHashCode() ^
                    ((IsSuppressRouterSideProcessing ? 0 : (1 << 8)) + QueryRobustnessVariable) ^
                    SourceAddresses.SequenceGetHashCode();
-
         }
 
         /// <summary>

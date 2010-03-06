@@ -90,6 +90,10 @@ namespace PcapDotNet.Packets.Test
                 // TCP
                 tcpLayer.Checksum = packet.Ethernet.IpV4.Tcp.Checksum;
                 Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
+                Assert.AreNotEqual(random.NextTcpLayer(), packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
+                Assert.AreEqual(tcpLayer.GetHashCode(), packet.Ethernet.IpV4.Tcp.ExtractLayer().GetHashCode(), "TCP Layer");
+                Assert.AreNotEqual(random.NextTcpLayer().GetHashCode(), packet.Ethernet.IpV4.Tcp.ExtractLayer().GetHashCode(), "TCP Layer");
+                Assert.AreEqual(packet.Ethernet.IpV4.Tcp.SequenceNumber + packet.Ethernet.IpV4.Tcp.PayloadLength, packet.Ethernet.IpV4.Tcp.NextSequenceNumber);
                 foreach (TcpOption option in packet.Ethernet.IpV4.Tcp.Options.OptionsCollection)
                 {
                     Assert.AreEqual(option, option);
@@ -130,6 +134,8 @@ namespace PcapDotNet.Packets.Test
             Assert.AreNotEqual(block1, block2);
             Assert.IsTrue(block1 != block2);
             Assert.IsFalse(block1 == block2);
+            Assert.AreNotEqual(block1.ToString(), block2.ToString());
+            Assert.AreNotEqual(block1, 0);
 
             block2 = new TcpOptionSelectiveAcknowledgmentBlock(1, 2);
             Assert.AreEqual(block1, block2);
