@@ -75,23 +75,32 @@ namespace PcapDotNet.Packets.Igmp
             get { return TimeSpan.Zero; }
         }
 
-        public bool Equals(IgmpReportVersion3Layer other)
-        {
-            return other != null &&
-                   GroupRecords.SequenceEqual(other.GroupRecords);
-        }
-
-        public sealed override bool Equals(IgmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IgmpReportVersion3Layer);
-        }
-
+        /// <summary>
+        /// Xor of the hash codes of the layer length, datalink, message type, query version and the group records.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    GroupRecords.SequenceGetHashCode();
         }
- 
+
+        /// <summary>
+        /// true iff the group records are equal.
+        /// </summary>
+        protected override bool EqualFields(IgmpLayer other)
+        {
+            return EqualFields(other as IgmpReportVersion3Layer);
+        }
+
+        /// <summary>
+        /// true iff the group records are equal.
+        /// </summary>
+        private bool EqualFields(IgmpReportVersion3Layer other)
+        {
+            return other != null &&
+                   GroupRecords.SequenceEqual(other.GroupRecords);
+        }
+
         private readonly IList<IgmpGroupRecord> _groupRecords;
     }
 }

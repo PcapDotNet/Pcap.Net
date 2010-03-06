@@ -47,17 +47,11 @@ namespace PcapDotNet.Packets
 
         /// <summary>
         /// True iff the two objects are equal Layers.
-        /// In order to be equal, the two layers must have identical length and data link.
         /// </summary>
-        public virtual bool Equals(Layer other)
-        {
-            return other != null &&
-                   Length == other.Length && DataLink == other.DataLink;
-        }
+        public abstract bool Equals(Layer other);
 
         /// <summary>
         /// True iff the two objects are equal Layers.
-        /// In order to be equal, the two layers must have identical length and data link.
         /// </summary>
         public override sealed bool Equals(object obj)
         {
@@ -66,7 +60,7 @@ namespace PcapDotNet.Packets
 
         /// <summary>
         /// Returns a hash code for the layer.
-        /// The hash code base is a XOR of the layer length and data link.
+        /// The hash code base is a XOR of the hash codes of the layer length and data link.
         /// </summary>
         public override int GetHashCode()
         {

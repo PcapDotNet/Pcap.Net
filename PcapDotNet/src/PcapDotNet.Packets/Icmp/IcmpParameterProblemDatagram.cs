@@ -51,6 +51,11 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct, the code is in the expected range,
+        /// the IPv4 payload contains at least an IPv4 header, the IPv4's payload is in the expected size
+        /// and the pointer points to a byte within the IPv4 header.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Pointer < IpV4.Length;

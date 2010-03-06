@@ -41,6 +41,9 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpRedirectLayer

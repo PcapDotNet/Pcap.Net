@@ -95,6 +95,10 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         public override abstract ILayer ExtractLayer();
 
+        /// <summary>
+        /// The payload of the ICMP.
+        /// All the data without the header.
+        /// </summary>
         public Datagram Payload
         {
             get
@@ -163,9 +167,13 @@ namespace PcapDotNet.Packets.Icmp
             return Sum16BitsToChecksum(sum);
         }
 
-        private bool? _isChecksumCorrect;
-        private Datagram _payload;
-
+        /// <summary>
+        /// Creates an IcmpDatagram from a buffer according to the message type.
+        /// </summary>
+        /// <param name="buffer">The buffer of the datagram.</param>
+        /// <param name="offset">The offset where the datagram starts.</param>
+        /// <param name="length">The length of the datagram in the buffer.</param>
+        /// <returns>An IcmpDatagram according to the Icmp message type.</returns>
         public static IcmpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length <= Offset.Type)
@@ -236,5 +244,8 @@ namespace PcapDotNet.Packets.Icmp
                     return new IcmpUnknownDatagram(buffer, offset, length);
             }
         }
+
+        private bool? _isChecksumCorrect;
+        private Datagram _payload;
     }
 }

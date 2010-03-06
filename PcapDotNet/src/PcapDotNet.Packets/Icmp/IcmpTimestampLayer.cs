@@ -52,17 +52,23 @@ namespace PcapDotNet.Packets.Icmp
                                                         OriginateTimestamp, ReceiveTimestamp, TransmitTimestamp);
         }
 
-        public bool Equals(IcmpTimestampLayer other)
+        /// <summary>
+        /// True iff the OriginateTimestamp, ReceiveTimestamp and the TransmitTimestamp fields are equal.
+        /// </summary>
+        protected override bool EqualPayload(IcmpLayer other)
+        {
+            return EqualPayload(other as IcmpTimestampLayer);
+        }
+
+        /// <summary>
+        /// True iff the OriginateTimestamp, ReceiveTimestamp and the TransmitTimestamp fields are equal.
+        /// </summary>
+        private bool EqualPayload(IcmpTimestampLayer other)
         {
             return other != null &&
                    OriginateTimestamp == other.OriginateTimestamp &&
                    ReceiveTimestamp == other.ReceiveTimestamp &&
                    TransmitTimestamp == other.TransmitTimestamp;
-        }
-
-        public sealed override bool Equals(IcmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IcmpTimestampLayer);
         }
     }
 }

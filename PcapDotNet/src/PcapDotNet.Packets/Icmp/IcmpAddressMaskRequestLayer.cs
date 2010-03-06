@@ -42,20 +42,19 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         /// <summary>
-        /// Two ICMP Address Mask Request layers are equal if they have the same sequence number, identifier and address mask.
+        /// True iff the address mask is equal to the other address mask.
         /// </summary>
-        public bool Equals(IcmpAddressMaskRequestLayer other)
+        protected override bool EqualPayload(IcmpLayer other)
         {
-            return other != null &&
-                   AddressMask == other.AddressMask;
+            return EqualPayload(other as IcmpAddressMaskRequestLayer);
         }
 
         /// <summary>
-        /// Two ICMP Address Mask Request layers are equal if they have the same sequence number, identifier and address mask.
+        /// True iff the address mask is equal to the other address mask.
         /// </summary>
-        public override sealed bool Equals(IcmpLayer other)
+        private bool EqualPayload(IcmpAddressMaskRequestLayer other)
         {
-            return base.Equals(other) && Equals(other as IcmpAddressMaskRequestLayer);
+            return other != null && AddressMask.Equals(other.AddressMask);
         }
     }
 }

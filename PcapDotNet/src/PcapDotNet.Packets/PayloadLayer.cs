@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         public override sealed bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as PayloadLayer);
+            return Equals(other as PayloadLayer);
         }
 
         /// <summary>

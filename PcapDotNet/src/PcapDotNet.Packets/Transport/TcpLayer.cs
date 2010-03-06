@@ -93,18 +93,24 @@ namespace PcapDotNet.Packets.Transport
                                     Options);
         }
 
-        public bool Equals(TcpLayer other)
+        /// <summary>
+        /// True iff the SequenceNumber, AcknowledgmentNumber, ControlBits, Window, UrgentPointer and Options fields are equal.
+        /// </summary>
+        protected override sealed bool EqualFields(TransportLayer other)
+        {
+            return EqualFields(other as TcpLayer);
+        }
+
+        /// <summary>
+        /// True iff the SequenceNumber, AcknowledgmentNumber, ControlBits, Window, UrgentPointer and Options fields are equal.
+        /// </summary>
+        private bool EqualFields(TcpLayer other)
         {
             return other != null &&
                    SequenceNumber == other.SequenceNumber && AcknowledgmentNumber == other.AcknowledgmentNumber &&
                    ControlBits == other.ControlBits &&
                    Window == other.Window && UrgentPointer == other.UrgentPointer &&
                    Options.Equals(other.Options);
-        }
-
-        public override sealed bool Equals(TransportLayer other)
-        {
-            return base.Equals(other) && Equals(other as TcpLayer);
         }
     }
 }

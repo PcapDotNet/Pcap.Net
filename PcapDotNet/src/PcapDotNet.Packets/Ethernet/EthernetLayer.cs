@@ -90,23 +90,37 @@ namespace PcapDotNet.Packets.Ethernet
             get { return ArpHardwareType.Ethernet; }
         }
 
+        /// <summary>
+        /// Two Ethernet layers are equal if they have the same source, destination and ethernet type.
+        /// </summary>
         public bool Equals(EthernetLayer other)
         {
             return other != null &&
                    Source == other.Source && Destination == other.Destination && EtherType == other.EtherType;
         }
 
+        /// <summary>
+        /// Two Ethernet layers are equal if they have the same source, destination and ethernet type.
+        /// </summary>
         public override sealed bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as EthernetLayer);
+            return Equals(other as EthernetLayer);
         }
 
+        /// <summary>
+        /// Returns a hash code for the layer.
+        /// The hash code is a XOR of the hash codes of the layer length, data link, source and destination addresses and the ethernet type.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    Source.GetHashCode() ^ Destination.GetHashCode() ^ EtherType.GetHashCode();
         }
 
+        /// <summary>
+        /// Contains the source, destination and ether type.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return Source + " -> " + Destination + " (" + EtherType + ")";

@@ -85,6 +85,9 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct and the code is in the expected range.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Length == DatagramLength;

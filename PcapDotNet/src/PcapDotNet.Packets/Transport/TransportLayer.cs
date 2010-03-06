@@ -51,24 +51,45 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public abstract bool IsChecksumOptional { get; }
 
-        public virtual bool Equals(TransportLayer other)
+        /// <summary>
+        /// Two Transport layers are equal if they have they have the same previous layer protocol value, checksum, source and destination ports, 
+        /// and if the specific transport protocol fields are equal.
+        /// </summary>
+        public bool Equals(TransportLayer other)
         {
             return other != null &&
                    PreviousLayerProtocol == other.PreviousLayerProtocol &&
                    Checksum == other.Checksum &&
-                   SourcePort == other.SourcePort && DestinationPort == other.DestinationPort;
+                   SourcePort == other.SourcePort && DestinationPort == other.DestinationPort &&
+                   EqualFields(other);
         }
 
+        /// <summary>
+        /// Two Transport layers are equal if they have they have the same previous layer protocol value, checksum, source and destination ports, 
+        /// and if the specific transport protocol fields are equal.
+        /// </summary>
         public override sealed bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as TransportLayer);
+            return Equals(other as TransportLayer);
         }
 
+        /// <summary>
+        /// Returns a hash code for the layer.
+        /// The hash code is a XOR of the combination of the source and destination ports and the hash codes of the layer length, data link and checksum.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    Checksum.GetHashCode() ^
                    ((SourcePort << 16) + DestinationPort);
+        }
+
+        /// <summary>
+        /// True iff the specific transport layer fields are equal.
+        /// </summary>
+        protected virtual bool EqualFields(TransportLayer other)
+        {
+            return true;
         }
     }
 }

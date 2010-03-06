@@ -11,6 +11,13 @@ namespace PcapDotNet.Core.Extensions
     /// </summary>
     public static class LivePacketDeviceExtensions
     {
+        /// <summary>
+        /// Returns the network interface of the packet device.
+        /// The interface is found using its id.
+        /// If no interface is found, null is returned.
+        /// </summary>
+        /// <param name="livePacketDevice">The LivePacketDevice to look for a matching network interface for.</param>
+        /// <returns>The network interface found according to the given device or null if none is found.</returns>
         public static NetworkInterface GetNetworkInterface(this LivePacketDevice livePacketDevice)
         {
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
@@ -22,6 +29,12 @@ namespace PcapDotNet.Core.Extensions
             return null;
         }
 
+        /// <summary>
+        /// Returns the MacAddress of the network interface of the given device.
+        /// If no interface matches the given packet device, an exception is thrown.
+        /// </summary>
+        /// <param name="livePacketDevice">The packet device to look for the matching interface.</param>
+        /// <returns>The MacAddress of the given device's matching interface.</returns>
         public static MacAddress GetMacAddress(this LivePacketDevice livePacketDevice)
         {
             NetworkInterface networkInterface = livePacketDevice.GetNetworkInterface();
