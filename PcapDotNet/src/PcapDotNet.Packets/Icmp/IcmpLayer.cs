@@ -69,6 +69,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         /// <param name="buffer">The buffer to write the layer to.</param>
         /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "offset+8")]
         protected override sealed void Write(byte[] buffer, int offset)
         {
             IcmpDatagram.WriteHeader(buffer, offset, MessageType, CodeValue, Variable);
