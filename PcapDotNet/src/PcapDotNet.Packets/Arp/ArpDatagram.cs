@@ -169,9 +169,13 @@ namespace PcapDotNet.Packets.Arp
             return Length >= HeaderBaseLength && Length == HeaderLength;
         }
 
-        internal ArpDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        internal static ArpDatagram CreateInstance(byte[] buffer, int offset, int length)
         {
+            if (length <= HeaderBaseLength)
+                return new ArpDatagram(buffer, offset, length);
+
+            int headerLength = GetHeaderLength(buffer[offset + Offset.HardwareLength], buffer[offset + Offset.ProtocolLength]);
+            return new ArpDatagram(buffer, offset, Math.Min(length, headerLength));
         }
 
         internal static int GetHeaderLength(int hardwareLength, int protocolLength)
@@ -193,6 +197,11 @@ namespace PcapDotNet.Packets.Arp
             buffer.Write(ref offset, senderProtocolAddress);
             buffer.Write(ref offset, targetHardwareAddress);
             buffer.Write(ref offset, targetProtocolAddress);
+        }
+
+        private ArpDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private int OffsetSenderProtocolAddress
