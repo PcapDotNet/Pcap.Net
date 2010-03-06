@@ -121,7 +121,7 @@ namespace PcapDotNet.Packets.Ethernet
             get
             {
                 if (_arp == null && Length >= HeaderLength)
-                    _arp = new ArpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                    _arp = ArpDatagram.CreateInstance(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
                 return _arp;
             }
         }
