@@ -17,6 +17,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.AddressMaskRequest)]
     public class IcmpAddressMaskRequestDatagram : IcmpIdentifiedDatagram
     {
         /// <summary>
@@ -42,11 +43,6 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadIpV4Address(Offset.AddressMask, Endianity.Big); }
         }
 
-        internal IcmpAddressMaskRequestDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -69,9 +65,19 @@ namespace PcapDotNet.Packets.Icmp
             return base.CalculateIsValid() && Length == DatagramLength;
         }
 
+        internal IcmpAddressMaskRequestDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpAddressMaskRequestDatagram(buffer, offset, length);
+        }
+
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4Address addressMask)
         {
             buffer.Write(offset, addressMask, Endianity.Big);
         }
-    }
+   }
 }

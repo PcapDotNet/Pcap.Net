@@ -12,13 +12,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------+-----------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.DomainNameRequest)]
     public class IcmpDomainNameRequestDatagram : IcmpIdentifiedDatagram
     {
-        internal IcmpDomainNameRequestDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -30,6 +26,16 @@ namespace PcapDotNet.Packets.Icmp
                            Identifier = Identifier,
                            SequenceNumber = SequenceNumber
                        };
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpDomainNameRequestDatagram(buffer, offset, length);
+        }
+
+        private IcmpDomainNameRequestDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }

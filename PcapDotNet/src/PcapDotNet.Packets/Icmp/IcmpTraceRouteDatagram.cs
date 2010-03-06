@@ -22,6 +22,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.TraceRoute)]
     public class IcmpTraceRouteDatagram : IcmpDatagram
     {
         /// <summary>
@@ -46,11 +47,6 @@ namespace PcapDotNet.Packets.Icmp
             public const int ReturnHopCount = 10;
             public const int OutputLinkSpeed = 12;
             public const int OutputLinkMtu = 16;
-        }
-
-        internal IcmpTraceRouteDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -148,12 +144,22 @@ namespace PcapDotNet.Packets.Icmp
             get { return _maxCode; }
         }
 
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpTraceRouteDatagram(buffer, offset, length);
+        }
+
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, ushort outboundHopCount, ushort returnHopCount, uint outputLinkSpeed, uint outputLinkMtu)
         {
             buffer.Write(ref offset, outboundHopCount, Endianity.Big);
             buffer.Write(ref offset, returnHopCount, Endianity.Big);
             buffer.Write(ref offset, outputLinkSpeed, Endianity.Big);
             buffer.Write(offset, outputLinkMtu, Endianity.Big);
+        }
+
+        private IcmpTraceRouteDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private static readonly byte _minCode = (byte)typeof(IcmpCodeTraceRoute).GetEnumValues<IcmpCodeTraceRoute>().Min();

@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -15,6 +17,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.EchoReply)]
     public class IcmpEchoReplyDatagram : IcmpIdentifiedDatagram
     {
         /// <summary>
@@ -30,9 +33,14 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
-        internal IcmpEchoReplyDatagram(byte[] buffer, int offset, int length)
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpEchoReplyDatagram(buffer, offset, length);
+        }
+
+        private IcmpEchoReplyDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
         }
-    }
+   }
 }

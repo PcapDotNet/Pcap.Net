@@ -21,6 +21,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.Timestamp)]
     public class IcmpTimestampDatagram : IcmpIdentifiedDatagram
     {
         /// <summary>
@@ -38,11 +39,6 @@ namespace PcapDotNet.Packets.Icmp
             public const int OriginateTimestamp = 8;
             public const int ReceiveTimestamp = 12;
             public const int TransmitTimestamp = 16;
-        }
-
-        internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -91,6 +87,16 @@ namespace PcapDotNet.Packets.Icmp
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Length == DatagramLength;
+        }
+
+        internal IcmpTimestampDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpTimestampDatagram(buffer, offset, length);
         }
 
         internal static void WriteHeaderAdditional(byte[] buffer, int offset, IpV4TimeOfDay originateTimestamp, IpV4TimeOfDay receiveTimestamp, IpV4TimeOfDay transmitTimestamp)

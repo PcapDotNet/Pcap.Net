@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -19,6 +20,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.DestinationUnreachable)]
     public class IcmpDestinationUnreachableDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         /// <summary>
@@ -29,11 +31,6 @@ namespace PcapDotNet.Packets.Icmp
         private static class Offset
         {
             public const int NextHopMtu = 6;
-        }
-
-        internal IcmpDestinationUnreachableDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -89,6 +86,16 @@ namespace PcapDotNet.Packets.Icmp
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpDestinationUnreachableDatagram(buffer, offset, length);
+        }
+
+        private IcmpDestinationUnreachableDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private static readonly byte _minCode = (byte)typeof(IcmpCodeDestinationUnreachable).GetEnumValues<IcmpCodeDestinationUnreachable>().Min();

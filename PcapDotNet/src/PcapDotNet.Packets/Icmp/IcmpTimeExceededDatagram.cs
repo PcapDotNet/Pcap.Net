@@ -19,13 +19,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.TimeExceeded)]
     public class IcmpTimeExceededDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        internal IcmpTimeExceededDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -54,8 +50,17 @@ namespace PcapDotNet.Packets.Icmp
             get { return _maxCode; }
         }
 
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpTimeExceededDatagram(buffer, offset, length);
+        }
+
+        private IcmpTimeExceededDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
         private static readonly byte _minCode = (byte)typeof(IcmpCodeTimeExceeded).GetEnumValues<IcmpCodeTimeExceeded>().Min();
         private static readonly byte _maxCode = (byte)typeof(IcmpCodeTimeExceeded).GetEnumValues<IcmpCodeTimeExceeded>().Max();
-
     }
 }

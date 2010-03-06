@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -12,13 +14,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------+-----------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.InformationReply)]
     public class IcmpInformationReplyDatagram : IcmpIdentifiedDatagram
     {
-        internal IcmpInformationReplyDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -30,6 +28,16 @@ namespace PcapDotNet.Packets.Icmp
                            Identifier = Identifier,
                            SequenceNumber = SequenceNumber
                        };
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpInformationReplyDatagram(buffer, offset, length);
+        }
+
+        private IcmpInformationReplyDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }
