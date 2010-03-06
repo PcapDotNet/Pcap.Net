@@ -88,8 +88,10 @@ namespace PcapDotNet.Packets.Test
                 // IGMP
                 Assert.IsTrue(packet.Ethernet.IpV4.Igmp.IsChecksumCorrect);
                 Assert.AreEqual(igmpLayer, packet.Ethernet.IpV4.Igmp.ExtractLayer(), "IGMP Layer");
+                Assert.AreEqual(igmpLayer.GetHashCode(), packet.Ethernet.IpV4.Igmp.ExtractLayer().GetHashCode(), "IGMP Layer");
                 Assert.AreNotEqual(igmpLayer, null);
                 Assert.AreNotEqual(igmpLayer, random.NextPayloadLayer(igmpLayer.Length));
+                Assert.AreNotEqual(igmpLayer.GetHashCode(), random.NextPayloadLayer(igmpLayer.Length).GetHashCode());
                 if (packet.Ethernet.IpV4.Igmp.QueryVersion != IgmpQueryVersion.Version3)
                     MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.IpV4.Igmp.MaxResponseTime);
                 if (packet.Ethernet.IpV4.Igmp.MessageType != IgmpMessageType.MembershipQuery)
@@ -346,11 +348,13 @@ namespace PcapDotNet.Packets.Test
                                                          Datagram.Empty);
             Assert.IsTrue(record.Equals((object)record));
             Assert.AreEqual(record.GetHashCode(), record.GetHashCode());
+            Assert.AreEqual(record.ToString(), record.ToString());
             Assert.IsFalse(record.Equals(null));
             Assert.AreNotEqual(record, new IgmpGroupRecord(IgmpRecordType.CurrentStateRecordModeIsExclude, record.MulticastAddress, record.SourceAddresses, record.AuxiliaryData));
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, new IpV4Address("1.2.3.4"), record.SourceAddresses, record.AuxiliaryData));
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, record.MulticastAddress, new List<IpV4Address>(new[] {new IpV4Address("2.3.4.5")}), record.AuxiliaryData));
             Assert.AreNotEqual(record, new IgmpGroupRecord(record.RecordType, record.MulticastAddress, record.SourceAddresses, new Datagram(new byte[12])));
+            Assert.AreNotEqual(record.ToString(), new IgmpGroupRecord(record.RecordType, record.MulticastAddress, record.SourceAddresses, new Datagram(new byte[12])).ToString());
         }
 
         [TestMethod]

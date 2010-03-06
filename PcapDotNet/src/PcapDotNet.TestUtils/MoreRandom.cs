@@ -90,6 +90,11 @@ namespace PcapDotNet.TestUtils
             return ((((ulong)random.NextUInt()) << 32) + random.NextUInt());
         }
 
+        public static UInt128 NextUInt128(this Random random)
+        {
+            return new UInt128(random.NextULong(), random.NextULong());
+        }
+
         public static DateTime NextDateTime(this Random random, DateTime minimumValue, DateTime maximumValue)
         {
             return new DateTime(random.NextLong(minimumValue.ToUniversalTime().Ticks,

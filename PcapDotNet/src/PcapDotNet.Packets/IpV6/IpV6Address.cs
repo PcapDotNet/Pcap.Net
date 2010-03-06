@@ -78,13 +78,13 @@ namespace PcapDotNet.Packets.IpV6
             _value = new UInt128(mostSignificant, leastSignificant);
         }
 
-//        /// <summary>
-//        /// Gets the address value as a 32 bit integer.
-//        /// </summary>
-//        public uint ToValue()
-//        {
-//            return _value;
-//        }
+        /// <summary>
+        /// Gets the address value as a 128 bit integer.
+        /// </summary>
+        public UInt128 ToValue()
+        {
+            return _value;
+        }
 
         /// <summary>
         /// Two addresses are equal if the have the exact same value.

@@ -9,6 +9,7 @@ using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
@@ -120,7 +121,6 @@ namespace PcapDotNet.Packets.TestUtils
         {
             return new IpV4Layer
                 {
-
                     TypeOfService = random.NextByte(),
                     Identification = random.NextUShort(),
                     Ttl = random.NextByte(),
@@ -317,6 +317,13 @@ namespace PcapDotNet.Packets.TestUtils
                     break;
             }
             return new IpV4Options(options);
+        }
+
+        // IPv6
+
+        public static IpV6Address NextIpV6Address(this Random random)
+        {
+            return new IpV6Address(random.NextUInt128());
         }
 
         // UDP
@@ -557,6 +564,8 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IgmpMessageType.MembershipReportVersion3:
                     igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
+                    if (igmpGroupRecords.Count() == 0 && random.NextBool())
+                        return new IgmpReportVersion3Layer();
                     return new IgmpReportVersion3Layer(igmpGroupRecords);
 
                 default:
@@ -755,6 +764,10 @@ namespace PcapDotNet.Packets.TestUtils
                     icmpPayloadLayers = icmpPayloadLayers.Concat(random.NextIpV4Layer(), random.NextPayloadLayer(IcmpIpV4HeaderPlus64BitsPayloadDatagram.OriginalDatagramPayloadLength));
                     break;
                 case IcmpMessageType.ConversionFailed:
+                    IpV4Protocol icmpIpV4Protocol = random.NextBool()
+                                                        ? random.NextValue(new[] {IpV4Protocol.Udp, IpV4Protocol.Tcp})
+                                                        : random.NextEnum<IpV4Protocol>();
+
                     IpV4Layer icmpIpV4Layer = random.NextIpV4Layer();
                     icmpPayloadLayers = icmpPayloadLayers.Concat(icmpIpV4Layer);
                     if (icmpLayer.MessageTypeAndCode == IcmpMessageTypeAndCode.ConversionFailedUnsupportedTransportProtocol)

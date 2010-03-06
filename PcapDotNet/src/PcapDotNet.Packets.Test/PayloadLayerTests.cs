@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.Test
                                               {
                                                   Data = new Datagram(layer.Data.Concat<byte>(1).ToArray())
                                               });
-                if (layer.Length != 0)
+                if (layer.Length > 1)
                 {
                     Assert.AreNotEqual(layer, new PayloadLayer
                                                   {

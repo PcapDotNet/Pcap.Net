@@ -198,7 +198,7 @@ namespace PcapDotNet.Packets.Igmp
                         return 2;
 
                     default:
-                        throw new InvalidOperationException("Invalid MessageType " + MessageType);
+                        throw new InvalidOperationException("Invalid IgmpMessageType " + MessageType);
                 }
             }
         }

@@ -36,29 +36,29 @@ namespace PcapDotNet.Base
             _mostSignificant = mostSignificant;
             _leastSignificant = leastSignificant;
         }
-
+/*
         /// <summary>
         /// Creates a value using 8 16 bits values.
         /// </summary>
         /// <param name="values">The 16 bits values ordered so that the first value is the most significant.</param>
-        public UInt128(ushort[] values)
-        {
-            if (values.Length != 8)
-                throw new ArgumentException("UInt128 must be created by 8 ushorts and not " + values.Length + " ushorts");
-
-            _mostSignificant =
-                ((ulong)values[0] << 48) +
-                ((ulong)values[1] << 32) +
-                ((ulong)values[2] << 16) +
-                values[3];
-
-            _leastSignificant =
-                ((ulong)values[4] << 48) +
-                ((ulong)values[5] << 32) +
-                ((ulong)values[6] << 16) +
-                values[7];
-        }
-
+//        public UInt128(ushort[] values)
+//        {
+//            if (values.Length != 8)
+//                throw new ArgumentException("UInt128 must be created by 8 ushorts and not " + values.Length + " ushorts");
+//
+//            _mostSignificant =
+//                ((ulong)values[0] << 48) +
+//                ((ulong)values[1] << 32) +
+//                ((ulong)values[2] << 16) +
+//                values[3];
+//
+//            _leastSignificant =
+//                ((ulong)values[4] << 48) +
+//                ((ulong)values[5] << 32) +
+//                ((ulong)values[6] << 16) +
+//                values[7];
+//        }
+        */
         /// <summary>
         /// Converts the string representation of a number in a specified style to its 128-bit unsigned integer equivalent.
         /// </summary>
@@ -105,7 +105,7 @@ namespace PcapDotNet.Base
         /// <returns>The 64 bit value converted from the 128 bit value.</returns>
         public static explicit operator ulong(UInt128 value)
         {
-            return value._mostSignificant;
+            return value._leastSignificant;
         }
 
         /// <summary>

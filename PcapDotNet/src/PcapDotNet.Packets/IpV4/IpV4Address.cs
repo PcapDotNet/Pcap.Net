@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// Gets the address valud as a 32 bit integer.
+        /// Gets the address value as a 32 bit integer.
         /// </summary>
         public uint ToValue()
         {
