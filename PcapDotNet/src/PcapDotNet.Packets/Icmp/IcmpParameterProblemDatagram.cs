@@ -18,6 +18,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.ParameterProblem)]
     public class IcmpParameterProblemDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         private static class Offset
@@ -32,11 +33,6 @@ namespace PcapDotNet.Packets.Icmp
         public byte Pointer
         {
             get { return this[Offset.Pointer]; }
-        }
-
-        internal IcmpParameterProblemDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -59,6 +55,16 @@ namespace PcapDotNet.Packets.Icmp
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Pointer < IpV4.Length;
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpParameterProblemDatagram(buffer, offset, length);
+        }
+
+        private IcmpParameterProblemDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }

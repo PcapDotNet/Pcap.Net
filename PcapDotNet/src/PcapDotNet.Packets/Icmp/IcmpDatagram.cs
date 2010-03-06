@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -180,72 +184,129 @@ namespace PcapDotNet.Packets.Icmp
                 return new IcmpUnknownDatagram(buffer, offset, length);
 
             IcmpMessageType messageType = (IcmpMessageType)buffer[offset + Offset.Type];
-            switch (messageType)
-            {
-                case IcmpMessageType.DestinationUnreachable:
-                    return new IcmpDestinationUnreachableDatagram(buffer, offset, length);
 
-                case IcmpMessageType.TimeExceeded:
-                    return new IcmpTimeExceededDatagram(buffer, offset, length);
-
-                case IcmpMessageType.SourceQuench:
-                    return new IcmpSourceQuenchDatagram(buffer, offset, length);
-
-                case IcmpMessageType.ParameterProblem:
-                    return new IcmpParameterProblemDatagram(buffer, offset, length);
-
-                case IcmpMessageType.Redirect:
-                    return new IcmpRedirectDatagram(buffer, offset, length);
-
-                case IcmpMessageType.Echo:
-                    return new IcmpEchoDatagram(buffer, offset, length);
-
-                case IcmpMessageType.EchoReply:
-                    return new IcmpEchoReplyDatagram(buffer, offset, length);
-                    
-                case IcmpMessageType.Timestamp:
-                    return new IcmpTimestampDatagram(buffer, offset, length);
-
-                case IcmpMessageType.TimestampReply:
-                    return new IcmpTimestampReplyDatagram(buffer, offset, length);
-
-                case IcmpMessageType.InformationRequest:
-                    return new IcmpInformationRequestDatagram(buffer, offset, length);
-
-                case IcmpMessageType.InformationReply:
-                    return new IcmpInformationReplyDatagram(buffer, offset, length);
-
-                case IcmpMessageType.DomainNameRequest:
-                    return new IcmpDomainNameRequestDatagram(buffer, offset, length);
-                
-                case IcmpMessageType.RouterAdvertisement:
-                    return new IcmpRouterAdvertisementDatagram(buffer, offset, length);
-
-                case IcmpMessageType.AddressMaskRequest:
-                    return new IcmpAddressMaskRequestDatagram(buffer, offset, length);
-
-                case IcmpMessageType.AddressMaskReply:
-                    return new IcmpAddressMaskReplyDatagram(buffer, offset, length);
-
-                case IcmpMessageType.TraceRoute:
-                    return new IcmpTraceRouteDatagram(buffer, offset, length);
-
-                case IcmpMessageType.ConversionFailed:
-                    return new IcmpConversionFailedDatagram(buffer, offset, length);
-
-                case IcmpMessageType.SecurityFailures:
-                    return new IcmpSecurityFailuresDatagram(buffer, offset, length);
-
-                case IcmpMessageType.RouterSolicitation:
-                    return new IcmpRouterSolicitationDatagram(buffer, offset, length);
-
-                case IcmpMessageType.DomainNameReply: // Domain Name Reply is unsupported
-                default:
-                    return new IcmpUnknownDatagram(buffer, offset, length);
-            }
+            return IcmpDatagramFactory.CreateInstance(messageType, buffer, offset, length);
+//            switch (messageType)
+//            {
+//                case IcmpMessageType.DestinationUnreachable:
+//                    return new IcmpDestinationUnreachableDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.TimeExceeded:
+//                    return new IcmpTimeExceededDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.SourceQuench:
+//                    return new IcmpSourceQuenchDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.ParameterProblem:
+//                    return new IcmpParameterProblemDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.Redirect:
+//                    return new IcmpRedirectDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.Echo:
+//                    return new IcmpEchoDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.EchoReply:
+//                    return new IcmpEchoReplyDatagram(buffer, offset, length);
+//                    
+//                case IcmpMessageType.Timestamp:
+//                    return new IcmpTimestampDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.TimestampReply:
+//                    return new IcmpTimestampReplyDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.InformationRequest:
+//                    return new IcmpInformationRequestDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.InformationReply:
+//                    return new IcmpInformationReplyDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.DomainNameRequest:
+//                    return new IcmpDomainNameRequestDatagram(buffer, offset, length);
+//                
+//                case IcmpMessageType.RouterAdvertisement:
+//                    return new IcmpRouterAdvertisementDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.AddressMaskRequest:
+//                    return new IcmpAddressMaskRequestDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.AddressMaskReply:
+//                    return new IcmpAddressMaskReplyDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.TraceRoute:
+//                    return new IcmpTraceRouteDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.ConversionFailed:
+//                    return new IcmpConversionFailedDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.SecurityFailures:
+//                    return new IcmpSecurityFailuresDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.RouterSolicitation:
+//                    return new IcmpRouterSolicitationDatagram(buffer, offset, length);
+//
+//                case IcmpMessageType.DomainNameReply: // Domain Name Reply is unsupported
+//                default:
+//                    return new IcmpUnknownDatagram(buffer, offset, length);
+//            }
         }
+
+        internal abstract IcmpDatagram CreateInstance(byte[] buffer, int offset, int length);
 
         private bool? _isChecksumCorrect;
         private Datagram _payload;
+    }
+
+    internal static class IcmpDatagramFactory
+    {
+        internal static IcmpDatagram CreateInstance(IcmpMessageType messageType, byte[] buffer, int offset, int length)
+        {
+            IcmpDatagram prototype;
+            if (!_prototypes.TryGetValue(messageType, out prototype))
+                return new IcmpUnknownDatagram(buffer, offset, length);
+
+            return prototype.CreateInstance(buffer, offset, length);
+        }
+
+        private static Dictionary<IcmpMessageType, IcmpDatagram> InitializeComplexOptions()
+        {
+            var prototypes =
+                from type in Assembly.GetExecutingAssembly().GetTypes()
+                where typeof(IcmpDatagram).IsAssignableFrom(type) &&
+                      GetRegistrationAttribute(type) != null
+                let constructor =
+                    type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public, null, new[] {typeof(byte[]), typeof(int), typeof(int)}, null)
+                select new
+                           {
+                               GetRegistrationAttribute(type).MessageType,
+                               Datagram = (IcmpDatagram)constructor.Invoke(new object[] {null, 0, 0})
+                           };
+
+            return prototypes.ToDictionary(prototype => prototype.MessageType, prototype => prototype.Datagram);
+        }
+
+        private static IcmpDatagramRegistrationAttribute GetRegistrationAttribute(Type type)
+        {
+            var registrationAttributes =
+                from attribute in type.GetCustomAttributes<IcmpDatagramRegistrationAttribute>(false)
+                select attribute;
+
+            if (registrationAttributes.IsEmpty())
+                return null;
+
+            return registrationAttributes.First();
+        }
+
+        private static readonly Dictionary<IcmpMessageType, IcmpDatagram> _prototypes = InitializeComplexOptions();
+    }
+
+    internal sealed class IcmpDatagramRegistrationAttribute : Attribute
+    {
+        public IcmpDatagramRegistrationAttribute(IcmpMessageType messageType)
+        {
+            MessageType = messageType;
+        }
+
+        public IcmpMessageType MessageType { get; private set; }
     }
 }

@@ -18,13 +18,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.TimestampReply)]
     public class IcmpTimestampReplyDatagram : IcmpTimestampDatagram
     {
-        internal IcmpTimestampReplyDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -39,6 +35,16 @@ namespace PcapDotNet.Packets.Icmp
                            ReceiveTimestamp = ReceiveTimestamp,
                            TransmitTimestamp = TransmitTimestamp
                        };
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpTimestampReplyDatagram(buffer, offset, length);
+        }
+
+        private IcmpTimestampReplyDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }

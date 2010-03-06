@@ -14,13 +14,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.AddressMaskReply)]
     public class IcmpAddressMaskReplyDatagram : IcmpAddressMaskRequestDatagram
     {
-        internal IcmpAddressMaskReplyDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -33,6 +29,16 @@ namespace PcapDotNet.Packets.Icmp
                            SequenceNumber = SequenceNumber,
                            AddressMask = AddressMask
                        };
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpAddressMaskReplyDatagram(buffer, offset, length);
+        }
+
+        private IcmpAddressMaskReplyDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }

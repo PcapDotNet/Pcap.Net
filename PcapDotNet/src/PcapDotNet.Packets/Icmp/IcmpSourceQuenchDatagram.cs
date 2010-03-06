@@ -18,13 +18,9 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.SourceQuench)]
     public class IcmpSourceQuenchDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
-        internal IcmpSourceQuenchDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -34,6 +30,16 @@ namespace PcapDotNet.Packets.Icmp
                        {
                            Checksum = Checksum
                        };
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpSourceQuenchDatagram(buffer, offset, length);
+        }
+
+        private IcmpSourceQuenchDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
     }
 }

@@ -20,16 +20,12 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.SecurityFailures)]
     public class IcmpSecurityFailuresDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         private static class Offset
         {
             public const int Pointer = 6;
-        }
-
-        internal IcmpSecurityFailuresDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -77,6 +73,16 @@ namespace PcapDotNet.Packets.Icmp
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpSecurityFailuresDatagram(buffer, offset, length);
+        }
+
+        private IcmpSecurityFailuresDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private static readonly byte _minCode = (byte)typeof(IcmpCodeSecurityFailure).GetEnumValues<IcmpCodeSecurityFailure>().Min();

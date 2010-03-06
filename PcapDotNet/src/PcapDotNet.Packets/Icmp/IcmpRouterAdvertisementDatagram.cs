@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Icmp
     /// |  .  |                   .                    |
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.RouterAdvertisement)]
     public class IcmpRouterAdvertisementDatagram : IcmpDatagram
     {
         /// <summary>
@@ -125,9 +126,9 @@ namespace PcapDotNet.Packets.Icmp
                    Length == HeaderLength + NumberOfAddresses * AddressEntrySize * IpV4Address.SizeOf;
         }
 
-        internal IcmpRouterAdvertisementDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
         {
+            return new IcmpRouterAdvertisementDatagram(buffer, offset, length);
         }
 
         internal static int GetPayloadLength(int numEntries)
@@ -143,6 +144,11 @@ namespace PcapDotNet.Packets.Icmp
                 buffer.Write(ref offset, entry.RouterAddress, Endianity.Big);
                 buffer.Write(ref offset, entry.RouterAddressPreference, Endianity.Big);
             }
+        }
+
+        private IcmpRouterAdvertisementDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private ReadOnlyCollection<IcmpRouterAdvertisementEntry> _entries;

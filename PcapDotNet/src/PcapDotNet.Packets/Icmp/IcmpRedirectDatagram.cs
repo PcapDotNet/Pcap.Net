@@ -21,6 +21,7 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+--------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.Redirect)]
     public class IcmpRedirectDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         private static class Offset
@@ -34,11 +35,6 @@ namespace PcapDotNet.Packets.Icmp
         public IpV4Address GatewayInternetAddress
         {
             get { return ReadIpV4Address(Offset.GatewayInternetAddress, Endianity.Big); }
-        }
-
-        internal IcmpRedirectDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
         }
 
         /// <summary>
@@ -68,6 +64,16 @@ namespace PcapDotNet.Packets.Icmp
         protected override byte MaxCodeValue
         {
             get { return _maxCode; }
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpRedirectDatagram(buffer, offset, length);
+        }
+
+        private IcmpRedirectDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         private static readonly byte _minCode = (byte)typeof(IcmpCodeRedirect).GetEnumValues<IcmpCodeRedirect>().Min();

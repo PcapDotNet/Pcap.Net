@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets
         private static OptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
         {
             var registraionAttributes =
-                from attribute in type.GetCustomAttributes(typeof(OptionTypeRegistrationAttribute), false).Cast<OptionTypeRegistrationAttribute>()
+                from attribute in type.GetCustomAttributes<OptionTypeRegistrationAttribute>(false)
                 where attribute.OptionTypeType == typeof(TOptionType)
                 select attribute;
 
@@ -70,12 +70,6 @@ namespace PcapDotNet.Packets
 
             return registraionAttributes.First();
         }
-
-//        [DebuggerHidden]
-//        private OptionComplexFactory()
-//        {
-//            throw new NotImplementedException();
-//        }
 
         private static readonly Dictionary<TOptionType, IOptionComplexFactory> _complexOptions = InitializeComplexOptions();
         private static readonly IOptionUnknownFactory<TOptionType> UnknownFactoryOptionPrototype = InitializeUnknownOptionPrototype();

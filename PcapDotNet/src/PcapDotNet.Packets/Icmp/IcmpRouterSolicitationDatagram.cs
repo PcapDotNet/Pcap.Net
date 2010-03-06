@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -12,19 +14,25 @@ namespace PcapDotNet.Packets.Icmp
     /// +-----+-------------------------+
     /// </pre>
     /// </summary>
+    [IcmpDatagramRegistration(IcmpMessageType.RouterSolicitation)]
     public class IcmpRouterSolicitationDatagram : IcmpDatagram
     {
-        internal IcmpRouterSolicitationDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
         public override ILayer ExtractLayer()
         {
             return new IcmpRouterSolicitationLayer();
+        }
+
+        private IcmpRouterSolicitationDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
+        }
+
+        internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
+        {
+            return new IcmpRouterSolicitationDatagram(buffer, offset, length);
         }
     }
 }
