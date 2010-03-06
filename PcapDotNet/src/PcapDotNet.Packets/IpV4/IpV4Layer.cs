@@ -146,6 +146,9 @@ namespace PcapDotNet.Packets.IpV4
                                                 nextTransportLayer.Checksum);
         }
 
+        /// <summary>
+        /// True iff the two IPv4 layers have the same TypeOfService, Identification, Fragmentation, Ttl, Protocol, HeaderChecksum, Source, Destination and Options.
+        /// </summary>
         public bool Equals(IpV4Layer other)
         {
             return other != null &&
@@ -157,11 +160,18 @@ namespace PcapDotNet.Packets.IpV4
                    Options.Equals(other.Options);
         }
 
+        /// <summary>
+        /// True iff the two IPv4 layers have the same TypeOfService, Identification, Fragmentation, Ttl, Protocol, HeaderChecksum, Source, Destination and Options.
+        /// </summary>
         public override sealed bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as IpV4Layer);
+            return Equals(other as IpV4Layer);
         }
 
+        /// <summary>
+        /// Returns a hash code for the layer.
+        /// The hash code is a XOR of the TypeOfService and Identification combined and the hash codes of the layer length, data link, Fragmentation, Protocol, HeaderChecksum, Source, Destination, Options.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
@@ -174,6 +184,9 @@ namespace PcapDotNet.Packets.IpV4
 
         }
 
+        /// <summary>
+        /// Contains the Source, Destination and Protocol.
+        /// </summary>
         public override string ToString()
         {
             return Source + " -> " + Destination + " (" + Protocol + ")";

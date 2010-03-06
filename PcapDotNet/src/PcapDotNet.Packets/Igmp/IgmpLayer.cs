@@ -37,23 +37,43 @@ namespace PcapDotNet.Packets.Igmp
             get { return IpV4Protocol.InternetGroupManagementProtocol; }
         }
 
-        public virtual bool Equals(IgmpLayer other)
+        /// <summary>
+        /// IGMP layers are equal if they have the same message type, query version, similar max response time and the same specific type fields.
+        /// </summary>
+        public bool Equals(IgmpLayer other)
         {
             return other != null &&
                    MessageType == other.MessageType &&
                    QueryVersion == other.QueryVersion &&
-                   MaxResponseTimeValue.Divide(2) <= other.MaxResponseTimeValue && MaxResponseTimeValue.Multiply(2) >= other.MaxResponseTimeValue;
+                   EqualMaxResponseTime(MaxResponseTimeValue, other.MaxResponseTimeValue) &&
+                   EqualFields(other);
         }
 
+        /// <summary>
+        /// IGMP layers are equal if they have the same message type, query version, similar max response time and the same specific type fields.
+        /// </summary>
         public sealed override bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as IgmpLayer);
+            return Equals(other as IgmpLayer);
         }
 
+        /// <summary>
+        /// Xor of the hash codes of the layer length, datalink, message type and query version.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    MessageType.GetHashCode() ^ QueryVersion.GetHashCode();
+        }
+
+        /// <summary>
+        /// true iff the fields that are not mutual to all IGMP layers are equal.
+        /// </summary>
+        protected abstract bool EqualFields(IgmpLayer other);
+
+        private static bool EqualMaxResponseTime(TimeSpan value1, TimeSpan value2)
+        {
+            return value1.Divide(2) <= value2 && value1.Multiply(2) >= value2;
         }
     }
 }

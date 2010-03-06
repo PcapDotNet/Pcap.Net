@@ -77,15 +77,21 @@ namespace PcapDotNet.Packets.Icmp
             IcmpRouterAdvertisementDatagram.WriteHeaderAdditional(buffer, offset, Entries);
         }
 
-        public bool Equals(IcmpRouterAdvertisementLayer other)
+        /// <summary>
+        /// True iff the Entries are equal to the other ICMP entries.
+        /// </summary>
+        protected override bool EqualPayload(IcmpLayer other)
+        {
+            return EqualPayload(other as IcmpRouterAdvertisementLayer);
+        }
+
+        /// <summary>
+        /// True iff the Entries are equal to the other ICMP entries.
+        /// </summary>
+        private bool EqualPayload(IcmpRouterAdvertisementLayer other)
         {
             return other != null &&
                    Entries.SequenceEqual(other.Entries);
-        }
-
-        public sealed override bool Equals(IcmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IcmpRouterAdvertisementLayer);
         }
 
         private readonly IList<IcmpRouterAdvertisementEntry> _entries;

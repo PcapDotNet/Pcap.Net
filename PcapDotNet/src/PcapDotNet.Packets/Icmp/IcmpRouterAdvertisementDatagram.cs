@@ -114,6 +114,10 @@ namespace PcapDotNet.Packets.Icmp
             };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct, the code is in the expected range
+        /// and the address entry size is the default address entry size.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() &&

@@ -132,11 +132,20 @@ namespace PcapDotNet.Packets.Arp
                    TargetProtocolAddress.SequenceEqual(other.TargetProtocolAddress);
         }
 
+        /// <summary>
+        /// True iff the two ARP layers have equal protocol type, operation and addresses.
+        /// </summary>
+        /// <param name="other">The ARP layer to compare the layer to.</param>
+        /// <returns>True iff the two layers are equal.</returns>
         public override sealed bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as ArpLayer);
+            return Equals(other as ArpLayer);
         }
 
+        /// <summary>
+        /// Returns a hash code for the layer.
+        /// The hash code is a XOR of a combination of the protocol type and operation and the hash codes of the layer length and data link.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^

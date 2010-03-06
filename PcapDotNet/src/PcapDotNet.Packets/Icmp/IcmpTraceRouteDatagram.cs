@@ -98,6 +98,10 @@ namespace PcapDotNet.Packets.Icmp
             get { return ReadUInt(Offset.OutputLinkMtu, Endianity.Big); }
         }
 
+        /// <summary>
+        /// Is the packet an Outbound packet.
+        /// This is indicated by a value of  0xFFFF in the ReturnHopCount field.
+        /// </summary>
         public bool IsOutbound
         {
             get { return ReturnHopCount == OutboundReturnHopCountValue; }
@@ -120,6 +124,9 @@ namespace PcapDotNet.Packets.Icmp
             };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct and the code is in the expected range.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Length == DatagramLength;

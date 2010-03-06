@@ -44,16 +44,33 @@ namespace PcapDotNet.Packets
     /// </summary>
     public class PacketBuilder
     {
+        /// <summary>
+        /// Builds a single packet using the given layers with the given timestamp.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
+        /// <returns>A packet built from the given layers with the given timestamp.</returns>
         public static Packet Build(DateTime timestamp, params ILayer[] layers)
         {
             return new PacketBuilder(layers).Build(timestamp);
         }
 
+        /// <summary>
+        /// Builds a single packet using the given layers with the given timestamp.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
+        /// <returns>A packet built from the given layers with the given timestamp.</returns>
         public static Packet Build(DateTime timestamp, IEnumerable<ILayer> layers)
         {
             return new PacketBuilder(layers).Build(timestamp);
         }
 
+        /// <summary>
+        /// Creates a PacketBuilder that can build packets according to the given layers and with different timestamps.
+        /// The layers' properties can be modified after the builder is built and this will affect the packets built.
+        /// </summary>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
         public PacketBuilder(params ILayer[] layers)
         {
             if (layers.Length == 0)
@@ -67,11 +84,22 @@ namespace PcapDotNet.Packets
             _dataLink = new DataLink(dataLinkKind.Value);
         }
 
+
+        /// <summary>
+        /// Creates a PacketBuilder that can build packets according to the given layers and with different timestamps.
+        /// The layers' properties can be modified after the builder is built and this will affect the packets built.
+        /// </summary>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
         public PacketBuilder(IEnumerable<ILayer> layers)
             :this(layers.ToArray())
         {
         }
 
+        /// <summary>
+        /// Builds a single packet using the builder's layers with the given timestamp.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
+        /// <returns>A packet built from the builder's layers with the given timestamp.</returns>
         public Packet Build(DateTime timestamp)
         {
             int length = _layers.Select(layer => layer.Length).Sum();

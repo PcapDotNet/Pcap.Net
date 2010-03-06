@@ -234,6 +234,9 @@ namespace PcapDotNet.Packets.IpV4
             get { return Tcp; }
         }
 
+        /// <summary>
+        /// The payload of the datagram as an ICMP datagram.
+        /// </summary>
         public IcmpDatagram Icmp
         {
             get

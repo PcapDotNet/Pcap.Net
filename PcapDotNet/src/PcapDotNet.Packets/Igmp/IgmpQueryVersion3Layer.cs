@@ -115,21 +115,10 @@ namespace PcapDotNet.Packets.Igmp
             get { return MaxResponseTime; }
         }
 
-        public bool Equals(IgmpQueryVersion3Layer other)
-        {
-            return other != null &&
-                   GroupAddress == other.GroupAddress &&
-                   IsSuppressRouterSideProcessing == other.IsSuppressRouterSideProcessing &&
-                   QueryRobustnessVariable == other.QueryRobustnessVariable &&
-                   QueryInterval.Divide(2) <= other.QueryInterval && QueryInterval.Multiply(2) >= other.QueryInterval &&
-                   SourceAddresses.SequenceEqual(other.SourceAddresses);
-        }
-
-        public override sealed bool Equals(IgmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IgmpQueryVersion3Layer);
-        }
-
+        /// <summary>
+        /// Xor of the combination of the IsSuppressRouterSideProcessing and QueryRobustnessVariable fields with
+        /// the hash codes of the layer length, datalink, message type, query version, group address and all the source addresses.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
@@ -137,6 +126,29 @@ namespace PcapDotNet.Packets.Igmp
                    ((IsSuppressRouterSideProcessing ? 0 : (1 << 8)) + QueryRobustnessVariable) ^
                    SourceAddresses.SequenceGetHashCode();
 
+        }
+
+        /// <summary>
+        /// true iff the GroupAddress, IsSuppressRouterSideProcessing, QueryRobustnessVariable and SourceAddresses fields are equal
+        /// and the QueryInterval is similar.
+        /// </summary>
+        protected override bool EqualFields(IgmpLayer other)
+        {
+            return EqualFields(other as IgmpQueryVersion3Layer);
+        }
+
+        /// <summary>
+        /// true iff the GroupAddress, IsSuppressRouterSideProcessing, QueryRobustnessVariable and SourceAddresses fields are equal
+        /// and the QueryInterval is similar.
+        /// </summary>
+        private bool EqualFields(IgmpQueryVersion3Layer other)
+        {
+            return other != null &&
+                   GroupAddress == other.GroupAddress &&
+                   IsSuppressRouterSideProcessing == other.IsSuppressRouterSideProcessing &&
+                   QueryRobustnessVariable == other.QueryRobustnessVariable &&
+                   QueryInterval.Divide(2) <= other.QueryInterval && QueryInterval.Multiply(2) >= other.QueryInterval &&
+                   SourceAddresses.SequenceEqual(other.SourceAddresses);
         }
 
         private readonly IList<IpV4Address> _sourceAddresses;

@@ -376,5 +376,20 @@ namespace PcapDotNet.Packets.Test
                                                                                                         });
             Assert.IsNull(packet);
         }
+
+        [TestMethod]
+        public void DifferentIgmpSimpleLayersTest()
+        {
+            IgmpSimpleLayer layer1 = new IgmpQueryVersion1Layer
+                                         {
+                                             GroupAddress = new IpV4Address("1.2.3.4")
+                                         };
+            IgmpSimpleLayer layer2 = new IgmpQueryVersion2Layer
+                                         {
+                                             GroupAddress = new IpV4Address("1.2.3.4"),
+                                             MaxResponseTime = TimeSpan.FromMinutes(55)
+                                         };
+            Assert.IsFalse(layer1.Equals(layer2));
+        }
     }
 }

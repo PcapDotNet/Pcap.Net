@@ -54,6 +54,9 @@ namespace PcapDotNet.Packets.Icmp
             return Equals(obj as IcmpRouterAdvertisementEntry);
         }
 
+        /// <summary>
+        /// A xor of the hash codes of the router address and preference.
+        /// </summary>
         public override int GetHashCode()
         {
             return RouterAddress.GetHashCode() ^ RouterAddressPreference.GetHashCode();

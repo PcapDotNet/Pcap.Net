@@ -21,6 +21,11 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpDestinationUnreachableDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
+        /// <summary>
+        /// The minimum value of the maximum transmission unit for FragmentationNeededAndDoNotFragmentSet code.
+        /// </summary>
+        public const ushort MinimumMaximumTransmissionUnit = 68;
+
         private static class Offset
         {
             public const int NextHopMtu = 6;
@@ -54,11 +59,20 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct, the code is in the expected range,
+        /// the IPv4 payload contains at least an IPv4 header, the IPv4's payload is in the expected size
+        /// and if the NextHopMaximumTransmissionUnit is at least 68 for FragmentationNeededAndDoNotFragmentSet code or exactly 0 for other codes.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
-            return base.CalculateIsValid() &&
-                   (((IcmpCodeDestinationUnreachable)Code == IcmpCodeDestinationUnreachable.FragmentationNeededAndDoNotFragmentSet) ||
-                    NextHopMaximumTransmissionUnit == 0);
+            if (!base.CalculateIsValid())
+                return false;
+
+            if ((IcmpCodeDestinationUnreachable)Code == IcmpCodeDestinationUnreachable.FragmentationNeededAndDoNotFragmentSet)
+                return NextHopMaximumTransmissionUnit >= MinimumMaximumTransmissionUnit;
+
+            return NextHopMaximumTransmissionUnit == 0;
         }
 
         /// <summary>

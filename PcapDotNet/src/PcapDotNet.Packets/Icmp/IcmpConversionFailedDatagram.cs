@@ -55,6 +55,11 @@ namespace PcapDotNet.Packets.Icmp
                        };
         }
 
+        /// <summary>
+        /// Valid if the datagram's length is OK, the checksum is correct, the code is in the expected range
+        /// and the IPv4 payload contains at least an IPv4 header and the transport header.
+        /// If the code is for unsupported transport protocol, the IPv4 payload should contain 256 bytes of the original datagram.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             if (!base.CalculateIsValid())

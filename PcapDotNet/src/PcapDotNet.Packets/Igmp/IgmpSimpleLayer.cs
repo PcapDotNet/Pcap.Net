@@ -37,21 +37,30 @@ namespace PcapDotNet.Packets.Igmp
                                      MessageType, MaxResponseTimeValue, GroupAddress);
         }
 
-        public bool Equals(IgmpSimpleLayer other)
-        {
-            return other != null &&
-                   GroupAddress == other.GroupAddress;
-        }
-
-        public override sealed bool Equals(IgmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IgmpSimpleLayer);
-        }
-
-        public override int GetHashCode()
+        /// <summary>
+        /// Xor of the hash codes of the layer length, datalink, message type, query version and group address.
+        /// </summary>
+        public override sealed int GetHashCode()
         {
             return base.GetHashCode() ^
                    GroupAddress.GetHashCode();
+        }
+
+        /// <summary>
+        /// true iff the the group address is equal.
+        /// </summary>
+        protected override sealed bool EqualFields(IgmpLayer other)
+        {
+            return EqualFields(other as IgmpSimpleLayer);
+        }
+
+        /// <summary>
+        /// true iff the the group address is equal.
+        /// </summary>
+        private bool EqualFields(IgmpSimpleLayer other)
+        {
+            return other != null &&
+                   GroupAddress == other.GroupAddress;
         }
     }
 }

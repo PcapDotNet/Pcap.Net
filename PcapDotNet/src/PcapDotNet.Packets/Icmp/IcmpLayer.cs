@@ -85,6 +85,14 @@ namespace PcapDotNet.Packets.Icmp
         {
         }
 
+        /// <summary>
+        /// Finalizes the layer data in the buffer.
+        /// Used for the ICMP checksum.
+        /// </summary>
+        /// <param name="buffer">The buffer to finalize the layer in.</param>
+        /// <param name="offset">The offset in the buffer the layer starts.</param>
+        /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
+        /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override sealed void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
             IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength, Checksum);
@@ -98,28 +106,50 @@ namespace PcapDotNet.Packets.Icmp
             get { return IpV4Protocol.InternetControlMessageProtocol; }
         }
 
-        public virtual bool Equals(IcmpLayer other)
+        /// <summary>
+        /// ICMP layers are equal if they have the same message type, code, checksum, variable and payload.
+        /// </summary>
+        public bool Equals(IcmpLayer other)
         {
             return other != null &&
                    MessageType == other.MessageType && CodeValue == other.CodeValue &&
                    Checksum == other.Checksum &&
-                   Variable == other.Variable;
+                   Variable == other.Variable &&
+                   EqualPayload(other);
         }
 
+        /// <summary>
+        /// ICMP layers are equal if they have the same message type, code, checksum, variable and payload.
+        /// </summary>
         public sealed override bool Equals(Layer other)
         {
-            return base.Equals(other) && Equals(other as IcmpLayer);
+            return Equals(other as IcmpLayer);
         }
 
+        /// <summary>
+        /// Returns a hash code for the layer.
+        /// The hash code is a XOR of the layer length, data link, message type and code, checksum and variable.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
                    MessageTypeAndCode.GetHashCode() ^ Checksum.GetHashCode() ^ Variable.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns a string containing the message type, code and variable.
+        /// </summary>
         public override string ToString()
         {
             return MessageType + "." + CodeValue + "(" + Variable + ")";
+        }
+
+        /// <summary>
+        /// True iff the ICMP payload is equal to the other ICMP payload.
+        /// </summary>
+        protected virtual bool EqualPayload(IcmpLayer other)
+        {
+            return true;
         }
     }
 }

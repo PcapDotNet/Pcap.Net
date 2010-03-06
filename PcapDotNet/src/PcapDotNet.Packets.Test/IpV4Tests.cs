@@ -596,6 +596,17 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNull(packet);
         }
 
+        [TestMethod]
+        public void IpV4LayerNullChecksumAndProtocolGetHashCodeTest()
+        {
+            IpV4Layer layer = new IpV4Layer
+                                  {
+                                      HeaderChecksum = null,
+                                      Protocol = null,
+                                  };
+            Assert.IsNotNull(layer.GetHashCode());
+        }
+
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
         {
             return Packet.FromHexadecimalString(hexString, DateTime.MinValue, dataLinkKind);

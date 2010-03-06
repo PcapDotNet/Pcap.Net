@@ -87,18 +87,24 @@ namespace PcapDotNet.Packets.Icmp
             IcmpTraceRouteDatagram.WriteHeaderAdditional(buffer, offset, OutboundHopCount, ReturnHopCount, OutputLinkSpeed, OutputLinkMaximumTransmissionUnit);
         }
 
-        public bool Equals(IcmpTraceRouteLayer other)
+        /// <summary>
+        /// True iff the OutboundHopCount, ReturnHopCount, OutputLinkSpeed and OutputLinkMaximumTransmissionUnit fields are equal to the other layer fields.
+        /// </summary>
+        protected override bool EqualPayload(IcmpLayer other)
+        {
+            return EqualPayload(other as IcmpTraceRouteLayer);
+        }
+
+        /// <summary>
+        /// True iff the OutboundHopCount, ReturnHopCount, OutputLinkSpeed and OutputLinkMaximumTransmissionUnit fields are equal to the other layer fields.
+        /// </summary>
+        private bool EqualPayload(IcmpTraceRouteLayer other)
         {
             return other != null &&
                    OutboundHopCount == other.OutboundHopCount &&
                    ReturnHopCount == other.ReturnHopCount &&
                    OutputLinkSpeed == other.OutputLinkSpeed &&
                    OutputLinkMaximumTransmissionUnit == other.OutputLinkMaximumTransmissionUnit;
-        }
-
-        public override sealed bool Equals(IcmpLayer other)
-        {
-            return base.Equals(other) && Equals(other as IcmpTraceRouteLayer);
         }
     }
 }
