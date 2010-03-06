@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using PcapDotNet.Core;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Icmp;
+using PcapDotNet.Packets.IpV4;
 
 namespace SendingASinglePacketWithSendPacket
 {
@@ -44,11 +46,11 @@ namespace SendingASinglePacketWithSendPacket
 
             // Take the selected adapter
             PacketDevice selectedDevice = allDevices[deviceIndex - 1];
-    
+
             // Open the output device
-            using (PacketCommunicator communicator = selectedDevice.Open(100,                                    // name of the device
+            using (PacketCommunicator communicator = selectedDevice.Open(100, // name of the device
                                                                          PacketDeviceOpenAttributes.Promiscuous, // promiscuous mode
-                                                                         1000))                                  // read timeout
+                                                                         1000)) // read timeout
             {
                 // Supposing to be on ethernet, set mac destination to 1:1:1:1:1:1
                 MacAddress source = new MacAddress("1:1:1:1:1:1");
@@ -56,17 +58,46 @@ namespace SendingASinglePacketWithSendPacket
                 // set mac source to 2:2:2:2:2:2
                 MacAddress destination = new MacAddress("2:2:2:2:2:2");
 
-                // Fill the rest of the packet (ethernet payload)
-                byte[] ethernetPayloadBuffer = new byte[100];
-                for (int i = 0; i != ethernetPayloadBuffer.Length; ++i)
-                    ethernetPayloadBuffer[i] = (byte)(i % 256);
-                Datagram ethernetPayload = new Datagram(ethernetPayloadBuffer);
+                // Create the packets layers
 
-                // Create the packet
-                Packet packet = PacketBuilder.Ethernet(DateTime.Now, source, destination, EthernetType.IpV4, ethernetPayload);
+                // Ethernet Layer
+                EthernetLayer ethernetLayer = new EthernetLayer
+                                                  {
+                                                      Source = source,
+                                                      Destination = destination
+                                                  };
 
-                // Send down the packet
-                communicator.SendPacket(packet);
+                // IPv4 Layer
+                IpV4Layer ipV4Layer = new IpV4Layer
+                                          {
+                                              Source = new IpV4Address("1.2.3.4"),
+                                              Ttl = 128,
+                                              // The rest of the important parameters will be set for each packet
+                                          };
+
+                // ICMP Layer
+                IcmpEchoLayer icmpLayer = new IcmpEchoLayer();
+
+                // Create the builder that will build our packets
+                PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer);
+
+                // Send 100 Pings to different destination with different parameters
+                for (int i = 0; i != 100; ++i)
+                {
+                    // Set IPv4 parameters
+                    ipV4Layer.Destination = new IpV4Address("2.3.4." + i);
+                    ipV4Layer.Identification = (ushort)i;
+
+                    // Set ICMP parameters
+                    icmpLayer.SequenceNumber = (ushort)i;
+                    icmpLayer.Identifier = (ushort)i;
+
+                    // Build the packet
+                    Packet packet = builder.Build(DateTime.Now);
+
+                    // Send down the packet
+                    communicator.SendPacket(packet);
+                }
             }
         }
     }
