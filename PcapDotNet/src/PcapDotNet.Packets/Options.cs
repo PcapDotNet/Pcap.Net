@@ -11,8 +11,34 @@ namespace PcapDotNet.Packets
     /// Represents a list of options (either IPv4 options or TCP options).
     /// </summary>
     /// <typeparam name="T">The Option type this collection contains.</typeparam>
-    public abstract class Options<T> : ReadOnlyCollection<T> where T : Option
+    public abstract class Options<T> where T : Option
     {
+        /// <summary>
+        /// Returns the collection of options.
+        /// </summary>
+        public ReadOnlyCollection<T> OptionsCollection
+        {
+            get { return _options; }
+        }
+
+        /// <summary>
+        /// Returns the number of options.
+        /// </summary>
+        public int Count
+        {
+            get { return OptionsCollection.Count; }
+        }
+
+        /// <summary>
+        /// Returns the option in the given index.
+        /// </summary>
+        /// <param name="index">The zero based index of the option.</param>
+        /// <returns>The option in the given index.</returns>
+        public T this[int index]
+        {
+            get { return OptionsCollection[index]; }
+        }
+
         /// <summary>
         /// The number of bytes the options take.
         /// </summary>
@@ -34,7 +60,7 @@ namespace PcapDotNet.Packets
             if (BytesLength != other.BytesLength)
                 return false;
 
-            return this.SequenceEqual(other);
+            return OptionsCollection.SequenceEqual(other.OptionsCollection);
         }
 
         /// <summary>
@@ -51,7 +77,7 @@ namespace PcapDotNet.Packets
         public override int GetHashCode()
         {
             return BytesLength.GetHashCode() ^
-                   this.SequenceGetHashCode();
+                   OptionsCollection.SequenceGetHashCode();
         }
 
         /// <summary>
@@ -59,7 +85,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         public override string ToString()
         {
-            return this.SequenceToString(", ", GetType().Name + " {", "}");
+            return OptionsCollection.SequenceToString(", ", GetType().Name + " {", "}");
         }
 
         internal Options(byte[] buffer, int offset, int length, T end)
@@ -71,7 +97,7 @@ namespace PcapDotNet.Packets
         internal void Write(byte[] buffer, int offset)
         {
             int offsetEnd = offset + BytesLength;
-            foreach (T option in this)
+            foreach (T option in OptionsCollection)
                 option.Write(buffer, ref offset);
 
             // Padding
@@ -87,11 +113,12 @@ namespace PcapDotNet.Packets
         }
 
         private Options(IList<T> options, bool isValid)
-            : base(options)
         {
+            _options = new ReadOnlyCollection<T>(options);
+
             IsValid = isValid;
 
-            BytesLength = SumBytesLength(this);
+            BytesLength = SumBytesLength(OptionsCollection);
 
             if (BytesLength % 4 != 0)
                 BytesLength = (BytesLength / 4 + 1) * 4;
@@ -137,5 +164,7 @@ namespace PcapDotNet.Packets
 
             return new Tuple<IList<T>, bool>(options, true);
         }
+
+        private readonly ReadOnlyCollection<T> _options;
     }
 }

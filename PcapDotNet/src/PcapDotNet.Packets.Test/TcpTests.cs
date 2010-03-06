@@ -90,7 +90,7 @@ namespace PcapDotNet.Packets.Test
                 // TCP
                 tcpLayer.Checksum = packet.Ethernet.IpV4.Tcp.Checksum;
                 Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
-                foreach (TcpOption option in packet.Ethernet.IpV4.Tcp.Options)
+                foreach (TcpOption option in packet.Ethernet.IpV4.Tcp.Options.OptionsCollection)
                 {
                     Assert.AreEqual(option, option);
                     Assert.AreEqual(option.GetHashCode(), option.GetHashCode());
