@@ -91,6 +91,11 @@ namespace PcapDotNet.Packets.TestUtils
             return random.NextEthernetPacket(packetSize, timestamp, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
         }
 
+        public static Packet NextEthernetPacket(this Random random, int packetSize, MacAddress ethernetSource, MacAddress ethernetDestination)
+        {
+            return random.NextEthernetPacket(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
+        }
+
         public static Packet NextEthernetPacket(this Random random, int packetSize, string ethernetSource, string ethernetDestination)
         {
             return random.NextEthernetPacket(packetSize, DateTime.Now, ethernetSource, ethernetDestination);

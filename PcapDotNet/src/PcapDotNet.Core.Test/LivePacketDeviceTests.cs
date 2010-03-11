@@ -528,21 +528,21 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void SetSamplingMethodFirstAfterIntervalTest()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(2));
+            Random random = new Random();
 
-            const string SourceMac = "11:22:33:44:55:66";
-            const string DestinationMac = "77:88:99:AA:BB:CC";
+            MacAddress sourceMac = random.NextMacAddress();
+            MacAddress destinationMac = random.NextMacAddress();
 
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
-                communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
+                communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
-                Packet expectedPacket = _random.NextEthernetPacket(60, SourceMac, DestinationMac);
+                Packet expectedPacket = _random.NextEthernetPacket(60, sourceMac, destinationMac);
                 communicator.SendPacket(expectedPacket);
                 Thread.Sleep(TimeSpan.FromSeconds(0.75));
                 for (int i = 0; i != 10; ++i)
                 {
-                    expectedPacket = _random.NextEthernetPacket(60 * (i + 2), SourceMac, DestinationMac);
+                    expectedPacket = _random.NextEthernetPacket(60 * (i + 2), sourceMac, destinationMac);
                     communicator.SendPacket(expectedPacket);
                     Thread.Sleep(TimeSpan.FromSeconds(0.5));
                 }
