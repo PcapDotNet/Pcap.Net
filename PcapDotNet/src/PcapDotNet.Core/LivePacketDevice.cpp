@@ -16,13 +16,13 @@ using namespace PcapDotNet::Core;
 ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
 {
     pcap_if_t *alldevs;
-    char errbuf[PCAP_ERRBUF_SIZE];
+    char errorBuffer[PCAP_ERRBUF_SIZE];
 
     // Retrieve the device list from the local machine 
     if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, // auth is not needed 
-        &alldevs, errbuf) == -1)
+        &alldevs, errorBuffer) == -1)
     {
-        String^ errorString = gcnew String(errbuf);
+        String^ errorString = gcnew String(errorBuffer);
 		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. Error: {0}", errorString));
     }
     
