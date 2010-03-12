@@ -26,3 +26,12 @@ array<Byte>^ MarshalingServices::UnamangedToManagedByteArray(const unsigned char
     Marshal::Copy((IntPtr)const_cast<unsigned char*>(unmanagedByteArray), managedBytes, offset, count);
     return managedBytes;
 }
+
+/*
+// static 
+System::String^ MarshalingServices::UnmangedToManagedString(const std::string& unmanagedString)
+{
+	array<Byte>^ managedBytes = UnamangedToManagedByteArray(reinterpret_cast<const unsigned char*>(unmanagedString.c_str()), 0, (int)unmanagedString.length());
+	return System::Text::Encoding::ASCII->GetString(managedBytes);
+}
+*/
