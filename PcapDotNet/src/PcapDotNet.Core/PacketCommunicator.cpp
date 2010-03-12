@@ -294,7 +294,7 @@ PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, P
                                        errorBuffer);               // error buffer
 
     if (pcapDescriptor == NULL)
-		throw gcnew InvalidOperationException("Unable to open the adapter. Adapter name: " + gcnew String(source) + ". WinPcap Error: " + gcnew String(errorBuffer));
+		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Unable to open the adapter. Adapter name: {0}. WinPcap Error: {1}", gcnew String(source), gcnew String(errorBuffer)));
 
     _pcapDescriptor = pcapDescriptor;
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);
