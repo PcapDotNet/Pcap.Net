@@ -10,6 +10,7 @@ namespace PcapDotNet { namespace Core
         static std::string ManagedToUnmanagedString(System::String^ managedString);
 
         static array<System::Byte>^ UnamangedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count);
+//		static System::String^ UnmangedToManagedString(const std::string& unmanagedString);
 
     private:
         [System::Diagnostics::DebuggerNonUserCode]

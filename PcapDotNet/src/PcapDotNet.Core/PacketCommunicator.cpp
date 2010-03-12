@@ -295,7 +295,8 @@ PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, P
 
     if (pcapDescriptor == NULL)
     {
-        throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
+		throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
+//		throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap. Error: " + MarshalingServices::UnmangedToManagedString(std::string(errbuf)));
     }
 
     _pcapDescriptor = pcapDescriptor;
