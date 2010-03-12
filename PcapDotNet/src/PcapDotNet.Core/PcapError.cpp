@@ -8,7 +8,10 @@ using namespace PcapDotNet::Core;
 // static 
 String^ PcapError::GetErrorMessage(pcap_t* pcapDescriptor)
 {
-    return gcnew String(pcap_geterr(pcapDescriptor));
+	char* unmanagedPcapError = pcap_geterr(pcapDescriptor);
+	if (unmanagedPcapError == NULL)
+		return nullptr;
+    return gcnew String(unmanagedPcapError);
 }
 
 // static 
@@ -17,12 +20,12 @@ InvalidOperationException^ PcapError::BuildInvalidOperation(String^ errorMessage
     StringBuilder^ fullError = gcnew StringBuilder(errorMessage);
     if (pcapDescriptor != NULL)
     {
-        String^ pcapError = gcnew String(pcap_geterr(pcapDescriptor));
-        if (!String::IsNullOrEmpty(pcapError))
-        {
-            fullError->Append(". ");         
-            fullError->Append(pcapError);
-        }
+		String^ pcapError = GetErrorMessage(pcapDescriptor);
+		if (!String::IsNullOrEmpty(pcapError))
+		{
+			fullError->Append(". WinPcap Error: ");         
+			fullError->Append(pcapError);
+		}
     }
     return gcnew InvalidOperationException(fullError->ToString());
 }

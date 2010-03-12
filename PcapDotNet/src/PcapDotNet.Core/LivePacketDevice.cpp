@@ -23,7 +23,7 @@ ReadOnlyCollection<LivePacketDevice^>^ LivePacketDevice::AllLocalMachine::get()
         &alldevs, errorBuffer) == -1)
     {
         String^ errorString = gcnew String(errorBuffer);
-		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. Error: {0}", errorString));
+		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed getting devices. WinPcap Error: {0}", errorString));
     }
     
     try
