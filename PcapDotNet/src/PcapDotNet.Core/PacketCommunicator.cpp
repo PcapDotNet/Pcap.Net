@@ -90,8 +90,8 @@ void PacketCommunicator::Mode::set(PacketCommunicatorMode value)
 
 bool PacketCommunicator::NonBlocking::get()
 {
-    char errbuf[PCAP_ERRBUF_SIZE];
-    int nonBlockValue = pcap_getnonblock(_pcapDescriptor, errbuf);
+    char errorBuffer[PCAP_ERRBUF_SIZE];
+    int nonBlockValue = pcap_getnonblock(_pcapDescriptor, errorBuffer);
     if (nonBlockValue == -1)
         throw BuildInvalidOperation("Error getting NonBlocking value");
     return nonBlockValue != 0;
@@ -99,8 +99,8 @@ bool PacketCommunicator::NonBlocking::get()
 
 void PacketCommunicator::NonBlocking::set(bool value)
 {
-    char errbuf[PCAP_ERRBUF_SIZE];
-    if (pcap_setnonblock(_pcapDescriptor, value, errbuf) != 0)
+    char errorBuffer[PCAP_ERRBUF_SIZE];
+    if (pcap_setnonblock(_pcapDescriptor, value, errorBuffer) != 0)
         throw BuildInvalidOperation("Error setting NonBlocking to " + value.ToString());
 }
 
@@ -284,20 +284,17 @@ PacketCommunicator::~PacketCommunicator()
 PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth, SocketAddress^ netmask)
 {
     // Open the device
-    char errbuf[PCAP_ERRBUF_SIZE];
+    char errorBuffer[PCAP_ERRBUF_SIZE];
     pcap_t *pcapDescriptor = pcap_open(source,                // name of the device
                                        snapshotLength,        // portion of the packet to capture
                                                               // 65536 guarantees that the whole packet will be captured on all the link layers
                                        safe_cast<int>(attributes),
                                        readTimeout,           // read timeout
                                        auth,                  // authentication on the remote machine
-                                       errbuf);               // error buffer
+                                       errorBuffer);               // error buffer
 
     if (pcapDescriptor == NULL)
-    {
-		throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap");
-//		throw gcnew InvalidOperationException("Unable to open the adapter. " + gcnew String(source) + " is not supported by WinPcap. Error: " + MarshalingServices::UnmangedToManagedString(std::string(errbuf)));
-    }
+		throw gcnew InvalidOperationException("Unable to open the adapter. Adapter name: " + gcnew String(source) + ". WinPcap Error: " + gcnew String(errorBuffer));
 
     _pcapDescriptor = pcapDescriptor;
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);

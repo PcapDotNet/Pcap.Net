@@ -5,6 +5,7 @@ using System.Linq;
 using PcapDotNet.Core;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 
@@ -70,15 +71,22 @@ namespace UsingLinq
 
                 // start the capture
                 var query = from packet in communicator.ReceivePackets()
-                            where !packet.IsValid
+//                            where !packet.IsValid
                             select packet;
 
                 using (PacketDumpFile dumpFile = communicator.OpenDump("dump.pcap"))
                 {
                     foreach (Packet packet in query)
                     {
-                        Console.WriteLine("Captured Packet " + packet.Timestamp);
-                        dumpFile.Dump(packet);
+                        if (packet.Length <= 60 &&
+                            packet.Ethernet.EtherType == EthernetType.IpV4 &&
+                            packet.Ethernet.IpV4.Protocol == IpV4Protocol.Tcp &&
+                            packet.Ethernet.IpV4.Tcp.ControlBits == (TcpControlBits.Synchronize | TcpControlBits.Acknowledgment))
+                        {
+                            Console.WriteLine("Captured Packet " + packet.Timestamp);
+                        }
+                        
+//                        dumpFile.Dump(packet);
                     }
                 }
             }
