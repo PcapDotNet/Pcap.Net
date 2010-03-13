@@ -73,6 +73,7 @@
     <Compile Include="Ethernet\EthernetType.cs" />
     <Compile Include="Ethernet\MacAddress.cs" />
     <Compile Include="Arp\IArpPreviousLayer.cs" />
+    <Compile Include="Gre\GreDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskRequestLayer.cs" />
