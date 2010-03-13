@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.Transport;
@@ -276,6 +277,17 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        public GreDatagram Gre
+        {
+            get
+            {
+                if (_gre == null && Length >= HeaderLength)
+                    _gre = new GreDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _gre;
+            }
+        }
+
         /// <summary>
         /// The payload of the datagram as a UDP datagram.
         /// </summary>
@@ -416,6 +428,7 @@ namespace PcapDotNet.Packets.IpV4
         private IpV4Options _options;
         private IcmpDatagram _icmp;
         private IgmpDatagram _igmp;
+        private GreDatagram _gre;
         private TcpDatagram _tcp;
         private UdpDatagram _udp;
     }
