@@ -6,6 +6,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
@@ -576,6 +577,12 @@ namespace PcapDotNet.Packets.TestUtils
                 default:
                     throw new InvalidOperationException("Invalid message type " + igmpMessageType);
             }
+        }
+
+        // GRE
+        public static GreLayer NextGreLayer(this Random random)
+        {
+            return new GreLayer();
         }
 
         // ICMP
