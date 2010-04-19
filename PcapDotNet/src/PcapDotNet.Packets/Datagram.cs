@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -61,6 +62,11 @@ namespace PcapDotNet.Packets
         public byte this[int offset]
         {
             get { return _buffer[StartOffset + offset]; }
+        }
+
+        public MemoryStream ToMemoryStream()
+        {
+            return new MemoryStream(Buffer, StartOffset, Length, false, false);
         }
 
         /// <summary>
