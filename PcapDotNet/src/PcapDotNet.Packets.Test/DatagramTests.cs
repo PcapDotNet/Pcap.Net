@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -100,6 +103,30 @@ namespace PcapDotNet.Packets.Test
         {
             Datagram data = new Datagram(new byte[]{1,2,3});
             Assert.IsTrue(data.IsValid);
+        }
+
+        [TestMethod]
+        public void DatagramToMemoryStreamTest()
+        {
+            Datagram tcpPayload = new Datagram(new byte[] {1, 2, 3});
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new IpV4Layer(),
+                                                new TcpLayer(),
+                                                new PayloadLayer {Data = tcpPayload});
+            using (MemoryStream stream = packet.Ethernet.IpV4.Tcp.Payload.ToMemoryStream())
+            {
+                Assert.IsTrue(stream.CanRead, "CanRead");
+                Assert.IsTrue(stream.CanSeek, "CanSeek");
+                Assert.IsFalse(stream.CanTimeout, "CanTimeout");
+                Assert.IsFalse(stream.CanWrite, "CanWrite");
+                Assert.AreEqual(tcpPayload.Length, stream.Length);
+                for (int i = 0; i != tcpPayload.Length; ++i)
+                {
+                    Assert.AreEqual(i, stream.Position);
+                    Assert.AreEqual(i + 1, stream.ReadByte());
+                }
+            }
         }
     }
 }

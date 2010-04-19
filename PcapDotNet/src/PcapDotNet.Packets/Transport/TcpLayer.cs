@@ -9,6 +9,11 @@ namespace PcapDotNet.Packets.Transport
     /// </summary>
     public class TcpLayer : TransportLayer
     {
+        public TcpLayer()
+        {
+            Options = TcpOptions.None;
+        }
+
         /// <summary>
         /// The sequence number of the first data octet in this segment (except when SYN is present). 
         /// If SYN is present the sequence number is the initial sequence number (ISN) and the first data octet is ISN+1.
