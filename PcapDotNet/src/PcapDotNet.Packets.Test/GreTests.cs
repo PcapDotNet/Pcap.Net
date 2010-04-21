@@ -80,7 +80,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
 
                 // IPv4
-                ipV4Layer.Protocol = IpV4Protocol.InternetControlMessageProtocol;
+                ipV4Layer.Protocol = IpV4Protocol.Gre;
                 ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer());
                 ipV4Layer.HeaderChecksum = null;
