@@ -58,25 +58,8 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                return OffsetRouting + (RoutingPresent
-                                            ? Routing.Sum(entry => entry.Length) + GreSourceRouteEntry.HeaderLength // Routing and Routing termination
-                                            : 0);
+                return GetHeaderLength(ChecksumPresent, KeyPresent, SequenceNumberPresent, Routing);
             }
-        }
-
-        private int OffsetKey
-        {
-            get{return HeaderMinimumLength + ((ChecksumPresent || RoutingPresent) ? sizeof(ushort) + sizeof(ushort) : 0);}
-        }
-
-        private int OffsetSequenceNumber
-        {
-            get { return OffsetKey + (KeyPresent ? sizeof(uint) : 0); }
-        }
-
-        private int OffsetRouting
-        {
-            get { return OffsetSequenceNumber + (SequenceNumberPresent ? sizeof(uint) : 0); }
         }
 
         /// <summary>
@@ -123,7 +106,6 @@ namespace PcapDotNet.Packets.Gre
         {
             get { return (this[Offset.StrictSourceRoute] & Mask.StrictSourceRoute) == Mask.StrictSourceRoute; }
         }
-
 
           /// <summary>
           /// Recursion control contains a three bit unsigned integer which contains the number of additional encapsulations which are permissible.  
@@ -210,7 +192,7 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                if (_routing == null)
+                if (_routing == null && RoutingPresent)
                 {
                     List<GreSourceRouteEntry> entries = new List<GreSourceRouteEntry>();
                     int entryOffset = StartOffset + OffsetRouting;
@@ -249,7 +231,19 @@ namespace PcapDotNet.Packets.Gre
 
         public override ILayer ExtractLayer()
         {
-            throw new NotImplementedException();
+            return new GreLayer
+                       {
+                           Version = Version,
+                           ProtocolType = ProtocolType,
+                           RecursionControl = RecursionControl,
+                           ChecksumPresent = ChecksumPresent,
+                           Checksum = ChecksumPresent ? (ushort?)Checksum : null,
+                           Key = KeyPresent ? (uint?)Key : null,
+                           SequenceNumber = SequenceNumberPresent ? (uint?)SequenceNumber : null,
+                           Routing = RoutingPresent ? Routing : null,
+                           RoutingOffset = RoutingPresent ? (ushort?)RoutingOffset : null,
+                           StrictSourceRoute = StrictSourceRoute,
+                       };
         }
 
         protected override bool CalculateIsValid()
@@ -263,9 +257,80 @@ namespace PcapDotNet.Packets.Gre
         {
         }
 
-        internal static void WriteHeader(byte[] buffer, int offset)
+        internal static int GetHeaderLength(bool isChecksumPresent, bool isKeyPresent, bool isSequenceNumberPresent, IEnumerable<GreSourceRouteEntry> routing)
         {
-            throw new NotImplementedException();
+            return HeaderMinimumLength +
+                   (isChecksumPresent || routing != null ? sizeof(ushort) + sizeof(ushort) : 0) +
+                   (isKeyPresent ? sizeof(uint) : 0) +
+                   (isSequenceNumberPresent ? sizeof(uint) : 0) +
+                   (routing != null ? routing.Sum(entry => entry.Length) + GreSourceRouteEntry.HeaderLength : 0);
+        }
+
+        internal static void WriteHeader(byte[] buffer, int offset,
+            byte recursionControl, GreVersion version, EthernetType protocolType,
+            bool checksumPresent, uint? key, uint? sequenceNumber,
+            ReadOnlyCollection<GreSourceRouteEntry> routing, ushort? routingOffset, bool strictSourceRoute)
+        {
+            buffer.Write(offset + Offset.ChecksumPresent,
+                         (byte)((checksumPresent ? Mask.ChecksumPresent : (byte)0) |
+                                (routing != null ? Mask.RoutingPresent : (byte)0) |
+                                (key != null ? Mask.KeyPresent : (byte)0) |
+                                (sequenceNumber != null ? Mask.SequenceNumberPresent : (byte)0) |
+                                (strictSourceRoute ? Mask.StrictSourceRoute : (byte)0) |
+                                (recursionControl & Mask.RecursionControl)));
+
+            buffer.Write(offset + Offset.Version, (byte)((byte)version & Mask.Version));
+
+            buffer.Write(offset + Offset.ProtocolType, (ushort)protocolType, Endianity.Big);
+
+            offset += Offset.RoutingOffset;
+            if (routingOffset != null)
+                buffer.Write(ref offset, routingOffset.Value, Endianity.Big);
+
+            if (key != null)
+                buffer.Write(ref offset, key.Value, Endianity.Big);
+
+            if (sequenceNumber != null)
+                buffer.Write(ref offset, sequenceNumber.Value, Endianity.Big);
+
+            if (routing != null)
+            {
+                foreach (GreSourceRouteEntry entry in routing)
+                    entry.Write(buffer, ref offset);
+
+                buffer.Write(ref offset, (uint)0, Endianity.Big);
+            }
+        }
+
+        internal static void WriteChecksum(byte[] buffer, int offset, int length, ushort? checksum)
+        {
+            ushort checksumValue = checksum == null
+                                       ? CalculateChecksum(buffer, offset, length)
+                                       : checksum.Value;
+            buffer.Write(offset + Offset.Checksum, checksumValue, Endianity.Big);
+        }
+
+        private int OffsetKey
+        {
+            get { return HeaderMinimumLength + ((ChecksumPresent || RoutingPresent) ? sizeof(ushort) + sizeof(ushort) : 0); }
+        }
+
+        private int OffsetSequenceNumber
+        {
+            get { return OffsetKey + (KeyPresent ? sizeof(uint) : 0); }
+        }
+
+        private int OffsetRouting
+        {
+            get { return OffsetSequenceNumber + (SequenceNumberPresent ? sizeof(uint) : 0); }
+        }
+
+        private static ushort CalculateChecksum(byte[] buffer, int offset, int length)
+        {
+            uint sum = Sum16Bits(buffer, offset, Math.Min(Offset.Checksum, length)) +
+                       Sum16Bits(buffer, offset + Offset.Checksum + sizeof(ushort), length - Offset.Checksum - sizeof(ushort));
+
+            return Sum16BitsToChecksum(sum);
         }
 
         private IpV4Datagram _ipV4;
@@ -273,12 +338,26 @@ namespace PcapDotNet.Packets.Gre
         private bool _isValidRouting = true;
     }
 
+    /// <summary>
+    /// <pre>
+    /// +-----+----------------+------------+------------+
+    /// | Bit | 0-15           | 16-23      | 24-31      |
+    /// +-----+----------------+------------+------------+
+    /// | 0   | Address Family | SRE Offset | SRE Length |
+    /// +-----+----------------+------------+------------+
+    /// | 32  | Routing Information ...                  |
+    /// +-----+------------------------------------------+
+    /// </pre>
+    /// </summary>
     public abstract class GreSourceRouteEntry
     {
+        public abstract GreSourceRouteEntryAddressFamily AddressFamily { get; }
+
         public const int HeaderLength = 4;
 
         private static class Offset
         {
+            public const int AddressFamily = 0;
             public const int SreOffset = 2;
             public const int SreLength = 3;
         }
@@ -289,6 +368,9 @@ namespace PcapDotNet.Packets.Gre
         }
 
         public abstract int PayloadLength { get; }
+
+        protected abstract byte OffsetInPayload { get; }
+        protected abstract void WriteRoutingInformation(byte[] buffer, int offset);
 
         internal static bool TryReadEntry(byte[] buffer, ref int offset, int length, out GreSourceRouteEntry entry)
         {
@@ -319,6 +401,14 @@ namespace PcapDotNet.Packets.Gre
             // Change offset
             offset += sreLength;
             return true;
+        }
+
+        internal void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
+            buffer.Write(offset + Offset.SreOffset, OffsetInPayload);
+            buffer.Write(offset + Offset.SreLength, Length, Endianity.Big);
+            WriteRoutingInformation(buffer, offset + HeaderLength);
         }
 
         private static bool TryReadEntry(byte[] buffer, int payloadOffset, int payloadLength, GreSourceRouteEntryAddressFamily addressFamily, int offsetInPayload, out GreSourceRouteEntry entry)
@@ -352,7 +442,7 @@ namespace PcapDotNet.Packets.Gre
 
                 default:
                     Datagram data = new Datagram(buffer, payloadOffset, payloadLength);
-                    entry = new GreSourceRouteEntryUnknown(data, offsetInPayload);
+                    entry = new GreSourceRouteEntryUnknown(addressFamily, data, offsetInPayload);
                     return true;
             }
         }
@@ -360,9 +450,20 @@ namespace PcapDotNet.Packets.Gre
 
     public class GreSourceRouteEntryIp : GreSourceRouteEntry
     {
+        public override GreSourceRouteEntryAddressFamily AddressFamily
+        {
+            get { return GreSourceRouteEntryAddressFamily.IpSourceRoute; }
+        }
+
         public override int PayloadLength
         {
             get { return IpV4Address.SizeOf; }
+        }
+
+        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        {
+            foreach (IpV4Address address in Addresses)
+                buffer.Write(ref offset, address, Endianity.Big);
         }
 
         public ReadOnlyCollection<IpV4Address> Addresses
@@ -380,6 +481,11 @@ namespace PcapDotNet.Packets.Gre
             get { return Addresses[NextAddressIndex]; }
         }
 
+        protected override byte OffsetInPayload
+        {
+            get { return (byte)(NextAddressIndex * IpV4Address.SizeOf); }
+        }
+
         internal GreSourceRouteEntryIp(IpV4Address[] addresses, int nextAddressIndex)
         {
             _addresses = new ReadOnlyCollection<IpV4Address>(addresses);
@@ -392,6 +498,11 @@ namespace PcapDotNet.Packets.Gre
 
     public class GreSourceRouteEntryAs : GreSourceRouteEntry
     {
+        public override GreSourceRouteEntryAddressFamily AddressFamily
+        {
+            get { return GreSourceRouteEntryAddressFamily.AsSourceRoute; }
+        }
+
         public override int PayloadLength
         {
             get { return sizeof(ushort); }
@@ -412,6 +523,17 @@ namespace PcapDotNet.Packets.Gre
             get { return AsNumbers[NextAsNumberIndex]; }
         }
 
+        protected override byte OffsetInPayload
+        {
+            get { return (byte)(NextAsNumberIndex * sizeof(ushort)); }
+        }
+
+        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        {
+            foreach (ushort asNumber in AsNumbers)
+                buffer.Write(ref offset, asNumber, Endianity.Big);
+        }
+
         internal GreSourceRouteEntryAs(ushort[] asNumbers, int nextAsNumberIndex)
         {
             _asNumbers = new ReadOnlyCollection<ushort>(asNumbers);
@@ -424,6 +546,11 @@ namespace PcapDotNet.Packets.Gre
 
     public class GreSourceRouteEntryUnknown : GreSourceRouteEntry
     {
+        public override GreSourceRouteEntryAddressFamily AddressFamily
+        {
+            get { return _addressFamily; }
+        }
+
         public override int PayloadLength
         {
             get { return Data.Length; }
@@ -439,12 +566,24 @@ namespace PcapDotNet.Packets.Gre
             get { return _offset; }
         }
 
-        internal GreSourceRouteEntryUnknown(Datagram data, int offset)
+        protected override byte OffsetInPayload
         {
+            get { return (byte)Offset; }
+        }
+
+        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        {
+            buffer.Write(offset, Data);
+        }
+
+        internal GreSourceRouteEntryUnknown(GreSourceRouteEntryAddressFamily addressFamily, Datagram data, int offset)
+        {
+            _addressFamily = addressFamily;
             _data = data;
             _offset = offset;
         }
 
+        private readonly GreSourceRouteEntryAddressFamily _addressFamily;
         private readonly Datagram _data;
         private readonly int _offset;
     }
