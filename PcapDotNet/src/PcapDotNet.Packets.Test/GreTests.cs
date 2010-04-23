@@ -73,7 +73,8 @@ namespace PcapDotNet.Packets.Test
                 PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
-                Assert.IsTrue(packet.IsValid, "IsValid");
+                if (greLayer.Checksum == null)
+                    Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // Ethernet
                 ethernetLayer.EtherType = EthernetType.IpV4;
@@ -95,7 +96,7 @@ namespace PcapDotNet.Packets.Test
                 GreLayer actualGreLayer = (GreLayer)actualGre.ExtractLayer();
                 if (greLayer.ChecksumPresent && greLayer.Checksum == null)
                 {
-                    //Assert.IsTrue(actualGre.IsChecksumCorrect);
+                    Assert.IsTrue(actualGre.IsChecksumCorrect);
                     greLayer.Checksum = actualGre.Checksum;
                 }
                 Assert.AreEqual(greLayer, actualGreLayer, "Layer");
@@ -105,6 +106,12 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsTrue(actualGre.RoutingPresent ^ (greLayer.Routing == null && greLayer.RoutingOffset == null));
                 Assert.IsTrue(actualGre.SequenceNumberPresent ^ (greLayer.SequenceNumber == null));
                 Assert.IsTrue(!actualGre.StrictSourceRoute || actualGre.RoutingPresent);
+                if (actualGre.RoutingPresent)
+                {
+                    Assert.IsNotNull(actualGre.ActiveSourceRouteEntryIndex);
+                    if (actualGre.ActiveSourceRouteEntryIndex < actualGre.Routing.Count)
+                        Assert.IsNotNull(actualGre.ActiveSourceRouteEntry);
+                }
             }
         }
     }

@@ -409,6 +409,9 @@ namespace PcapDotNet.Packets.IpV4
                 case IpV4Protocol.InternetControlMessageProtocol:
                     return Icmp.IsValid;
 
+                case IpV4Protocol.Gre:
+                    return Gre.IsValid;
+
                 default:
                     // Todo check more protocols
                     return true;
