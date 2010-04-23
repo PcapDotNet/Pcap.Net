@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
@@ -582,7 +583,66 @@ namespace PcapDotNet.Packets.TestUtils
         // GRE
         public static GreLayer NextGreLayer(this Random random)
         {
-            return new GreLayer();
+            bool isChecksum = random.NextBool();
+            bool isRouting = random.NextBool();
+            GreSourceRouteEntry[] routing = null;
+            ushort? routingOffset = null;
+            bool strictSourceRoute = false;
+            if (isRouting)
+            {
+                strictSourceRoute = random.NextBool();
+                routing = new GreSourceRouteEntry[random.Next(5)];
+
+                GreSourceRouteEntryAddressFamily family = random.NextEnum(GreSourceRouteEntryAddressFamily.None);
+                for (int i = 0; i != routing.Length; ++i)
+                {
+                    switch (family)
+                    {
+                        case GreSourceRouteEntryAddressFamily.AsSourceRoute:
+                        {
+                            ushort[] asNumbers = new ushort[random.Next(5)];
+                            for (int j = 0; j != asNumbers.Length; ++j)
+                                asNumbers[j] = random.NextUShort();
+                            routing[i] = new GreSourceRouteEntryAs(asNumbers.AsReadOnly(), asNumbers.IsEmpty() ? 0 : random.Next(asNumbers.Length));
+                            break;
+                        }
+
+                        case GreSourceRouteEntryAddressFamily.IpSourceRoute:
+                        {
+                            IpV4Address[] ips = new IpV4Address[random.Next(5)];
+                            for (int j = 0; j != ips.Length; ++j)
+                                ips[j] = random.NextIpV4Address();
+                            routing[i] = new GreSourceRouteEntryIp(ips.AsReadOnly(), ips.IsEmpty() ? 0 : random.Next(ips.Length));
+                            break;
+                        }
+
+                        default:
+                            throw new InvalidOperationException("Unknown family " + family);
+                    }
+
+                }
+                routingOffset = 0;
+                if (!routing.IsEmpty())
+                {
+                    int routingIndex = random.Next(routing.Length);
+                    for (int i = 0; i != routingIndex; ++i)
+                        routingOffset += (ushort)routing[i].Length;
+                }
+            }
+
+            return new GreLayer
+                       {
+                           Version = random.NextEnum<GreVersion>(),
+                           ProtocolType = random.NextEnum(EthernetType.None),
+                           ChecksumPresent = isChecksum,
+                           Checksum = isChecksum && random.NextBool() ? (ushort?)random.NextUShort() : null,
+                           Key = random.NextBool() ? (uint?)random.NextUInt() : null,
+                           SequenceNumber = random.NextBool() ? (uint?)random.NextUInt() : null,
+                           RecursionControl = random.NextByte(8),
+                           Routing = routing == null ? null : routing.AsReadOnly(),
+                           RoutingOffset = routingOffset,
+                           StrictSourceRoute = strictSourceRoute,
+                       };
         }
 
         // ICMP
