@@ -146,6 +146,16 @@ namespace PcapDotNet.Packets.Gre
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
+        public bool IsChecksumCorrect
+        {
+            get
+            {
+                if (_isChecksumCorrect == null)
+                    _isChecksumCorrect = (CalculateChecksum() == Checksum);
+                return _isChecksumCorrect.Value;
+            }
+        }
+
         /// <summary>
         /// The offset field indicates the octet offset from the start of the Routing field to the first octet of the active Source Route Entry to be examined.  
         /// This field is present if the Routing Present or the Checksum Present bit is set to 1, and contains valid information only if the Routing Present bit is set to 1.
@@ -153,6 +163,28 @@ namespace PcapDotNet.Packets.Gre
         public ushort RoutingOffset
         {
             get { return ReadUShort(Offset.RoutingOffset, Endianity.Big); }
+        }
+
+        public int? ActiveSourceRouteEntryIndex
+        {
+            get
+            {
+                if (_activeSourceRouteEntryIndex == null && RoutingPresent)
+                    ParseRouting();
+                return _activeSourceRouteEntryIndex;
+            }
+        }
+
+        public GreSourceRouteEntry ActiveSourceRouteEntry
+        {
+            get
+            {
+                int? activeSourceRouteEntryIndex = ActiveSourceRouteEntryIndex;
+                if (activeSourceRouteEntryIndex == null || activeSourceRouteEntryIndex == Routing.Count)
+                    return null;
+
+                return Routing[activeSourceRouteEntryIndex.Value];
+            }
         }
 
         /// <summary>
@@ -194,28 +226,7 @@ namespace PcapDotNet.Packets.Gre
             get
             {
                 if (_routing == null && RoutingPresent)
-                {
-                    List<GreSourceRouteEntry> entries = new List<GreSourceRouteEntry>();
-                    int entryOffset = StartOffset + OffsetRouting;
-
-                    int totalLength = StartOffset + Length;
-                    while (totalLength >= entryOffset)
-                    {
-                        GreSourceRouteEntry entry;
-                        if (!GreSourceRouteEntry.TryReadEntry(Buffer, ref entryOffset, totalLength - entryOffset, out entry))
-                        {
-                            _isValidRouting = false;
-                            break;
-                        }
-                        
-                        if (entry == null)
-                            break;
-
-                        entries.Add(entry);
-                    }
-
-                    _routing = new ReadOnlyCollection<GreSourceRouteEntry>(entries);
-                }
+                    ParseRouting();
 
                 return _routing;
             }
@@ -250,8 +261,7 @@ namespace PcapDotNet.Packets.Gre
 
         protected override bool CalculateIsValid()
         {
-            throw new NotImplementedException();
-            return (Length >= HeaderMinimumLength && Length >= HeaderLength);
+            return (Length >= HeaderMinimumLength && Length >= HeaderLength && (!ChecksumPresent || IsChecksumCorrect));
         }
 
         internal GreDatagram(byte[] buffer, int offset, int length)
@@ -332,6 +342,38 @@ namespace PcapDotNet.Packets.Gre
             get { return OffsetSequenceNumber + (SequenceNumberPresent ? sizeof(uint) : 0); }
         }
 
+        private void ParseRouting()
+        {
+            List<GreSourceRouteEntry> entries = new List<GreSourceRouteEntry>();
+            int routingStartOffset = StartOffset + OffsetRouting;
+            int entryOffset = routingStartOffset;
+
+            int totalLength = StartOffset + Length;
+            while (totalLength >= entryOffset)
+            {
+                GreSourceRouteEntry entry;
+                if (entryOffset == routingStartOffset + RoutingOffset)
+                    _activeSourceRouteEntryIndex = entries.Count;
+                if (!GreSourceRouteEntry.TryReadEntry(Buffer, ref entryOffset, totalLength - entryOffset, out entry))
+                {
+                    _isValidRouting = false;
+                    break;
+                }
+
+                if (entry == null)
+                    break;
+
+                entries.Add(entry);
+            }
+
+            _routing = new ReadOnlyCollection<GreSourceRouteEntry>(entries);
+        }
+
+        private ushort CalculateChecksum()
+        {
+            return CalculateChecksum(Buffer, StartOffset, Length);
+        }
+
         private static ushort CalculateChecksum(byte[] buffer, int offset, int length)
         {
             uint sum = Sum16Bits(buffer, offset, Math.Min(Offset.Checksum, length)) +
@@ -343,6 +385,8 @@ namespace PcapDotNet.Packets.Gre
         private IpV4Datagram _ipV4;
         private ReadOnlyCollection<GreSourceRouteEntry> _routing;
         private bool _isValidRouting = true;
+        private bool? _isChecksumCorrect;
+        private int? _activeSourceRouteEntryIndex;
     }
 
     /// <summary>
@@ -391,7 +435,7 @@ namespace PcapDotNet.Packets.Gre
 
         protected abstract byte OffsetInPayload { get; }
         protected abstract bool EqualsPayloads(GreSourceRouteEntry other);
-        protected abstract void WriteRoutingInformation(byte[] buffer, int offset);
+        protected abstract void WritePayload(byte[] buffer, int offset);
 
         internal static bool TryReadEntry(byte[] buffer, ref int offset, int length, out GreSourceRouteEntry entry)
         {
@@ -429,7 +473,7 @@ namespace PcapDotNet.Packets.Gre
             buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
             buffer.Write(offset + Offset.SreOffset, OffsetInPayload);
             buffer.Write(offset + Offset.SreLength, (byte)PayloadLength);
-            WriteRoutingInformation(buffer, offset + HeaderLength);
+            WritePayload(buffer, offset + HeaderLength);
             offset += Length;
         }
 
@@ -494,7 +538,7 @@ namespace PcapDotNet.Packets.Gre
             return Addresses.SequenceEqual(((GreSourceRouteEntryIp)other).Addresses);
         }
 
-        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             foreach (IpV4Address address in Addresses)
                 buffer.Write(ref offset, address, Endianity.Big);
@@ -572,7 +616,7 @@ namespace PcapDotNet.Packets.Gre
             get { return (byte)(NextAsNumberIndex * sizeof(ushort)); }
         }
 
-        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             foreach (ushort asNumber in AsNumbers)
                 buffer.Write(ref offset, asNumber, Endianity.Big);
@@ -619,7 +663,7 @@ namespace PcapDotNet.Packets.Gre
             return Data.Equals(((GreSourceRouteEntryUnknown)other).Data);
         }
 
-        protected override void WriteRoutingInformation(byte[] buffer, int offset)
+        protected override void WritePayload(byte[] buffer, int offset)
         {
             buffer.Write(offset, Data);
         }
