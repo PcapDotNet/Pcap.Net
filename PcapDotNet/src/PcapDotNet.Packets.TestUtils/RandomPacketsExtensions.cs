@@ -600,19 +600,19 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         case GreSourceRouteEntryAddressFamily.AsSourceRoute:
                         {
-                            ushort[] asNumbers = new ushort[random.Next(5)];
+                            ushort[] asNumbers = new ushort[random.Next(1, 5)];
                             for (int j = 0; j != asNumbers.Length; ++j)
                                 asNumbers[j] = random.NextUShort();
-                            routing[i] = new GreSourceRouteEntryAs(asNumbers.AsReadOnly(), asNumbers.IsEmpty() ? 0 : random.Next(asNumbers.Length));
+                            routing[i] = new GreSourceRouteEntryAs(asNumbers.AsReadOnly(), random.Next(asNumbers.Length + 1));
                             break;
                         }
 
                         case GreSourceRouteEntryAddressFamily.IpSourceRoute:
                         {
-                            IpV4Address[] ips = new IpV4Address[random.Next(5)];
+                            IpV4Address[] ips = new IpV4Address[random.Next(1, 5)];
                             for (int j = 0; j != ips.Length; ++j)
                                 ips[j] = random.NextIpV4Address();
-                            routing[i] = new GreSourceRouteEntryIp(ips.AsReadOnly(), ips.IsEmpty() ? 0 : random.Next(ips.Length));
+                            routing[i] = new GreSourceRouteEntryIp(ips.AsReadOnly(), random.Next(ips.Length + 1));
                             break;
                         }
 

@@ -400,7 +400,7 @@ namespace PcapDotNet.Packets.Gre
                 return false;
 
             // Address Family
-            GreSourceRouteEntryAddressFamily addressFamily = (GreSourceRouteEntryAddressFamily)buffer.ReadUShort(offset, Endianity.Big);
+            GreSourceRouteEntryAddressFamily addressFamily = (GreSourceRouteEntryAddressFamily)buffer.ReadUShort(offset + Offset.AddressFamily, Endianity.Big);
 
             // SRE Length
             byte sreLength = buffer[offset + Offset.SreLength];
@@ -420,7 +420,7 @@ namespace PcapDotNet.Packets.Gre
                 return false;
 
             // Change offset
-            offset += sreLength;
+            offset += entry.Length;
             return true;
         }
 
