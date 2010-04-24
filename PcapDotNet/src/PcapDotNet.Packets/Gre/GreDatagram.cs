@@ -258,6 +258,7 @@ namespace PcapDotNet.Packets.Gre
                            Version = Version,
                            ProtocolType = ProtocolType,
                            RecursionControl = RecursionControl,
+                           Flags = Flags,
                            ChecksumPresent = ChecksumPresent,
                            Checksum = ChecksumPresent ? (ushort?)Checksum : null,
                            Key = KeyPresent ? (uint?)Key : null,
@@ -288,7 +289,7 @@ namespace PcapDotNet.Packets.Gre
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,
-            byte recursionControl, GreVersion version, EthernetType protocolType,
+            byte recursionControl, byte flags, GreVersion version, EthernetType protocolType,
             bool checksumPresent, uint? key, uint? sequenceNumber,
             ReadOnlyCollection<GreSourceRouteEntry> routing, ushort? routingOffset, bool strictSourceRoute)
         {
@@ -300,7 +301,7 @@ namespace PcapDotNet.Packets.Gre
                                 (strictSourceRoute ? Mask.StrictSourceRoute : (byte)0) |
                                 (recursionControl & Mask.RecursionControl)));
 
-            buffer.Write(offset + Offset.Version, (byte)((byte)version & Mask.Version));
+            buffer.Write(offset + Offset.Flags, (byte)(((flags << Shift.Flags) & Mask.Flags) | ((byte)version & Mask.Version)));
 
             buffer.Write(offset + Offset.ProtocolType, (ushort)protocolType, Endianity.Big);
 

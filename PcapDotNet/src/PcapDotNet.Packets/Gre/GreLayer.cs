@@ -11,6 +11,7 @@ namespace PcapDotNet.Packets.Gre
         public GreVersion Version { get; set; }
         public EthernetType ProtocolType { get; set; }
         public byte RecursionControl { get; set; }
+        public byte Flags { get; set; }
         public bool ChecksumPresent { get; set; }
         public ushort? Checksum { get; set; }
         public uint? Key { get; set; }
@@ -29,7 +30,7 @@ namespace PcapDotNet.Packets.Gre
 
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
-            GreDatagram.WriteHeader(buffer, offset, RecursionControl, Version, ProtocolType, ChecksumPresent, Key, SequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
+            GreDatagram.WriteHeader(buffer, offset, RecursionControl, Flags, Version, ProtocolType, ChecksumPresent, Key, SequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
         }
 
         public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
@@ -44,6 +45,7 @@ namespace PcapDotNet.Packets.Gre
                    Version.Equals(other.Version) &&
                    ProtocolType.Equals(other.ProtocolType) &&
                    RecursionControl.Equals(other.RecursionControl) &&
+                   Flags.Equals(other.Flags) &&
                    ChecksumPresent.Equals(other.ChecksumPresent) &&
                    (Checksum == null ? other.Checksum == null : Checksum.Equals(other.Checksum)) &&
                    (Key == null ? other.Key == null : Key.Equals(other.Key)) &&

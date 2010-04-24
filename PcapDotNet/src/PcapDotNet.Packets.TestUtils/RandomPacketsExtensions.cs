@@ -640,18 +640,19 @@ namespace PcapDotNet.Packets.TestUtils
             }
 
             return new GreLayer
-                       {
-                           Version = random.NextEnum<GreVersion>(),
-                           ProtocolType = random.NextEnum(EthernetType.None),
-                           ChecksumPresent = isChecksum,
-                           Checksum = isChecksum && random.NextBool() ? (ushort?)random.NextUShort() : null,
-                           Key = random.NextBool() ? (uint?)random.NextUInt() : null,
-                           SequenceNumber = random.NextBool() ? (uint?)random.NextUInt() : null,
-                           RecursionControl = random.NextByte(8),
-                           Routing = routing == null ? null : routing.AsReadOnly(),
-                           RoutingOffset = routingOffset,
-                           StrictSourceRoute = strictSourceRoute,
-                       };
+                   {
+                       Version = random.NextEnum<GreVersion>(),
+                       ProtocolType = random.NextEnum(EthernetType.None),
+                       ChecksumPresent = isChecksum,
+                       Checksum = isChecksum && random.NextBool() ? (ushort?)random.NextUShort() : null,
+                       Key = random.NextBool() ? (uint?)random.NextUInt() : null,
+                       SequenceNumber = random.NextBool() ? (uint?)random.NextUInt() : null,
+                       RecursionControl = random.NextByte(8),
+                       Flags = random.NextByte(32),
+                       Routing = routing == null ? null : routing.AsReadOnly(),
+                       RoutingOffset = routingOffset,
+                       StrictSourceRoute = strictSourceRoute,
+                   };
         }
 
         // ICMP
