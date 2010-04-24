@@ -114,7 +114,8 @@ namespace PcapDotNet.Packets.Test
                               ipV4Layer.Protocol == IpV4Protocol.Tcp ||
                               ipV4Layer.Protocol == IpV4Protocol.InternetGroupManagementProtocol ||
                               ipV4Layer.Protocol == IpV4Protocol.InternetControlMessageProtocol ||
-                              packet.IsValid, "IsValid");
+                              ipV4Layer.Protocol == IpV4Protocol.Gre ||
+                              packet.IsValid, "IsValid (" + ipV4Layer.Protocol + ")");
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
