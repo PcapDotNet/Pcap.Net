@@ -169,8 +169,7 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                if (_activeSourceRouteEntryIndex == null && RoutingPresent)
-                    ParseRouting();
+                TryParseRouting();
                 return _activeSourceRouteEntryIndex;
             }
         }
@@ -225,9 +224,7 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                if (_routing == null && RoutingPresent)
-                    ParseRouting();
-
+                TryParseRouting();
                 return _routing;
             }
         }
@@ -261,7 +258,7 @@ namespace PcapDotNet.Packets.Gre
 
         protected override bool CalculateIsValid()
         {
-            return (Length >= HeaderMinimumLength && Length >= HeaderLength && (!ChecksumPresent || IsChecksumCorrect));
+            return (Length >= HeaderMinimumLength && Length >= HeaderLength && IsValidRouting && (!ChecksumPresent || IsChecksumCorrect));
         }
 
         internal GreDatagram(byte[] buffer, int offset, int length)
@@ -342,8 +339,11 @@ namespace PcapDotNet.Packets.Gre
             get { return OffsetSequenceNumber + (SequenceNumberPresent ? sizeof(uint) : 0); }
         }
 
-        private void ParseRouting()
+        private void TryParseRouting()
         {
+            if (_routing != null || !RoutingPresent)
+                return;
+
             List<GreSourceRouteEntry> entries = new List<GreSourceRouteEntry>();
             int routingStartOffset = StartOffset + OffsetRouting;
             int entryOffset = routingStartOffset;
@@ -380,6 +380,16 @@ namespace PcapDotNet.Packets.Gre
                        Sum16Bits(buffer, offset + Offset.Checksum + sizeof(ushort), length - Offset.Checksum - sizeof(ushort));
 
             return Sum16BitsToChecksum(sum);
+        }
+
+        private bool IsValidRouting
+        {
+            get
+            {
+                TryParseRouting();
+
+                return _isValidRouting;
+            }
         }
 
         private IpV4Datagram _ipV4;
@@ -422,7 +432,8 @@ namespace PcapDotNet.Packets.Gre
 
         public bool Equals(GreSourceRouteEntry other)
         {
-            return AddressFamily == other.AddressFamily &&
+            return other != null &&
+                   AddressFamily == other.AddressFamily &&
                    Length == other.Length &&
                    OffsetInPayload == other.OffsetInPayload &&
                    EqualsPayloads(other);
@@ -633,6 +644,13 @@ namespace PcapDotNet.Packets.Gre
 
     public class GreSourceRouteEntryUnknown : GreSourceRouteEntry
     {
+        public GreSourceRouteEntryUnknown(GreSourceRouteEntryAddressFamily addressFamily, Datagram data, int offset)
+        {
+            _addressFamily = addressFamily;
+            _data = data;
+            _offset = offset;
+        }
+
         public override GreSourceRouteEntryAddressFamily AddressFamily
         {
             get { return _addressFamily; }
@@ -666,13 +684,6 @@ namespace PcapDotNet.Packets.Gre
         protected override void WritePayload(byte[] buffer, int offset)
         {
             buffer.Write(offset, Data);
-        }
-
-        internal GreSourceRouteEntryUnknown(GreSourceRouteEntryAddressFamily addressFamily, Datagram data, int offset)
-        {
-            _addressFamily = addressFamily;
-            _data = data;
-            _offset = offset;
         }
 
         private readonly GreSourceRouteEntryAddressFamily _addressFamily;
