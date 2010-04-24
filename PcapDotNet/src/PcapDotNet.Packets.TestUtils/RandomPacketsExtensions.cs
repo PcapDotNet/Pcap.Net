@@ -593,7 +593,12 @@ namespace PcapDotNet.Packets.TestUtils
                 strictSourceRoute = random.NextBool();
                 routing = new GreSourceRouteEntry[random.Next(5)];
 
-                GreSourceRouteEntryAddressFamily family = random.NextEnum(GreSourceRouteEntryAddressFamily.None);
+                GreSourceRouteEntryAddressFamily family;
+                if (random.NextBool())
+                    family = random.NextEnum(GreSourceRouteEntryAddressFamily.None);
+                else
+                    family = (GreSourceRouteEntryAddressFamily)random.NextUShort();
+
                 for (int i = 0; i != routing.Length; ++i)
                 {
                     switch (family)
@@ -617,7 +622,11 @@ namespace PcapDotNet.Packets.TestUtils
                         }
 
                         default:
-                            throw new InvalidOperationException("Unknown family " + family);
+                        {
+                            int dataLength = random.Next(1, 100);
+                            routing[i] = new GreSourceRouteEntryUnknown(family, random.NextDatagram(dataLength), random.Next(dataLength + 1));
+                            break;
+                        }
                     }
 
                 }
