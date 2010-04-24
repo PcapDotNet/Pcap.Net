@@ -102,9 +102,11 @@ namespace PcapDotNet.Packets.Test
                     greLayer.Checksum = actualGre.Checksum;
                 }
                 Assert.AreEqual(greLayer, actualGreLayer, "Layer");
+                Assert.AreNotEqual(random.NextGreLayer(), actualGreLayer, "Not Layer");
                 Assert.AreEqual(greLayer.Length, actualGre.HeaderLength);
                 Assert.IsTrue(actualGre.KeyPresent ^ (greLayer.Key == null));
                 MoreAssert.IsSmaller(8, actualGre.RecursionControl);
+                MoreAssert.IsSmaller(32, actualGre.Flags);
                 Assert.IsTrue(actualGre.RoutingPresent ^ (greLayer.Routing == null && greLayer.RoutingOffset == null));
                 Assert.IsTrue(actualGre.SequenceNumberPresent ^ (greLayer.SequenceNumber == null));
                 Assert.IsTrue(!actualGre.StrictSourceRoute || actualGre.RoutingPresent);
