@@ -50,8 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteExtensions.cs" />
     <Compile Include="MoreAssert.cs" />
-    <Compile Include="MoreRandom.cs" />
+    <Compile Include="BoolExtensions.cs" />
+    <Compile Include="RandomExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

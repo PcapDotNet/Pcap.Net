@@ -36,6 +36,7 @@ namespace PcapDotNet.Packets.Gre
             public const int SequenceNumberPresent = 0;
             public const int StrictSourceRoute = 0;
             public const int RecursionControl = 0;
+            public const int Flags = 1;
             public const int Version = 1;
             public const int ProtocolType = 2;
             public const int Checksum = 4;
@@ -50,7 +51,13 @@ namespace PcapDotNet.Packets.Gre
             public const byte SequenceNumberPresent = 0x10;
             public const byte StrictSourceRoute = 0x08;
             public const byte RecursionControl = 0x07;
+            public const byte Flags = 0xF8;
             public const byte Version = 0x07;
+        }
+
+        private static class Shift
+        {
+            public const int Flags = 3;
         }
 
         public const int HeaderMinimumLength = 4;
@@ -108,14 +115,19 @@ namespace PcapDotNet.Packets.Gre
             get { return (this[Offset.StrictSourceRoute] & Mask.StrictSourceRoute) == Mask.StrictSourceRoute; }
         }
 
-          /// <summary>
-          /// Recursion control contains a three bit unsigned integer which contains the number of additional encapsulations which are permissible.  
-          /// This SHOULD default to zero.
-          /// </summary>
-          public byte RecursionControl
-          {
-              get { return (byte)(this[Offset.RecursionControl] & Mask.RecursionControl); }
-          }
+        /// <summary>
+        /// Recursion control contains a three bit unsigned integer which contains the number of additional encapsulations which are permissible.  
+        /// This SHOULD default to zero.
+        /// </summary>
+        public byte RecursionControl
+        {
+            get { return (byte)(this[Offset.RecursionControl] & Mask.RecursionControl); }
+        }
+
+        public byte Flags
+        {
+            get { return (byte)((this[Offset.Flags] & Mask.Flags) >> Shift.Flags); }
+        }
 
         /// <summary>
         /// The Version Number field MUST contain the value zero.
@@ -428,14 +440,15 @@ namespace PcapDotNet.Packets.Gre
             get { return HeaderLength + PayloadLength; }
         }
 
-        public abstract int PayloadLength { get; }
+        public abstract byte PayloadOffset { get; }
+        public abstract byte PayloadLength { get; }
 
         public bool Equals(GreSourceRouteEntry other)
         {
             return other != null &&
                    AddressFamily == other.AddressFamily &&
                    Length == other.Length &&
-                   OffsetInPayload == other.OffsetInPayload &&
+                   PayloadOffset == other.PayloadOffset &&
                    EqualsPayloads(other);
         }
 
@@ -444,7 +457,6 @@ namespace PcapDotNet.Packets.Gre
             return Equals(obj as GreSourceRouteEntry);
         }
 
-        protected abstract byte OffsetInPayload { get; }
         protected abstract bool EqualsPayloads(GreSourceRouteEntry other);
         protected abstract void WritePayload(byte[] buffer, int offset);
 
@@ -482,7 +494,7 @@ namespace PcapDotNet.Packets.Gre
         internal void Write(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
-            buffer.Write(offset + Offset.SreOffset, OffsetInPayload);
+            buffer.Write(offset + Offset.SreOffset, PayloadOffset);
             buffer.Write(offset + Offset.SreLength, (byte)PayloadLength);
             WritePayload(buffer, offset + HeaderLength);
             offset += Length;
@@ -533,15 +545,19 @@ namespace PcapDotNet.Packets.Gre
             _nextAddressIndex = nextAddressIndex;
         }
 
-
         public override GreSourceRouteEntryAddressFamily AddressFamily
         {
             get { return GreSourceRouteEntryAddressFamily.IpSourceRoute; }
         }
 
-        public override int PayloadLength
+        public override byte PayloadLength
         {
-            get { return Addresses.Count * IpV4Address.SizeOf; }
+            get { return (byte)(Addresses.Count * IpV4Address.SizeOf); }
+        }
+
+        public override byte PayloadOffset
+        {
+            get { return (byte)(NextAddressIndex * IpV4Address.SizeOf); }
         }
 
         protected override bool EqualsPayloads(GreSourceRouteEntry other)
@@ -570,11 +586,6 @@ namespace PcapDotNet.Packets.Gre
             get { return Addresses[NextAddressIndex]; }
         }
 
-        protected override byte OffsetInPayload
-        {
-            get { return (byte)(NextAddressIndex * IpV4Address.SizeOf); }
-        }
-
         internal GreSourceRouteEntryIp(IpV4Address[] addresses, int nextAddressIndex)
             :this(addresses.AsReadOnly(), nextAddressIndex)
         {
@@ -597,9 +608,14 @@ namespace PcapDotNet.Packets.Gre
             get { return GreSourceRouteEntryAddressFamily.AsSourceRoute; }
         }
 
-        public override int PayloadLength
+        public override byte PayloadLength
         {
-            get { return AsNumbers.Count * sizeof(ushort); }
+            get { return (byte)(AsNumbers.Count * sizeof(ushort)); }
+        }
+
+        public override byte PayloadOffset
+        {
+            get { return (byte)(NextAsNumberIndex * sizeof(ushort)); }
         }
 
         protected override bool EqualsPayloads(GreSourceRouteEntry other)
@@ -620,11 +636,6 @@ namespace PcapDotNet.Packets.Gre
         public ushort NextAsNumber
         {
             get { return AsNumbers[NextAsNumberIndex]; }
-        }
-
-        protected override byte OffsetInPayload
-        {
-            get { return (byte)(NextAsNumberIndex * sizeof(ushort)); }
         }
 
         protected override void WritePayload(byte[] buffer, int offset)
@@ -656,24 +667,19 @@ namespace PcapDotNet.Packets.Gre
             get { return _addressFamily; }
         }
 
-        public override int PayloadLength
+        public override byte PayloadLength
         {
-            get { return Data.Length; }
+            get { return (byte)Data.Length; }
+        }
+
+        public override byte PayloadOffset
+        {
+            get { return (byte)_offset; }
         }
 
         public Datagram Data
         {
             get { return _data; }
-        }
-
-        public int Offset
-        {
-            get { return _offset; }
-        }
-
-        protected override byte OffsetInPayload
-        {
-            get { return (byte)Offset; }
         }
 
         protected override bool EqualsPayloads(GreSourceRouteEntry other)
