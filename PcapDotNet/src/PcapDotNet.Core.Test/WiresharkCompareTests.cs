@@ -13,6 +13,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
@@ -99,8 +100,9 @@ namespace PcapDotNet.Core.Test
             IpV4,
             Igmp,
             Icmp,
+            Gre,
             Udp,
-            Tcp
+            Tcp,
         }
 
         private static Packet CreateRandomPacket(Random random)
@@ -135,6 +137,13 @@ namespace PcapDotNet.Core.Test
                     IcmpLayer icmpLayer = random.NextIcmpLayer();
                     IEnumerable<ILayer> icmpPayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
                     return PacketBuilder.Build(packetTimestamp, new ILayer[]{ethernetLayer, ipV4Layer, icmpLayer}.Concat(icmpPayloadLayers));
+
+                case PacketType.Gre:
+                    ethernetLayer.EtherType = EthernetType.None;
+                    ipV4Layer.Protocol = null;
+                    GreLayer greLayer = random.NextGreLayer();
+//                    IEnumerable<ILayer> grePayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
+                    return PacketBuilder.Build(packetTimestamp, new ILayer[] {ethernetLayer, ipV4Layer, greLayer});
 
                 case PacketType.Udp:
                     ethernetLayer.EtherType = EthernetType.None;
@@ -287,6 +296,14 @@ namespace PcapDotNet.Core.Test
                             break;
                         currentDatagram = icmpProperty.GetValue(currentDatagram);
                         CompareIcmp(layer, (IcmpDatagram)currentDatagram);
+                        break;
+
+                    case "gre":
+                        PropertyInfo greProperty = currentDatagram.GetType().GetProperty("Gre");
+                        if (greProperty == null)
+                            break;
+                        currentDatagram = greProperty.GetValue(currentDatagram);
+                        CompareGre(layer, (GreDatagram)currentDatagram);
                         break;
 
                     case "udp":
@@ -821,23 +838,102 @@ namespace PcapDotNet.Core.Test
             }
 
             CompareProtocols(icmpDatagram, icmp);
-//            object currentDatagram = icmpDatagram;
-//            foreach (var layer in icmp.Protocols())
-//            {
-//                switch (layer.Name())
-//                {
-//                    case "ip":
-//                        PropertyInfo ipV4Property = currentDatagram.GetType().GetProperty("IpV4");
-//                        if (ipV4Property == null)
-//                            break;
-//                        currentDatagram = ipV4Property.GetValue(currentDatagram);
-//                        CompareIpV4(layer, (IpV4Datagram)currentDatagram);
-//                        break;
-//
-//                    default:
-//                        throw new InvalidOperationException("unexpected layer under icmp: " + layer.Name());
-//                }
-//            }
+        }
+
+        private static void CompareGre(XElement greElement, GreDatagram greDatagram)
+        {
+            int currentEntry = -1;
+            foreach (var field in greElement.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "":
+                        if (field.Show().StartsWith("Flags and version: "))
+                        {
+                            XElement[] innerFields = field.Fields().ToArray();
+                            Assert.AreEqual(8, innerFields.Length);
+                            foreach (var innerField in innerFields)
+                            {
+                                innerField.AssertName("");
+                            }
+
+                            innerFields[0].AssertShow(string.Format("{0}... .... .... .... = {1}", greDatagram.ChecksumPresent.ToInt(),
+                                                                    (greDatagram.ChecksumPresent ? "Checksum" : "No checksum")));
+                            innerFields[1].AssertShow(string.Format(".{0}.. .... .... .... = {1}", greDatagram.RoutingPresent.ToInt(),
+                                                                    (greDatagram.RoutingPresent ? "Routing" : "No routing")));
+                            innerFields[2].AssertShow(string.Format("..{0}. .... .... .... = {1}", greDatagram.KeyPresent.ToInt(),
+                                                                    (greDatagram.KeyPresent ? "Key" : "No key")));
+                            innerFields[3].AssertShow(string.Format("...{0} .... .... .... = {1}", greDatagram.SequenceNumberPresent.ToInt(),
+                                                                    (greDatagram.SequenceNumberPresent ? "Sequence number" : "No sequence number")));
+                            innerFields[4].AssertShow(string.Format(".... {0}... .... .... = {1}", greDatagram.StrictSourceRoute.ToInt(),
+                                                                    (greDatagram.StrictSourceRoute ? "Strict source route" : "No strict source route")));
+                            innerFields[5].AssertShow(string.Format(".... .{0} .... .... = Recursion control: {1}",
+                                                                    greDatagram.RecursionControl.ToBits().Skip(5).Select(b => b.ToInt()).
+                                                                        SequenceToString(),
+                                                                    greDatagram.RecursionControl));
+                            innerFields[6].AssertShow(string.Format(".... .... {0}... = Flags: {1}",
+                                                                    greDatagram.Flags.ToBits().Skip(3).Select(b => b.ToInt()).SequenceToString().
+                                                                        Insert(4, " "),
+                                                                    greDatagram.Flags));
+                            innerFields[7].AssertShow(string.Format(".... .... .... .{0} = Version: {1}",
+                                                                    ((byte)greDatagram.Version).ToBits().Skip(5).Select(b => b.ToInt()).
+                                                                        SequenceToString(),
+                                                                    (byte)greDatagram.Version));
+                        }
+                        else if (field.Show().StartsWith("Checksum: "))
+                        {
+                            field.AssertValue(greDatagram.Checksum);
+                        }
+                        else if (field.Show().StartsWith("Offset: "))
+                        {
+                            field.AssertValue(greDatagram.RoutingOffset);
+                        }
+                        else if (field.Show().StartsWith("Sequence number: "))
+                        {
+                            field.AssertValue(greDatagram.SequenceNumber);
+                        }
+                        else if (field.Show().StartsWith("Address family: "))
+                        {
+                            ++currentEntry;
+                            if (currentEntry == greDatagram.Routing.Count)
+                                field.AssertValue((ushort)0);
+                            else
+                                field.AssertValue((ushort)greDatagram.Routing[currentEntry].AddressFamily);
+                        }
+                        else if (field.Show().StartsWith("SRE offset: "))
+                        {
+                            if (currentEntry == greDatagram.Routing.Count)
+                                field.AssertValue((byte)0);
+                            else
+                                field.AssertValue(greDatagram.Routing[currentEntry].PayloadOffset);
+                        }
+                        else if (field.Show().StartsWith("SRE length: "))
+                        {
+                            if (currentEntry == greDatagram.Routing.Count)
+                                field.AssertValue((byte)0);
+                            else
+                                field.AssertValue(greDatagram.Routing[currentEntry].PayloadLength);
+                        }
+                        else
+                        {
+                            Assert.Fail("Invalid field " + field.Show());
+                        }
+
+                        break;
+
+                    case "gre.proto":
+                        field.AssertShowHex((ushort)greDatagram.ProtocolType);
+                        break;
+
+                    case "gre.key":
+                        field.AssertShowHex(greDatagram.Key);
+                        break;
+
+                    default:
+                        Assert.Fail("Invalid field name: " + field.Name());
+                        break;
+                }
+            }
         }
 
         private static void CompareUdp(XElement udpElement, IpV4Datagram ipV4Datagram)

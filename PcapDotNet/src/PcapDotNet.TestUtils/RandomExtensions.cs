@@ -6,7 +6,7 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.TestUtils
 {
-    public static class MoreRandom
+    public static class RandomExtensions
     {
         public static bool NextBool(this Random random)
         {

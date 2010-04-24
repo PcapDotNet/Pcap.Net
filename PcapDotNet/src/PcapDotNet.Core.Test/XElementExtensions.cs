@@ -42,99 +42,119 @@ namespace PcapDotNet.Core.Test
             return element.GetAttributeValue("value");
         }
 
-        public static void AssertShow(this XElement element, string value)
+        public static void AssertName(this XElement element, string expectedName)
         {
-            Assert.AreEqual(element.Show(), value, element.Name());
+            Assert.AreEqual(element.Name(), expectedName);
         }
 
-        public static void AssertShow(this XElement element, IEnumerable<byte> value)
+        public static void AssertShow(this XElement element, string expectedValue)
         {
-            element.AssertShow(value.BytesSequenceToHexadecimalString(":"));
+            Assert.AreEqual(expectedValue, element.Show(), element.Name());
         }
 
-        public static void AssertShowDecimal(this XElement element, bool value)
+        public static void AssertShow(this XElement element, IEnumerable<byte> expectedValue)
         {
-            element.AssertShowDecimal(value ? 1 : 0);
+            element.AssertShow(expectedValue.BytesSequenceToHexadecimalString(":"));
         }
 
-        public static void AssertShowDecimal(this XElement element, byte value)
+        public static void AssertShowDecimal(this XElement element, bool expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShowDecimal(expectedValue ? 1 : 0);
         }
 
-        public static void AssertShowDecimal(this XElement element, short value)
+        public static void AssertShowDecimal(this XElement element, byte expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, ushort value)
+        public static void AssertShowDecimal(this XElement element, short expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, int value)
+        public static void AssertShowDecimal(this XElement element, ushort expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, uint value)
+        public static void AssertShowDecimal(this XElement element, int expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, long value)
+        public static void AssertShowDecimal(this XElement element, uint expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, ulong value)
+        public static void AssertShowDecimal(this XElement element, long expectedValue)
         {
-            element.AssertShow(value.ToString());
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowHex(this XElement element, byte value)
+        public static void AssertShowDecimal(this XElement element, ulong expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(byte)));
+            element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowHex(this XElement element, short value)
+        public static void AssertShowHex(this XElement element, byte expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(short)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(byte)));
         }
 
-        public static void AssertShowHex(this XElement element, ushort value)
+        public static void AssertShowHex(this XElement element, short expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(ushort)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(short)));
         }
 
-        public static void AssertShowHex(this XElement element, int value)
+        public static void AssertShowHex(this XElement element, ushort expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(int)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(ushort)));
         }
 
-        public static void AssertShowHex(this XElement element, uint value)
+        public static void AssertShowHex(this XElement element, int expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(uint)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(int)));
         }
 
-        public static void AssertShowHex(this XElement element, long value)
+        public static void AssertShowHex(this XElement element, uint expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(long)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(uint)));
         }
 
-        public static void AssertShowHex(this XElement element, ulong value)
+        public static void AssertShowHex(this XElement element, long expectedValue)
         {
-            element.AssertShow("0x" + value.ToString("x" + 2 * sizeof(ulong)));
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(long)));
         }
 
-        public static void AssertValue(this XElement element, string value)
+        public static void AssertShowHex(this XElement element, ulong expectedValue)
         {
-            Assert.AreEqual(element.Value(), value, element.Name());
+            element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(ulong)));
         }
 
-        public static void AssertValue(this XElement element, IEnumerable<byte> bytes)
+        public static void AssertValue(this XElement element, string expectedValue)
         {
-            element.AssertValue(bytes.BytesSequenceToHexadecimalString());
+            Assert.AreEqual(element.Value(), expectedValue, element.Name());
+        }
+
+        public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue)
+        {
+            element.AssertValue(expectedValue.BytesSequenceToHexadecimalString());
+        }
+
+        public static void AssertValue(this XElement element, byte expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x2"));
+        }
+
+        public static void AssertValue(this XElement element, ushort expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x4"));
+        }
+
+        public static void AssertValue(this XElement element, uint expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x8"));
         }
     }
 }

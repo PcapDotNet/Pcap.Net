@@ -135,7 +135,7 @@ namespace PcapDotNet.Packets.Test
 
                             default:
                                 GreSourceRouteEntryUnknown unknownEntry = (GreSourceRouteEntryUnknown)entry;
-                                MoreAssert.IsInRange(0, unknownEntry.Data.Length, unknownEntry.Offset);
+                                MoreAssert.IsInRange(0, unknownEntry.Data.Length, unknownEntry.PayloadOffset);
                                 break;
 
                         }
@@ -191,7 +191,7 @@ namespace PcapDotNet.Packets.Test
             packet = packetBuilder.Build(DateTime.Now);
             Assert.IsFalse(packet.IsValid);
 
-            // SreOffset is too big
+            // PayloadOffset is too big
             buffer = gre.ToArray();
             buffer[gre.Length - 10] = 100;
             newIpPayload = new Datagram(buffer);
@@ -199,7 +199,7 @@ namespace PcapDotNet.Packets.Test
             packet = packetBuilder.Build(DateTime.Now);
             Assert.IsFalse(packet.IsValid);
 
-            // SreOffset isn't aligned to ip
+            // PayloadOffset isn't aligned to ip
             buffer = gre.ToArray();
             buffer[gre.Length - 10] = 3;
             newIpPayload = new Datagram(buffer);
@@ -207,7 +207,7 @@ namespace PcapDotNet.Packets.Test
             packet = packetBuilder.Build(DateTime.Now);
             Assert.IsFalse(packet.IsValid);
 
-            // SreOffset isn't aligned to as
+            // PayloadOffset isn't aligned to as
             buffer = gre.ToArray();
             buffer[gre.Length - 16] = 1;
             newIpPayload = new Datagram(buffer);
