@@ -51,6 +51,10 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         MacControl = 0x8808,
         /// <summary>
+        /// PPP, Point-to-Point Protocol
+        /// </summary>
+        PointToPointProtocol = 0x880B,
+        /// <summary>
         /// CobraNet
         /// </summary>
         CobraNet = 0x8819,

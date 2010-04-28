@@ -11,19 +11,21 @@ namespace PcapDotNet.Packets.Gre
     /// <summary>
     /// RFC 1701, RFC 1702, RFC 2637, RFC 2784.
     /// <pre>
-    /// +-----+---+---+---+---+---+-------+-------+---------+-------------------+
-    /// | Bit | 0 | 1 | 2 | 3 | 4 | 5-7   | 8-12  | 13-15   | 16-31             |
-    /// +-----+---+-----------+---+-------+-------+---------+-------------------+
-    /// | 0   | C | R | K | S | s | Recur | Flags | Version | Protocol Type     |
-    /// +-----+---+-----------+---+-------+-------+---------+-------------------+
-    /// | 32  | Checksum (optional)                         | Offset (optional) |
-    /// +-----+---------------------------------------------+-------------------+
-    /// | 32  | Key (optional)                                                  |
-    /// +-----+-----------------------------------------------------------------+
-    /// | 32  | Sequence Number (optional)                                      |
-    /// +-----+-----------------------------------------------------------------+
-    /// | 32  | Routing (optional)                                              |
-    /// +-----+-----------------------------------------------------------------+
+    /// +-----+---+---+---+---+---+-------+---+-------+---------+-------------------+
+    /// | Bit | 0 | 1 | 2 | 3 | 4 | 5-7   | 8 | 9-12  | 13-15   | 16-31             |
+    /// +-----+---+-----------+---+-------+---+-------+---------+-------------------+
+    /// | 0   | C | R | K | S | s | Recur | A | Flags | Version | Protocol Type     |
+    /// +-----+---+-----------+---+-------+---+-------+---------+-------------------+
+    /// | 32  | Checksum (optional)                             | Offset (optional) |
+    /// +-----+-------------------------------------------------+-------------------+
+    /// | 32  | Key (optional)                                                      |
+    /// +-----+---------------------------------------------------------------------+
+    /// | 32  | Sequence Number (optional)                                          |
+    /// +-----+---------------------------------------------------------------------+
+    /// | 32  | Acknowledgment Number (optional)                                    |
+    /// +-----+---------------------------------------------------------------------+
+    /// | 32  | Routing (optional)                                                  |
+    /// +-----+---------------------------------------------------------------------+
     /// </pre>
     /// </summary>
     public class GreDatagram : Datagram
@@ -36,6 +38,7 @@ namespace PcapDotNet.Packets.Gre
             public const int SequenceNumberPresent = 0;
             public const int StrictSourceRoute = 0;
             public const int RecursionControl = 0;
+            public const int AcknowledgmentSequenceNumberPresent = 1;
             public const int Flags = 1;
             public const int Version = 1;
             public const int ProtocolType = 2;
@@ -51,7 +54,8 @@ namespace PcapDotNet.Packets.Gre
             public const byte SequenceNumberPresent = 0x10;
             public const byte StrictSourceRoute = 0x08;
             public const byte RecursionControl = 0x07;
-            public const byte Flags = 0xF8;
+            public const byte AcknowledgmentSequenceNumberPresent = 0x80;
+            public const byte Flags = 0x78;
             public const byte Version = 0x07;
         }
 
@@ -66,7 +70,7 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                return GetHeaderLength(ChecksumPresent, KeyPresent, SequenceNumberPresent, Routing);
+                return GetHeaderLength(ChecksumPresent, KeyPresent, SequenceNumberPresent, AcknowledgmentSequenceNumberPresent, Routing);
             }
         }
 
@@ -124,6 +128,17 @@ namespace PcapDotNet.Packets.Gre
             get { return (byte)(this[Offset.RecursionControl] & Mask.RecursionControl); }
         }
 
+        /// <summary>
+        /// Set to one (1) if packet contains Acknowledgment Number to be used for acknowledging previously transmitted data.
+        /// </summary>
+        public bool AcknowledgmentSequenceNumberPresent
+        {
+            get { return (this[Offset.AcknowledgmentSequenceNumberPresent] & Mask.AcknowledgmentSequenceNumberPresent) == Mask.AcknowledgmentSequenceNumberPresent; }
+        }
+
+        /// <summary>
+        /// Must be set to zero (0).
+        /// </summary>
         public byte Flags
         {
             get { return (byte)((this[Offset.Flags] & Mask.Flags) >> Shift.Flags); }
@@ -208,6 +223,16 @@ namespace PcapDotNet.Packets.Gre
             get { return ReadUInt(OffsetKey, Endianity.Big); }
         }
 
+        public ushort KeyPayloadLength
+        {
+            get { return ReadUShort(OffsetKeyPayloadLength, Endianity.Big); }
+        }
+
+        public ushort KeyCallId
+        {
+            get { return ReadUShort(OffsetKeyCallId, Endianity.Big); }
+        }
+
         /// <summary>
         /// The Sequence Number field contains an unsigned 32 bit integer which is inserted by the encapsulator.  
         /// It may be used by the receiver to establish the order in which packets have been transmitted from the encapsulator to the receiver.  
@@ -215,6 +240,15 @@ namespace PcapDotNet.Packets.Gre
         public uint SequenceNumber
         {
             get { return ReadUInt(OffsetSequenceNumber, Endianity.Big); }
+        }
+
+        /// <summary>
+        /// Contains the sequence number of the highest numbered GRE packet received by the sending peer for this user session.
+        /// Present if A bit (Bit 8) is one (1).
+        /// </summary>
+        public uint  AcknowledgmentSequenceNumber
+        {
+            get { return ReadUInt(OffsetAcknowledgmentSequenceNumber, Endianity.Big); }
         }
 
         /// <summary>
@@ -254,24 +288,28 @@ namespace PcapDotNet.Packets.Gre
         public override ILayer ExtractLayer()
         {
             return new GreLayer
-                       {
-                           Version = Version,
-                           ProtocolType = ProtocolType,
-                           RecursionControl = RecursionControl,
-                           Flags = Flags,
-                           ChecksumPresent = ChecksumPresent,
-                           Checksum = ChecksumPresent ? (ushort?)Checksum : null,
-                           Key = KeyPresent ? (uint?)Key : null,
-                           SequenceNumber = SequenceNumberPresent ? (uint?)SequenceNumber : null,
-                           Routing = RoutingPresent ? Routing : null,
-                           RoutingOffset = RoutingPresent ? (ushort?)RoutingOffset : null,
-                           StrictSourceRoute = StrictSourceRoute,
-                       };
+                   {
+                       Version = Version,
+                       ProtocolType = ProtocolType,
+                       RecursionControl = RecursionControl,
+                       Flags = Flags,
+                       ChecksumPresent = ChecksumPresent,
+                       Checksum = ChecksumPresent ? (ushort?)Checksum : null,
+                       Key = KeyPresent ? (uint?)Key : null,
+                       SequenceNumber = SequenceNumberPresent ? (uint?)SequenceNumber : null,
+                       AcknowledgmentSequenceNumber = AcknowledgmentSequenceNumberPresent ? (uint?)AcknowledgmentSequenceNumber : null,
+                       Routing = RoutingPresent ? Routing : null,
+                       RoutingOffset = RoutingPresent ? (ushort?)RoutingOffset : null,
+                       StrictSourceRoute = StrictSourceRoute,
+                   };
         }
 
         protected override bool CalculateIsValid()
         {
-            return (Length >= HeaderMinimumLength && Length >= HeaderLength && IsValidRouting && (!ChecksumPresent || IsChecksumCorrect));
+            return (Length >= HeaderMinimumLength && Length >= HeaderLength && 
+                IsValidRouting && Flags == 0 && 
+                (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
+                (!ChecksumPresent || IsChecksumCorrect));
         }
 
         internal GreDatagram(byte[] buffer, int offset, int length)
@@ -279,18 +317,19 @@ namespace PcapDotNet.Packets.Gre
         {
         }
 
-        internal static int GetHeaderLength(bool isChecksumPresent, bool isKeyPresent, bool isSequenceNumberPresent, IEnumerable<GreSourceRouteEntry> routing)
+        internal static int GetHeaderLength(bool isChecksumPresent, bool isKeyPresent, bool isSequenceNumberPresent, bool isAcknowledgmentSequenceNumberPresent, IEnumerable<GreSourceRouteEntry> routing)
         {
             return HeaderMinimumLength +
                    (isChecksumPresent || routing != null ? sizeof(ushort) + sizeof(ushort) : 0) +
                    (isKeyPresent ? sizeof(uint) : 0) +
                    (isSequenceNumberPresent ? sizeof(uint) : 0) +
+                   (isAcknowledgmentSequenceNumberPresent ? sizeof(uint) : 0) +
                    (routing != null ? routing.Sum(entry => entry.Length) + GreSourceRouteEntry.HeaderLength : 0);
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,
             byte recursionControl, byte flags, GreVersion version, EthernetType protocolType,
-            bool checksumPresent, uint? key, uint? sequenceNumber,
+            bool checksumPresent, uint? key, uint? sequenceNumber, uint? acknowledgmentSequenceNumber,
             ReadOnlyCollection<GreSourceRouteEntry> routing, ushort? routingOffset, bool strictSourceRoute)
         {
             buffer.Write(offset + Offset.ChecksumPresent,
@@ -301,7 +340,9 @@ namespace PcapDotNet.Packets.Gre
                                 (strictSourceRoute ? Mask.StrictSourceRoute : (byte)0) |
                                 (recursionControl & Mask.RecursionControl)));
 
-            buffer.Write(offset + Offset.Flags, (byte)(((flags << Shift.Flags) & Mask.Flags) | ((byte)version & Mask.Version)));
+            buffer.Write(offset + Offset.Flags, (byte)((acknowledgmentSequenceNumber != null ? Mask.AcknowledgmentSequenceNumberPresent : (byte)0) |
+                                                       ((flags << Shift.Flags) & Mask.Flags) |
+                                                       ((byte)version & Mask.Version)));
 
             buffer.Write(offset + Offset.ProtocolType, (ushort)protocolType, Endianity.Big);
 
@@ -319,6 +360,9 @@ namespace PcapDotNet.Packets.Gre
 
             if (sequenceNumber != null)
                 buffer.Write(ref offset, sequenceNumber.Value, Endianity.Big);
+
+            if (acknowledgmentSequenceNumber != null)
+                buffer.Write(ref offset, acknowledgmentSequenceNumber.Value, Endianity.Big);
 
             if (routing != null)
             {
@@ -342,14 +386,29 @@ namespace PcapDotNet.Packets.Gre
             get { return HeaderMinimumLength + ((ChecksumPresent || RoutingPresent) ? sizeof(ushort) + sizeof(ushort) : 0); }
         }
 
+        private int OffsetKeyPayloadLength
+        {
+            get { return OffsetKey; }
+        }
+
+        private int OffsetKeyCallId
+        {
+            get { return OffsetKey + sizeof(ushort); }
+        }
+
         private int OffsetSequenceNumber
         {
             get { return OffsetKey + (KeyPresent ? sizeof(uint) : 0); }
         }
 
-        private int OffsetRouting
+        private int OffsetAcknowledgmentSequenceNumber
         {
             get { return OffsetSequenceNumber + (SequenceNumberPresent ? sizeof(uint) : 0); }
+        }
+
+        private int OffsetRouting
+        {
+            get { return OffsetAcknowledgmentSequenceNumber + (AcknowledgmentSequenceNumberPresent ? sizeof(uint) : 0); }
         }
 
         private void TryParseRouting()
