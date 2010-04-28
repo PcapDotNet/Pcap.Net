@@ -15,6 +15,11 @@ namespace PcapDotNet.Packets.Gre
         public bool ChecksumPresent { get; set; }
         public ushort? Checksum { get; set; }
         public uint? Key { get; set; }
+        public void SetKey(ushort keyPayloadLength, ushort keyCallId)
+        {
+            Key = (uint)((keyPayloadLength << 16) | keyCallId);
+        }
+
         public uint? SequenceNumber { get; set; }
         public uint? AcknowledgmentSequenceNumber { get; set; }
         public ushort? RoutingOffset { get; set; }
