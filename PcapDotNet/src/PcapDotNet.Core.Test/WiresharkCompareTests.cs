@@ -142,6 +142,14 @@ namespace PcapDotNet.Core.Test
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
                     GreLayer greLayer = random.NextGreLayer();
+//                    GreLayer greLayer = new GreLayer
+//                                        {
+//                                            AcknowledgmentSequenceNumber = 10,
+//                                            ProtocolType = EthernetType.AppleTalk,
+//                                            //EthernetType.PointToPointProtocol,
+//                                            Key = 0,
+//                                            Version = GreVersion.EnhancedGre,
+//                                        };
 //                    IEnumerable<ILayer> grePayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
                     return PacketBuilder.Build(packetTimestamp, new ILayer[] {ethernetLayer, ipV4Layer, greLayer});
 
@@ -173,7 +181,7 @@ namespace PcapDotNet.Core.Test
 
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
         {
-            string pcapFilename = Path.GetTempPath() + "temp.pcap";
+            string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextUShort() + ".pcap";
             PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
 //            List<Packet> packetsList = new List<Packet>();
 //            new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -851,31 +859,52 @@ namespace PcapDotNet.Core.Test
                         if (field.Show().StartsWith("Flags and version: "))
                         {
                             XElement[] innerFields = field.Fields().ToArray();
-                            Assert.AreEqual(8, innerFields.Length);
+                            bool isEnhanced = greDatagram.ProtocolType == EthernetType.PointToPointProtocol;
+                            Assert.AreEqual(isEnhanced ? 9 : 8, innerFields.Length, "innerFields.Length");
                             foreach (var innerField in innerFields)
                             {
                                 innerField.AssertName("");
                             }
 
-                            innerFields[0].AssertShow(string.Format("{0}... .... .... .... = {1}", greDatagram.ChecksumPresent.ToInt(),
+                            int currentInnerFieldIndex = 0;
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format("{0}... .... .... .... = {1}", greDatagram.ChecksumPresent.ToInt(),
                                                                     (greDatagram.ChecksumPresent ? "Checksum" : "No checksum")));
-                            innerFields[1].AssertShow(string.Format(".{0}.. .... .... .... = {1}", greDatagram.RoutingPresent.ToInt(),
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".{0}.. .... .... .... = {1}", greDatagram.RoutingPresent.ToInt(),
                                                                     (greDatagram.RoutingPresent ? "Routing" : "No routing")));
-                            innerFields[2].AssertShow(string.Format("..{0}. .... .... .... = {1}", greDatagram.KeyPresent.ToInt(),
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format("..{0}. .... .... .... = {1}", greDatagram.KeyPresent.ToInt(),
                                                                     (greDatagram.KeyPresent ? "Key" : "No key")));
-                            innerFields[3].AssertShow(string.Format("...{0} .... .... .... = {1}", greDatagram.SequenceNumberPresent.ToInt(),
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format("...{0} .... .... .... = {1}", greDatagram.SequenceNumberPresent.ToInt(),
                                                                     (greDatagram.SequenceNumberPresent ? "Sequence number" : "No sequence number")));
-                            innerFields[4].AssertShow(string.Format(".... {0}... .... .... = {1}", greDatagram.StrictSourceRoute.ToInt(),
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... {0}... .... .... = {1}", greDatagram.StrictSourceRoute.ToInt(),
                                                                     (greDatagram.StrictSourceRoute ? "Strict source route" : "No strict source route")));
-                            innerFields[5].AssertShow(string.Format(".... .{0} .... .... = Recursion control: {1}",
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .{0} .... .... = Recursion control: {1}",
                                                                     greDatagram.RecursionControl.ToBits().Skip(5).Select(b => b.ToInt()).
                                                                         SequenceToString(),
                                                                     greDatagram.RecursionControl));
-                            innerFields[6].AssertShow(string.Format(".... .... {0}... = Flags: {1}",
-                                                                    greDatagram.Flags.ToBits().Skip(3).Select(b => b.ToInt()).SequenceToString().
-                                                                        Insert(4, " "),
-                                                                    greDatagram.Flags));
-                            innerFields[7].AssertShow(string.Format(".... .... .... .{0} = Version: {1}",
+                            if (isEnhanced)
+                            {
+                                innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... {0}... .... = {1}",
+                                                                                               greDatagram.AcknowledgmentSequenceNumberPresent.ToInt(),
+                                                                                               (greDatagram.AcknowledgmentSequenceNumberPresent
+                                                                                                    ? "Acknowledgment number"
+                                                                                                    : "No acknowledgment number")));
+
+                                innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... .{0}... = Flags: {1}",
+                                                                   greDatagram.Flags.ToBits().Skip(3).Take(4).Select(b => b.ToInt()).
+                                                                       SequenceToString().
+                                                                       Insert(3, " "),
+                                                                   greDatagram.Flags));
+                            }
+                            else
+                            {
+                                byte fullFlags = (byte)(greDatagram.Flags | (greDatagram.AcknowledgmentSequenceNumberPresent ? 0x10 : 0x00));
+                                innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... {0}... = Flags: {1}",
+                                                                                               fullFlags.ToBits().Skip(3).Select(b => b.ToInt()).
+                                                                                                   SequenceToString().
+                                                                                                   Insert(4, " "),
+                                                                                               fullFlags));
+                            }
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... .... .{0} = Version: {1}",
                                                                     ((byte)greDatagram.Version).ToBits().Skip(5).Select(b => b.ToInt()).
                                                                         SequenceToString(),
                                                                     (byte)greDatagram.Version));
@@ -888,9 +917,21 @@ namespace PcapDotNet.Core.Test
                         {
                             field.AssertValue(greDatagram.RoutingOffset);
                         }
+                        else if (field.Show().StartsWith("Payload length: "))
+                        {
+                            field.AssertValue(greDatagram.KeyPayloadLength);
+                        }
+                        else if (field.Show().StartsWith("Call ID: "))
+                        {
+                            field.AssertValue(greDatagram.KeyCallId);
+                        }
                         else if (field.Show().StartsWith("Sequence number: "))
                         {
                             field.AssertValue(greDatagram.SequenceNumber);
+                        }
+                        else if (field.Show().StartsWith("Acknowledgement number: "))
+                        {
+                            field.AssertValue(greDatagram.AcknowledgmentSequenceNumber);
                         }
                         else if (field.Show().StartsWith("Address family: "))
                         {

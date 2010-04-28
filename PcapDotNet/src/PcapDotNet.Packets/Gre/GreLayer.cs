@@ -16,6 +16,7 @@ namespace PcapDotNet.Packets.Gre
         public ushort? Checksum { get; set; }
         public uint? Key { get; set; }
         public uint? SequenceNumber { get; set; }
+        public uint? AcknowledgmentSequenceNumber { get; set; }
         public ushort? RoutingOffset { get; set; }
         public ReadOnlyCollection<GreSourceRouteEntry> Routing { get; set; }
         public bool StrictSourceRoute { get; set; }
@@ -24,13 +25,13 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                return GreDatagram.GetHeaderLength(ChecksumPresent, Key != null, SequenceNumber != null, Routing);
+                return GreDatagram.GetHeaderLength(ChecksumPresent, Key != null, SequenceNumber != null, AcknowledgmentSequenceNumber != null, Routing);
             }
         }
 
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
-            GreDatagram.WriteHeader(buffer, offset, RecursionControl, Flags, Version, ProtocolType, ChecksumPresent, Key, SequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
+            GreDatagram.WriteHeader(buffer, offset, RecursionControl, Flags, Version, ProtocolType, ChecksumPresent, Key, SequenceNumber, AcknowledgmentSequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
         }
 
         public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
@@ -50,6 +51,7 @@ namespace PcapDotNet.Packets.Gre
                    (Checksum == null ? other.Checksum == null : Checksum.Equals(other.Checksum)) &&
                    (Key == null ? other.Key == null : Key.Equals(other.Key)) &&
                    (SequenceNumber == null ? other.SequenceNumber == null : SequenceNumber.Equals(other.SequenceNumber)) &&
+                   (AcknowledgmentSequenceNumber == null ? other.AcknowledgmentSequenceNumber == null : AcknowledgmentSequenceNumber.Equals(other.AcknowledgmentSequenceNumber)) &&
                    (RoutingOffset == null ? other.RoutingOffset == null : RoutingOffset.Equals(other.RoutingOffset)) &&
                    (Routing == null ? other.Routing == null : Routing.SequenceEqual(other.Routing)) &&
                    StrictSourceRoute.Equals(other.StrictSourceRoute);
