@@ -1,5 +1,7 @@
+using System;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Base.Test
 {
@@ -60,21 +62,18 @@ namespace PcapDotNet.Base.Test
         [TestMethod]
         public void UInt128Test()
         {
-//            Random random = new Random();
-//            for (int i = 0; i != 1000; ++i)
-//            {
-//                UInt48 value = random.NextUInt48();
-//
-//                Assert.AreEqual(value, value);
-//                Assert.IsTrue(value == value);
-//                Assert.IsFalse(value != value);
-//                Assert.IsNotNull(value.GetHashCode());
-//
-//                if (value < uint.MaxValue)
-//                    Assert.AreEqual(value, uint.Parse(value.ToString()));
-//
-//                Assert.AreEqual((byte)value, (byte)(value % 256));
-//            }
+            Random random = new Random();
+            for (int i = 0; i != 1000; ++i)
+            {
+                UInt128 value = random.NextUInt128();
+
+                Assert.AreEqual(value, value);
+                Assert.IsTrue(value == value);
+                Assert.IsFalse(value != value);
+                Assert.IsNotNull(value.GetHashCode());
+                Assert.AreEqual(value, UInt128.Parse(value.ToString("X32"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+                Assert.AreEqual(value >> 64, UInt128.Parse(((ulong)(value >> 64)).ToString("X16"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+            }
         }
 
         [TestMethod]

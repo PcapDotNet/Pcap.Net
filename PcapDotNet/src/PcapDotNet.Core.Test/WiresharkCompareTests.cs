@@ -151,7 +151,7 @@ namespace PcapDotNet.Core.Test
 //                                            Version = GreVersion.EnhancedGre,
 //                                        };
 //                    IEnumerable<ILayer> grePayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
-                    return PacketBuilder.Build(packetTimestamp, new ILayer[] {ethernetLayer, ipV4Layer, greLayer});
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, greLayer, payloadLayer);
 
                 case PacketType.Udp:
                     ethernetLayer.EtherType = EthernetType.None;
@@ -181,7 +181,7 @@ namespace PcapDotNet.Core.Test
 
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
         {
-            string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextUShort() + ".pcap";
+            string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextByte() + ".pcap";
             PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
 //            List<Packet> packetsList = new List<Packet>();
 //            new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -191,8 +191,8 @@ namespace PcapDotNet.Core.Test
             string documentFilename = pcapFilename + ".pdml";
             using (Process process = new Process())
             {
-                process.StartInfo = new ProcessStartInfo()
-                                        {
+                process.StartInfo = new ProcessStartInfo
+                                    {
                                             FileName = WiresharkTsharkPath,
                                             Arguments = "-o udp.check_checksum:TRUE " +
                                                         "-o tcp.relative_sequence_numbers:FALSE " +
@@ -968,6 +968,15 @@ namespace PcapDotNet.Core.Test
 
                     case "gre.key":
                         field.AssertShowHex(greDatagram.Key);
+                        break;
+
+                    case "data":
+                    case "data.data":
+                        field.AssertValue(greDatagram.Payload);
+                        break;
+
+                    case "data.len":
+                        field.AssertShowDecimal(greDatagram.Payload.Length);
                         break;
 
                     default:

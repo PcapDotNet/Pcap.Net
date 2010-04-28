@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PcapDotNet.Base;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 
@@ -275,16 +275,6 @@ namespace PcapDotNet.Packets.Gre
             }
         }
 
-        public IpV4Datagram IpV4
-        {
-            get
-            {
-                if (_ipV4 == null && Length >= HeaderLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _ipV4;
-            }
-        }
-
         public override ILayer ExtractLayer()
         {
             return new GreLayer
@@ -304,12 +294,38 @@ namespace PcapDotNet.Packets.Gre
                    };
         }
 
+        /// <summary>
+        /// The Ethernet payload.
+        /// </summary>
+        public Datagram Payload
+        {
+            get { return PayloadDatagrams.Payload; }
+        }
+
+        /// <summary>
+        /// The Ethernet payload as an IPv4 datagram.
+        /// </summary>
+        public IpV4Datagram IpV4
+        {
+            get { return PayloadDatagrams.IpV4; }
+        }
+
+        /// <summary>
+        /// The Ethernet payload as an ARP datagram.
+        /// </summary>
+        public ArpDatagram Arp
+        {
+            get { return PayloadDatagrams.Arp; }
+        }
+
+
         protected override bool CalculateIsValid()
         {
-            return (Length >= HeaderMinimumLength && Length >= HeaderLength && 
-                IsValidRouting && Flags == 0 && 
-                (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
-                (!ChecksumPresent || IsChecksumCorrect));
+            return (Length >= HeaderMinimumLength && Length >= HeaderLength &&
+                    IsValidRouting && Flags == 0 &&
+                    (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
+                    (!ChecksumPresent || IsChecksumCorrect) &&
+                    PayloadDatagrams.Get(ProtocolType).IsValid);
         }
 
         internal GreDatagram(byte[] buffer, int offset, int length)
@@ -464,316 +480,24 @@ namespace PcapDotNet.Packets.Gre
             }
         }
 
-        private IpV4Datagram _ipV4;
+        private EthernetPayloadDatagrams PayloadDatagrams
+        {
+            get
+            {
+                if (_payloadDatagrams == null)
+                {
+                    _payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
+                                                                         ? new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength)
+                                                                         : null);
+                }
+                return _payloadDatagrams;
+            }
+        }
+        
+        private EthernetPayloadDatagrams _payloadDatagrams;
         private ReadOnlyCollection<GreSourceRouteEntry> _routing;
         private bool _isValidRouting = true;
         private bool? _isChecksumCorrect;
         private int? _activeSourceRouteEntryIndex;
-    }
-
-    /// <summary>
-    /// <pre>
-    /// +-----+----------------+------------+------------+
-    /// | Bit | 0-15           | 16-23      | 24-31      |
-    /// +-----+----------------+------------+------------+
-    /// | 0   | Address Family | SRE Offset | SRE Length |
-    /// +-----+----------------+------------+------------+
-    /// | 32  | Routing Information ...                  |
-    /// +-----+------------------------------------------+
-    /// </pre>
-    /// </summary>
-    public abstract class GreSourceRouteEntry : IEquatable<GreSourceRouteEntry>
-    {
-        public abstract GreSourceRouteEntryAddressFamily AddressFamily { get; }
-
-        public const int HeaderLength = 4;
-
-        private static class Offset
-        {
-            public const int AddressFamily = 0;
-            public const int SreOffset = 2;
-            public const int SreLength = 3;
-        }
-
-        public int Length
-        {
-            get { return HeaderLength + PayloadLength; }
-        }
-
-        public abstract byte PayloadOffset { get; }
-        public abstract byte PayloadLength { get; }
-
-        public bool Equals(GreSourceRouteEntry other)
-        {
-            return other != null &&
-                   AddressFamily == other.AddressFamily &&
-                   Length == other.Length &&
-                   PayloadOffset == other.PayloadOffset &&
-                   EqualsPayloads(other);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as GreSourceRouteEntry);
-        }
-
-        protected abstract bool EqualsPayloads(GreSourceRouteEntry other);
-        protected abstract void WritePayload(byte[] buffer, int offset);
-
-        internal static bool TryReadEntry(byte[] buffer, ref int offset, int length, out GreSourceRouteEntry entry)
-        {
-            entry = null;
-            if (length < HeaderLength)
-                return false;
-
-            // Address Family
-            GreSourceRouteEntryAddressFamily addressFamily = (GreSourceRouteEntryAddressFamily)buffer.ReadUShort(offset + Offset.AddressFamily, Endianity.Big);
-
-            // SRE Length
-            byte sreLength = buffer[offset + Offset.SreLength];
-            if (sreLength == 0)
-                return addressFamily == GreSourceRouteEntryAddressFamily.None;
-            
-            if (HeaderLength + sreLength > length)
-                return false;
-
-            // SRE Offset
-            byte sreOffset = buffer[offset + Offset.SreOffset];
-            if (sreOffset > sreLength)
-                return false;
-
-            // Entry
-            if (!TryReadEntry(buffer, offset + HeaderLength, sreLength, addressFamily, sreOffset, out entry))
-                return false;
-
-            // Change offset
-            offset += entry.Length;
-            return true;
-        }
-
-        internal void Write(byte[] buffer, ref int offset)
-        {
-            buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
-            buffer.Write(offset + Offset.SreOffset, PayloadOffset);
-            buffer.Write(offset + Offset.SreLength, (byte)PayloadLength);
-            WritePayload(buffer, offset + HeaderLength);
-            offset += Length;
-        }
-
-        private static bool TryReadEntry(byte[] buffer, int payloadOffset, int payloadLength, GreSourceRouteEntryAddressFamily addressFamily, int offsetInPayload, out GreSourceRouteEntry entry)
-        {
-            entry = null;
-            switch (addressFamily)
-            {
-                case GreSourceRouteEntryAddressFamily.IpSourceRoute:
-                    if (offsetInPayload % IpV4Address.SizeOf != 0 || payloadLength % IpV4Address.SizeOf != 0)
-                        return false;
-
-                    int numAddresses = payloadLength / IpV4Address.SizeOf;
-                    IpV4Address[] addresses = new IpV4Address[numAddresses];
-                    for (int i = 0; i != numAddresses; ++i)
-                        addresses[i] = buffer.ReadIpV4Address(payloadOffset + i * IpV4Address.SizeOf, Endianity.Big);
-
-                    entry = new GreSourceRouteEntryIp(addresses, offsetInPayload / IpV4Address.SizeOf);
-                    return true;
-
-                case GreSourceRouteEntryAddressFamily.AsSourceRoute:
-                    if (offsetInPayload % sizeof(ushort) != 0 || payloadLength % sizeof(ushort) != 0)
-                        return false;
-
-                    int numAsNumbers = payloadLength / sizeof(ushort);
-                    ushort[] asNumbers = new ushort[numAsNumbers];
-                    for (int i = 0; i != numAsNumbers; ++i)
-                        asNumbers[i] = buffer.ReadUShort(payloadOffset + i * sizeof(ushort), Endianity.Big);
-
-                    entry = new GreSourceRouteEntryAs(asNumbers, offsetInPayload / sizeof(ushort));
-                    return true;
-
-                default:
-                    Datagram data = new Datagram(buffer, payloadOffset, payloadLength);
-                    entry = new GreSourceRouteEntryUnknown(addressFamily, data, offsetInPayload);
-                    return true;
-            }
-        }
-    }
-
-    public class GreSourceRouteEntryIp : GreSourceRouteEntry
-    {
-        public GreSourceRouteEntryIp(ReadOnlyCollection<IpV4Address> addresses, int nextAddressIndex)
-        {
-            _addresses = addresses;
-            _nextAddressIndex = nextAddressIndex;
-        }
-
-        public override GreSourceRouteEntryAddressFamily AddressFamily
-        {
-            get { return GreSourceRouteEntryAddressFamily.IpSourceRoute; }
-        }
-
-        public override byte PayloadLength
-        {
-            get { return (byte)(Addresses.Count * IpV4Address.SizeOf); }
-        }
-
-        public override byte PayloadOffset
-        {
-            get { return (byte)(NextAddressIndex * IpV4Address.SizeOf); }
-        }
-
-        protected override bool EqualsPayloads(GreSourceRouteEntry other)
-        {
-            return Addresses.SequenceEqual(((GreSourceRouteEntryIp)other).Addresses);
-        }
-
-        protected override void WritePayload(byte[] buffer, int offset)
-        {
-            foreach (IpV4Address address in Addresses)
-                buffer.Write(ref offset, address, Endianity.Big);
-        }
-
-        public ReadOnlyCollection<IpV4Address> Addresses
-        {
-            get { return _addresses; }
-        }
-
-        public int NextAddressIndex
-        {
-            get { return _nextAddressIndex; }
-        }
-
-        public IpV4Address NextAddress
-        {
-            get { return Addresses[NextAddressIndex]; }
-        }
-
-        internal GreSourceRouteEntryIp(IpV4Address[] addresses, int nextAddressIndex)
-            :this(addresses.AsReadOnly(), nextAddressIndex)
-        {
-        }
-
-        private readonly ReadOnlyCollection<IpV4Address> _addresses;
-        private readonly int _nextAddressIndex;
-    }
-
-    public class GreSourceRouteEntryAs : GreSourceRouteEntry
-    {
-        public GreSourceRouteEntryAs(ReadOnlyCollection<ushort> asNumbers, int nextAsNumberIndex)
-        {
-            _asNumbers = asNumbers;
-            _nextAsNumberIndex = nextAsNumberIndex;
-        }
-
-        public override GreSourceRouteEntryAddressFamily AddressFamily
-        {
-            get { return GreSourceRouteEntryAddressFamily.AsSourceRoute; }
-        }
-
-        public override byte PayloadLength
-        {
-            get { return (byte)(AsNumbers.Count * sizeof(ushort)); }
-        }
-
-        public override byte PayloadOffset
-        {
-            get { return (byte)(NextAsNumberIndex * sizeof(ushort)); }
-        }
-
-        protected override bool EqualsPayloads(GreSourceRouteEntry other)
-        {
-            return AsNumbers.SequenceEqual(((GreSourceRouteEntryAs)other).AsNumbers);
-        }
-
-        public ReadOnlyCollection<ushort> AsNumbers
-        {
-            get { return _asNumbers; }
-        }
-
-        public int NextAsNumberIndex
-        {
-            get { return _nextAsNumberIndex; }
-        }
-
-        public ushort NextAsNumber
-        {
-            get { return AsNumbers[NextAsNumberIndex]; }
-        }
-
-        protected override void WritePayload(byte[] buffer, int offset)
-        {
-            foreach (ushort asNumber in AsNumbers)
-                buffer.Write(ref offset, asNumber, Endianity.Big);
-        }
-
-        internal GreSourceRouteEntryAs(ushort[] asNumbers, int nextAsNumberIndex)
-            : this(asNumbers.AsReadOnly(), nextAsNumberIndex)
-        {
-        }
-
-        private readonly ReadOnlyCollection<ushort> _asNumbers;
-        private readonly int _nextAsNumberIndex;
-    }
-
-    public class GreSourceRouteEntryUnknown : GreSourceRouteEntry
-    {
-        public GreSourceRouteEntryUnknown(GreSourceRouteEntryAddressFamily addressFamily, Datagram data, int offset)
-        {
-            _addressFamily = addressFamily;
-            _data = data;
-            _offset = offset;
-        }
-
-        public override GreSourceRouteEntryAddressFamily AddressFamily
-        {
-            get { return _addressFamily; }
-        }
-
-        public override byte PayloadLength
-        {
-            get { return (byte)Data.Length; }
-        }
-
-        public override byte PayloadOffset
-        {
-            get { return (byte)_offset; }
-        }
-
-        public Datagram Data
-        {
-            get { return _data; }
-        }
-
-        protected override bool EqualsPayloads(GreSourceRouteEntry other)
-        {
-            return Data.Equals(((GreSourceRouteEntryUnknown)other).Data);
-        }
-
-        protected override void WritePayload(byte[] buffer, int offset)
-        {
-            buffer.Write(offset, Data);
-        }
-
-        private readonly GreSourceRouteEntryAddressFamily _addressFamily;
-        private readonly Datagram _data;
-        private readonly int _offset;
-    }
-
-    public enum GreSourceRouteEntryAddressFamily : ushort
-    {
-        None = 0x0000,
-        IpSourceRoute = 0x0800,
-        AsSourceRoute = 0xfffe,
-    }
-
-    public enum GreVersion : byte
-    {
-        /// <summary>
-        /// RFC 2784
-        /// </summary>
-        Gre = 0x00,
-
-        /// <summary>
-        /// RFC 2637
-        /// </summary>
-        EnhancedGre = 0x01
     }
 }

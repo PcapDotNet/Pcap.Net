@@ -15,6 +15,8 @@ namespace PcapDotNet.Packets.Gre
         public bool ChecksumPresent { get; set; }
         public ushort? Checksum { get; set; }
         public uint? Key { get; set; }
+        public ushort? KeyPayloadLength { get { return Key == null ? null : (ushort?)((Key & 0xFFFF0000) >> 16); } }
+        public ushort? KeyCallId { get { return Key == null ? null : (ushort?)(Key & 0x0000FFFF); } }
         public void SetKey(ushort keyPayloadLength, ushort keyCallId)
         {
             Key = (uint)((keyPayloadLength << 16) | keyCallId);

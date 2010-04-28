@@ -40,19 +40,6 @@ namespace PcapDotNet.Packets.Ethernet
         }
 
         /// <summary>
-        /// The Ethernet payload.
-        /// </summary>
-        public Datagram Payload
-        {
-            get
-            {
-                if (_payload == null && Length >= HeaderLength)
-                    _payload = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _payload;
-            }
-        }
-
-        /// <summary>
         /// The Ethernet payload length in bytes.
         /// </summary>
         public int PayloadLength
@@ -101,16 +88,19 @@ namespace PcapDotNet.Packets.Ethernet
         }
 
         /// <summary>
+        /// The Ethernet payload.
+        /// </summary>
+        public Datagram Payload
+        {
+            get { return PayloadDatagrams.Payload; }
+        }
+
+        /// <summary>
         /// The Ethernet payload as an IPv4 datagram.
         /// </summary>
         public IpV4Datagram IpV4
         {
-            get
-            {
-                if (_ipV4 == null && Length >= HeaderLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _ipV4;
-            }
+            get { return PayloadDatagrams.IpV4; }
         }
 
         /// <summary>
@@ -118,12 +108,7 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public ArpDatagram Arp
         {
-            get
-            {
-                if (_arp == null && Length >= HeaderLength)
-                    _arp = ArpDatagram.CreateInstance(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _arp;
-            }
+            get { return PayloadDatagrams.Arp; }
         }
 
         internal EthernetDatagram(byte[] buffer, int offset, int length)
@@ -146,22 +131,24 @@ namespace PcapDotNet.Packets.Ethernet
             if (Length < HeaderLength)
                 return false;
 
-            switch (EtherType)
+            return PayloadDatagrams.Get(EtherType).IsValid;
+        }
+
+        private EthernetPayloadDatagrams PayloadDatagrams
+        {
+            get
             {
-                case EthernetType.Arp:
-                    return Arp.IsValid;
-
-                case EthernetType.IpV4:
-                    return IpV4.IsValid;
-
-                default:
-                    return true;
+                if (_payloadDatagrams == null)
+                {
+                    _payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
+                                                                         ? new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength)
+                                                                         : null);
+                }
+                return _payloadDatagrams;
             }
         }
 
         private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");
-        private Datagram _payload;
-        private IpV4Datagram _ipV4;
-        private ArpDatagram _arp;
+        private EthernetPayloadDatagrams _payloadDatagrams;
     }
 }
