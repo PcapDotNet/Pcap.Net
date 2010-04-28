@@ -63,6 +63,7 @@ namespace PcapDotNet.Packets.Test
                 Packet packet = new PacketBuilder(ethernetLayer, payloadLayer).Build(DateTime.Now);
 
                 // Ethernet
+                Assert.IsTrue(packet.IsValid, "IsValid");
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
                 Assert.AreEqual(ethernetLayer.GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");

@@ -71,8 +71,9 @@ namespace PcapDotNet.Packets.Test
             for (int i = 0; i != 100; ++i)
             {
                 GreLayer greLayer = random.NextGreLayer();
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
-                PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
+                PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer, payloadLayer);
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 if (greLayer.Checksum == null)
@@ -89,7 +90,7 @@ namespace PcapDotNet.Packets.Test
                 ipV4Layer.HeaderChecksum = null;
                 Assert.AreEqual(ipV4Layer.Length, packet.Ethernet.IpV4.HeaderLength);
                 Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
-                Assert.AreEqual(ipV4Layer.Length + greLayer.Length,
+                Assert.AreEqual(ipV4Layer.Length + greLayer.Length + payloadLayer.Length,
                                 packet.Ethernet.IpV4.TotalLength);
                 Assert.AreEqual(IpV4Datagram.DefaultVersion, packet.Ethernet.IpV4.Version);
 
@@ -100,6 +101,14 @@ namespace PcapDotNet.Packets.Test
                 {
                     Assert.IsTrue(actualGre.IsChecksumCorrect);
                     greLayer.Checksum = actualGre.Checksum;
+                }
+                Assert.AreEqual(greLayer, actualGreLayer, "Layer");
+                if (actualGreLayer.Key != null)
+                    actualGreLayer.SetKey(actualGreLayer.KeyPayloadLength.Value, actualGreLayer.KeyCallId.Value);
+                else
+                {
+                    Assert.IsNull(actualGreLayer.KeyPayloadLength);
+                    Assert.IsNull(actualGreLayer.KeyCallId);
                 }
                 Assert.AreEqual(greLayer, actualGreLayer, "Layer");
                 Assert.AreNotEqual(random.NextGreLayer(), actualGreLayer, "Not Layer");

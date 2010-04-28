@@ -243,6 +243,13 @@ namespace PcapDotNet.Core.Test
         {
             OpenOfflineDevice(10, _random.NextEthernetPacket(100), TimeSpan.Zero, "??");
         }
+        
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void EmptyNameTest()
+        {
+            OpenOfflineDevice(10, _random.NextEthernetPacket(100), TimeSpan.Zero, string.Empty);
+        }
 
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,

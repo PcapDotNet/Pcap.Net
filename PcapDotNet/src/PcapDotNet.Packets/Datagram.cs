@@ -149,7 +149,7 @@ namespace PcapDotNet.Packets
         /// The original buffer that holds all the data for the datagram.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-        protected byte[] Buffer
+        internal byte[] Buffer
         {
             get { return _buffer; }
         }
@@ -157,7 +157,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// The offset of the first byte of the datagram in the buffer.
         /// </summary>
-        protected int StartOffset
+        internal int StartOffset
         {
             get { return _startOffset; }
         }
