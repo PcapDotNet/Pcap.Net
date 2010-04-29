@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
@@ -63,7 +64,8 @@ namespace PcapDotNet.Packets.Test
                 Packet packet = new PacketBuilder(ethernetLayer, payloadLayer).Build(DateTime.Now);
 
                 // Ethernet
-                Assert.IsTrue(packet.IsValid, "IsValid");
+                Assert.IsTrue(new[] {EthernetType.IpV4, EthernetType.Arp}.Contains(packet.Ethernet.EtherType) ||
+                              packet.IsValid, "IsValid - EtherType = " + packet.Ethernet.EtherType);
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
                 Assert.AreEqual(ethernetLayer.GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");
