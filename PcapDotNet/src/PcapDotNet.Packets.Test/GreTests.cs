@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.Test
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
             ipV4Layer.HeaderChecksum = null;
 
-            for (int i = 0; i != 100; ++i)
+            for (int i = 0; i != 200; ++i)
             {
                 GreLayer greLayer = random.NextGreLayer();
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
@@ -114,6 +114,11 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsNull(actualGreLayer.KeyCallId);
                 }
                 Assert.AreEqual(greLayer, actualGreLayer, "Layer");
+                if (actualGre.KeyPresent)
+                {
+                    Assert.AreEqual(greLayer.KeyPayloadLength, actualGre.KeyPayloadLength, "KeyPayloadLength");
+                    Assert.AreEqual(greLayer.KeyCallId, actualGre.KeyCallId, "KeyCallId");
+                }
                 Assert.AreNotEqual(random.NextGreLayer(), actualGreLayer, "Not Layer");
                 Assert.AreEqual(greLayer.Length, actualGre.HeaderLength);
                 Assert.IsTrue(actualGre.KeyPresent ^ (greLayer.Key == null));
@@ -158,6 +163,18 @@ namespace PcapDotNet.Packets.Test
                 else
                 {
                     Assert.IsNull(actualGre.ActiveSourceRouteEntry);
+                }
+
+                Assert.IsNotNull(actualGre.Payload);
+                switch (actualGre.ProtocolType)
+                {
+                    case EthernetType.IpV4:
+                        Assert.IsNotNull(actualGre.IpV4);
+                        break;
+
+                    case EthernetType.Arp:
+                        Assert.IsNotNull(actualGre.Arp);
+                        break;
                 }
             }
         }

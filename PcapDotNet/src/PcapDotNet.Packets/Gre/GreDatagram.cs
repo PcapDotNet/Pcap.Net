@@ -206,7 +206,7 @@ namespace PcapDotNet.Packets.Gre
             get
             {
                 int? activeSourceRouteEntryIndex = ActiveSourceRouteEntryIndex;
-                if (activeSourceRouteEntryIndex == null || activeSourceRouteEntryIndex == Routing.Count)
+                if (activeSourceRouteEntryIndex == null || activeSourceRouteEntryIndex.Value == Routing.Count)
                     return null;
 
                 return Routing[activeSourceRouteEntryIndex.Value];
