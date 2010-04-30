@@ -9,6 +9,10 @@ namespace PcapDotNet.Packets.Transport
     /// </summary>
     public class TcpLayer : TransportLayer
     {
+        /// <summary>
+        /// Default constructor.
+        /// No TCP options.
+        /// </summary>
         public TcpLayer()
         {
             Options = TcpOptions.None;

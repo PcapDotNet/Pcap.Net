@@ -146,6 +146,18 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
+        /// Returns a hash code by xoring all the ushorts.
+        /// Each ushort is xored with the next 16 bits of the integer.
+        /// </summary>
+        /// <param name="sequence">The ushorts to xor.</param>
+        /// <returns>The hash code resulted by xoring all the ushorts.</returns>
+        public static int UShortsSequenceGetHashCode(this IEnumerable<ushort> sequence)
+        {
+            int i = 0;
+            return sequence.Aggregate(0, (value, b) => value ^ (b << (16 * (i++ % 2))));
+        }
+
+        /// <summary>
         /// Counts the number of types the given value is contained in the given sequence.
         /// </summary>
         /// <typeparam name="T">The type of the elements in the sequence.</typeparam>

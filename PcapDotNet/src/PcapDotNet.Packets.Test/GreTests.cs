@@ -123,7 +123,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(greLayer.Length, actualGre.HeaderLength);
                 Assert.IsTrue(actualGre.KeyPresent ^ (greLayer.Key == null));
                 MoreAssert.IsSmaller(8, actualGre.RecursionControl);
-                MoreAssert.IsSmaller(32, actualGre.Flags);
+                MoreAssert.IsSmaller(32, actualGre.FutureUseBits);
                 Assert.IsTrue(actualGre.RoutingPresent ^ (greLayer.Routing == null && greLayer.RoutingOffset == null));
                 Assert.IsTrue(actualGre.SequenceNumberPresent ^ (greLayer.SequenceNumber == null));
                 Assert.IsTrue(!actualGre.StrictSourceRoute || actualGre.RoutingPresent);
