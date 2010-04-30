@@ -1,9 +1,12 @@
 namespace PcapDotNet.Packets.Gre
 {
+    /// <summary>
+    /// The GRE Version Number.
+    /// </summary>
     public enum GreVersion : byte
     {
         /// <summary>
-        /// RFC 2784
+        /// RFC 1701, RFC 2784
         /// </summary>
         Gre = 0x00,
 

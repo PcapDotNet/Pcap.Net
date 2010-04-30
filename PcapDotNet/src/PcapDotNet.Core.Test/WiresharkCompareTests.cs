@@ -890,14 +890,14 @@ namespace PcapDotNet.Core.Test
                                                                                                     : "No acknowledgment number")));
 
                                 innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... .{0}... = Flags: {1}",
-                                                                   greDatagram.Flags.ToBits().Skip(3).Take(4).Select(b => b.ToInt()).
+                                                                   greDatagram.FutureUseBits.ToBits().Skip(3).Take(4).Select(b => b.ToInt()).
                                                                        SequenceToString().
                                                                        Insert(3, " "),
-                                                                   greDatagram.Flags));
+                                                                   greDatagram.FutureUseBits));
                             }
                             else
                             {
-                                byte fullFlags = (byte)(greDatagram.Flags | (greDatagram.AcknowledgmentSequenceNumberPresent ? 0x10 : 0x00));
+                                byte fullFlags = (byte)(greDatagram.FutureUseBits | (greDatagram.AcknowledgmentSequenceNumberPresent ? 0x10 : 0x00));
                                 innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... {0}... = Flags: {1}",
                                                                                                fullFlags.ToBits().Skip(3).Select(b => b.ToInt()).
                                                                                                    SequenceToString().

@@ -277,6 +277,9 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        /// <summary>
+        /// The payload of the datagram as a GRE datagram.
+        /// </summary>
         public GreDatagram Gre
         {
             get

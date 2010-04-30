@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Gre
             public const int StrictSourceRoute = 0;
             public const int RecursionControl = 0;
             public const int AcknowledgmentSequenceNumberPresent = 1;
-            public const int Flags = 1;
+            public const int FutureUseBits = 1;
             public const int Version = 1;
             public const int ProtocolType = 2;
             public const int Checksum = 4;
@@ -55,17 +55,23 @@ namespace PcapDotNet.Packets.Gre
             public const byte StrictSourceRoute = 0x08;
             public const byte RecursionControl = 0x07;
             public const byte AcknowledgmentSequenceNumberPresent = 0x80;
-            public const byte Flags = 0x78;
+            public const byte FutureUseBits = 0x78;
             public const byte Version = 0x07;
         }
 
         private static class Shift
         {
-            public const int Flags = 3;
+            public const int FutureUseBits = 3;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the GRE header can contain.
+        /// </summary>
         public const int HeaderMinimumLength = 4;
 
+        /// <summary>
+        /// The length of the full GRE header on bytes.
+        /// </summary>
         public int HeaderLength
         {
             get
@@ -139,14 +145,13 @@ namespace PcapDotNet.Packets.Gre
         /// <summary>
         /// Must be set to zero (0).
         /// </summary>
-        public byte Flags
+        public byte FutureUseBits
         {
-            get { return (byte)((this[Offset.Flags] & Mask.Flags) >> Shift.Flags); }
+            get { return (byte)((this[Offset.FutureUseBits] & Mask.FutureUseBits) >> Shift.FutureUseBits); }
         }
 
         /// <summary>
-        /// The Version Number field MUST contain the value zero.
-        /// ?
+        /// The GRE Version Number.
         /// </summary>
         public GreVersion Version
         {
@@ -173,6 +178,10 @@ namespace PcapDotNet.Packets.Gre
             get { return ReadUShort(Offset.Checksum, Endianity.Big); }
         }
 
+        /// <summary>
+        /// True iff the checksum value is correct according to the datagram data.
+        /// Valid only if the Checksum Present bit is set to one.
+        /// </summary>
         public bool IsChecksumCorrect
         {
             get
@@ -192,6 +201,9 @@ namespace PcapDotNet.Packets.Gre
             get { return ReadUShort(Offset.RoutingOffset, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The index in the Routing collection of the active source route entry.
+        /// </summary>
         public int? ActiveSourceRouteEntryIndex
         {
             get
@@ -201,6 +213,11 @@ namespace PcapDotNet.Packets.Gre
             }
         }
 
+        /// <summary>
+        /// The active Source Route Entry to be examined.
+        /// Contains valid information only if the Routing Present bit is set to 1.
+        /// if the offset points to the end of the routing information, returns null.
+        /// </summary>
         public GreSourceRouteEntry ActiveSourceRouteEntry
         {
             get
@@ -223,11 +240,17 @@ namespace PcapDotNet.Packets.Gre
             get { return ReadUInt(OffsetKey, Endianity.Big); }
         }
 
+        /// <summary>
+        /// (High 2 octets of Key) Size of the payload, not including the GRE header
+        /// </summary>
         public ushort KeyPayloadLength
         {
             get { return ReadUShort(OffsetKeyPayloadLength, Endianity.Big); }
         }
 
+        /// <summary>
+        /// (Low 2 octets of Key) Contains the Peer's Call ID for the session to which this packet belongs.
+        /// </summary>
         public ushort KeyCallId
         {
             get { return ReadUShort(OffsetKeyCallId, Endianity.Big); }
@@ -275,6 +298,9 @@ namespace PcapDotNet.Packets.Gre
             }
         }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new GreLayer
@@ -282,7 +308,7 @@ namespace PcapDotNet.Packets.Gre
                        Version = Version,
                        ProtocolType = ProtocolType,
                        RecursionControl = RecursionControl,
-                       Flags = Flags,
+                       FutureUseBits = FutureUseBits,
                        ChecksumPresent = ChecksumPresent,
                        Checksum = ChecksumPresent ? (ushort?)Checksum : null,
                        Key = KeyPresent ? (uint?)Key : null,
@@ -318,11 +344,16 @@ namespace PcapDotNet.Packets.Gre
             get { return PayloadDatagrams.Arp; }
         }
 
-
+        /// <summary>
+        /// A GRE Datagram is valid if its length is enough for the GRE header, its routing information is valid,
+        /// the bits for future use are set to 0, it has acknowledgment sequence number only if it's Enhanced GRE,
+        /// if it has checksum the checksum is correct and its payload is correct.
+        /// </summary>
+        /// <returns>true iff the datagram is valid.</returns>
         protected override bool CalculateIsValid()
         {
             return (Length >= HeaderMinimumLength && Length >= HeaderLength &&
-                    IsValidRouting && Flags == 0 &&
+                    IsValidRouting && FutureUseBits == 0 &&
                     (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
                     (!ChecksumPresent || IsChecksumCorrect) &&
                     PayloadDatagrams.Get(ProtocolType).IsValid);
@@ -356,8 +387,8 @@ namespace PcapDotNet.Packets.Gre
                                 (strictSourceRoute ? Mask.StrictSourceRoute : (byte)0) |
                                 (recursionControl & Mask.RecursionControl)));
 
-            buffer.Write(offset + Offset.Flags, (byte)((acknowledgmentSequenceNumber != null ? Mask.AcknowledgmentSequenceNumberPresent : (byte)0) |
-                                                       ((flags << Shift.Flags) & Mask.Flags) |
+            buffer.Write(offset + Offset.FutureUseBits, (byte)((acknowledgmentSequenceNumber != null ? Mask.AcknowledgmentSequenceNumberPresent : (byte)0) |
+                                                       ((flags << Shift.FutureUseBits) & Mask.FutureUseBits) |
                                                        ((byte)version & Mask.Version)));
 
             buffer.Write(offset + Offset.ProtocolType, (ushort)protocolType, Endianity.Big);

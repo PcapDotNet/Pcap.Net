@@ -64,6 +64,10 @@ namespace PcapDotNet.Packets
             get { return _buffer[StartOffset + offset]; }
         }
 
+        /// <summary>
+        /// Returns the Datagram's bytes as a read only MemoryStream with a non-public buffer.
+        /// </summary>
+        /// <returns>A read only MemoryStream containing the bytes of the Datagram.</returns>
         public MemoryStream ToMemoryStream()
         {
             return new MemoryStream(Buffer, StartOffset, Length, false, false);
