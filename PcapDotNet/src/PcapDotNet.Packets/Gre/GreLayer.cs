@@ -138,7 +138,18 @@ namespace PcapDotNet.Packets.Gre
         /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
-            GreDatagram.WriteHeader(buffer, offset, RecursionControl, FutureUseBits, Version, ProtocolType, ChecksumPresent, Key, SequenceNumber, AcknowledgmentSequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
+            EthernetType protocolType = ProtocolType;
+            if (protocolType == EthernetType.None)
+            {
+                if (nextLayer == null)
+                    throw new ArgumentException("Can't determine protocol type automatically from next layer because there is not next layer");
+                IEthernetNextLayer ethernetNextLayer = nextLayer as IEthernetNextLayer;
+                if (ethernetNextLayer == null)
+                    throw new ArgumentException("Can't determine protocol type automatically from next layer (" + nextLayer.GetType() + ")");
+                protocolType = ethernetNextLayer.PreviousLayerEtherType;
+            }
+
+            GreDatagram.WriteHeader(buffer, offset, RecursionControl, FutureUseBits, Version, protocolType, ChecksumPresent, Key, SequenceNumber, AcknowledgmentSequenceNumber, Routing, RoutingOffset, StrictSourceRoute);
         }
 
         /// <summary>

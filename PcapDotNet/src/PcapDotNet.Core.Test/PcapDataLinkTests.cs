@@ -115,9 +115,13 @@ namespace PcapDotNet.Core.Test
                     dataLinkName = dataLink.Name;
                     Assert.IsNotNull(dataLinkName);
                 }
-                catch (ArgumentException)
+                catch (InvalidOperationException)
                 {
                     return dataLink;
+                }
+                catch (Exception)
+                {
+                    Assert.Fail();
                 }
             }
             Assert.Fail();

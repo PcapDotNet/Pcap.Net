@@ -182,10 +182,20 @@ namespace PcapDotNet.Core.Test
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
         {
             string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextByte() + ".pcap";
-            PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
-//            List<Packet> packetsList = new List<Packet>();
-//            new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
-//            packets = packetsList;
+//            const bool isRetry = true;
+            const bool isRetry = false;
+            if (!isRetry)
+            {
+                PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
+            }
+            else
+            {
+                const byte retryNumber = 24;
+                pcapFilename = Path.GetTempPath() + "temp." + retryNumber + ".pcap";
+                List<Packet> packetsList = new List<Packet>();
+                new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
+                packets = packetsList;
+            }
 
             // Create pdml file
             string documentFilename = pcapFilename + ".pdml";

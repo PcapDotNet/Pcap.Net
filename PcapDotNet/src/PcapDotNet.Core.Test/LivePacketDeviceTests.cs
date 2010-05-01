@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -73,7 +74,7 @@ namespace PcapDotNet.Core.Test
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
-                MoreAssert.IsInRange(TimeSpan.FromSeconds(0.99), TimeSpan.FromSeconds(1.04), finishedWaiting - startWaiting);
+                MoreAssert.IsInRange(TimeSpan.FromSeconds(0.99), TimeSpan.FromSeconds(1.075), finishedWaiting - startWaiting);
 
                 Packet sentPacket = _random.NextEthernetPacket(24, SourceMac, DestinationMac);
 
@@ -134,7 +135,7 @@ namespace PcapDotNet.Core.Test
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.035);
 
             // Break loop
-            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.02);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.027);
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.02);
         }
 
@@ -148,11 +149,11 @@ namespace PcapDotNet.Core.Test
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, NumPacketsToSend, 0, 0.3);
 
             // Wait for less packets
-            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.02);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.027);
 
             // Wait for more packets
             TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.02);
-            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.03);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.13);
 
             // Break loop
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.02);
@@ -538,6 +539,9 @@ namespace PcapDotNet.Core.Test
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
                 Packet expectedPacket = _random.NextEthernetPacket(60, sourceMac, destinationMac);
+                List<Packet> packets = new List<Packet>(6);
+                Thread thread = new Thread(() => packets.AddRange(communicator.ReceivePackets(6)));
+                thread.Start();
                 communicator.SendPacket(expectedPacket);
                 Thread.Sleep(TimeSpan.FromSeconds(0.75));
                 for (int i = 0; i != 10; ++i)
@@ -547,15 +551,18 @@ namespace PcapDotNet.Core.Test
                     Thread.Sleep(TimeSpan.FromSeconds(0.5));
                 }
 
+                if (!thread.Join(TimeSpan.FromSeconds(10)))
+                    thread.Abort();
+                Assert.AreEqual(6, packets.Count);
                 Packet packet;
-                PacketCommunicatorReceiveResult result;
                 for (int i = 0; i != 6; ++i)
                 {
-                    result = communicator.ReceivePacket(out packet);
-                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-                    Assert.AreEqual(60 * (i * 2 + 1), packet.Length);
+//                    result = communicator.ReceivePacket(out packet);
+//                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+//                    Assert.AreEqual(60 * (i * 2 + 1), packet.Length, i.ToString());
+                    Assert.AreEqual(60 * (i * 2 + 1), packets[i].Length, i.ToString());
                 }
-                result = communicator.ReceivePacket(out packet);
+                PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.IsNull(packet);
             }
@@ -598,6 +605,26 @@ namespace PcapDotNet.Core.Test
             using (PacketCommunicator communicator = OpenLiveDevice())
             {
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromDays(25)));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SetInvalidDataLink()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.DataLink = new PcapDataLink(0);
+                Assert.AreEqual(new PcapDataLink(0), communicator.DataLink);
+            }
+        }
+
+        [TestMethod]
+        public void SendZeroPacket()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SendPacket(new Packet(new byte[0], DateTime.Now, DataLinkKind.Ethernet));
             }
         }
 
@@ -817,7 +844,9 @@ namespace PcapDotNet.Core.Test
                 Assert.AreNotEqual(null, totalStatistics);
                 Assert.AreEqual(totalStatistics.GetHashCode(), totalStatistics.GetHashCode());
                 Assert.IsTrue(totalStatistics.Equals(totalStatistics));
+                Assert.IsFalse(totalStatistics.Equals(null));
                 Assert.AreNotEqual(null, totalStatistics);
+                Assert.AreNotEqual(totalStatistics, 2);
                 MoreAssert.IsSmallerOrEqual<uint>(1, totalStatistics.PacketsCaptured, "PacketsCaptured");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByDriver, "PacketsDroppedByDriver");
                 Assert.AreEqual<uint>(0, totalStatistics.PacketsDroppedByInterface, "PacketsDroppedByInterface");
