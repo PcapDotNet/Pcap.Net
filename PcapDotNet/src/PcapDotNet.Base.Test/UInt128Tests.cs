@@ -47,19 +47,6 @@ namespace PcapDotNet.Base.Test
         #endregion
 
         [TestMethod]
-        public void ParseTest()
-        {
-//            Random random = new Random();
-//            for (int i = 0; i != 100; ++i)
-//            {
-//                UInt48 expected = (UInt48)random.NextLong(UInt48.MaxValue + 1);
-//                UInt48 actual = UInt48.Parse(expected.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture);
-//
-//                Assert.AreEqual(expected, actual);
-//            }
-        }
-
-        [TestMethod]
         public void UInt128Test()
         {
             Random random = new Random();
