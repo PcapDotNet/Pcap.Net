@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
-using PcapDotNet.TestUtils;
+using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -76,6 +76,22 @@ namespace PcapDotNet.Packets.Test
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Payload);
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AutomaticEthernetTypeNoNextLayer()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer());
+            Assert.IsTrue(packet.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AutomaticEthernetTypeBadNextLayer()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new TcpLayer());
+            Assert.IsTrue(packet.IsValid);
         }
     }
 }

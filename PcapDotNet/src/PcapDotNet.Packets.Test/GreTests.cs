@@ -136,6 +136,7 @@ namespace PcapDotNet.Packets.Test
                     foreach (GreSourceRouteEntry entry in actualGre.Routing)
                     {
                         Assert.AreNotEqual(entry, 2);
+                        Assert.AreEqual(entry.GetHashCode(), entry.GetHashCode());
                         switch (entry.AddressFamily)
                         {
                             case GreSourceRouteEntryAddressFamily.AsSourceRoute:
@@ -180,6 +181,29 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void GreAutomaticProtocolType()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new GreLayer(), new IpV4Layer(), new IcmpEchoLayer());
+            Assert.IsTrue(packet.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void GreAutomaticProtocolTypeNoNextLayer()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new GreLayer());
+            Assert.IsTrue(packet.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void GreAutomaticProtocolTypeBadNextLayer()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new GreLayer(), new PayloadLayer());
+            Assert.IsTrue(packet.IsValid);
+        }
+
+        [TestMethod]
         public void InvalidGreTest()
         {
             EthernetLayer ethernetLayer = new EthernetLayer
@@ -204,7 +228,7 @@ namespace PcapDotNet.Packets.Test
 
             PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
             Packet packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsTrue(packet.IsValid);
+            Assert.IsTrue(packet.IsValid, "IsValid");
 
             GreDatagram gre = packet.Ethernet.IpV4.Gre;
 
