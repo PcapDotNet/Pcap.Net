@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets
     /// <summary>
     /// Extension methods for byte[].
     /// </summary>
-    public static class MoreByteArray
+    public static class ByteArrayExtensions
     {
         /// <summary>
         /// Copies a specified number of bytes from a source array starting at a particular offset to a destination array starting at a particular offset.
