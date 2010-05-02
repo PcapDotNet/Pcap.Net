@@ -55,6 +55,7 @@ namespace PcapDotNet.Base.Test
                 UInt128 value = random.NextUInt128();
 
                 Assert.AreEqual(value, value);
+                Assert.AreNotEqual(value, string.Empty);
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
                 Assert.IsNotNull(value.GetHashCode());

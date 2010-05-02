@@ -195,7 +195,7 @@
     <Compile Include="IpV4\IpV4OptionTraceRoute.cs" />
     <Compile Include="IpV4\IpV4OptionType.cs" />
     <Compile Include="IpV4\IpV4Protocol.cs" />
-    <Compile Include="MoreByteArray.cs" />
+    <Compile Include="ByteArrayExtensions.cs" />
     <Compile Include="OptionComplexFactory.cs" />
     <Compile Include="OptionComplexFactoryBase.cs" />
     <Compile Include="Options.cs" />
