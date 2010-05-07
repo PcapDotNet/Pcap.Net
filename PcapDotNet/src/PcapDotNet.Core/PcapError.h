@@ -11,6 +11,7 @@ namespace PcapDotNet { namespace Core
         static System::InvalidOperationException^ BuildInvalidOperation(System::String^ errorMessage, pcap_t* pcapDescriptor);
 
     private:
+		[System::Diagnostics::DebuggerNonUserCode]
         PcapError(){}
     };
 }}

@@ -500,7 +500,11 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IgmpLayer NextIgmpLayer(this Random random)
         {
-            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None);
+            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None, IgmpMessageType.CreateGroupRequestVersion0,
+                                                              IgmpMessageType.CreateGroupReplyVersion0, IgmpMessageType.JoinGroupRequestVersion0,
+                                                              IgmpMessageType.JoinGroupReplyVersion0, IgmpMessageType.LeaveGroupRequestVersion0,
+                                                              IgmpMessageType.LeaveGroupReplyVersion0, IgmpMessageType.ConfirmGroupRequestVersion0,
+                                                              IgmpMessageType.ConfirmGroupReplyVersion0);
             IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
             TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
             IpV4Address igmpGroupAddress = random.NextIpV4Address();

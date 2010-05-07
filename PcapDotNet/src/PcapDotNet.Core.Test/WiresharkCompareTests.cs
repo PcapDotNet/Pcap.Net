@@ -142,15 +142,6 @@ namespace PcapDotNet.Core.Test
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
                     GreLayer greLayer = random.NextGreLayer();
-//                    GreLayer greLayer = new GreLayer
-//                                        {
-//                                            AcknowledgmentSequenceNumber = 10,
-//                                            ProtocolType = EthernetType.AppleTalk,
-//                                            //EthernetType.PointToPointProtocol,
-//                                            Key = 0,
-//                                            Version = GreVersion.EnhancedGre,
-//                                        };
-//                    IEnumerable<ILayer> grePayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, greLayer, payloadLayer);
 
                 case PacketType.Udp:
@@ -190,7 +181,7 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte retryNumber = 24;
+                const byte retryNumber = 121;
                 pcapFilename = Path.GetTempPath() + "temp." + retryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -621,7 +612,8 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "igmp.version":
-                        field.AssertShowDecimal(igmpDatagram.Version);
+                        if (field.Show() != "0")
+                            field.AssertShowDecimal(igmpDatagram.Version);
                         break;
 
                     case "igmp.type":
@@ -688,6 +680,10 @@ namespace PcapDotNet.Core.Test
 
                     case "igmp.saddr":
                         field.AssertShow(igmpDatagram.SourceAddresses[sourceAddressIndex++].ToString());
+                        break;
+
+                    case "igmp.identifier":
+                        // todo support IGMP version 0 and IGMP identifier.
                         break;
 
                     default:

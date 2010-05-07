@@ -236,6 +236,7 @@ namespace PcapDotNet.Packets.Test
             Datagram newIpPayload = new Datagram(gre.Take(gre.Length - 1).ToArray());
             packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
             packet = packetBuilder.Build(DateTime.Now);
+            Assert.IsNull(packet.Ethernet.IpV4.Gre.Payload);
             Assert.IsFalse(packet.IsValid);
 
             // SreLength is too big

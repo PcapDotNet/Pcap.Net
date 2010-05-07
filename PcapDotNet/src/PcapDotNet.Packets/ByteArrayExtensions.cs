@@ -225,6 +225,33 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        /// <!--summary>
+        /// Reads 8 bytes from a specific offset as an int with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns-->
+//        public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
+//        {
+//            long value = ReadLong(buffer, offset);
+//            if (IsWrongEndianity(endianity))
+//                value = IPAddress.HostToNetworkOrder(value);
+//            return value;
+//        }
+
+        /// <!--summary>
+        /// Reads 8 bytes from a specific offset as a ulong with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns-->
+//        public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
+//        {
+//            return (ulong)ReadLong(buffer, offset, endianity);
+//        }
+
         /// <summary>
         /// Reads 6 bytes from a specific offset as a MacAddress with a given endianity.
         /// </summary>
@@ -663,6 +690,17 @@ namespace PcapDotNet.Packets
                 }
             }
         }
+
+//        private static long ReadLong(byte[] buffer, int offset)
+//        {
+//            unsafe
+//            {
+//                fixed (byte* ptr = &buffer[offset])
+//                {
+//                    return *((long*)ptr);
+//                }
+//            }
+//        }
 
         private static void Write(byte[] buffer, int offset, short value)
         {
