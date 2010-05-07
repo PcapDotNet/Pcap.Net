@@ -14,31 +14,10 @@ namespace PcapDotNet.Packets.Igmp
     public class IgmpReportVersion3Layer : IgmpLayer
     {
         /// <summary>
-        /// Creates an instance with no group records.
-        /// </summary>
-        public IgmpReportVersion3Layer()
-            :this(new List<IgmpGroupRecord>())
-        {
-        }
-
-        /// <summary>
-        /// Creates an instance with the given group records.
-        /// </summary>
-        /// <param name="groupRecords">
-        /// Each Group Record is a block of fields containing information pertaining to the sender's membership in a single multicast group on the interface from which the Report is sent.
-        /// </param>
-        public IgmpReportVersion3Layer(IList<IgmpGroupRecord> groupRecords)
-        {
-            _groupRecords = groupRecords;
-        }
-
-        /// <summary>
         /// Each Group Record is a block of fields containing information pertaining to the sender's membership in a single multicast group on the interface from which the Report is sent.
         /// </summary>
-        public IList<IgmpGroupRecord> GroupRecords
-        {
-            get { return _groupRecords; }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<IgmpGroupRecord> GroupRecords { get; set;}
 
         /// <summary>
         /// The number of bytes this layer will take.
@@ -100,7 +79,5 @@ namespace PcapDotNet.Packets.Igmp
             return other != null &&
                    GroupRecords.SequenceEqual(other.GroupRecords);
         }
-
-        private readonly IList<IgmpGroupRecord> _groupRecords;
     }
 }

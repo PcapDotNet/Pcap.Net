@@ -154,11 +154,15 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         public override ILayer ExtractLayer()
         {
-            return new ArpLayer(SenderHardwareAddress, SenderProtocolAddress, TargetHardwareAddress, TargetProtocolAddress)
-                       {
-                           ProtocolType = ProtocolType,
-                           Operation = Operation,
-                       };
+            return new ArpLayer
+                   {
+                       SenderHardwareAddress = SenderHardwareAddress,
+                       SenderProtocolAddress = SenderProtocolAddress,
+                       TargetHardwareAddress = TargetHardwareAddress,
+                       TargetProtocolAddress = TargetProtocolAddress,
+                       ProtocolType = ProtocolType,
+                       Operation = Operation,
+                   };
         }
 
         /// <summary>

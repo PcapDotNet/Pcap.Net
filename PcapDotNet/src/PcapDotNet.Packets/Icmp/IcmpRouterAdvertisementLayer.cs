@@ -13,16 +13,10 @@ namespace PcapDotNet.Packets.Icmp
     public class IcmpRouterAdvertisementLayer : IcmpLayer
     {
         /// <summary>
-        /// Creates an instance with the given router advertisement entries.
+        /// Creates an ICMP layer instance.
         /// </summary>
-        /// <param name="entries">
-        /// The pairs of sending router's IP address(es) on the interface from which this message is sent
-        /// and the preferability of each Router Address[i] as a default router address, relative to other router addresses on the same subnet.
-        /// A signed, twos-complement value; higher values mean more preferable.
-        /// </param>
-        public IcmpRouterAdvertisementLayer(IList<IcmpRouterAdvertisementEntry> entries)
+        public IcmpRouterAdvertisementLayer()
         {
-            _entries = entries;
         }
 
         /// <summary>
@@ -35,7 +29,8 @@ namespace PcapDotNet.Packets.Icmp
         /// and the preferability of each Router Address[i] as a default router address, relative to other router addresses on the same subnet.
         /// A signed, twos-complement value; higher values mean more preferable.
         /// </summary>
-        public IList<IcmpRouterAdvertisementEntry> Entries { get { return _entries; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<IcmpRouterAdvertisementEntry> Entries { get; set; }
 
         /// <summary>
         /// The value of this field determines the format of the remaining data.
@@ -93,7 +88,5 @@ namespace PcapDotNet.Packets.Icmp
             return other != null &&
                    Entries.SequenceEqual(other.Entries);
         }
-
-        private readonly IList<IcmpRouterAdvertisementEntry> _entries;
     }
 }

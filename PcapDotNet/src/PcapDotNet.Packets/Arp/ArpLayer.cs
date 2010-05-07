@@ -14,18 +14,10 @@ namespace PcapDotNet.Packets.Arp
     public class ArpLayer : Layer, IEthernetNextLayer
     {
         /// <summary>
-        /// Create an ARP layer by giving the different addresses.
+        /// Create an ARP layer.
         /// </summary>
-        /// <param name="senderHardwareAddress">Hardware address of the sender.</param>
-        /// <param name="senderProtocolAddress">Protocol address of the sender.</param>
-        /// <param name="targetHardwareAddress">Hardware address of the intended receiver. This field is ignored in requests.</param>
-        /// <param name="targetProtocolAddress">Protocol address of the intended receiver.</param>
-        public ArpLayer(IList<byte> senderHardwareAddress, IList<byte> senderProtocolAddress, IList<byte> targetHardwareAddress, IList<byte> targetProtocolAddress)
+        public ArpLayer()
         {
-            _senderHardwareAddress = senderHardwareAddress;
-            _senderProtocolAddress = senderProtocolAddress;
-            _targetHardwareAddress = targetHardwareAddress;
-            _targetProtocolAddress = targetProtocolAddress;
         }
 
         /// <summary>
@@ -41,23 +33,27 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// Hardware address of the sender.
         /// </summary>
-        public IList<byte> SenderHardwareAddress { get { return _senderHardwareAddress; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<byte> SenderHardwareAddress { get; set; }
 
         /// <summary>
         /// Protocol address of the sender.
         /// </summary>
-        public IList<byte> SenderProtocolAddress { get { return _senderProtocolAddress; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<byte> SenderProtocolAddress { get; set; }
 
         /// <summary>
         /// Hardware address of the intended receiver. 
         /// This field is ignored in requests.
         /// </summary>
-        public IList<byte> TargetHardwareAddress { get { return _targetHardwareAddress; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<byte> TargetHardwareAddress { get; set; }
 
         /// <summary>
         /// Protocol address of the intended receiver.
         /// </summary>
-        public IList<byte> TargetProtocolAddress { get { return _targetProtocolAddress; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<byte> TargetProtocolAddress { get; set; }
 
         /// <summary>
         /// The Ethernet Type the Ethernet layer should write when this layer is the Ethernet payload.
@@ -150,12 +146,6 @@ namespace PcapDotNet.Packets.Arp
         {
             return base.GetHashCode() ^
                    (((ushort)ProtocolType << 16) + (ushort)Operation);
-
         }
-
-        private readonly IList<byte> _senderHardwareAddress;
-        private readonly IList<byte> _senderProtocolAddress;
-        private readonly IList<byte> _targetHardwareAddress;
-        private readonly IList<byte> _targetProtocolAddress;
     }
 }

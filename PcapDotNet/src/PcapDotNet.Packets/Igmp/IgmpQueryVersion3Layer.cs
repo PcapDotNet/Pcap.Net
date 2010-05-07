@@ -15,22 +15,6 @@ namespace PcapDotNet.Packets.Igmp
     public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         /// <summary>
-        /// A query on 0 source addresses.
-        /// </summary>
-        public IgmpQueryVersion3Layer()
-            :this(new List<IpV4Address>())
-        {
-        }
-
-        /// <summary>
-        /// A query on the given source addresses.
-        /// </summary>
-        public IgmpQueryVersion3Layer(IList<IpV4Address> sourceAddresses)
-        {
-            _sourceAddresses = sourceAddresses;
-        }
-
-        /// <summary>
         /// The actual time allowed, called the Max Resp Time.
         /// </summary>
         public TimeSpan MaxResponseTime { get; set; }
@@ -67,7 +51,8 @@ namespace PcapDotNet.Packets.Igmp
         /// The Source Address [i] fields are a vector of n IP unicast addresses,
         /// where n is the value in the Number of Sources (N) field.
         /// </summary>
-        public IList<IpV4Address> SourceAddresses { get { return _sourceAddresses; } }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ReadOnlyCollection<IpV4Address> SourceAddresses { get; set; }
 
         /// <summary>
         /// The number of bytes this layer will take.
@@ -149,7 +134,5 @@ namespace PcapDotNet.Packets.Igmp
                    QueryInterval.Divide(2) <= other.QueryInterval && QueryInterval.Multiply(2) >= other.QueryInterval &&
                    SourceAddresses.SequenceEqual(other.SourceAddresses);
         }
-
-        private readonly IList<IpV4Address> _sourceAddresses;
     }
 }

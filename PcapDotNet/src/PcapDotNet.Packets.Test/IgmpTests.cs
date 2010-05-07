@@ -262,14 +262,15 @@ namespace PcapDotNet.Packets.Test
 
             // non zero max response code report version 3
             Packet reportVersion3 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
-                                                        new IgmpReportVersion3Layer(
-                                                            new[]
-                                                                {
-                                                                    new IgmpGroupRecord(
-                                                                        IgmpRecordType.CurrentStateRecordModeIsExclude,
-                                                                        IpV4Address.Zero, new List<IpV4Address>(), Datagram.Empty)
-                                                                }
-                                                            ));
+                                                        new IgmpReportVersion3Layer
+                                                        {
+                                                            GroupRecords = new[]
+                                                                           {
+                                                                               new IgmpGroupRecord(
+                                                                                   IgmpRecordType.CurrentStateRecordModeIsExclude,
+                                                                                   IpV4Address.Zero, new List<IpV4Address>(), Datagram.Empty)
+                                                                           }.AsReadOnly()
+                                                        });
             
             buffer = new byte[reportVersion3.Length];
             reportVersion3.Buffer.BlockCopy(0, buffer, 0, buffer.Length);

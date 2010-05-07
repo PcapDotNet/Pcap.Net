@@ -538,6 +538,8 @@ namespace PcapDotNet.Core.Test
             {
                 communicator.SetFilter("ether src " + sourceMac + " and ether dst " + destinationMac);
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
+                int numPacketsGot;
+                communicator.ReceiveSomePackets(out numPacketsGot, 100, p => { });
                 Packet expectedPacket = _random.NextEthernetPacket(60, sourceMac, destinationMac);
                 List<Packet> packets = new List<Packet>(6);
                 Thread thread = new Thread(() => packets.AddRange(communicator.ReceivePackets(6)));
