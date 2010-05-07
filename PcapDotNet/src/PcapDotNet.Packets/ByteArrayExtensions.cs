@@ -224,14 +224,14 @@ namespace PcapDotNet.Packets
             offset += UInt48.SizeOf;
             return result;
         }
-
-        /// <!--summary>
+        /*
+        /// <summary>
         /// Reads 8 bytes from a specific offset as an int with a given endianity.
         /// </summary>
         /// <param name="buffer">The buffer to read the bytes from.</param>
         /// <param name="offset">The offset in the buffer to start reading.</param>
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
-        /// <returns>The value converted from the read bytes according to the endianity.</returns-->
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
 //        public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
 //        {
 //            long value = ReadLong(buffer, offset);
@@ -239,19 +239,21 @@ namespace PcapDotNet.Packets
 //                value = IPAddress.HostToNetworkOrder(value);
 //            return value;
 //        }
+        */
 
-        /// <!--summary>
+        /*
+        /// <summary>
         /// Reads 8 bytes from a specific offset as a ulong with a given endianity.
         /// </summary>
         /// <param name="buffer">The buffer to read the bytes from.</param>
         /// <param name="offset">The offset in the buffer to start reading.</param>
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
-        /// <returns>The value converted from the read bytes according to the endianity.</returns-->
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
 //        public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
 //        {
 //            return (ulong)ReadLong(buffer, offset, endianity);
 //        }
-
+        */
         /// <summary>
         /// Reads 6 bytes from a specific offset as a MacAddress with a given endianity.
         /// </summary>
