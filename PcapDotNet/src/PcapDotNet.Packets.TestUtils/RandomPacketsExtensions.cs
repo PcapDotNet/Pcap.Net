@@ -114,12 +114,15 @@ namespace PcapDotNet.Packets.TestUtils
         {
             byte hardwareAddressLength = random.NextByte();
             byte protocolAddressLength = random.NextByte();
-            return new ArpLayer(random.NextBytes(hardwareAddressLength).AsReadOnly(), random.NextBytes(protocolAddressLength).AsReadOnly(),
-                random.NextBytes(hardwareAddressLength).AsReadOnly(),random.NextBytes(protocolAddressLength).AsReadOnly())
-                       {
-                           ProtocolType = random.NextEnum<EthernetType>(),
-                           Operation = random.NextEnum<ArpOperation>(),
-                       };
+            return new ArpLayer
+                   {
+                       SenderHardwareAddress = random.NextBytes(hardwareAddressLength).AsReadOnly(),
+                       SenderProtocolAddress = random.NextBytes(protocolAddressLength).AsReadOnly(),
+                       TargetHardwareAddress = random.NextBytes(hardwareAddressLength).AsReadOnly(),
+                       TargetProtocolAddress = random.NextBytes(protocolAddressLength).AsReadOnly(),
+                       ProtocolType = random.NextEnum<EthernetType>(),
+                       Operation = random.NextEnum<ArpOperation>(),
+                   };
         }
 
         // IPv4
@@ -540,8 +543,9 @@ namespace PcapDotNet.Packets.TestUtils
                                                                       IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
                             igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
                             igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
-                            return new IgmpQueryVersion3Layer(igmpSourceAddresses)
+                            return new IgmpQueryVersion3Layer
                             {
+                                SourceAddresses = igmpSourceAddresses.AsReadOnly(),
                                 MaxResponseTime = igmpMaxResponseTime,
                                 GroupAddress = igmpGroupAddress,
                                 IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing.Value,
@@ -577,7 +581,10 @@ namespace PcapDotNet.Packets.TestUtils
                     igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
                     if (igmpGroupRecords.Count() == 0 && random.NextBool())
                         return new IgmpReportVersion3Layer();
-                    return new IgmpReportVersion3Layer(igmpGroupRecords);
+                    return new IgmpReportVersion3Layer
+                           {
+                               GroupRecords = igmpGroupRecords.AsReadOnly()
+                           };
 
                 default:
                     throw new InvalidOperationException("Invalid message type " + igmpMessageType);
@@ -673,7 +680,7 @@ namespace PcapDotNet.Packets.TestUtils
         }
 
         // ICMP
-                        
+
         public static IcmpLayer NextIcmpLayer(this Random random)
         {
             IcmpMessageType icmpMessageType = random.NextEnum(IcmpMessageType.DomainNameReply);
@@ -683,170 +690,170 @@ namespace PcapDotNet.Packets.TestUtils
             {
                 case IcmpMessageType.DestinationUnreachable:
                     return new IcmpDestinationUnreachableLayer
-                    {
-                        Code = random.NextEnum<IcmpCodeDestinationUnreachable>(),
-                        Checksum = checksum,
-                        NextHopMaximumTransmissionUnit = random.NextUShort(),
-                    };
+                           {
+                               Code = random.NextEnum<IcmpCodeDestinationUnreachable>(),
+                               Checksum = checksum,
+                               NextHopMaximumTransmissionUnit = random.NextUShort(),
+                           };
 
                 case IcmpMessageType.TimeExceeded:
                     return new IcmpTimeExceededLayer
-                    {
-                        Code = random.NextEnum<IcmpCodeTimeExceeded>(),
-                        Checksum = checksum,
-                    };
+                           {
+                               Code = random.NextEnum<IcmpCodeTimeExceeded>(),
+                               Checksum = checksum,
+                           };
 
                 case IcmpMessageType.ParameterProblem:
                     return new IcmpParameterProblemLayer
-                               {
-                                   Checksum = checksum,
-                                   Pointer = random.NextByte()
-                               };
+                           {
+                               Checksum = checksum,
+                               Pointer = random.NextByte()
+                           };
 
                 case IcmpMessageType.SourceQuench:
                     return new IcmpSourceQuenchLayer
-                               {
-                                   Checksum = checksum
-                               };
-                
+                           {
+                               Checksum = checksum
+                           };
+
                 case IcmpMessageType.Redirect:
                     return new IcmpRedirectLayer
-                               {
-                                   Code = random.NextEnum<IcmpCodeRedirect>(),
-                                   Checksum = checksum,
-                                   GatewayInternetAddress = random.NextIpV4Address()
-                               };
+                           {
+                               Code = random.NextEnum<IcmpCodeRedirect>(),
+                               Checksum = checksum,
+                               GatewayInternetAddress = random.NextIpV4Address()
+                           };
 
                 case IcmpMessageType.Echo:
                     return new IcmpEchoLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort()
-                               };
-                    
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort()
+                           };
+
                 case IcmpMessageType.EchoReply:
                     return new IcmpEchoReplyLayer
-                    {
-                        Checksum = checksum,
-                        Identifier = random.NextUShort(),
-                        SequenceNumber = random.NextUShort()
-                    };
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort()
+                           };
 
 
                 case IcmpMessageType.Timestamp:
                     return new IcmpTimestampLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                                   OriginateTimestamp = random.NextIpV4TimeOfDay(),
-                                   ReceiveTimestamp = random.NextIpV4TimeOfDay(),
-                                   TransmitTimestamp = random.NextIpV4TimeOfDay()
-                               };
-                                        
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                               OriginateTimestamp = random.NextIpV4TimeOfDay(),
+                               ReceiveTimestamp = random.NextIpV4TimeOfDay(),
+                               TransmitTimestamp = random.NextIpV4TimeOfDay()
+                           };
+
                 case IcmpMessageType.TimestampReply:
                     return new IcmpTimestampReplyLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                                   OriginateTimestamp = random.NextIpV4TimeOfDay(),
-                                   ReceiveTimestamp = random.NextIpV4TimeOfDay(),
-                                   TransmitTimestamp = random.NextIpV4TimeOfDay()
-                               };
-                                 
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                               OriginateTimestamp = random.NextIpV4TimeOfDay(),
+                               ReceiveTimestamp = random.NextIpV4TimeOfDay(),
+                               TransmitTimestamp = random.NextIpV4TimeOfDay()
+                           };
+
                 case IcmpMessageType.InformationRequest:
                     return new IcmpInformationRequestLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                               };
-                    
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                           };
+
                 case IcmpMessageType.InformationReply:
                     return new IcmpInformationReplyLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                               };
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                           };
 
 
                 case IcmpMessageType.RouterAdvertisement:
-                    return new IcmpRouterAdvertisementLayer(random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList())
-                               {
-                                   Checksum = checksum,
-                                   Lifetime = random.NextTimeSpan(TimeSpan.Zero, TimeSpan.FromSeconds(ushort.MaxValue)),
-                               };
+                    return new IcmpRouterAdvertisementLayer
+                           {
+                               Entries = random.NextIcmpRouterAdvertisementEntries(random.Next(10)).ToList().AsReadOnly(),
+                               Checksum = checksum,
+                               Lifetime = random.NextTimeSpan(TimeSpan.Zero, TimeSpan.FromSeconds(ushort.MaxValue)),
+                           };
 
                 case IcmpMessageType.RouterSolicitation:
                     return new IcmpRouterSolicitationLayer
-                               {
-                                   Checksum = checksum,
-                               };
+                           {
+                               Checksum = checksum,
+                           };
 
                 case IcmpMessageType.AddressMaskRequest:
                     return new IcmpAddressMaskRequestLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                                   AddressMask = random.NextIpV4Address()
-                               };
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                               AddressMask = random.NextIpV4Address()
+                           };
 
                 case IcmpMessageType.AddressMaskReply:
                     return new IcmpAddressMaskReplyLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                                   AddressMask = random.NextIpV4Address()
-                               };
-                
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                               AddressMask = random.NextIpV4Address()
+                           };
+
                 case IcmpMessageType.TraceRoute:
                     return new IcmpTraceRouteLayer
-                               {
-                                   Code = random.NextEnum<IcmpCodeTraceRoute>(),
-                                   Checksum = checksum,
-                                   Identification = random.NextUShort(),
-                                   OutboundHopCount = random.NextUShort(),
-                                   ReturnHopCount = random.NextUShort(),
-                                   OutputLinkSpeed = random.NextUInt(),
-                                   OutputLinkMaximumTransmissionUnit = random.NextUInt(),
-                               };
+                           {
+                               Code = random.NextEnum<IcmpCodeTraceRoute>(),
+                               Checksum = checksum,
+                               Identification = random.NextUShort(),
+                               OutboundHopCount = random.NextUShort(),
+                               ReturnHopCount = random.NextUShort(),
+                               OutputLinkSpeed = random.NextUInt(),
+                               OutputLinkMaximumTransmissionUnit = random.NextUInt(),
+                           };
 
                 case IcmpMessageType.ConversionFailed:
                     return new IcmpConversionFailedLayer
-                               {
-                                   Code = random.NextEnum<IcmpCodeConversionFailed>(),
-                                   Checksum = checksum,
-                                   Pointer = random.NextUInt(),
-                               };
+                           {
+                               Code = random.NextEnum<IcmpCodeConversionFailed>(),
+                               Checksum = checksum,
+                               Pointer = random.NextUInt(),
+                           };
 
                 case IcmpMessageType.DomainNameRequest:
                     return new IcmpDomainNameRequestLayer
-                               {
-                                   Checksum = checksum,
-                                   Identifier = random.NextUShort(),
-                                   SequenceNumber = random.NextUShort(),
-                               };
+                           {
+                               Checksum = checksum,
+                               Identifier = random.NextUShort(),
+                               SequenceNumber = random.NextUShort(),
+                           };
 
                 case IcmpMessageType.DomainNameReply:
                     throw new NotSupportedException("Message Type " + icmpMessageType + " is not supported");
 
                 case IcmpMessageType.SecurityFailures:
                     return new IcmpSecurityFailuresLayer
-                               {
-                                   Code = random.NextEnum<IcmpCodeSecurityFailure>(),
-                                   Checksum = checksum,
-                                   Pointer = random.NextUShort()
-                               };
+                           {
+                               Code = random.NextEnum<IcmpCodeSecurityFailure>(),
+                               Checksum = checksum,
+                               Pointer = random.NextUShort()
+                           };
 
                 default:
                     throw new InvalidOperationException("Invalid icmpMessageType " + icmpMessageType);
             }
-
         }
 
         public static IEnumerable<ILayer> NextIcmpPayloadLayers(this Random random, IcmpLayer icmpLayer)

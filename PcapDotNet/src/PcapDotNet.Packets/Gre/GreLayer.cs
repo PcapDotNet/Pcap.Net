@@ -109,6 +109,7 @@ namespace PcapDotNet.Packets.Gre
         /// The Routing field is a list of Source Route Entries (SREs). 
         /// null iff the routing isn't present.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public ReadOnlyCollection<GreSourceRouteEntry> Routing { get; set; }
 
         /// <summary>

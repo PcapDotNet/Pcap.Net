@@ -77,7 +77,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(EthernetType.Arp, packet.Ethernet.EtherType, "Ethernet EtherType");
 
                 // Arp
-                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count+ 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
+                Assert.AreEqual(ArpDatagram.HeaderBaseLength + 2 * arpLayer.SenderHardwareAddress.Count + 2 * arpLayer.SenderProtocolAddress.Count, packet.Ethernet.Arp.Length, "Arp length");
                 Assert.AreEqual(ArpHardwareType.Ethernet, packet.Ethernet.Arp.HardwareType, "Arp hardware type");
                 Assert.AreEqual(arpLayer, packet.Ethernet.Arp.ExtractLayer(), "ARP Layer");
                 Assert.AreNotEqual(arpLayer, random.NextArpLayer(), "ARP Layer");
@@ -90,15 +90,19 @@ namespace PcapDotNet.Packets.Test
         public void ArpProtocolIpV4Address()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
-                                     new EthernetLayer
-                                     {
-                                         Source = new MacAddress(),
-                                         EtherType = EthernetType.QInQ
-                                     },
-                                     new ArpLayer(new byte[8], new byte[] { 1, 2, 3, 4 }, new byte[8], new byte[] { 11, 22, 33, 44 })
-                                     {
-                                         Operation = ArpOperation.Request,
-                                     });
+                                                new EthernetLayer
+                                                {
+                                                    Source = new MacAddress(),
+                                                    EtherType = EthernetType.QInQ
+                                                },
+                                                new ArpLayer
+                                                {
+                                                    SenderHardwareAddress = new byte[8].AsReadOnly(),
+                                                    SenderProtocolAddress = new byte[] { 1, 2, 3, 4 }.AsReadOnly(),
+                                                    TargetHardwareAddress = new byte[8].AsReadOnly(),
+                                                    TargetProtocolAddress = new byte[] { 11, 22, 33, 44 }.AsReadOnly(),
+                                                    Operation = ArpOperation.Request,
+                                                });
 
             Assert.AreEqual(new IpV4Address("1.2.3.4"), packet.Ethernet.Arp.SenderProtocolIpV4Address);
             Assert.AreEqual(new IpV4Address("11.22.33.44"), packet.Ethernet.Arp.TargetProtocolIpV4Address);
@@ -109,15 +113,19 @@ namespace PcapDotNet.Packets.Test
         public void ArpIncosistentSenderAddressSizeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
-                                                 new EthernetLayer
-                                                     {
-                                                         Source = new MacAddress(),
-                                                         EtherType = EthernetType.IpV4
-                                                     },
-                                                 new ArpLayer(new byte[4], new byte[6], new byte[5], new byte[6])
-                                                     {
-                                                         Operation = ArpOperation.Request,
-                                                     });
+                                                new EthernetLayer
+                                                {
+                                                    Source = new MacAddress(),
+                                                    EtherType = EthernetType.IpV4
+                                                },
+                                                new ArpLayer
+                                                {
+                                                    SenderHardwareAddress = new byte[4].AsReadOnly(),
+                                                    SenderProtocolAddress = new byte[6].AsReadOnly(),
+                                                    TargetHardwareAddress = new byte[5].AsReadOnly(),
+                                                    TargetProtocolAddress = new byte[6].AsReadOnly(),
+                                                    Operation = ArpOperation.Request,
+                                                });
             Assert.IsNull(packet);
             Assert.Fail();
         }
@@ -132,8 +140,12 @@ namespace PcapDotNet.Packets.Test
                                                      Source = new MacAddress(),
                                                      EtherType = EthernetType.IpV4
                                                  },
-                                                 new ArpLayer(new byte[4], new byte[6], new byte[4], new byte[7])
+                                                 new ArpLayer
                                                  {
+                                                     SenderHardwareAddress = new byte[4].AsReadOnly(),
+                                                     SenderProtocolAddress = new byte[6].AsReadOnly(),
+                                                     TargetHardwareAddress = new byte[4].AsReadOnly(),
+                                                     TargetProtocolAddress = new byte[7].AsReadOnly(),
                                                      Operation = ArpOperation.Request,
                                                  });
             Assert.IsNull(packet);
