@@ -14,6 +14,10 @@ namespace PcapDotNet.Packets.Igmp
     /// </summary>
     public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
+        /// <summary>
+        /// Creates an instance of an IGMP Query Version 3 layer.
+        /// Default SourceAddresses is no addresses.
+        /// </summary>
         public IgmpQueryVersion3Layer()
         {
             SourceAddresses = new IpV4Address[0].AsReadOnly();
