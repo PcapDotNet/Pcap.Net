@@ -57,6 +57,9 @@ namespace PcapDotNet.Base.Test
                 Assert.AreEqual(value, value);
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
+                Assert.AreNotEqual(value, "string");
+                Assert.AreNotEqual(value, (UInt24)(((value & 0x00FFFF) + 1)| value & 0xFF0000));
+                Assert.AreNotEqual(value, (UInt24)((value & 0x00FFFF)| ((value & 0xFF0000) + 0x010000)));
                 Assert.IsNotNull(value.GetHashCode());
                 Assert.AreEqual(((int)value).ToString(), value.ToString());
             }
