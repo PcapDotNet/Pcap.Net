@@ -14,6 +14,10 @@ namespace PcapDotNet.Packets.Igmp
     /// </summary>
     public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
+        public IgmpQueryVersion3Layer()
+        {
+            SourceAddresses = new IpV4Address[0].AsReadOnly();
+        }
         /// <summary>
         /// The actual time allowed, called the Max Resp Time.
         /// </summary>
