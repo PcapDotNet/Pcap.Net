@@ -181,7 +181,7 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte retryNumber = 121;
+                const byte retryNumber = 28;
                 pcapFilename = Path.GetTempPath() + "temp." + retryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -221,7 +221,14 @@ namespace PcapDotNet.Core.Test
                                                                                 ? b
                                                                                 : Math.Max((byte)0x20, Math.Min(b, (byte)0x7F))).ToArray());
 
-            Compare(XDocument.Load(fixedDocumentFilename), packets);
+            try
+            {
+                Compare(XDocument.Load(fixedDocumentFilename), packets);
+            }
+            catch (AssertFailedException exception)
+            {
+                throw new AssertFailedException("Failed comparing packets in file " + pcapFilename + ". Message: " + exception.Message, exception);
+            }
         }
 
         private static void Compare(XDocument document, IEnumerable<Packet> packets)
@@ -232,7 +239,7 @@ namespace PcapDotNet.Core.Test
             int i = 1;
             foreach (var documentPacket in document.Element("pdml").Elements("packet"))
             {
-                Console.WriteLine("Checking packet " + i);
+//                Console.WriteLine("Checking packet " + i);
                 packetEnumerator.MoveNext();
                 Packet packet = packetEnumerator.Current;
 
@@ -612,8 +619,10 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "igmp.version":
-                        if (field.Show() != "0")
-                            field.AssertShowDecimal(igmpDatagram.Version);
+                        if (field.Show() == "0")
+                            return;
+
+                        field.AssertShowDecimal(igmpDatagram.Version);
                         break;
 
                     case "igmp.type":
