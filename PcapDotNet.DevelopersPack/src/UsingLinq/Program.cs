@@ -5,8 +5,6 @@ using System.Linq;
 using PcapDotNet.Core;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
-using PcapDotNet.Packets.IpV4;
-using PcapDotNet.Packets.Transport;
 
 namespace UsingLinq
 {
