@@ -32,9 +32,10 @@
     <CppCommentsFixup>True</CppCommentsFixup>
     <HelpTitle>Pcap.Net Documented Class Library</HelpTitle>
     <MissingTags>None</MissingTags>
-    <HelpFileVersion>0.5.0.0</HelpFileVersion>
+    <HelpFileVersion>0.6.0.0</HelpFileVersion>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <ShowFeedbackControl>False</ShowFeedbackControl>
+    <IndentHtml>False</IndentHtml>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
