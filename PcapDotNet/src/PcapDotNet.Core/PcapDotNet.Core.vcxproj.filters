@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Properties">
+      <UniqueIdentifier>{ff07a539-c7fb-4553-8ec3-008ecfa40f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketDevice">
+      <UniqueIdentifier>{9b2610f3-6c14-4dee-ac58-d6fc166b1b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketCommunicator">
+      <UniqueIdentifier>{27afaa2b-0e3d-4d17-816a-30ccc63417b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Marshaling">
+      <UniqueIdentifier>{2e23ad1d-1d7c-4185-bfd5-8aa1fde6df91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pcap">
+      <UniqueIdentifier>{bd72735e-f377-4d6b-95a2-7dd795c6d73f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Properties\AssemblyInfo.cpp">
+      <Filter>Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceAddress.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="IpV4SocketAddress.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="IpV6SocketAddress.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="LivePacketDevice.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflinePacketDevice.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketDevice.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketAddress.cpp">
+      <Filter>PacketDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="LivePacketCommunicator.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflinePacketCommunicator.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketCommunicator.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplingMethodFirstAfterInterval.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplingMethodNone.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplingMethodOneEveryCount.cpp">
+      <Filter>PacketCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="MarshalingServices.cpp">
+      <Filter>Marshaling</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHeader.cpp">
+      <Filter>Marshaling</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketTimestamp.cpp">
+      <Filter>Marshaling</Filter>
+    </ClCompile>
+    <ClCompile Include="PcapDeclarations.cpp">
+      <Filter>Pcap</Filter>
+    </ClCompile>
+    <ClCompile Include="BerkeleyPacketFilter.cpp" />
+    <ClCompile Include="PacketDumpFile.cpp" />
+    <ClCompile Include="PacketSampleStatistics.cpp" />
+    <ClCompile Include="PacketSendBuffer.cpp" />
+    <ClCompile Include="PacketTotalStatistics.cpp" />
+    <ClCompile Include="PcapDataLink.cpp" />
+    <ClCompile Include="PcapError.cpp" />
+    <ClCompile Include="PcapLibrary.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DeviceAddress.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceAttributes.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="IPacketDevice.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="IpV4SocketAddress.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="IpV6SocketAddress.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="LivePacketDevice.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflinePacketDevice.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketDevice.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketDeviceOpenAttributes.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketAddress.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketAddressFamily.h">
+      <Filter>PacketDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="LivePacketCommunicator.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflinePacketCommunicator.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketCommunicator.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketCommunicatorMode.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketCommunicatorReceiveResult.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingMethod.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingMethodFirstAfterInterval.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingMethodNone.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingMethodOneEveryCount.h">
+      <Filter>PacketCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="MarshalingServices.h">
+      <Filter>Marshaling</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHeader.h">
+      <Filter>Marshaling</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketTimestamp.h">
+      <Filter>Marshaling</Filter>
+    </ClInclude>
+    <ClInclude Include="Pcap.h">
+      <Filter>Pcap</Filter>
+    </ClInclude>
+    <ClInclude Include="PcapDeclarations.h">
+      <Filter>Pcap</Filter>
+    </ClInclude>
+    <ClInclude Include="BerkeleyPacketFilter.h" />
+    <ClInclude Include="PacketDumpFile.h" />
+    <ClInclude Include="PacketSampleStatistics.h" />
+    <ClInclude Include="PacketSendBuffer.h" />
+    <ClInclude Include="PacketTotalStatistics.h" />
+    <ClInclude Include="PcapDataLink.h" />
+    <ClInclude Include="PcapError.h" />
+    <ClInclude Include="PcapLibrary.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeAnalysisDictionary.xml" />
+    <None Include="Migrated rules for PcapDotNet.Core.ruleset" />
+  </ItemGroup>
+</Project>
