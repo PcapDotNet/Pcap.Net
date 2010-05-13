@@ -51,7 +51,7 @@ void PacketDumpFile::Dump(Packet^ packet)
 void PacketDumpFile::Flush()
 {
     if (pcap_dump_flush(_pcapDumper) != 0)
-        throw gcnew InvalidOperationException("Failed flusing to file " + _filename);
+		throw gcnew InvalidOperationException("Failed flushing to file " + _filename);
 }
 
 long PacketDumpFile::Position::get()
