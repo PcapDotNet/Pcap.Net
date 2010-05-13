@@ -1,14 +1,14 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Core.Test", "PcapDotNet.Core.Test\PcapDotNet.Core.Test.csproj", "{045A6460-C260-4CDA-8030-FD19A0086C95}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D5DCCC5-A509-4B4E-90B0-92390C6EA06F}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		PcapDotNet.4.5.resharper = PcapDotNet.4.5.resharper
 		PcapDotNet.vsmdi = PcapDotNet.vsmdi
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Core.Test", "PcapDotNet.Core.Test\PcapDotNet.Core.Test.csproj", "{045A6460-C260-4CDA-8030-FD19A0086C95}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.TestUtils", "PcapDotNet.TestUtils\PcapDotNet.TestUtils.csproj", "{540F21A8-CD9F-4288-ADCA-DB17027FF309}"
 EndProject
@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Packets.Test", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Base.Test", "PcapDotNet.Base.Test\PcapDotNet.Base.Test.csproj", "{20BCB32F-6B86-41D4-8DF4-191F3D233087}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\PcapDotNet.Core.vcproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PcapDotNet.Core", "PcapDotNet.Core\PcapDotNet.Core.vcxproj", "{89C63BE1-AF9A-472E-B256-A4F56B1655A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Core.Extensions", "PcapDotNet.Core.Extensions\PcapDotNet.Core.Extensions.csproj", "{322040C2-3DC1-4D0C-8E0F-F05290AFE023}"
 EndProject
@@ -53,12 +53,12 @@ Global
 		SccProjectUniqueName7 = PcapDotNet.Base.Test\\PcapDotNet.Base.Test.csproj
 		SccProjectName7 = PcapDotNet.Base.Test
 		SccLocalPath7 = PcapDotNet.Base.Test
-		SccProjectUniqueName8 = PcapDotNet.Core\\PcapDotNet.Core.vcproj
-		SccProjectName8 = PcapDotNet.Core
-		SccLocalPath8 = PcapDotNet.Core
-		SccProjectUniqueName9 = PcapDotNet.Core.Extensions\\PcapDotNet.Core.Extensions.csproj
-		SccProjectName9 = PcapDotNet.Core.Extensions
-		SccLocalPath9 = PcapDotNet.Core.Extensions
+		SccProjectUniqueName8 = PcapDotNet.Core.Extensions\\PcapDotNet.Core.Extensions.csproj
+		SccProjectName8 = PcapDotNet.Core.Extensions
+		SccLocalPath8 = PcapDotNet.Core.Extensions
+		SccProjectUniqueName9 = PcapDotNet.Core\\PcapDotNet.Core.vcxproj
+		SccProjectName9 = PcapDotNet.Core
+		SccLocalPath9 = PcapDotNet.Core
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = PcapDotNet.vsmdi

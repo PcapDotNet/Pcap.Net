@@ -181,7 +181,7 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte retryNumber = 28;
+                const byte retryNumber = 55;
                 pcapFilename = Path.GetTempPath() + "temp." + retryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -239,7 +239,6 @@ namespace PcapDotNet.Core.Test
             int i = 1;
             foreach (var documentPacket in document.Element("pdml").Elements("packet"))
             {
-//                Console.WriteLine("Checking packet " + i);
                 packetEnumerator.MoveNext();
                 Packet packet = packetEnumerator.Current;
 
@@ -364,7 +363,7 @@ namespace PcapDotNet.Core.Test
                         DateTime fieldTimestamp = fieldShow[4] == ' '
                                                       ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
                                                       : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp);
+                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp, "Timestamp");
                         break;
 
                     case "frame.len":
