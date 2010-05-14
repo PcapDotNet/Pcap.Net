@@ -41,8 +41,6 @@
     </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Packets\PcapDotNet.Packets.csproj">
       <Project>{8a184af5-e46c-482c-81a3-76d8ce290104}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
