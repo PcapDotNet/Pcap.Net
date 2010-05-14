@@ -132,9 +132,9 @@ namespace PcapDotNet.Core.Test
             element.AssertShow("0x" + expectedValue.ToString("x" + 2 * sizeof(ulong)));
         }
 
-        public static void AssertValue(this XElement element, string expectedValue)
+        public static void AssertValue(this XElement element, string expectedValue, string message = null)
         {
-            Assert.AreEqual(element.Value(), expectedValue, element.Name());
+            Assert.AreEqual(element.Value(), expectedValue, message ?? element.Name());
         }
 
         public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue)
@@ -147,9 +147,9 @@ namespace PcapDotNet.Core.Test
             element.AssertValue(expectedValue.ToString("x2"));
         }
 
-        public static void AssertValue(this XElement element, ushort expectedValue)
+        public static void AssertValue(this XElement element, ushort expectedValue, string message = null)
         {
-            element.AssertValue(expectedValue.ToString("x4"));
+            element.AssertValue(expectedValue.ToString("x4"), message);
         }
 
         public static void AssertValue(this XElement element, uint expectedValue)

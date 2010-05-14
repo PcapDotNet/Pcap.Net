@@ -90,7 +90,12 @@ namespace PcapDotNet.Core.Test
             Packet packet = new Packet(new byte[14], timestamp, DataLinkKind.Ethernet);
 
             // Compare packet to wireshark
-            ComparePacketsToWireshark(new[]{packet});
+            ComparePacketsToWireshark(new[] { packet });
+
+            // BUG: Limited timestamp due to Wireshark bug: https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=4766
+            // Now check different dates.
+            //packet = new Packet(new byte[14], new DateTime(2004,08,25,10,36,41, DateTimeKind.Utc).ToLocalTime(), DataLinkKind.Ethernet);
+            //ComparePacketsToWireshark(new[] { packet });
         }
 
         private enum PacketType
@@ -107,8 +112,10 @@ namespace PcapDotNet.Core.Test
 
         private static Packet CreateRandomPacket(Random random)
         {
+            // BUG: Limited timestamp due to Wireshark bug: https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=4766
             DateTime packetTimestamp =
-                random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+                random.NextDateTime(new DateTime(2010,1,1), new DateTime(2010,12,31)).ToUniversalTime().ToLocalTime();
+                //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
 
             EthernetLayer ethernetLayer = random.NextEthernetLayer();
             IpV4Layer ipV4Layer = random.NextIpV4Layer();
@@ -950,23 +957,17 @@ namespace PcapDotNet.Core.Test
                         else if (field.Show().StartsWith("Address family: "))
                         {
                             ++currentEntry;
-                            if (currentEntry == greDatagram.Routing.Count)
-                                field.AssertValue((ushort)0);
-                            else
+                            if (currentEntry != greDatagram.Routing.Count)
                                 field.AssertValue((ushort)greDatagram.Routing[currentEntry].AddressFamily);
                         }
                         else if (field.Show().StartsWith("SRE offset: "))
                         {
-                            if (currentEntry == greDatagram.Routing.Count)
-                                field.AssertValue((byte)0);
-                            else
+                            if (currentEntry != greDatagram.Routing.Count)
                                 field.AssertValue(greDatagram.Routing[currentEntry].PayloadOffset);
                         }
                         else if (field.Show().StartsWith("SRE length: "))
                         {
-                            if (currentEntry == greDatagram.Routing.Count)
-                                field.AssertValue((byte)0);
-                            else
+                            if (currentEntry != greDatagram.Routing.Count)
                                 field.AssertValue(greDatagram.Routing[currentEntry].PayloadLength);
                         }
                         else
