@@ -68,7 +68,6 @@
   <ItemGroup>
     <Compile Include="MoreIEnumerableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TupleTests.cs" />
     <Compile Include="UInt128Tests.cs" />
     <Compile Include="UInt24Tests.cs" />
     <Compile Include="UInt48Tests.cs" />

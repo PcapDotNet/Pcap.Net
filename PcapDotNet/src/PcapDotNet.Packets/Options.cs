@@ -138,7 +138,7 @@ namespace PcapDotNet.Packets
         }
 
         private Options(Tuple<IList<T>, bool> optionsAndIsValid)
-            : this(optionsAndIsValid.Value1, optionsAndIsValid.Value2)
+            : this(optionsAndIsValid.Item1, optionsAndIsValid.Item2)
         {
         }
 
