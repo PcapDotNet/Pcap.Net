@@ -47,12 +47,12 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Base.XML</DocumentationFile>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>Migrated rules for PcapDotNet.Base.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\PcapDotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,13 +61,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Base.XML</DocumentationFile>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
     <NoWarn>
     </NoWarn>
-    <CodeAnalysisRuleSet>Migrated rules for PcapDotNet.Base.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\PcapDotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
