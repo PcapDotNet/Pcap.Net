@@ -109,6 +109,9 @@ namespace PcapDotNet.Packets.IpV4
         protected static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,
                                       byte[] buffer, ref int offset, byte valueLength)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             addresses = null;
             pointedAddressIndex = 0;
 

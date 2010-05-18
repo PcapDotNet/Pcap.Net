@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Text;
 
@@ -47,6 +48,9 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public IpV4Address(string value)
         {
+            if (value == null) 
+                throw new ArgumentNullException("value");
+
             string[] values = value.Split('.');
             _value = (uint)((byte.Parse(values[0], CultureInfo.InvariantCulture) << 24) +
                             (byte.Parse(values[1], CultureInfo.InvariantCulture) << 16) +

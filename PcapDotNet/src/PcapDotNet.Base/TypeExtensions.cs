@@ -33,6 +33,9 @@ namespace PcapDotNet.Base
         /// <returns>A sequence of custom attributes applied to this member, or a sequence with zero (0) elements if no attributes have been applied.</returns>
         public static IEnumerable<T> GetCustomAttributes<T>(this MemberInfo memberInfo, bool inherit) where T : Attribute
         {
+            if (memberInfo == null)
+                throw new ArgumentNullException("memberInfo");
+
             return memberInfo.GetCustomAttributes(typeof(T), inherit).Cast<T>();
         }
     }

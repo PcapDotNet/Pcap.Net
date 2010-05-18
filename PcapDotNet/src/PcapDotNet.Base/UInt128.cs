@@ -71,6 +71,9 @@ namespace PcapDotNet.Base
         /// <returns>A 128-bit unsigned integer equivalent to the number specified in s.</returns>
         public static UInt128 Parse(string value, NumberStyles style, IFormatProvider provider)
         {
+            if (value == null) 
+                throw new ArgumentNullException("value");
+
             if (style != NumberStyles.HexNumber)
                 throw new NotSupportedException("Only " + NumberStyles.HexNumber + " style is supported");
 

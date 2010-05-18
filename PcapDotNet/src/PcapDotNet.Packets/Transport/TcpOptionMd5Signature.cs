@@ -44,6 +44,9 @@ namespace PcapDotNet.Packets.Transport
         public TcpOptionMd5Signature(IList<byte> data)
             : base(TcpOptionType.Md5Signature)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (data.Count != OptionValueLength)
                 throw new ArgumentException("data must be " + OptionValueLength + " bytes and not " + data.Count + " bytes", "data");
 

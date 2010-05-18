@@ -22,6 +22,9 @@ BerkeleyPacketFilter::BerkeleyPacketFilter(String^ filterValue, int snapshotLeng
 
 bool BerkeleyPacketFilter::Test([Out] int% snapshotLength, Packet^ packet)
 {
+	if (packet == nullptr) 
+		throw gcnew ArgumentNullException("packet");
+
     pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
     pin_ptr<Byte> unmanagedPacketBytes = &packet->Buffer[0];

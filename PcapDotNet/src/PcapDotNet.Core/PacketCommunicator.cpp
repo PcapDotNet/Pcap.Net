@@ -118,7 +118,10 @@ void PacketCommunicator::SetKernelMinimumBytesToCopy(int size)
 
 void PacketCommunicator::SetSamplingMethod(SamplingMethod^ method)
 {
-    pcap_samp* pcapSamplingMethod = pcap_setsampling(_pcapDescriptor);
+	if (method == nullptr) 
+		throw gcnew ArgumentNullException("method");
+
+	pcap_samp* pcapSamplingMethod = pcap_setsampling(_pcapDescriptor);
     pcapSamplingMethod->method = method->Method;
     pcapSamplingMethod->value = method->Value;
 }
@@ -239,7 +242,10 @@ void PacketCommunicator::Break()
 
 void PacketCommunicator::SendPacket(Packet^ packet)
 {
-    if (packet->Length == 0)
+	if (packet == nullptr) 
+		throw gcnew ArgumentNullException("packet");
+
+	if (packet->Length == 0)
         return;
     pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
     if (pcap_sendpacket(_pcapDescriptor, unamangedPacketBytes, packet->Length) != 0)
@@ -253,7 +259,10 @@ BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterValue)
 
 void PacketCommunicator::SetFilter(BerkeleyPacketFilter^ filter)
 {
-    filter->SetFilter(_pcapDescriptor);
+	if (filter == nullptr) 
+		throw gcnew ArgumentNullException("filter");
+
+	filter->SetFilter(_pcapDescriptor);
 }
 
 void PacketCommunicator::SetFilter(String^ filterValue)

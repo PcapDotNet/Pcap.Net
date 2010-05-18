@@ -21,8 +21,13 @@ namespace PcapDotNet.Packets
         /// </summary>
         /// <param name="buffer">The buffer to take as a datagram.</param>
         public Datagram(byte[] buffer)
-            : this(buffer, 0, buffer.Length)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
+            _buffer = buffer;
+            _startOffset = 0;
+            _length = buffer.Length;
         }
 
         /// <summary>
@@ -116,7 +121,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         public bool Equals(Datagram other)
         {
-            if (Length != other.Length)
+            if (other == null || Length != other.Length)
                 return false;
 
             for (int i = 0; i != Length; ++i)
@@ -296,6 +301,9 @@ namespace PcapDotNet.Packets
         /// <returns>A value equals to the sum of all 16 bits big endian values of the given bytes.</returns>
         protected static uint Sum16Bits(byte[] buffer, int offset, int length)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             int endOffset = offset + length;
             uint sum = 0;
             while (offset < endOffset - 1)

@@ -42,6 +42,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Address(string value)
         {
+            if (value == null)
+                throw new ArgumentNullException("value");
+
             string cannonizedValue = value;
             
             // Handle ...:1.2.3.4
