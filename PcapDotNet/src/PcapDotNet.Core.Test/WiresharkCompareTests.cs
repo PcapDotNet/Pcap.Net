@@ -1190,7 +1190,9 @@ namespace PcapDotNet.Core.Test
                 if (currentOptionIndex >= options.Count)
                 {
                     Assert.IsFalse(options.IsValid);
-                    Assert.Fail();
+                    Assert.IsTrue(field.Show().Contains("bytes says option goes past end of options"));
+                    Assert.AreEqual(options.Count, currentOptionIndex);
+                    return;
                 }
 
                 TcpOption option = options[currentOptionIndex];
