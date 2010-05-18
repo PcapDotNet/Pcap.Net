@@ -52,7 +52,7 @@ PacketCommunicator^ OfflinePacketDevice::Open(int snapshotLength, PacketDeviceOp
                           errorBuffer          // error buffer
                           ) != 0)
     {
-		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Error creating a source string from filename {0}. Error: ", _fileName, gcnew String(errorBuffer)));
+		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Error creating a source string from filename {0}. Error: {1}", _fileName, gcnew String(errorBuffer)));
     }
 
     return gcnew OfflinePacketCommunicator(source, snapshotLength, attributes, readTimeout, NULL);
