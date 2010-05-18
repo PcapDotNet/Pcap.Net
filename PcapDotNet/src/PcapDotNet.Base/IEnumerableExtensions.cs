@@ -18,6 +18,9 @@ namespace PcapDotNet.Base
         /// </summary>
         public static bool IsEmpty<T>(this IEnumerable<T> sequence)
         {
+            if (sequence == null) 
+                throw new ArgumentNullException("sequence");
+
             return !sequence.GetEnumerator().MoveNext();
         }
 
@@ -44,6 +47,9 @@ namespace PcapDotNet.Base
         /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence, string separator, string prefix, string suffix)
         {
+            if (sequence == null) 
+                throw new ArgumentNullException("sequence");
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(prefix);
             bool isFirst = true;

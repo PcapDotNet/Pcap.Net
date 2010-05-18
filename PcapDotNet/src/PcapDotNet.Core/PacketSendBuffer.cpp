@@ -14,7 +14,10 @@ PacketSendBuffer::PacketSendBuffer(unsigned int capacity)
 
 void PacketSendBuffer::Enqueue(Packet^ packet)
 {
-    pcap_pkthdr pcapHeader;
+	if (packet == nullptr) 
+		throw gcnew ArgumentNullException("packet");
+
+	pcap_pkthdr pcapHeader;
     PacketHeader::GetPcapHeader(pcapHeader, packet);
     pin_ptr<Byte> unmanagedPacketBytes = &packet->Buffer[0];
     if (pcap_sendqueue_queue(_pcapSendQueue, &pcapHeader, unmanagedPacketBytes) != 0)

@@ -35,6 +35,8 @@ namespace PcapDotNet.Packets
         /// <returns>The value read from the buffer.</returns>
         public static byte ReadByte(this byte[] buffer, int offset)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
             return buffer[offset];
         }
 
@@ -334,6 +336,9 @@ namespace PcapDotNet.Packets
         /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, int offset, byte value)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             buffer[offset] = value;
         }
 
@@ -357,6 +362,11 @@ namespace PcapDotNet.Packets
         /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, ref int offset, IEnumerable<byte> value)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+            if (value == null) 
+                throw new ArgumentNullException("value");
+
             foreach (byte b in value)
                 buffer.Write(offset++, b);
         }
@@ -514,6 +524,9 @@ namespace PcapDotNet.Packets
         /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, int offset, Datagram value)
         {
+            if (value == null)
+                throw new ArgumentNullException("value");
+
             value.Write(buffer, offset);
         }
 
@@ -525,6 +538,9 @@ namespace PcapDotNet.Packets
         /// <param name="value">The value to write.</param>
         public static void Write(this byte[] buffer, ref int offset, Datagram value)
         {
+            if (value == null) 
+                throw new ArgumentNullException("value");
+
             value.Write(buffer, offset);
             offset += value.Length;
         }

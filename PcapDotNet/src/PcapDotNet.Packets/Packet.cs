@@ -19,6 +19,9 @@ namespace PcapDotNet.Packets
         /// </summary>
         public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
         {
+            if (value == null) 
+                throw new ArgumentNullException("value");
+
             byte[] bytes = new byte[value.Length / 2];
 
             for (int i = 0; i < value.Length; i += 2)
@@ -94,7 +97,7 @@ namespace PcapDotNet.Packets
         /// <returns>True iff the packets have equal data.</returns>
         public bool Equals(Packet other)
         {
-            return (Length == other.Length && this.SequenceEqual(other));
+            return (other != null && Length == other.Length && this.SequenceEqual(other));
         }
 
         /// <summary>

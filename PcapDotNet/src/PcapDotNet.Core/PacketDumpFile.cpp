@@ -13,6 +13,9 @@ using namespace PcapDotNet::Packets;
 // static
 void PacketDumpFile::Dump(String^ fileName, PcapDataLink dataLink, int snapshotLength, IEnumerable<Packet^>^ packets)
 {
+	if (packets == nullptr) 
+		throw gcnew ArgumentNullException("packets");
+
     pcap_t* pcapDescriptor = pcap_open_dead(dataLink.Value, snapshotLength);
     if (pcapDescriptor == NULL)
         throw gcnew InvalidOperationException("Unable to open open a dead capture");
@@ -40,7 +43,10 @@ void PacketDumpFile::Dump(String^ fileName, PcapDataLink dataLink, int snapshotL
 
 void PacketDumpFile::Dump(Packet^ packet)
 {
-    pcap_pkthdr header;
+	if (packet == nullptr) 
+		throw gcnew ArgumentNullException("packet");
+
+	pcap_pkthdr header;
     PacketHeader::GetPcapHeader(header, packet);
     std::string unmanagedFilename = MarshalingServices::ManagedToUnmanagedString(_filename);
 

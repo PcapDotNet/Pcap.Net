@@ -37,6 +37,9 @@ namespace PcapDotNet.Packets.Ethernet
         /// <param name="address">The string value in hexadecimal format. Every two digits are separated by a colon.</param>
         public MacAddress(string address)
         {
+            if (address == null) 
+                throw new ArgumentNullException("address");
+
             string[] hexes = address.Split(':');
             if (hexes.Length != 6)
                 throw new ArgumentException("Failed parsing " + address + " as mac address. Expected 6 hexes and got " + hexes.Length + " hexes", "address");

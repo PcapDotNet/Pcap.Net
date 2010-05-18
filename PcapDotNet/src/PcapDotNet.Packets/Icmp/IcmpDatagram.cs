@@ -180,6 +180,9 @@ namespace PcapDotNet.Packets.Icmp
         /// <returns>An IcmpDatagram according to the Icmp message type.</returns>
         public static IcmpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             if (length <= Offset.Type)
                 return new IcmpUnknownDatagram(buffer, offset, length);
 

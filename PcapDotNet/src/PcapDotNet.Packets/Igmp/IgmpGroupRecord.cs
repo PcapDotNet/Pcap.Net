@@ -31,6 +31,9 @@ namespace PcapDotNet.Packets.Igmp
         /// </param>
         public IgmpGroupRecord(IgmpRecordType recordType, IpV4Address multicastAddress, ReadOnlyCollection<IpV4Address> sourceAddresses, Datagram auxiliaryData)
         {
+            if (auxiliaryData == null) 
+                throw new ArgumentNullException("auxiliaryData");
+
             if (auxiliaryData.Length % 4 != 0)
                 throw new ArgumentException("Auxiliary data length must divide by 4 and can't be " + auxiliaryData.Length, "auxiliaryData");
 

@@ -73,6 +73,9 @@ namespace PcapDotNet.Packets
         /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
         public PacketBuilder(params ILayer[] layers)
         {
+            if (layers == null) 
+                throw new ArgumentNullException("layers");
+
             if (layers.Length == 0)
                 throw new ArgumentException("At least one layer must be given", "layers");
 

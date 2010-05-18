@@ -238,6 +238,9 @@ namespace PcapDotNet.Packets.IpV4
         /// <returns>On success - the complex option read. On failure - null.</returns>
         public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             if (valueLength != OptionValueLength)
                 return null;
 

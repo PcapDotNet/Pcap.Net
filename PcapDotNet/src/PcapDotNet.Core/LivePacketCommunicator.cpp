@@ -2,6 +2,7 @@
 
 #include "Pcap.h"
 
+using namespace System;
 using namespace PcapDotNet::Core;
 
 LivePacketCommunicator::LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth, SocketAddress^ netmask)
@@ -21,5 +22,8 @@ PacketTotalStatistics^ LivePacketCommunicator::TotalStatistics::get()
 
 void LivePacketCommunicator::Transmit(PacketSendBuffer^ sendBuffer, bool isSync)
 {
-    sendBuffer->Transmit(PcapDescriptor, isSync);
+	if (sendBuffer == nullptr) 
+		throw gcnew ArgumentNullException("sendBuffer");
+
+	sendBuffer->Transmit(PcapDescriptor, isSync);
 }
