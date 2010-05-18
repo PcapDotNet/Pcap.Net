@@ -182,7 +182,7 @@ namespace PcapDotNet.Packets.Igmp
                                 return 3;
 
                             default:
-                                throw new InvalidOperationException("Invalid QueryVersion " + QueryVersion);
+                                throw new InvalidOperationException("Invalid Query Version " + QueryVersion);
                         }
 
                     case IgmpMessageType.MembershipReportVersion1:
@@ -198,7 +198,7 @@ namespace PcapDotNet.Packets.Igmp
                         return 2;
 
                     default:
-                        throw new InvalidOperationException("Invalid IgmpMessageType " + MessageType);
+                        throw new InvalidOperationException("Invalid IGMP Message Type " + MessageType);
                 }
             }
         }
