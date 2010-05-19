@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
@@ -589,6 +588,7 @@ namespace PcapDotNet.Core.Test
                     Assert.IsFalse(options.IsValid);
                     Assert.IsTrue(field.Show() == "Commercial IP security option" ||
                                   field.Show() == "Loose source route (length byte past end of options)" ||
+                                  field.Show() == "Time stamp:" ||
                                   field.Show().StartsWith("Unknown") ||
                                   field.Show().StartsWith("Security") ||
                                   field.Show().StartsWith("Router Alert (with option length = ") ||
