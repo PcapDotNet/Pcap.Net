@@ -91,7 +91,7 @@ namespace PcapDotNet.Packets.Arp
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
             if (previousLayer == null)
-                throw new ArgumentException("Must have a previous layer");
+                throw new ArgumentNullException("previousLayer");
 
             IArpPreviousLayer arpPreviousLayer = previousLayer as IArpPreviousLayer;
             if (arpPreviousLayer == null)

@@ -79,7 +79,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void AutomaticEthernetTypeNoNextLayer()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer());
@@ -87,7 +87,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void AutomaticEthernetTypeBadNextLayer()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new TcpLayer());

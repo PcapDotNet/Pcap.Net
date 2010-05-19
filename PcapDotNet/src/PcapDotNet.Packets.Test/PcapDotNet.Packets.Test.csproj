@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArpTests.cs" />
+    <Compile Include="ByteArrayExtensionsTests.cs" />
     <Compile Include="DatagramTests.cs" />
     <Compile Include="DataLinkTests.cs" />
     <Compile Include="EndianitiyTests.cs" />

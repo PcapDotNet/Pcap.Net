@@ -128,5 +128,13 @@ namespace PcapDotNet.Packets.Test
                 }
             }
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void DatagramConstructorNullBufferTest()
+        {
+            Assert.IsNotNull(new Datagram(null));
+            Assert.Fail();
+        }
     }
 }

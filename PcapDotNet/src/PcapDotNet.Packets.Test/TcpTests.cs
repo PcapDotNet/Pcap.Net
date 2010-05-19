@@ -144,7 +144,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void TcpOptionMd5SignatureConstructorErrorDataLengthTest()
         {
             new TcpOptionMd5Signature(new byte[10]);
@@ -171,6 +171,28 @@ namespace PcapDotNet.Packets.Test
             packet = new Packet(buffer, packet.Timestamp, packet.DataLink);
 
             Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Options.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void TcpOptionMd5SignatureConstructorNullTest()
+        {
+            Assert.IsNotNull(new TcpOptionMd5Signature(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TcpOptionCreateInstanceBadValueLengthTest()
+        {
+            int offset = 0;
+            Assert.IsNull(new TcpOptionPartialOrderServiceProfile().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionTimestamp().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionAlternateChecksumRequest().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionConnectionCount().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionConnectionCountEcho().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionEcho().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new TcpOptionSelectiveAcknowledgment().CreateInstance(new byte[0], ref offset, 1));
+            Assert.IsNull(new TcpOptionWindowScale().CreateInstance(new byte[0], ref offset, 123));
         }
     }
 }

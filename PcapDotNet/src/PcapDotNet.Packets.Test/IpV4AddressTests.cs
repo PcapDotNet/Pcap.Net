@@ -116,5 +116,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreNotEqual(address, buffer.ReadIpV4Address(0, Endianity.Big));
             }
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV4AddressConstructorNullTest()
+        {
+            Assert.IsNotNull(new IpV4Address(null));
+            Assert.Fail();
+        }
     }
 }

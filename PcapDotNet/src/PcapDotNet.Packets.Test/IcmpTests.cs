@@ -196,5 +196,19 @@ namespace PcapDotNet.Packets.Test
             Assert.AreNotEqual(entry1, entry2);
             Assert.AreNotEqual(entry1.GetHashCode(), entry2.GetHashCode());
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IcmpDatagramCreateDatagramNullBufferTest()
+        {
+            Assert.IsNotNull(IcmpDatagram.CreateDatagram(null, 0, 0));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void IcmpDatagramCreateDatagramBadOffsetTest()
+        {
+            Assert.IsInstanceOfType(IcmpDatagram.CreateDatagram(new byte[0], -1, 0), typeof(IcmpUnknownDatagram));
+        }
     }
 }

@@ -101,11 +101,19 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void MacAddressBadStringErrorTest()
         {
             MacAddress address = new MacAddress("12:34:56:78");
             Assert.IsNotNull(address);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void MacAddressConstructorNullTest()
+        {
+            Assert.IsNotNull(new MacAddress(null));
             Assert.Fail();
         }
     }

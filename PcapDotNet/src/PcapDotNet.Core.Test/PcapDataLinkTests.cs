@@ -96,7 +96,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void InvalidNameErrorTest()
         {
             PcapDataLink dataLink = new PcapDataLink("Invalid Name");
