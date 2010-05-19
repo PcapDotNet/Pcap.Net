@@ -267,9 +267,6 @@
     <None Include="..\PcapDotNet.snk" />
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">
       <Project>{83E805C9-4D29-4E34-A27E-5A78690FBD2B}</Project>
       <Name>PcapDotNet.Base</Name>
@@ -291,6 +288,11 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml">
+      <Link>PcapDotNet.CodeAnalysisDictionary.xml</Link>
+    </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

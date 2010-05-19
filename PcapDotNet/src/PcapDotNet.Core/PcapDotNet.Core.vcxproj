@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
+    <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -107,7 +107,7 @@
     <ClInclude Include="PcapLibrary.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CodeAnalysisDictionary.xml" />
+    <None Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</ProjectGuid>

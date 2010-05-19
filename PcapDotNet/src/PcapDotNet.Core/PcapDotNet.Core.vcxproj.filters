@@ -167,6 +167,6 @@
     <ClInclude Include="PcapLibrary.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CodeAnalysisDictionary.xml" />
+    <None Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
 </Project>
