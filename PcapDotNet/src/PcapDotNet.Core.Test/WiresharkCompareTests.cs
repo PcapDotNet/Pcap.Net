@@ -987,11 +987,21 @@ namespace PcapDotNet.Core.Test
 
                     case "data":
                     case "data.data":
-                        field.AssertValue(greDatagram.Payload);
+                        if (greDatagram.Version != GreVersion.EnhancedGre &&
+                            greDatagram.AcknowledgmentSequenceNumberPresent)
+                        {
+                            Assert.AreEqual(field.Value().Skip(8).SequenceToString(), greDatagram.Payload.BytesSequenceToHexadecimalString(), "GRE data.data");
+                        }
+                        else
+                            field.AssertValue(greDatagram.Payload, "GRE data.data");
                         break;
 
                     case "data.len":
-                        field.AssertShowDecimal(greDatagram.Payload.Length);
+                        field.AssertShowDecimal(
+                            greDatagram.Payload.Length + (greDatagram.Version != GreVersion.EnhancedGre &&
+                                                          greDatagram.AcknowledgmentSequenceNumberPresent
+                                                              ? 4
+                                                              : 0), "GRE data.len");
                         break;
 
                     default:
