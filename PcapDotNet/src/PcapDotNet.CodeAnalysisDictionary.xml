@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Unrecognized>
+      <!--Word>cb</Word-->
+    </Unrecognized>
+    <Recognized>
+      <Word>ack</Word>
+      <Word>aris</Word>
+      <Word>arp</Word>
+      <Word>autonet</Word>
+      <Word>avb</Word>
+      <Word>ax</Word>
+      <Word>bbn</Word> <!-- Probably BBN Technologies (originally Bolt, Beranek and Newman) -->
+      <Word>cbt</Word>
+      <Word>ccitt</Word>
+      <Word>cftp</Word> <!-- maybe Configurable Fault Tolerant Processor -->
+      <Word>datagrams</Word>
+      <Word>datakit</Word>
+      <Word>dcn</Word>
+      <Word>emcon</Word>
+      <Word>endianity</Word>
+      <Word>enqueueing</Word>
+      <Word>eof</Word>
+      <Word>expak</Word>
+      <Word>fibre</Word>
+      <Word>firefox</Word>
+      <Word>genser</Word>
+      <Word>gmtp</Word>
+      <Word>hiparp</Word>
+      <Word>iclfxbm</Word>
+      <Word>icmp</Word>
+      <Word>igmp</Word>
+      <Word>infini</Word>
+      <Word>internetwork</Word>
+      <Word>internodal</Word>
+      <Word>iplt</Word>
+      <Word>ipsilon</Word> <!-- As in Ipsilon Networks -->
+      <Word>ipx</Word>
+      <Word>kryptolan</Word>
+      <Word>lite</Word>
+      <Word>md</Word>
+      <Word>metricom</Word>
+      <Word>multimegabit</Word>
+      <Word>multiprotocol</Word>
+      <Word>netmask</Word>
+      <Word>nsa</Word>
+      <Word>osi</Word>
+      <Word>pcap</Word>
+      <Word>prespecified</Word>
+      <Word>proteon</Word>
+      <Word>qnx</Word> <!-- www.qnx.com -->
+      <Word>rcc</Word>
+      <Word>satnet</Word>
+      <Word>sitara</Word>
+      <Word>sna</Word>
+      <Word>tcf</Word>
+      <Word>tcn</Word>
+      <Word>ttl</Word>
+      <Word>ttp</Word>
+      <Word>twinaxial</Word>
+      <Word>unicast</Word>
+      <Word>uti</Word>
+      <Word>wiegand</Word>
+    </Recognized>
+    <Deprecated>
+      <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->
+    </Deprecated>
+    <Compound>
+      <!--Term CompoundAlternate="DataStore">datastore</Term-->
+    </Compound>
+    <DiscreteExceptions>
+      <!--Term>netmask</Term-->
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>Ip</Acronym>
+      <Acronym>Ms</Acronym>
+      <Acronym>Nd</Acronym>
+      <Acronym>Ns</Acronym>
+      <Acronym>Sm</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
