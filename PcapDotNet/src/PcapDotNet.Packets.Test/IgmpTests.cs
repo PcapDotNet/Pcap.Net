@@ -96,6 +96,46 @@ namespace PcapDotNet.Packets.Test
                     MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.IpV4.Igmp.MaxResponseTime);
                 if (packet.Ethernet.IpV4.Igmp.MessageType != IgmpMessageType.MembershipQuery)
                     Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.IpV4.Igmp.QueryVersion);
+                switch (igmpLayer.MessageType)
+                {
+                    case IgmpMessageType.MembershipQuery:
+                        switch (igmpLayer.QueryVersion)
+                        {
+                            case IgmpQueryVersion.Version1:
+                                Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);
+                                break;
+
+                            case IgmpQueryVersion.Version2:
+                                Assert.AreEqual(2, packet.Ethernet.IpV4.Igmp.Version);
+                                break;
+
+                            case IgmpQueryVersion.Version3:
+                                Assert.AreEqual(3, packet.Ethernet.IpV4.Igmp.Version);
+                                break;
+
+                            default:
+                                Assert.Fail(igmpLayer.QueryVersion.ToString());
+                                break;
+                        }
+                        break;
+
+                    case IgmpMessageType.MembershipReportVersion1:
+                        Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);
+                        break;
+
+                    case IgmpMessageType.MembershipReportVersion2:
+                    case IgmpMessageType.LeaveGroupVersion2:
+                        Assert.AreEqual(2, packet.Ethernet.IpV4.Igmp.Version);
+                        break;
+
+                    case IgmpMessageType.MembershipReportVersion3:
+                        Assert.AreEqual(3, packet.Ethernet.IpV4.Igmp.Version);
+                        break;
+
+                    default:
+                        Assert.Fail(igmpLayer.MessageType.ToString());
+                        break;
+                }
                 foreach (IgmpGroupRecordDatagram groupRecord in packet.Ethernet.IpV4.Igmp.GroupRecords)
                     Assert.IsNotNull(groupRecord.ToString());
             }
@@ -333,7 +373,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IgmpGroupRecordBadAuxiliaryDataLengthTest()
         {
             IgmpGroupRecord record = new IgmpGroupRecord(IgmpRecordType.SourceListChangeAllowNewSources, IpV4Address.Zero, new List<IpV4Address>(),
@@ -395,6 +435,14 @@ namespace PcapDotNet.Packets.Test
                                              MaxResponseTime = TimeSpan.FromMinutes(55)
                                          };
             Assert.IsFalse(layer1.Equals(layer2));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IgmpGroupRecordConstructorNullTest()
+        {
+            Assert.IsNotNull(new IgmpGroupRecord(IgmpRecordType.FilterModeChangeToExclude, IpV4Address.Zero, new IpV4Address[0], null));
+            Assert.Fail();
         }
     }
 }

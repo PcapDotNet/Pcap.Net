@@ -155,7 +155,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV6AddressNoColonTest()
         {
             IpV6Address ipV6Address = new IpV6Address("123");
@@ -163,11 +163,19 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV6AddressDoubleColonsWithoutMissingColonsTest()
         {
             IpV6Address ipV6Address = new IpV6Address("1::2:3:4:5:6:7:8");
             Assert.AreEqual(ipV6Address, ipV6Address);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6AddressConstructorNullTest()
+        {
+            Assert.IsNotNull(new IpV6Address(null));
+            Assert.Fail();
         }
     }
 }

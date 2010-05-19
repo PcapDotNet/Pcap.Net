@@ -195,20 +195,6 @@ namespace PcapDotNet.Packets.Test
                                                          Options = new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
                                                      });
 
-                //        public static Packet EthernetIpV4(DateTime timestamp,
-                //                                          MacAddress ethernetSource, MacAddress ethernetDestination,
-                //                                          byte ipV4TypeOfService, ushort ipV4Identification, IpV4Fragmentation ipV4Fragmentation,
-                //                                          byte ipV4Ttl, IpV4Protocol ipV4Protocol,
-                //                                          IpV4Address ipV4SourceAddress, IpV4Address ipV4DestinationAddress,
-                //                                          IpV4Options ipV4Options,
-                //                                          Datagram ipV4Payload)
-
-//                PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                       new MacAddress(), new MacAddress(),
-//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-//                                                       new IpV4Options(new IpV4OptionTimestampOnly(0, 0)),
-//                                                       Datagram.Empty);
-
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
 
             // Bad Length
@@ -264,11 +250,6 @@ namespace PcapDotNet.Packets.Test
                                                          Protocol = 0,
                                                          Options = new IpV4Options(new IpV4OptionLooseSourceRouting())
                                                      });
-//                PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                       new MacAddress(), new MacAddress(),
-//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-//                                                       new IpV4Options(new IpV4OptionLooseSourceRouting()),
-//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             byte[] buffer = packet.Buffer;
@@ -304,7 +285,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionsTooLongErrorTest()
         {
             IpV4Options options = new IpV4Options(
@@ -319,7 +300,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4FragmentationOffsetErrorTest()
         {
             IpV4Fragmentation fragmentation = new IpV4Fragmentation(IpV4FragmentationOptions.None, 2);
@@ -328,7 +309,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4FragmentationOptionsErrorTest()
         {
             IpV4Fragmentation fragmentation = new IpV4Fragmentation((IpV4FragmentationOptions)12345, 8);
@@ -368,7 +349,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionBasicSecurityConstructorNoProtectionAuthoritiesButWithValueTest()
         {
             IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.Nsa, 3);
@@ -377,7 +358,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionBasicSecurityConstructorBadClassificationLevelTest()
         {
             IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.None);
@@ -397,12 +378,6 @@ namespace PcapDotNet.Packets.Test
                                          Options = new IpV4Options(new IpV4OptionBasicSecurity()),
                                      });
 
-//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                       new MacAddress(), new MacAddress(),
-//                                                       0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-//                                                       new IpV4Options(new IpV4OptionBasicSecurity()),
-//                                                       Datagram.Empty);
-
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             byte[] buffer = packet.Buffer;
             buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 1] = 2;
@@ -418,12 +393,6 @@ namespace PcapDotNet.Packets.Test
                              Options = new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
                          });
 
-//            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                new MacAddress(), new MacAddress(),
-//                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-//                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret)),
-//                                                Datagram.Empty);
-
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             buffer = packet.Buffer;
             buffer[packet.Length - packet.Ethernet.IpV4.Length + IpV4Datagram.HeaderMinimumLength + 2] = 0;
@@ -438,11 +407,6 @@ namespace PcapDotNet.Packets.Test
                              Protocol = 0,
                              Options = new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
                          });
-//            packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                new MacAddress(), new MacAddress(),
-//                                                0, 0, new IpV4Fragmentation(), 0, 0, new IpV4Address(), new IpV4Address(),
-//                                                new IpV4Options(new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Confidential, IpV4OptionSecurityProtectionAuthorities.Nsa, 5)),
-//                                                Datagram.Empty);
 
             Assert.IsTrue(packet.Ethernet.IpV4.Options.IsValid);
             buffer = packet.Buffer;
@@ -460,7 +424,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionQuickStartBadFunctionTest()
         {
             IpV4OptionQuickStart option = new IpV4OptionQuickStart((IpV4OptionQuickStartFunction)2, 1, 2, 16);
@@ -478,7 +442,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionQuickStartBadNonceTest()
         {
             IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 1, 1, 2);
@@ -487,7 +451,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionTimestampAndAddressBadTypeTest()
         {
             IpV4OptionTimestampAndAddress option = new IpV4OptionTimestampAndAddress((IpV4OptionTimestampType)166, 1, 2);
@@ -514,11 +478,6 @@ namespace PcapDotNet.Packets.Test
                              Destination = new IpV4Address(2),
                          });
 
-//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                       new MacAddress(1), new MacAddress(2),
-//                                                       0, 1, new IpV4Fragmentation(IpV4FragmentationOptions.MoreFragments, 8), 1,
-//                                                       IpV4Protocol.WidebandExpak, new IpV4Address(1), new IpV4Address(2), new IpV4Options(),
-//                                                       Datagram.Empty);
             Assert.IsTrue(packet.IsValid);
 
             byte[] badPacketBuffer = new byte[packet.Length - 5];
@@ -534,10 +493,6 @@ namespace PcapDotNet.Packets.Test
                                                                                         {
                                                                                             Protocol = 0,
                                                                                         });
-//            Packet packet = PacketBuilder.EthernetIpV4(DateTime.Now,
-//                                                       new MacAddress(), new MacAddress(),
-//                                                       0, 0, new IpV4Fragmentation(), 0, 0, IpV4Address.Zero, IpV4Address.Zero, IpV4Options.None,
-//                                                       Datagram.Empty);
 
             Assert.IsTrue(packet.IsValid);
 
@@ -577,7 +532,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4NoNextLayerTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
@@ -587,7 +542,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4BadNextLayerTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
@@ -606,6 +561,44 @@ namespace PcapDotNet.Packets.Test
                                       Protocol = null,
                                   };
             Assert.IsNotNull(layer.GetHashCode());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV4OptionQuickStartCreateInstanceNullBufferTest()
+        {
+            int offset = 0;
+            Assert.IsNotNull(new IpV4OptionQuickStart().CreateInstance(null, ref offset, 0));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV4OptionBasicSecurityCreateInstanceNullBufferTest()
+        {
+            int offset = 0;
+            Assert.IsNotNull(new IpV4OptionBasicSecurity().CreateInstance(null, ref offset, 0));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV4OptionLooseSourceRoutingCreateInstanceNullBufferTest()
+        {
+            int offset = 0;
+            Assert.IsNotNull(new IpV4OptionLooseSourceRouting().CreateInstance(null, ref offset, 0));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void IpV4OptionCreateInstanceBadValueLengthTest()
+        {
+            int offset = 0;
+            Assert.IsNull(new IpV4OptionQuickStart().CreateInstance(new byte[0], ref offset, 0));
+            Assert.IsNull(new IpV4OptionTraceRoute().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new IpV4OptionRecordRoute().CreateInstance(new byte[0], ref offset, 0));
+            Assert.IsNull(new IpV4OptionRouterAlert().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new IpV4OptionStreamIdentifier().CreateInstance(new byte[0], ref offset, 123));
+            Assert.IsNull(new IpV4OptionStrictSourceRouting().CreateInstance(new byte[0], ref offset, 0));
         }
 
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)

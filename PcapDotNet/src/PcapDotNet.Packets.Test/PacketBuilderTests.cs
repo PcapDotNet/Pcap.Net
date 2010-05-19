@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void NoLayersTest()
         {
             PacketBuilder packetBuilder = new PacketBuilder();
@@ -54,11 +54,20 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void BadFirstLayerTest()
         {
             PacketBuilder packetBuilder = new PacketBuilder(new TcpLayer());
             Assert.IsNull(packetBuilder);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void PacketBuilderConstructorNullTest()
+        {
+            ILayer[] layers = null;
+            Assert.IsNotNull(new PacketBuilder(layers));
+            Assert.Fail();
         }
     }
 }

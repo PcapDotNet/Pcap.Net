@@ -109,7 +109,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void ArpIncosistentSenderAddressSizeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
@@ -131,7 +131,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void ArpIncosistentTargetAddressSizeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
@@ -149,6 +149,22 @@ namespace PcapDotNet.Packets.Test
                                                      Operation = ArpOperation.Request,
                                                  });
             Assert.IsNull(packet);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void ArpWriteNullPreviousLayerTest()
+        {
+            new ArpLayer().Write(new byte[0], 0, 0, null, new PayloadLayer());
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void ArpWriteBadPreviousLayerTest()
+        {
+            new ArpLayer().Write(new byte[0], 0, 0, new PayloadLayer(), new PayloadLayer());
             Assert.Fail();
         }
     }

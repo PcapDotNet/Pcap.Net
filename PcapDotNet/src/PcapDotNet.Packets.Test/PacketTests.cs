@@ -131,5 +131,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.Fail();
             }
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void PacketFromHexadecimalStringNullTest()
+        {
+            Assert.IsNotNull(Packet.FromHexadecimalString(null, DateTime.MinValue, DataLinkKind.Ethernet));
+            Assert.Fail();
+        }
     }
 }
