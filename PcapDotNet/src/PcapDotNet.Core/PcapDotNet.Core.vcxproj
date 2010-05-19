@@ -108,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeAnalysisDictionary.xml" />
-    <None Include="Migrated rules for PcapDotNet.Core.ruleset" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</ProjectGuid>
