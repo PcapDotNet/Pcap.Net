@@ -20,6 +20,9 @@ namespace PcapDotNet.Core.Extensions
         /// <returns>The network interface found according to the given device or null if none is found.</returns>
         public static NetworkInterface GetNetworkInterface(this LivePacketDevice livePacketDevice)
         {
+            if (livePacketDevice == null) 
+                throw new ArgumentNullException("livePacketDevice");
+
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (@"rpcap://\Device\NPF_" + networkInterface.Id == livePacketDevice.Name)
