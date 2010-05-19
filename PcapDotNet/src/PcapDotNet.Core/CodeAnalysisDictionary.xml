@@ -16,6 +16,7 @@
       <Word>datakit</Word>
       <Word>ccitt</Word>
       <Word>iclfxbm</Word>
+      <Word>enqueueing</Word>
     </Recognized>
     <Deprecated>
       <!--Term PreferredAlternate="EnterpriseServices">complus</Term-->
@@ -29,7 +30,6 @@
   </Words>
   <Acronyms>
     <CasingExceptions>
-      <!-->Acronym>Eof</Acronym-->
       <Acronym>Ip</Acronym>
       <Acronym>Ms</Acronym>
     </CasingExceptions>

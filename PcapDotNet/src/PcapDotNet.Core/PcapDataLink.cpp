@@ -37,7 +37,7 @@ DataLinkKind PcapDataLink::Kind::get()
     case 1:
         return DataLinkKind::Ethernet;
     default:
-        throw gcnew NotSupportedException("PcapDataLink " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
+        throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
     }
 }
 
@@ -51,7 +51,7 @@ String^ PcapDataLink::Name::get()
 {
     const char* name = pcap_datalink_val_to_name(Value);
     if (name == NULL)
-        throw gcnew InvalidOperationException("datalink " + Value.ToString(CultureInfo::InvariantCulture) + " has no name");
+        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no name");
 
     return gcnew String(name);
 }
@@ -60,7 +60,7 @@ String^ PcapDataLink::Description::get()
 {
     const char* description = pcap_datalink_val_to_description(Value);
     if (description == NULL)
-        throw gcnew InvalidOperationException("datalink " + Value.ToString(CultureInfo::InvariantCulture) + " has no description");
+        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no description");
 
     return gcnew String(description);
 }
@@ -110,6 +110,6 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
     case DataLinkKind::Ethernet:
         return 1;
     default:
-        throw gcnew NotSupportedException("PcapDataLink kind " + kind.ToString() + " is unsupported");
+        throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " kind " + kind.ToString() + " is unsupported");
     }
 }

@@ -27,7 +27,7 @@ void PacketCommunicator::DataLink::set(PcapDataLink value)
 
 ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
-    throw gcnew NotSupportedException("Supported DataLinks is unsupported to avoid winpcap memory leak");
+    throw gcnew NotSupportedException("Unsupported property to avoid WinPcap memory leak");
 //	pcap_free_datalinks(NULL);
 /*
     int* dataLinks;
