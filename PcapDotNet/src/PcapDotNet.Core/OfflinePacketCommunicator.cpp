@@ -5,7 +5,7 @@ using namespace PcapDotNet::Core;
 
 PacketTotalStatistics^ OfflinePacketCommunicator::TotalStatistics::get()
 {
-    throw gcnew InvalidOperationException("Can't get TotalStatistics for offline devices");
+    throw gcnew InvalidOperationException("Can't get " + PacketTotalStatistics::typeid->Name + " for offline devices");
 }
 
 void OfflinePacketCommunicator::Transmit(PacketSendBuffer^, bool)
