@@ -265,7 +265,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />
-    <None Include="Migrated rules for PcapDotNet.Packets.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />

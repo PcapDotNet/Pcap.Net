@@ -168,6 +168,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeAnalysisDictionary.xml" />
-    <None Include="Migrated rules for PcapDotNet.Core.ruleset" />
   </ItemGroup>
 </Project>
