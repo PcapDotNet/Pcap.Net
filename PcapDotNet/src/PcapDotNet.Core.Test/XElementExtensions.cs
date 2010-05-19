@@ -47,9 +47,9 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(element.Name(), expectedName);
         }
 
-        public static void AssertShow(this XElement element, string expectedValue)
+        public static void AssertShow(this XElement element, string expectedValue, string message = null)
         {
-            Assert.AreEqual(expectedValue, element.Show(), element.Name());
+            Assert.AreEqual(expectedValue, element.Show(), message ?? element.Name());
         }
 
         public static void AssertShow(this XElement element, IEnumerable<byte> expectedValue)
@@ -77,9 +77,9 @@ namespace PcapDotNet.Core.Test
             element.AssertShow(expectedValue.ToString());
         }
 
-        public static void AssertShowDecimal(this XElement element, int expectedValue)
+        public static void AssertShowDecimal(this XElement element, int expectedValue, string message = null)
         {
-            element.AssertShow(expectedValue.ToString());
+            element.AssertShow(expectedValue.ToString(), message);
         }
 
         public static void AssertShowDecimal(this XElement element, uint expectedValue)
@@ -137,9 +137,9 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(element.Value(), expectedValue, message ?? element.Name());
         }
 
-        public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue)
+        public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue, string message = null)
         {
-            element.AssertValue(expectedValue.BytesSequenceToHexadecimalString());
+            element.AssertValue(expectedValue.BytesSequenceToHexadecimalString(), message);
         }
 
         public static void AssertValue(this XElement element, byte expectedValue)
