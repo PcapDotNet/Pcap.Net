@@ -11,13 +11,6 @@ namespace PcapDotNet.Base.Test
     [TestClass]
     public class UInt128Tests
     {
-        public UInt128Tests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.
@@ -58,8 +51,10 @@ namespace PcapDotNet.Base.Test
                 Assert.AreNotEqual(value, string.Empty);
                 Assert.AreNotEqual(value, UInt128.MaxValue);
                 Assert.AreNotEqual(value, UInt128.Zero);
+                // ReSharper disable EqualExpressionComparison
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
+                // ReSharper restore EqualExpressionComparison
                 Assert.IsNotNull(value.GetHashCode());
                 Assert.AreEqual(value, UInt128.Parse(value.ToString("X32"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
                 Assert.AreEqual(value >> 64, UInt128.Parse(((ulong)(value >> 64)).ToString("X16"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
@@ -69,13 +64,13 @@ namespace PcapDotNet.Base.Test
         [TestMethod]
         public void ShiftRightTest()
         {
-            const string valueString = "0123456789ABCDEFFEDCBA9876543210";
-            UInt128 value = UInt128.Parse(valueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            Assert.AreEqual(UInt128.Parse(valueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture), value);
+            const string ValueString = "0123456789ABCDEFFEDCBA9876543210";
+            UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            Assert.AreEqual(UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture), value);
 
             for (int i = 0; i <= 124; i += 4)
             {
-                string expectedValueString = new string('0', i / 4) + valueString.Substring(0, valueString.Length - i / 4);
+                string expectedValueString = new string('0', i / 4) + ValueString.Substring(0, ValueString.Length - i / 4);
                 UInt128 expectedValue = UInt128.Parse(expectedValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 Assert.AreEqual(expectedValue, value >> i, i.ToString());
                 Assert.AreEqual(expectedValue, value >> (i / 2) >> (i / 2), i.ToString());
@@ -86,15 +81,15 @@ namespace PcapDotNet.Base.Test
         [TestMethod]
         public void BitwiseAndTest()
         {
-            const string valueString = "0123456789ABCDEFFEDCBA9876543210";
-            UInt128 value = UInt128.Parse(valueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            Assert.AreEqual(UInt128.Parse(valueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture), value);
+            const string ValueString = "0123456789ABCDEFFEDCBA9876543210";
+            UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            Assert.AreEqual(UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture), value);
 
             for (int i = 0; i <= 32; ++i)
             {
-                string andValueString = new string('0', i) + new string('F', valueString.Length - i);
+                string andValueString = new string('0', i) + new string('F', ValueString.Length - i);
                 UInt128 andValue = UInt128.Parse(andValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-                string expectedValueString = new string('0', i) + valueString.Substring(i, valueString.Length - i);
+                string expectedValueString = new string('0', i) + ValueString.Substring(i, ValueString.Length - i);
                 UInt128 expectedValue = UInt128.Parse(expectedValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 UInt128 actualValue = value & andValue;
                 Assert.AreEqual(expectedValue, actualValue, i.ToString());
@@ -112,9 +107,9 @@ namespace PcapDotNet.Base.Test
         [TestMethod]
         public void ToStringTest()
         {
-            const string valueString = "0123456789ABCDEFFEDCBA9876543210";
-            UInt128 value = UInt128.Parse(valueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            Assert.AreEqual(valueString, value.ToString("X32"));
+            const string ValueString = "0123456789ABCDEFFEDCBA9876543210";
+            UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            Assert.AreEqual(ValueString, value.ToString("X32"));
         }
     }
 }

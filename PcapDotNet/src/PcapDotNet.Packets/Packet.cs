@@ -252,12 +252,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         public EthernetDatagram Ethernet
         {
-            get
-            {
-                if (_ethernet == null)
-                    _ethernet = new EthernetDatagram(Buffer, 0, Length);
-                return _ethernet;
-            }
+            get { return _ethernet ?? (_ethernet = new EthernetDatagram(Buffer, 0, Length)); }
         }
 
         private bool CalculateIsValid()

@@ -12,17 +12,10 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class PayloadLayerTests
     {
-        public PayloadLayerTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext { get; set;}
 
         #region Additional test attributes

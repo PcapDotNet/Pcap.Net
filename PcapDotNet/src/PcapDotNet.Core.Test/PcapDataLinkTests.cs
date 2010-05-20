@@ -1,6 +1,5 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Packets;
 
 namespace PcapDotNet.Core.Test
 {
@@ -10,18 +9,11 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class PcapDataLinkTests
     {
-        public PcapDataLinkTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -109,10 +101,9 @@ namespace PcapDotNet.Core.Test
             for (int i = 0; i != 1000; ++i)
             {
                 PcapDataLink dataLink = new PcapDataLink(i);
-                string dataLinkName;
                 try
                 {
-                    dataLinkName = dataLink.Name;
+                    string dataLinkName = dataLink.Name;
                     Assert.IsNotNull(dataLinkName);
                 }
                 catch (InvalidOperationException)

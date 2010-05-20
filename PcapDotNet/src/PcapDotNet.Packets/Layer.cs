@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets
 {
     /// <summary>
@@ -7,7 +9,7 @@ namespace PcapDotNet.Packets
     /// A packet can be according to a sequence of layers.
     /// <seealso cref="PacketBuilder"/>
     /// </summary>
-    public abstract class Layer : ILayer
+    public abstract class Layer : ILayer, IEquatable<Layer>
     {
         /// <summary>
         /// The number of bytes this layer will take.

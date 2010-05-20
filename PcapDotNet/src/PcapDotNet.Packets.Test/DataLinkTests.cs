@@ -8,18 +8,11 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class DataLinkTests
     {
-        public DataLinkTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -50,8 +43,10 @@ namespace PcapDotNet.Packets.Test
             Assert.AreNotEqual(DataLink.Ethernet, 2);
             Assert.AreEqual(DataLinkKind.Ethernet.ToString(), DataLink.Ethernet.ToString());
             Assert.AreEqual(DataLink.Ethernet.GetHashCode(), DataLink.Ethernet.GetHashCode());
+            // ReSharper disable EqualExpressionComparison
             Assert.IsTrue(DataLink.Ethernet == DataLink.Ethernet);
             Assert.IsFalse(DataLink.Ethernet != DataLink.Ethernet);
+            // ReSharper restore EqualExpressionComparison
         }
     }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>

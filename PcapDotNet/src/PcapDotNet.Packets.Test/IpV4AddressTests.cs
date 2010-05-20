@@ -1,7 +1,4 @@
 using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
@@ -14,22 +11,11 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class IpV4AddressTests
     {
-        public IpV4AddressTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get;
-            set;
-        }
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //

@@ -1,8 +1,6 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,7 +9,9 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for IEnumerable of type T.
     /// </summary>
+// ReSharper disable InconsistentNaming
     public static class IEnumerableExtensions
+// ReSharper restore InconsistentNaming
     {
         /// <summary>
         /// True iff the sequence has no elements.

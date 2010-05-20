@@ -1,5 +1,3 @@
-using PcapDotNet.Packets.IpV4;
-
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>

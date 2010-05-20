@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
@@ -29,10 +25,10 @@ namespace PcapDotNet.Core.Test
         }
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -152,7 +148,7 @@ namespace PcapDotNet.Core.Test
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.032);
 
             // Wait for more packets
-            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.029);
+            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.031);
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.13);
 
             // Break loop
@@ -682,7 +678,7 @@ namespace PcapDotNet.Core.Test
         private static void TestReceiveSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop, int packetSize, bool nonBlocking,
                                                    PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
-            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
+            string testDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
                                      ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". PacketSize=" + packetSize +
                                      ". NonBlocking=" + nonBlocking;
 
@@ -711,9 +707,9 @@ namespace PcapDotNet.Core.Test
                 DateTime finishedWaiting = DateTime.Now;
 
                 Assert.AreEqual(expectedResult, result);
-                Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + TestDescription);
-                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + TestDescription);
-                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds, TestDescription);
+                Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + testDescription);
+                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + testDescription);
+                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds, testDescription);
             }
         }
 
@@ -721,7 +717,7 @@ namespace PcapDotNet.Core.Test
                                            PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                            double expectedMinSeconds, double expectedMaxSeconds)
         {
-            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
+            string testDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
                                      ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". SecondsToWait=" +
                                      secondsToWait + ". PacketSize=" + packetSize;
 
@@ -756,7 +752,7 @@ namespace PcapDotNet.Core.Test
                     thread.Abort();
                 DateTime finishedWaiting = DateTime.Now;
 
-                Assert.AreEqual(expectedResult, result, TestDescription);
+                Assert.AreEqual(expectedResult, result, testDescription);
                 Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled);
                 MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }
@@ -765,7 +761,7 @@ namespace PcapDotNet.Core.Test
         private static void TestReceivePacketsEnumerable(int numPacketsToSend, int numPacketsToWait, int numPacketsToBreakLoop, double secondsToWait,
                                                          int packetSize, int expectedNumPackets, double expectedMinSeconds, double expectedMaxSeconds)
         {
-            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
+            string testDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToWait=" + numPacketsToWait +
                                      ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop + ". SecondsToWait=" +
                                      secondsToWait + ". PacketSize=" + packetSize;
 
@@ -806,8 +802,8 @@ namespace PcapDotNet.Core.Test
                     thread.Abort();
                 DateTime finishedWaiting = DateTime.Now;
 
-                Assert.AreEqual(expectedNumPackets, actualPacketsReceived, TestDescription);
-                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds, TestDescription);
+                Assert.AreEqual(expectedNumPackets, actualPacketsReceived, testDescription);
+                MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds, testDescription);
             }
         }
 
@@ -874,6 +870,6 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static Random _random = new Random();
+        private static readonly Random _random = new Random();
     }
 }

@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using PcapDotNet.Base;
-using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
@@ -511,11 +508,11 @@ namespace PcapDotNet.Packets.TestUtils
             IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
             TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
             IpV4Address igmpGroupAddress = random.NextIpV4Address();
-            bool? igmpIsSuppressRouterSideProcessing = null;
-            byte? igmpQueryRobustnessVariable = null;
-            TimeSpan? igmpQueryInterval = null;
-            IpV4Address[] igmpSourceAddresses = null;
-            IgmpGroupRecord[] igmpGroupRecords = null;
+            bool? igmpIsSuppressRouterSideProcessing;
+            byte? igmpQueryRobustnessVariable;
+            TimeSpan? igmpQueryInterval;
+            IpV4Address[] igmpSourceAddresses;
+            IgmpGroupRecord[] igmpGroupRecords;
 
             switch (igmpMessageType)
             {
@@ -870,10 +867,6 @@ namespace PcapDotNet.Packets.TestUtils
                     icmpPayloadLayers = icmpPayloadLayers.Concat(random.NextIpV4Layer(), random.NextPayloadLayer(IcmpIpV4HeaderPlus64BitsPayloadDatagram.OriginalDatagramPayloadLength));
                     break;
                 case IcmpMessageType.ConversionFailed:
-                    IpV4Protocol icmpIpV4Protocol = random.NextBool()
-                                                        ? random.NextValue(new[] {IpV4Protocol.Udp, IpV4Protocol.Tcp})
-                                                        : random.NextEnum<IpV4Protocol>();
-
                     IpV4Layer icmpIpV4Layer = random.NextIpV4Layer();
                     icmpPayloadLayers = icmpPayloadLayers.Concat(icmpIpV4Layer);
                     if (icmpLayer.MessageTypeAndCode == IcmpMessageTypeAndCode.ConversionFailedUnsupportedTransportProtocol)

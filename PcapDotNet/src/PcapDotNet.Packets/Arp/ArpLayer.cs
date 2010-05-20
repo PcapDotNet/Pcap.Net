@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml.Serialization;
-using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.Arp
@@ -13,13 +10,6 @@ namespace PcapDotNet.Packets.Arp
     /// </summary>
     public class ArpLayer : Layer, IEthernetNextLayer
     {
-        /// <summary>
-        /// Create an ARP layer.
-        /// </summary>
-        public ArpLayer()
-        {
-        }
-
         /// <summary>
         /// Each protocol is assigned a number used in this field.
         /// </summary>

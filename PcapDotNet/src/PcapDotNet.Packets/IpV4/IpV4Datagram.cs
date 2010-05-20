@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
@@ -180,12 +177,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public IpV4Options Options
         {
-            get
-            {
-                if (_options == null)
-                    _options = new IpV4Options(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
-                return _options;
-            }
+            get { return _options ?? (_options = new IpV4Options(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength)); }
         }
 
         /// <summary>

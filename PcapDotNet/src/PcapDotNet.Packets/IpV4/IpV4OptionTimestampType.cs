@@ -1,5 +1,3 @@
-using System;
-
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>

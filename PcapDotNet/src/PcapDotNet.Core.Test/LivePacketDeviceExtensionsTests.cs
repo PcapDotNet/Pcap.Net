@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Core.Extensions;
-using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -11,17 +10,10 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class LivePacketDeviceExtensionsTests
     {
-        public LivePacketDeviceExtensionsTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext { get; set; }
 
         #region Additional test attributes

@@ -79,12 +79,12 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public override ILayer ExtractLayer()
         {
-            return new EthernetLayer()
-                       {
-                           Source = Source,
-                           Destination = Destination,
-                           EtherType = EtherType,
-                       };
+            return new EthernetLayer
+                   {
+                       Source = Source,
+                       Destination = Destination,
+                       EtherType = EtherType,
+                   };
         }
 
         /// <summary>
@@ -138,13 +138,10 @@ namespace PcapDotNet.Packets.Ethernet
         {
             get
             {
-                if (_payloadDatagrams == null)
-                {
-                    _payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
-                                                                         ? new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength)
-                                                                         : null);
-                }
-                return _payloadDatagrams;
+                return _payloadDatagrams ?? (_payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
+                                                                                                  ? new Datagram(Buffer, StartOffset + HeaderLength,
+                                                                                                                 Length - HeaderLength)
+                                                                                                  : null));
             }
         }
 

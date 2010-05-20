@@ -6,7 +6,9 @@ namespace PcapDotNet.Base
     /// <summary>
     /// Extension methods for IList of type T.
     /// </summary>
+// ReSharper disable InconsistentNaming
     public static class IListExtensions
+// ReSharper restore InconsistentNaming
     {
         /// <summary>
         /// Wraps a list with a ReadOnlyCollection.

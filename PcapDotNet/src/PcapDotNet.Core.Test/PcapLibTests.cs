@@ -1,8 +1,4 @@
-﻿using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
@@ -13,18 +9,11 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class PcapLibTests
     {
-        public PcapLibTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //

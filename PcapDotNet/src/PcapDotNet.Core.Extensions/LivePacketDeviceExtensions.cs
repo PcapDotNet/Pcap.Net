@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using System.Net.NetworkInformation;
-using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 
@@ -24,13 +24,7 @@ namespace PcapDotNet.Core.Extensions
             if (livePacketDevice == null) 
                 throw new ArgumentNullException("livePacketDevice");
 
-            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (@"rpcap://\Device\NPF_" + networkInterface.Id == livePacketDevice.Name)
-                    return networkInterface;
-            }
-
-            return null;
+            return NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(networkInterface => @"rpcap://\Device\NPF_" + networkInterface.Id == livePacketDevice.Name);
         }
 
         /// <summary>

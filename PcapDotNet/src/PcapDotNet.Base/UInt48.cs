@@ -481,7 +481,7 @@ namespace PcapDotNet.Base
         /// <returns>The 8 bit value converted from the 48 bit value.</returns>
         public static explicit operator byte(UInt48 value)
         {
-            return (byte)value.ToByte();
+            return value.ToByte();
         }
 
         /// <summary>

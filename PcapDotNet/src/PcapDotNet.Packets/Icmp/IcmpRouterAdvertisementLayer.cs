@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -12,13 +11,6 @@ namespace PcapDotNet.Packets.Icmp
     /// </summary>
     public class IcmpRouterAdvertisementLayer : IcmpLayer
     {
-        /// <summary>
-        /// Creates an ICMP layer instance.
-        /// </summary>
-        public IcmpRouterAdvertisementLayer()
-        {
-        }
-
         /// <summary>
         /// The maximum time that the router addresses may be considered valid.
         /// </summary>

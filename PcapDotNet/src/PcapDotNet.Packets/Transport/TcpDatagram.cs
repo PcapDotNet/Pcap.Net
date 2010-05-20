@@ -159,12 +159,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public TcpOptions Options
         {
-            get
-            {
-                if (_options == null)
-                    _options = new TcpOptions(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
-                return _options;
-            }
+            get { return _options ?? (_options = new TcpOptions(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength)); }
         }
 
         /// <summary>
