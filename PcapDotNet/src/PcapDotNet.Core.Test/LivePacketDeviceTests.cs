@@ -120,7 +120,7 @@ namespace PcapDotNet.Core.Test
             const int PacketSize = 100;
 
             // Normal
-            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.041);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend, 0, 0.063);
 
             // Wait for less packets
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
@@ -132,7 +132,7 @@ namespace PcapDotNet.Core.Test
 
             // Break loop
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, 0, 0, 0.027);
-            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.031);
+            TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0, 0.032);
         }
 
         [TestMethod]
@@ -148,11 +148,11 @@ namespace PcapDotNet.Core.Test
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, NumPacketsToSend / 2, 0, 0.032);
 
             // Wait for more packets
-            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.031);
+            TestReceivePacketsEnumerable(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.14);
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.13);
 
             // Break loop
-            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.02);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.032);
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, NumPacketsToSend / 2, 0, 0.031);
         }
 

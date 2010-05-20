@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Ethernet
                     return IpV4;
 
                 default:
-                    return Payload;
+                    return null;
             }
         }
 
@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets.Ethernet
             get
             {
                 if (_ipV4 == null && _payload != null)
-                    _ipV4 = new IpV4Datagram(_payload.Buffer, _payload.StartOffset, _payload.Length);
+                    _ipV4 = new IpV4Datagram(_payload.Buffer, _payload.StartOffset, IpV4Datagram.GetTotalLength(_payload));
                 return _ipV4;
             }
         }

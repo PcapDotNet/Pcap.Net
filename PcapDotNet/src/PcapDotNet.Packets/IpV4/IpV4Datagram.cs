@@ -319,6 +319,18 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        internal static int GetTotalLength(Datagram ipV4Datagram)
+        {
+            if (ipV4Datagram.Length < HeaderMinimumLength)
+                return ipV4Datagram.Length;
+
+            ushort totalLength = ipV4Datagram.ReadUShort(Offset.TotalLength, Endianity.Big);
+            if (ipV4Datagram.Length < totalLength)
+                return ipV4Datagram.Length;
+
+            return totalLength;
+        }
+
         internal IpV4Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
