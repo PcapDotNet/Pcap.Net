@@ -285,10 +285,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
       <KeyFile>"$(SolutionDir)$(SolutionName).snk"</KeyFile>
+      <DelaySign>true</DelaySign>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

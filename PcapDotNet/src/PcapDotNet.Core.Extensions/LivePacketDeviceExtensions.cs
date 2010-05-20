@@ -18,6 +18,7 @@ namespace PcapDotNet.Core.Extensions
         /// </summary>
         /// <param name="livePacketDevice">The LivePacketDevice to look for a matching network interface for.</param>
         /// <returns>The network interface found according to the given device or null if none is found.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static NetworkInterface GetNetworkInterface(this LivePacketDevice livePacketDevice)
         {
             if (livePacketDevice == null) 
