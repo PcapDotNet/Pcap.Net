@@ -41,7 +41,7 @@ namespace PcapDotNet.Packets.Transport
         /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
         /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
         /// <returns>On success - the complex option read. On failure - null.</returns>
-        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        Option IOptionComplexFactory.CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             uint connectionCount;
             if (!TryRead(out connectionCount, buffer, ref offset, valueLength))

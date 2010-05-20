@@ -106,7 +106,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The hash code of the partial order service profile option is the hash code of the option type xored with a combination of the IsStart and IsEnd values.
         /// </summary>
-       public override int GetHashCode()
+        public override int GetHashCode()
         {
             return base.GetHashCode() ^ ((IsStart ? 1 : 0) << 1) ^ (IsEnd ? 1 : 0);
         }
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.Transport
         /// <param name="offset">The offset to the first byte to read the buffer. Will be incremented by the number of bytes read.</param>
         /// <param name="valueLength">The number of bytes the option value should take according to the length field that was already read.</param>
         /// <returns>On success - the complex option read. On failure - null.</returns>
-        public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+        Option IOptionComplexFactory.CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
             if (valueLength != OptionValueLength)
                 return null;

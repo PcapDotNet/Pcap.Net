@@ -563,44 +563,6 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(layer.GetHashCode());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void IpV4OptionQuickStartCreateInstanceNullBufferTest()
-        {
-            int offset = 0;
-            Assert.IsNotNull(new IpV4OptionQuickStart().CreateInstance(null, ref offset, 0));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void IpV4OptionBasicSecurityCreateInstanceNullBufferTest()
-        {
-            int offset = 0;
-            Assert.IsNotNull(new IpV4OptionBasicSecurity().CreateInstance(null, ref offset, 0));
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void IpV4OptionLooseSourceRoutingCreateInstanceNullBufferTest()
-        {
-            int offset = 0;
-            Assert.IsNotNull(new IpV4OptionLooseSourceRouting().CreateInstance(null, ref offset, 0));
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void IpV4OptionCreateInstanceBadValueLengthTest()
-        {
-            int offset = 0;
-            Assert.IsNull(new IpV4OptionQuickStart().CreateInstance(new byte[0], ref offset, 0));
-            Assert.IsNull(new IpV4OptionTraceRoute().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new IpV4OptionRecordRoute().CreateInstance(new byte[0], ref offset, 0));
-            Assert.IsNull(new IpV4OptionRouterAlert().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new IpV4OptionStreamIdentifier().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new IpV4OptionStrictSourceRouting().CreateInstance(new byte[0], ref offset, 0));
-        }
-
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
         {
             return Packet.FromHexadecimalString(hexString, DateTime.MinValue, dataLinkKind);

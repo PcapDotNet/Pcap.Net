@@ -75,7 +75,7 @@ namespace PcapDotNet.Packets.IpV4
         [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.InternetTimestamp)]
         internal class IpV4OptionTimestampFactory : IOptionComplexFactory
         {
-            public Option CreateInstance(byte[] buffer, ref int offset, byte valueLength)
+            Option IOptionComplexFactory.CreateInstance(byte[] buffer, ref int offset, byte valueLength)
             {
                 if (valueLength < OptionValueMinimumLength || valueLength % 4 != 2)
                     return null;
