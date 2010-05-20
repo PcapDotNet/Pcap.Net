@@ -95,6 +95,20 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.Payload; }
         }
 
+        public Datagram Trailer
+        {
+            get
+            {
+                Datagram payloadByEtherType = PayloadByEtherType;
+                if (payloadByEtherType == null)
+                    return null;
+
+                int payloadLength = PayloadByEtherType.Length;
+                int fcs = Length >= 68 ? 4 : 0;
+                return new Datagram(Buffer, HeaderLength + payloadLength, Math.Max(0, Length - HeaderLength - payloadLength - fcs));
+            }
+        }
+
         /// <summary>
         /// The Ethernet payload as an IPv4 datagram.
         /// </summary>
@@ -131,7 +145,8 @@ namespace PcapDotNet.Packets.Ethernet
             if (Length < HeaderLength)
                 return false;
 
-            return PayloadDatagrams.Get(EtherType).IsValid;
+            Datagram payloadByEtherType = PayloadByEtherType;
+            return payloadByEtherType == null ? true : payloadByEtherType.IsValid;
         }
 
         private EthernetPayloadDatagrams PayloadDatagrams
@@ -143,6 +158,11 @@ namespace PcapDotNet.Packets.Ethernet
                                                                                                                  Length - HeaderLength)
                                                                                                   : null));
             }
+        }
+
+        private Datagram PayloadByEtherType
+        {
+            get { return PayloadDatagrams.Get(EtherType); }
         }
 
         private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");

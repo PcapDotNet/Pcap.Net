@@ -196,7 +196,7 @@ namespace PcapDotNet.Packets
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
         /// <returns>The value converted from the read bytes according to the endianity.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ushort")]
-        protected ushort ReadUShort(int offset, Endianity endianity)
+        internal ushort ReadUShort(int offset, Endianity endianity)
         {
             return Buffer.ReadUShort(StartOffset + offset, endianity);
         }

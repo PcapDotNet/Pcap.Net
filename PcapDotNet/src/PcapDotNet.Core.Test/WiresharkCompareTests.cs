@@ -90,6 +90,14 @@ namespace PcapDotNet.Core.Test
             //ComparePacketsToWireshark(new[] { packet });
         }
 
+        [TestMethod]
+        public void CompareEthernetTrailerToWiresharkTest()
+        {
+            const string PacketString = "001120cf0900000c29566988080045000029627b00008006de80c0a8640bc0a81477a42cc03bdd3c481c6cfcd72050104278a5a90000000e01bf0101";
+            Packet packet = Packet.FromHexadecimalString(PacketString, DateTime.Now, DataLinkKind.Ethernet);
+            ComparePacketsToWireshark(packet);
+        }
+
         private enum PacketType
         {
             Ethernet,
@@ -169,11 +177,17 @@ namespace PcapDotNet.Core.Test
                 yield return CreateRandomPacket(random);
         }
 
+        private static void ComparePacketsToWireshark(params Packet[] packets)
+        {
+            ComparePacketsToWireshark((IEnumerable<Packet>)packets);
+        }
+
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
         {
             string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextByte() + ".pcap";
-//            const bool isRetry = true;
-            const bool IsRetry = false;
+            const bool IsRetry 
+//                = true;
+                = false;
 #pragma warning disable 162
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
@@ -183,7 +197,7 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte RetryNumber = 55;
+                const byte RetryNumber = 244;
                 pcapFilename = Path.GetTempPath() + "temp." + RetryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -397,6 +411,10 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "eth.trailer":
+                        if (ethernetDatagram.Trailer != null)
+                            field.AssertValue(ethernetDatagram.Trailer);
+                        break;
+
                     case "":
                         break;
 

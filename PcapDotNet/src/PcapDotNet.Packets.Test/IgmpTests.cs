@@ -254,19 +254,26 @@ namespace PcapDotNet.Packets.Test
                                                                 MaxResponseTime = TimeSpan.FromSeconds(1),
                                                                 QueryInterval = TimeSpan.FromSeconds(1),
                                                             });
-            buffer = new byte[queryVersion3.Length + 1];
+            Assert.IsTrue(queryVersion3.IsValid, "IsValid");
+            buffer = new byte[queryVersion3.Length + 2];
             queryVersion3.Buffer.BlockCopy(0, buffer, 0, queryVersion3.Length);
+            buffer[EthernetDatagram.HeaderLength + 3] += 2;
+            buffer[EthernetDatagram.HeaderLength + 11] -= 2;
             Packet bigQueryVersion3 = new Packet(buffer, queryVersion3.Timestamp, queryVersion3.DataLink);
             Assert.IsTrue(bigQueryVersion3.Ethernet.IpV4.Igmp.IsChecksumCorrect);
-            Assert.IsFalse(bigQueryVersion3.IsValid);
+            Assert.IsTrue(bigQueryVersion3.Ethernet.IpV4.IsHeaderChecksumCorrect, "IpV4.IsHeaderChecksumCorrect");
+            Assert.IsFalse(bigQueryVersion3.IsValid, "bigQueryVersion3.IsValid");
 
             // Big report version 1
             Packet reportVersion1 = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
 
-            buffer = new byte[reportVersion1.Length + 1];
+            buffer = new byte[reportVersion1.Length + 2];
             reportVersion1.Buffer.BlockCopy(0, buffer, 0, reportVersion1.Length);
+            buffer[EthernetDatagram.HeaderLength + 3] += 2;
+            buffer[EthernetDatagram.HeaderLength + 11] -= 2;
             Packet bigReportVersion1 = new Packet(buffer, reportVersion1.Timestamp, reportVersion1.DataLink);
             Assert.IsTrue(bigReportVersion1.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(bigReportVersion1.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(bigReportVersion1.IsValid);
 
             // Non zero max response code for report version 1
@@ -276,6 +283,7 @@ namespace PcapDotNet.Packets.Test
             buffer.Write(EthernetDatagram.HeaderLength + IpV4Datagram.HeaderMinimumLength + 2, (ushort)0xedfe, Endianity.Big);
             Packet nonZeroMaxResponseCodeReportVersion1 = new Packet(buffer, reportVersion1.Timestamp, reportVersion1.DataLink);
             Assert.IsTrue(nonZeroMaxResponseCodeReportVersion1.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(nonZeroMaxResponseCodeReportVersion1.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(nonZeroMaxResponseCodeReportVersion1.IsValid);
 
             // Big report version 2
@@ -285,10 +293,13 @@ namespace PcapDotNet.Packets.Test
                                                                  MaxResponseTime = TimeSpan.FromSeconds(1)
                                                              });
 
-            buffer = new byte[reportVersion2.Length + 1];
+            buffer = new byte[reportVersion2.Length + 2];
             reportVersion2.Buffer.BlockCopy(0, buffer, 0, reportVersion2.Length);
+            buffer[EthernetDatagram.HeaderLength + 3] += 2;
+            buffer[EthernetDatagram.HeaderLength + 11] -= 2;
             Packet bigReportVersion2 = new Packet(buffer, reportVersion2.Timestamp, reportVersion2.DataLink);
             Assert.IsTrue(bigReportVersion2.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(bigReportVersion2.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(bigReportVersion2.IsValid);
 
             // non zero max response code report version 3
@@ -309,13 +320,17 @@ namespace PcapDotNet.Packets.Test
             buffer.Write(EthernetDatagram.HeaderLength + IpV4Datagram.HeaderMinimumLength + 2, (ushort)0xdbfd, Endianity.Big);
             Packet nonZeroMaxResponseCodeReportVersion3 = new Packet(buffer, reportVersion3.Timestamp, reportVersion3.DataLink);
             Assert.IsTrue(nonZeroMaxResponseCodeReportVersion3.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(nonZeroMaxResponseCodeReportVersion3.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(nonZeroMaxResponseCodeReportVersion3.IsValid);
 
             // big report version 3
-            buffer = new byte[reportVersion3.Length + 1];
+            buffer = new byte[reportVersion3.Length + 2];
             reportVersion3.Buffer.BlockCopy(0, buffer, 0, reportVersion3.Length);
+            buffer[EthernetDatagram.HeaderLength + 3] += 2;
+            buffer[EthernetDatagram.HeaderLength + 11] -= 2;
             Packet bigReportVersion3 = new Packet(buffer, reportVersion3.Timestamp, reportVersion3.DataLink);
             Assert.IsTrue(bigReportVersion3.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(bigReportVersion3.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(bigReportVersion3.IsValid);
 
             // invalid group record report version 3
@@ -325,6 +340,7 @@ namespace PcapDotNet.Packets.Test
             buffer.Write(EthernetDatagram.HeaderLength + IpV4Datagram.HeaderMinimumLength + 2, (ushort)0xdbfd, Endianity.Big);
             Packet invalidGroupRecordReportVersion3 = new Packet(buffer, reportVersion3.Timestamp, reportVersion3.DataLink);
             Assert.IsTrue(invalidGroupRecordReportVersion3.Ethernet.IpV4.Igmp.IsChecksumCorrect);
+            Assert.IsTrue(invalidGroupRecordReportVersion3.Ethernet.IpV4.IsHeaderChecksumCorrect);
             Assert.IsFalse(invalidGroupRecordReportVersion3.IsValid);
         }
 

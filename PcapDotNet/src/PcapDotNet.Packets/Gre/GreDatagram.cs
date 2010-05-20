@@ -352,11 +352,12 @@ namespace PcapDotNet.Packets.Gre
         /// <returns>true iff the datagram is valid.</returns>
         protected override bool CalculateIsValid()
         {
+            Datagram payloadByProtocolType = PayloadDatagrams.Get(ProtocolType);
             return (Length >= HeaderMinimumLength && Length >= HeaderLength &&
                     IsValidRouting && FutureUseBits == 0 &&
                     (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
                     (!ChecksumPresent || IsChecksumCorrect) &&
-                    PayloadDatagrams.Get(ProtocolType).IsValid);
+                    (payloadByProtocolType == null || payloadByProtocolType.IsValid));
         }
 
         internal GreDatagram(byte[] buffer, int offset, int length)
