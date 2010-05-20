@@ -11,13 +11,6 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class BerkeleyPacketFilterTests
     {
-        public BerkeleyPacketFilterTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.
@@ -99,23 +92,23 @@ namespace PcapDotNet.Core.Test
         {
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
-            const int snapshotLength = 500;
+            const int SnapshotLength = 500;
 
             Random random = new Random();
 
-            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, snapshotLength, DataLinkKind.Ethernet))
+            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src " + SourceMac + " and ether dst " + DestinationMac, SnapshotLength, DataLinkKind.Ethernet))
             {
-                Assert.IsTrue(filter.Test(random.NextEthernetPacket(snapshotLength / 2, SourceMac, DestinationMac)));
-                Assert.IsTrue(filter.Test(random.NextEthernetPacket(snapshotLength - 1, SourceMac, DestinationMac)));
-                Assert.IsTrue(filter.Test(random.NextEthernetPacket(snapshotLength, SourceMac, DestinationMac)));
-                Assert.IsTrue(filter.Test(random.NextEthernetPacket(snapshotLength + 1, SourceMac, DestinationMac)));
-                Assert.IsTrue(filter.Test(random.NextEthernetPacket(snapshotLength * 2, SourceMac, DestinationMac)));
+                Assert.IsTrue(filter.Test(random.NextEthernetPacket(SnapshotLength / 2, SourceMac, DestinationMac)));
+                Assert.IsTrue(filter.Test(random.NextEthernetPacket(SnapshotLength - 1, SourceMac, DestinationMac)));
+                Assert.IsTrue(filter.Test(random.NextEthernetPacket(SnapshotLength, SourceMac, DestinationMac)));
+                Assert.IsTrue(filter.Test(random.NextEthernetPacket(SnapshotLength + 1, SourceMac, DestinationMac)));
+                Assert.IsTrue(filter.Test(random.NextEthernetPacket(SnapshotLength * 2, SourceMac, DestinationMac)));
 
-                Assert.IsFalse(filter.Test(random.NextEthernetPacket(snapshotLength / 2, DestinationMac, SourceMac)));
+                Assert.IsFalse(filter.Test(random.NextEthernetPacket(SnapshotLength / 2, DestinationMac, SourceMac)));
 
                 int actualSnapshotLength;
-                Assert.IsTrue(filter.Test(out actualSnapshotLength, random.NextEthernetPacket(snapshotLength / 2, SourceMac, DestinationMac)));
-                Assert.AreEqual(snapshotLength, actualSnapshotLength);
+                Assert.IsTrue(filter.Test(out actualSnapshotLength, random.NextEthernetPacket(SnapshotLength / 2, SourceMac, DestinationMac)));
+                Assert.AreEqual(SnapshotLength, actualSnapshotLength);
             }
         }
 

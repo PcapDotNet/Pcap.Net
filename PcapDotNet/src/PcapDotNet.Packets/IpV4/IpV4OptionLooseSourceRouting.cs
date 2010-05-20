@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace PcapDotNet.Base
 {

@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
 
@@ -11,18 +10,11 @@ namespace PcapDotNet.Base.Test
     [TestClass]
     public class UInt24Tests
     {
-        public UInt24Tests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -55,11 +47,13 @@ namespace PcapDotNet.Base.Test
                 UInt24 value = random.NextUInt24();
 
                 Assert.AreEqual(value, value);
+                // ReSharper disable EqualExpressionComparison
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
+                // ReSharper restore EqualExpressionComparison
                 Assert.AreNotEqual(value, "string");
-                Assert.AreNotEqual(value, (UInt24)(((value & 0x00FFFF) + 1)| value & 0xFF0000));
-                Assert.AreNotEqual(value, (UInt24)((value & 0x00FFFF)| ((value & 0xFF0000) + 0x010000)));
+                Assert.AreNotEqual(value, (UInt24)(((value & 0x00FFFF) + 1) | value & 0xFF0000));
+                Assert.AreNotEqual(value, (UInt24)((value & 0x00FFFF) | ((value & 0xFF0000) + 0x010000)));
                 Assert.IsNotNull(value.GetHashCode());
                 Assert.AreEqual(((int)value).ToString(), value.ToString());
             }

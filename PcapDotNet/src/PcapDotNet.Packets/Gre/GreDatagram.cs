@@ -380,14 +380,14 @@ namespace PcapDotNet.Packets.Gre
             ReadOnlyCollection<GreSourceRouteEntry> routing, ushort? routingOffset, bool strictSourceRoute)
         {
             buffer.Write(offset + Offset.ChecksumPresent,
-                         (byte)((checksumPresent ? Mask.ChecksumPresent : (byte)0) |
-                                (routing != null ? Mask.RoutingPresent : (byte)0) |
-                                (key != null ? Mask.KeyPresent : (byte)0) |
-                                (sequenceNumber != null ? Mask.SequenceNumberPresent : (byte)0) |
-                                (strictSourceRoute ? Mask.StrictSourceRoute : (byte)0) |
+                         (byte)((checksumPresent ? Mask.ChecksumPresent : 0) |
+                                (routing != null ? Mask.RoutingPresent : 0) |
+                                (key != null ? Mask.KeyPresent : 0) |
+                                (sequenceNumber != null ? Mask.SequenceNumberPresent : 0) |
+                                (strictSourceRoute ? Mask.StrictSourceRoute : 0) |
                                 (recursionControl & Mask.RecursionControl)));
 
-            buffer.Write(offset + Offset.FutureUseBits, (byte)((acknowledgmentSequenceNumber != null ? Mask.AcknowledgmentSequenceNumberPresent : (byte)0) |
+            buffer.Write(offset + Offset.FutureUseBits, (byte)((acknowledgmentSequenceNumber != null ? Mask.AcknowledgmentSequenceNumberPresent : 0) |
                                                        ((flags << Shift.FutureUseBits) & Mask.FutureUseBits) |
                                                        ((byte)version & Mask.Version)));
 
@@ -515,13 +515,10 @@ namespace PcapDotNet.Packets.Gre
         {
             get
             {
-                if (_payloadDatagrams == null)
-                {
-                    _payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
-                                                                         ? new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength)
-                                                                         : null);
-                }
-                return _payloadDatagrams;
+                return _payloadDatagrams ?? (_payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
+                                                                                                  ? new Datagram(Buffer, StartOffset + HeaderLength,
+                                                                                                                 Length - HeaderLength)
+                                                                                                  : null));
             }
         }
         

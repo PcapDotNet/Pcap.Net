@@ -31,18 +31,11 @@ namespace PcapDotNet.Core.Test
         private const string WiresharkDiretory = @"C:\Program Files\Wireshark\";
         private const string WiresharkTsharkPath = WiresharkDiretory + @"tshark.exe";
 
-        public WiresharkCompareTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -82,8 +75,8 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void CompareTimestampPacketsToWiresharkTest()
         {
-            const long ticks = 633737178954260865;
-            DateTime timestamp = new DateTime(ticks).ToUniversalTime().ToLocalTime();
+            const long Ticks = 633737178954260865;
+            DateTime timestamp = new DateTime(Ticks).ToUniversalTime().ToLocalTime();
 
             // Create packet
             Packet packet = new Packet(new byte[14], timestamp, DataLinkKind.Ethernet);
@@ -180,19 +173,25 @@ namespace PcapDotNet.Core.Test
         {
             string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextByte() + ".pcap";
 //            const bool isRetry = true;
-            const bool isRetry = false;
-            if (!isRetry)
+            const bool IsRetry = false;
+#pragma warning disable 162
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
+            if (!IsRetry)
             {
                 PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
             }
             else
             {
-                const byte retryNumber = 55;
-                pcapFilename = Path.GetTempPath() + "temp." + retryNumber + ".pcap";
+                const byte RetryNumber = 55;
+                pcapFilename = Path.GetTempPath() + "temp." + RetryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
                 packets = packetsList;
             }
+// ReSharper restore HeuristicUnreachableCode
+// ReSharper restore ConditionIsAlwaysTrueOrFalse
+#pragma warning restore 162
 
             // Create pdml file
             string documentFilename = pcapFilename + ".pdml";

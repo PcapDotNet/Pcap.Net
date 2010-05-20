@@ -78,7 +78,7 @@ namespace PcapDotNet.Base
                 throw new NotSupportedException("Only " + NumberStyles.HexNumber + " style is supported");
 
             ulong mostSignficantLong = 0;
-            ulong leastSignficantLong = 0;
+            ulong leastSignficantLong;
             if (value.Length > 16)
             {
                 leastSignficantLong = ulong.Parse(value.Substring(value.Length - 16, 16), style, provider);

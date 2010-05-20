@@ -4,7 +4,7 @@ namespace PcapDotNet.Packets
     /// A factory interface for an unknown option.
     /// </summary>
     /// <typeparam name="TOptionType">The option type enum type.</typeparam>
-    public interface IOptionUnknownFactory<TOptionType>
+    public interface IOptionUnknownFactory<in TOptionType>
     {
         /// <summary>
         /// Creates an unknown option from its type and by reading a buffer for its value.

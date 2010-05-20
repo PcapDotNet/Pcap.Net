@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Base.Test
 {
@@ -9,20 +8,15 @@ namespace PcapDotNet.Base.Test
     /// Summary description for IEnumerableExtensionsTests
     /// </summary>
     [TestClass]
+// ReSharper disable InconsistentNaming
     public class IEnumerableExtensionsTests
+// ReSharper restore InconsistentNaming
     {
-        public IEnumerableExtensionsTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //

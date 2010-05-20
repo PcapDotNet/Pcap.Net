@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Icmp

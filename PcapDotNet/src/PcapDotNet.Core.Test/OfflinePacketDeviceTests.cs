@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
@@ -16,18 +14,11 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class OfflinePacketDeviceTests
     {
-        public OfflinePacketDeviceTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -156,7 +147,7 @@ namespace PcapDotNet.Core.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void OpenInvalidFileTest()
         {
-            using (PacketCommunicator communicator = new OfflinePacketDevice("myinvalidfile").Open())
+            using (new OfflinePacketDevice("myinvalidfile").Open())
             {
             }
         }
@@ -256,7 +247,7 @@ namespace PcapDotNet.Core.Test
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)
         {
-            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
+            string testDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
                                      ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop;
 
             const string SourceMac = "11:22:33:44:55:66";
@@ -275,8 +266,8 @@ namespace PcapDotNet.Core.Test
                 int numPacketsGot;
                 PacketCommunicatorReceiveResult result = communicator.ReceiveSomePackets(out numPacketsGot, numPacketsToGet, handler.Handle);
                 Assert.AreEqual(expectedResult, result);
-                Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + TestDescription);
-                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + TestDescription);
+                Assert.AreEqual(expectedNumPackets, numPacketsGot, "NumPacketsGot. Test: " + testDescription);
+                Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled, "NumPacketsHandled. Test: " + testDescription);
             }
         }
 
@@ -284,7 +275,7 @@ namespace PcapDotNet.Core.Test
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)
         {
-            string TestDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
+            string testDescription = "NumPacketsToSend=" + numPacketsToSend + ". NumPacketsToGet=" + numPacketsToGet +
                          ". NumPacketsToBreakLoop=" + numPacketsToBreakLoop;
 
             const string SourceMac = "11:22:33:44:55:66";
@@ -312,7 +303,7 @@ namespace PcapDotNet.Core.Test
                     thread.Abort();
                 }
 
-                Assert.AreEqual(expectedResult, result, TestDescription);
+                Assert.AreEqual(expectedResult, result, testDescription);
                 Assert.AreEqual(expectedNumPackets, handler.NumPacketsHandled);
             }
         }
@@ -383,6 +374,6 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static Random _random = new Random();
+        private static readonly Random _random = new Random();
     }
 }

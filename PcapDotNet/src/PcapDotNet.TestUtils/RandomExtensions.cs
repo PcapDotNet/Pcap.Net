@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.TestUtils
@@ -121,7 +120,7 @@ namespace PcapDotNet.TestUtils
             if (enumValues.Count == 0)
                 throw new ArgumentException("T is an enum with no values", "T");
 
-            return (T)random.NextValue(enumValues);
+            return random.NextValue(enumValues);
         }
 
         public static T NextEnum<T>(this Random random, params T[] valuesToIgnore)

@@ -13,18 +13,11 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class PacketSendQueueTests
     {
-        public PacketSendQueueTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -153,6 +146,6 @@ namespace PcapDotNet.Core.Test
             return queue;
         }
 
-        private static Random _random = new Random();
+        private static readonly Random _random = new Random();
     }
 }

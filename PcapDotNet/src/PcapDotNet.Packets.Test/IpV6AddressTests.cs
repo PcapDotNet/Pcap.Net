@@ -1,6 +1,5 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 
@@ -12,13 +11,6 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class IpV6AddressTests
     {
-        public IpV6AddressTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.

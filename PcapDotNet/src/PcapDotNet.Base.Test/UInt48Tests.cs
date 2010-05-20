@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
 
@@ -14,18 +11,11 @@ namespace PcapDotNet.Base.Test
     [TestClass]
     public class UInt48Tests
     {
-        public UInt48Tests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -97,8 +87,10 @@ namespace PcapDotNet.Base.Test
 
                 Assert.AreEqual(value, value);
                 Assert.AreNotEqual(value, "1");
+                // ReSharper disable EqualExpressionComparison
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
+                // ReSharper restore EqualExpressionComparison
                 Assert.IsNotNull(value.GetHashCode());
 
                 if (value < uint.MaxValue)

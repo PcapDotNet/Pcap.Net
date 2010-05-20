@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
-using PcapDotNet.Packets.Icmp;
-using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
 {
@@ -15,18 +12,11 @@ namespace PcapDotNet.Core.Test
     [TestClass]
     public class PacketDumpFileTests
     {
-        public PacketDumpFileTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -56,16 +46,16 @@ namespace PcapDotNet.Core.Test
             string filename = Path.GetTempPath() + @"dump.pcap";
 
             Packet expectedPacket = PacketBuilder.Build(DateTime.Now,
-                                                         new EthernetLayer
-                                                             {
-                                                                 Source = new MacAddress(1),
-                                                                 Destination = new MacAddress(2),
-                                                                 EtherType = EthernetType.QInQ,
-                                                             },
-                                                         new PayloadLayer
-                                                             {
-                                                                 Data = new Datagram(new byte[] {1, 2, 3})
-                                                             });
+                                                        new EthernetLayer
+                                                        {
+                                                            Source = new MacAddress(1),
+                                                            Destination = new MacAddress(2),
+                                                            EtherType = EthernetType.QInQ,
+                                                        },
+                                                        new PayloadLayer
+                                                        {
+                                                            Data = new Datagram(new byte[] {1, 2, 3})
+                                                        });
             PacketDumpFile.Dump(filename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength,
                                 new[] {expectedPacket});
 

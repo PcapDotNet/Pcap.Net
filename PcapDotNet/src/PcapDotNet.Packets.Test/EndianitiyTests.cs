@@ -9,18 +9,11 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class EndianitiyTests
     {
-        public EndianitiyTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -119,18 +112,18 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void UIntTest()
         {
-            const uint value = 0x01020304;
+            const uint Value = 0x01020304;
             byte[] buffer = new byte[sizeof(uint)];
 
-            buffer.Write(0, value, Endianity.Big);
-            Assert.AreEqual(value, buffer.ReadUInt(0, Endianity.Big));
+            buffer.Write(0, Value, Endianity.Big);
+            Assert.AreEqual(Value, buffer.ReadUInt(0, Endianity.Big));
             Assert.AreEqual(0x01, buffer[0]);
             Assert.AreEqual(0x02, buffer[1]);
             Assert.AreEqual(0x03, buffer[2]);
             Assert.AreEqual(0x04, buffer[3]);
 
-            buffer.Write(0, value, Endianity.Small);
-            Assert.AreEqual(value, buffer.ReadUInt(0, Endianity.Small));
+            buffer.Write(0, Value, Endianity.Small);
+            Assert.AreEqual(Value, buffer.ReadUInt(0, Endianity.Small));
             Assert.AreEqual(0x04, buffer[0]);
             Assert.AreEqual(0x03, buffer[1]);
             Assert.AreEqual(0x02, buffer[2]);

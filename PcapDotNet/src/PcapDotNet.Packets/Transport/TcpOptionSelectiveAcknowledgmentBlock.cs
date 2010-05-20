@@ -1,9 +1,11 @@
+using System;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// Represents a block to ack when using the selective ack option.
     /// </summary>
-    public struct TcpOptionSelectiveAcknowledgmentBlock
+    public struct TcpOptionSelectiveAcknowledgmentBlock : IEquatable<TcpOptionSelectiveAcknowledgmentBlock>
     {
         /// <summary>
         /// The number of bytes this struct take.

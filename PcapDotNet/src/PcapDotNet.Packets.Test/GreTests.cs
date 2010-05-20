@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
@@ -19,13 +17,6 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class GreTests
     {
-        public GreTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.

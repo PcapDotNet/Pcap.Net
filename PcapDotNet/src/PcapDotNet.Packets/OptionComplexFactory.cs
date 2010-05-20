@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using PcapDotNet.Base;
@@ -25,7 +24,7 @@ namespace PcapDotNet.Packets
 
             IOptionComplexFactory prototype;
             if (!_complexOptions.TryGetValue(optionType, out prototype))
-                return UnknownFactoryOptionPrototype.CreateInstance(optionType, buffer, ref offset, optionValueLength);
+                return _unknownFactoryOptionPrototype.CreateInstance(optionType, buffer, ref offset, optionValueLength);
 
             return prototype.CreateInstance(buffer, ref offset, optionValueLength);
         }
@@ -72,6 +71,6 @@ namespace PcapDotNet.Packets
         }
 
         private static readonly Dictionary<TOptionType, IOptionComplexFactory> _complexOptions = InitializeComplexOptions();
-        private static readonly IOptionUnknownFactory<TOptionType> UnknownFactoryOptionPrototype = InitializeUnknownOptionPrototype();
+        private static readonly IOptionUnknownFactory<TOptionType> _unknownFactoryOptionPrototype = InitializeUnknownOptionPrototype();
     }
 }

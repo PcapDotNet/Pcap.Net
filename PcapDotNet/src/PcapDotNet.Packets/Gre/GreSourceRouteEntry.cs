@@ -133,7 +133,7 @@ namespace PcapDotNet.Packets.Gre
         {
             buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
             buffer.Write(offset + Offset.SreOffset, PayloadOffset);
-            buffer.Write(offset + Offset.SreLength, (byte)PayloadLength);
+            buffer.Write(offset + Offset.SreLength, PayloadLength);
             WritePayload(buffer, offset + HeaderLength);
             offset += Length;
         }

@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
@@ -17,18 +14,11 @@ namespace PcapDotNet.Packets.Test
     [TestClass]
     public class IpV4Tests
     {
-        public IpV4Tests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext{ get; set;}
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -90,13 +80,13 @@ namespace PcapDotNet.Packets.Test
         {
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
-            const EthernetType ethernetType = EthernetType.IpV4;
+            const EthernetType EthernetType = EthernetType.IpV4;
 
             EthernetLayer ethernetLayer = new EthernetLayer
                                               {
                                                   Source = ethernetSource,
                                                   Destination = ethernetDestination,
-                                                  EtherType = ethernetType
+                                                  EtherType = EthernetType
                                               };
 
             Random random = new Random();
@@ -237,7 +227,7 @@ namespace PcapDotNet.Packets.Test
         public void IpV4OptionRoutePointedAddressIndexErrorTest()
         {
             Random random = new Random();
-            IpV4Option option = new IpV4OptionRecordRoute(random.NextByte(IpV4OptionRecordRoute.PointedAddressIndexMaxValue + 1, byte.MaxValue + 1));
+            IpV4Option option = new IpV4OptionRecordRoute(random.NextByte(IpV4OptionRoute.PointedAddressIndexMaxValue + 1, byte.MaxValue + 1));
             Assert.IsNotNull(option);
             Assert.Fail();
         }
@@ -327,8 +317,10 @@ namespace PcapDotNet.Packets.Test
             IpV4TimeOfDay timeSinceMidnight = new IpV4TimeOfDay(timeOfDay);
             Assert.AreEqual(timeOfDay, timeSinceMidnight.TimeSinceMidnightUniversalTime);
             Assert.AreEqual<object>(timeSinceMidnight, timeSinceMidnight);
+            // ReSharper disable EqualExpressionComparison
             Assert.IsTrue(timeSinceMidnight == timeSinceMidnight);
             Assert.IsFalse(timeSinceMidnight != timeSinceMidnight);
+            // ReSharper restore EqualExpressionComparison
         }
 
         [TestMethod]

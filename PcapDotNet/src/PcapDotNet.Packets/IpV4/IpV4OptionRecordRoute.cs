@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -52,10 +51,7 @@ namespace PcapDotNet.Core.Test
 
                     StringBuilder quickStartWireshark = new StringBuilder("Quick-Start: ");
 
-                    if (quickStart.Function == IpV4OptionQuickStartFunction.RateRequest)
-                        quickStartWireshark.Append("Rate request");
-                    else
-                        quickStartWireshark.Append("Rate report");
+                    quickStartWireshark.Append(quickStart.Function == IpV4OptionQuickStartFunction.RateRequest ? "Rate request" : "Rate report");
 
                     quickStartWireshark.Append(", ");
 
@@ -146,7 +142,9 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
+// ReSharper disable RedundantCaseLabel
                 case IpV4OptionType.BasicSecurity:
+// ReSharper restore RedundantCaseLabel
                 default:
                     if (typeof(IpV4OptionType).GetEnumValues<IpV4OptionType>().Contains(option.OptionType))
                         throw new InvalidOperationException("Invalid option type " + option.OptionType);
