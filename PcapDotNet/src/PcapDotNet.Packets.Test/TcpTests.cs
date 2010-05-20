@@ -180,19 +180,5 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(new TcpOptionMd5Signature(null));
             Assert.Fail();
         }
-
-        [TestMethod]
-        public void TcpOptionCreateInstanceBadValueLengthTest()
-        {
-            int offset = 0;
-            Assert.IsNull(new TcpOptionPartialOrderServiceProfile().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionTimestamp().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionAlternateChecksumRequest().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionConnectionCount().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionConnectionCountEcho().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionEcho().CreateInstance(new byte[0], ref offset, 123));
-            Assert.IsNull(new TcpOptionSelectiveAcknowledgment().CreateInstance(new byte[0], ref offset, 1));
-            Assert.IsNull(new TcpOptionWindowScale().CreateInstance(new byte[0], ref offset, 123));
-        }
     }
 }

@@ -106,12 +106,9 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="offset">The offset in the buffer to start reading the value from.</param>
         /// <param name="valueLength">The number of bytes that the value should be.</param>
         /// <returns>True iff the read was successful.</returns>
-        protected static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,
+        internal static bool TryRead(out IpV4Address[] addresses, out byte pointedAddressIndex,
                                       byte[] buffer, ref int offset, byte valueLength)
         {
-            if (buffer == null) 
-                throw new ArgumentNullException("buffer");
-
             addresses = null;
             pointedAddressIndex = 0;
 
