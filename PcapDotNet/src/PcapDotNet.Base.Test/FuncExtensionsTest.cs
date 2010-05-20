@@ -1,19 +1,15 @@
-﻿using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.TestUtils;
 
-namespace PcapDotNet.Core.Test
+namespace PcapDotNet.Base.Test
 {
     /// <summary>
-    /// Summary description for PcapLibTests
+    /// Summary description for FuncExtensionsTest
     /// </summary>
     [TestClass]
-    public class PcapLibTests
+    public class FuncExtensionsTest
     {
-        public PcapLibTests()
+        public FuncExtensionsTest()
         {
             //
             // TODO: Add constructor logic here
@@ -24,7 +20,7 @@ namespace PcapDotNet.Core.Test
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext{ get; set;}
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -49,15 +45,11 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void VersionTest()
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void GenerateArrayNullTest()
         {
-            const string VersionNumberRegex = @"[0-9]+\.[0-9]+(?:\.| beta)[0-9]+(?:\.[0-9]+)?";
-            const string LibpcapVersionRegex = @"(?:[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?)|(?:[0-9]\.[0-9] branch [0-9]_[0-9]_rel0b \([0-9]+\))";
-            // WinPcap version 4.1.1 (packet.dll version 4.1.0.1753), based on libpcap version 1.0 branch 1_0_rel0b (20091008)
-            // WinPcap version 4.1 beta5 (packet.dll version 4.1.0.1452), based on libpcap version 1.0.0
-            const string VersionRegex = "^WinPcap version " + VersionNumberRegex + @" \(packet\.dll version " + VersionNumberRegex + @"\), based on libpcap version " + LibpcapVersionRegex + "$";
-            string version = PcapLibrary.Version;
-            MoreAssert.IsMatch(VersionRegex, version);
+            Assert.IsNotNull(FuncExtensions.GenerateArray<int>(null, 100));
+            Assert.Fail();
         }
     }
 }

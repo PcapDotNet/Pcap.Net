@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BerkeleyPacketFilterTests.cs" />
+    <Compile Include="LivePacketDeviceExtensionsTests.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MarshalingServicesTests.cs" />
     <Compile Include="MoreIpV4Option.cs" />

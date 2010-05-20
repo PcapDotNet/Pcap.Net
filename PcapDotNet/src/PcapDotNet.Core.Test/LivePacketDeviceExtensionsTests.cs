@@ -1,17 +1,17 @@
-using System;
-using System.Linq;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Core.Extensions;
 using PcapDotNet.TestUtils;
 
-namespace PcapDotNet.Base.Test
+namespace PcapDotNet.Core.Test
 {
     /// <summary>
-    /// Summary description for MoreIEnumerableTests
+    /// Summary description for LivePacketDeviceExtensionsTests
     /// </summary>
     [TestClass]
-    public class MoreIEnumerableTests
+    public class LivePacketDeviceExtensionsTests
     {
-        public MoreIEnumerableTests()
+        public LivePacketDeviceExtensionsTests()
         {
             //
             // TODO: Add constructor logic here
@@ -22,7 +22,7 @@ namespace PcapDotNet.Base.Test
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext{ get; set;}
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -47,35 +47,11 @@ namespace PcapDotNet.Base.Test
         #endregion
 
         [TestMethod]
-        public void SequenceToStringTest()
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void GetNetworkInterfaceNullTest()
         {
-            int[] sequence = new[]{1,2,3,4,5};
-
-            Assert.AreEqual("12345",sequence.SequenceToString());
-        }
-
-        [TestMethod]
-        public void SequenceGetHashCodeTest()
-        {
-            int[] sequence = new[]{1,2,3,4,5};
-
-            Assert.AreEqual(1.GetHashCode() ^ 2.GetHashCode() ^ 3.GetHashCode() ^ 4.GetHashCode() ^ 5.GetHashCode(),sequence.SequenceGetHashCode());
-        }
-
-        [TestMethod]
-        public void BytesSequenceGetHashCodeTest()
-        {
-            byte[] sequence = new byte[] { 1, 2, 3, 4, 5 };
-
-            Assert.AreEqual(1 ^ (2 << 8) ^ (3 << 16) ^ (4 << 24) ^ 5, sequence.BytesSequenceGetHashCode());
-        }
-
-        [TestMethod]
-        public void ConcatTest()
-        {
-            int[] sequence = new[] {1, 2, 3, 4, 5};
-
-            Assert.IsTrue(sequence.SequenceEqual(new[] {1,2,3}.Concat(4, 5)));
+            Assert.IsNotNull(LivePacketDeviceExtensions.GetNetworkInterface(null));
+            Assert.Fail();
         }
     }
 }

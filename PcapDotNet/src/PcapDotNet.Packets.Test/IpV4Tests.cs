@@ -132,6 +132,9 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreNotEqual(2, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsTrue(ipV4Layer.Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsFalse(ipV4Layer.Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
+                Assert.IsFalse(ipV4Layer.Fragmentation.Equals(0), "IP Fragmentation");
+                if (ipV4Layer.Fragmentation.Offset != 0)
+                    Assert.AreNotEqual(ipV4Layer.Fragmentation, IpV4Fragmentation.None, "IP Fragmentation");
                 Assert.AreEqual(ipV4Layer.Fragmentation.GetHashCode(), packet.Ethernet.IpV4.Fragmentation.GetHashCode(), "IP Fragmentation");
                 Assert.AreEqual(ipV4Layer.Fragmentation.Options, packet.Ethernet.IpV4.Fragmentation.Options, "IP Fragmentation");
                 Assert.AreEqual(ipV4Layer.Fragmentation.Offset, packet.Ethernet.IpV4.Fragmentation.Offset, "IP Fragmentation");
@@ -337,6 +340,7 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(timedAddress1, timedAddress2);
             Assert.IsTrue(timedAddress1 == timedAddress2);
             Assert.IsFalse(timedAddress1 != timedAddress2);
+            Assert.IsFalse(timedAddress1.Equals(0));
         }
 
         [TestMethod]

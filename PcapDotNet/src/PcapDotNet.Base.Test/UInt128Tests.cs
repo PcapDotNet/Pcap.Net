@@ -56,6 +56,8 @@ namespace PcapDotNet.Base.Test
 
                 Assert.AreEqual(value, value);
                 Assert.AreNotEqual(value, string.Empty);
+                Assert.AreNotEqual(value, UInt128.MaxValue);
+                Assert.AreNotEqual(value, UInt128.Zero);
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
                 Assert.IsNotNull(value.GetHashCode());
@@ -97,6 +99,14 @@ namespace PcapDotNet.Base.Test
                 UInt128 actualValue = value & andValue;
                 Assert.AreEqual(expectedValue, actualValue, i.ToString());
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void ParseNullTest()
+        {
+            Assert.IsNotNull(UInt128.Parse(null, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+            Assert.Fail();
         }
 
         [TestMethod]
