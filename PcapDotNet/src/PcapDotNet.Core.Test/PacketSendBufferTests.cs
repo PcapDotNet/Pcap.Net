@@ -69,6 +69,28 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void EnqueueNullTest()
+        {
+            using (PacketSendBuffer queue = new PacketSendBuffer(10))
+            {
+                queue.Enqueue(null);
+            }
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void TransmitNullTest()
+        {
+            using (PacketCommunicator communicator = LivePacketDeviceTests.OpenLiveDevice())
+            {
+                communicator.Transmit(null, false);
+            }
+            Assert.Fail();
+        }
+
         private static void TestTransmitQueueToLive(int numPacketsToSend, int packetSize, double secondsBetweenTimestamps, bool isSynced)
         {
             const string SourceMac = "11:22:33:44:55:66";
