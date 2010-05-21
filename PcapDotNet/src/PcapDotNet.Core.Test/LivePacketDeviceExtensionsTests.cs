@@ -45,5 +45,15 @@ namespace PcapDotNet.Core.Test
             Assert.IsNotNull(LivePacketDeviceExtensions.GetNetworkInterface(null));
             Assert.Fail();
         }
+        
+        [TestMethod]
+        public void GetMacAddressTest()
+        {
+            foreach (LivePacketDevice device in LivePacketDevice.AllLocalMachine)
+            {
+                Assert.IsNotNull(device.GetMacAddress());
+                Console.WriteLine(device.GetMacAddress());
+            }
+        }
     }
 }
