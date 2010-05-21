@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
@@ -88,6 +89,39 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual(sentPacket.Length, packet.Length);
                 MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void SendNullPacketTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SendPacket(null);
+            }
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void SetNullFilterTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetFilter(null as BerkeleyPacketFilter);
+            }
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void SetNullSamplingMethodTest()
+        {
+            using (PacketCommunicator communicator = OpenLiveDevice())
+            {
+                communicator.SetSamplingMethod(null);
+            }
+            Assert.Fail();
         }
 
         [TestMethod]

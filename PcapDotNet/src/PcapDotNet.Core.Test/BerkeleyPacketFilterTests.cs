@@ -112,6 +112,17 @@ namespace PcapDotNet.Core.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void TestNullTest()
+        {
+            using (BerkeleyPacketFilter filter = new BerkeleyPacketFilter("ether src 11:22:33:44:55:66", PacketDevice.DefaultSnapshotLength, DataLinkKind.Ethernet))
+            {
+                filter.Test(null);
+            }
+            Assert.Fail();
+        }
+
         private static void TestFilter(PacketCommunicator communicator, BerkeleyPacketFilter filter, Packet expectedPacket, Packet unexpectedPacket)
         {
             communicator.SetFilter(filter);

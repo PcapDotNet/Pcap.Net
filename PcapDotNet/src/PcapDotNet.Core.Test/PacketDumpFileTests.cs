@@ -68,38 +68,20 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-//        [TestMethod]
-//        public void Temp()
-//        {
-//            EthernetLayer ethernetLayer = new EthernetLayer
-//                                              {
-//                                                  Source = new MacAddress("00:01:02:03:04:05"),
-//                                                  Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
-//                                              };
-//
-//            IpV4Layer ipV4Layer = new IpV4Layer
-//                                      {
-//                                          Source = new IpV4Address("1.2.3.4"),
-//                                          Ttl = 128,
-//                                      };
-//
-//            IcmpEchoLayer icmpLayer = new IcmpEchoLayer();
-//
-//            PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV4Layer, icmpLayer);
-//
-//            List<Packet> packets = new List<Packet>();
-//
-//            for (int i = 0; i != 100; ++i)
-//            {
-//                ipV4Layer.Destination = new IpV4Address("2.3.4." + i);
-//                ipV4Layer.Identification = (ushort)i;
-//                icmpLayer.SequenceNumber = (ushort)i;
-//                icmpLayer.Identifier = (ushort)i;
-//
-//                packets.Add(builder.Build(DateTime.Now));
-//            }
-//
-//            PacketDumpFile.Dump(@"c:\users\boaz\temp.pcap", new PcapDataLink(DataLinkKind.Ethernet), int.MaxValue, packets);
-//        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void SendNullPacketTest()
+        {
+            PacketDumpFile.Dump(@"dump.pcap", new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, new Packet[1]);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void SendNullPacketsTest()
+        {
+            PacketDumpFile.Dump(@"dump.pcap", new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, null);
+            Assert.Fail();
+        }
     }
 }
