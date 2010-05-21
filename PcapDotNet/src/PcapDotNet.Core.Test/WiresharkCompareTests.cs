@@ -98,6 +98,22 @@ namespace PcapDotNet.Core.Test
             ComparePacketsToWireshark(packet);
         }
 
+        [TestMethod]
+        public void CompareEthernetFcsToWiresharkTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new IpV4Layer
+                                                {
+                                                    Protocol = IpV4Protocol.Udp
+                                                });
+            byte[] buffer = new byte[packet.Length + 100];
+            new Random().NextBytes(buffer);
+            packet.CopyTo(buffer, 0);
+            packet = new Packet(buffer, DateTime.Now, DataLinkKind.Ethernet);
+            ComparePacketsToWireshark(packet);
+        }
+
         private enum PacketType
         {
             Ethernet,
@@ -416,6 +432,8 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "":
+                        if (ethernetDatagram.Trailer != null)
+                            field.AssertValue(ethernetDatagram.FrameCheckSequence);
                         break;
 
                     default:

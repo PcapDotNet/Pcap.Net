@@ -104,8 +104,22 @@ namespace PcapDotNet.Packets.Ethernet
                     return null;
 
                 int payloadLength = PayloadByEtherType.Length;
-                int fcs = Length >= 68 ? 4 : 0;
-                return new Datagram(Buffer, HeaderLength + payloadLength, Math.Max(0, Length - HeaderLength - payloadLength - fcs));
+                Datagram fcs = FrameCheckSequence;
+                return new Datagram(Buffer, HeaderLength + payloadLength, Length - HeaderLength - payloadLength - (fcs == null ? 0 : fcs.Length));
+            }
+        }
+
+        public Datagram FrameCheckSequence
+        {
+            get
+            {
+                Datagram payloadByEtherType = PayloadByEtherType;
+                if (payloadByEtherType == null)
+                    return null;
+
+                if (Length - payloadByEtherType.Length >= 4 && Length >= 68)
+                    return new Datagram(Buffer, Length - 4, 4);
+                return null;
             }
         }
 
