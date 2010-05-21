@@ -52,10 +52,10 @@ namespace SendingASinglePacketWithSendPacket
                                                                          PacketDeviceOpenAttributes.Promiscuous, // promiscuous mode
                                                                          1000)) // read timeout
             {
-                // Supposing to be on ethernet, set mac destination to 1:1:1:1:1:1
+                // Supposing to be on ethernet, set mac source to 1:1:1:1:1:1
                 MacAddress source = new MacAddress("1:1:1:1:1:1");
 
-                // set mac source to 2:2:2:2:2:2
+                // set mac destination to 2:2:2:2:2:2
                 MacAddress destination = new MacAddress("2:2:2:2:2:2");
 
                 // Create the packets layers
