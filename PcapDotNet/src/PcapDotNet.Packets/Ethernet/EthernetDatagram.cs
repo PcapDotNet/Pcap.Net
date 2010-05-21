@@ -95,6 +95,12 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.Payload; }
         }
 
+        /// <summary>
+        /// The bytes padding the Ethernet packet beyond the actual Ethernet payload.
+        /// This assumes we know how to calculate the actual payload length (For example, by using the Total Length of the IPv4 payload).
+        /// If we don't know how to calculate the actual payload length <see langword="null"/> will be returned.
+        /// The trailer doesn't include the <see cref="FrameCheckSequence"/> if it exists.
+        /// </summary>
         public Datagram Trailer
         {
             get
@@ -109,6 +115,12 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// The 4 bytes of the France Check Sequence (FCS).
+        /// Usually, these bytes won't be available because the device remvoed them after checking their validity.
+        /// We assume they exist when we see that the Ethernet padding pads to 68 bytes or more.
+        /// If the padding isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
+        /// </summary>
         public Datagram FrameCheckSequence
         {
             get
