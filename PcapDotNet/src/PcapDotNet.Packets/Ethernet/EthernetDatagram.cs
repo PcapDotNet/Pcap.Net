@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Ethernet
                 if (payloadByEtherType == null)
                     return null;
 
-                if (Length - payloadByEtherType.Length >= 4 && Length >= 68)
+                if (Length - HeaderLength - payloadByEtherType.Length >= 4 && Length >= 68)
                     return new Datagram(Buffer, Length - 4, 4);
                 return null;
             }
