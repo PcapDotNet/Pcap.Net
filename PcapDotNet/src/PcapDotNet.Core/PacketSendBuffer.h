@@ -17,6 +17,11 @@ namespace PcapDotNet { namespace Core
         /// <param name="capacity">The size, in bytes, of the buffer, therefore it determines the maximum amount of data that the buffer will contain.</param>
         PacketSendBuffer(unsigned int capacity);
 
+        property int Length
+        {
+            int get();
+        }
+
         /// <summary>
         /// Adds a raw packet at the end of the send buffer.
         /// 'Raw packet' means that the sending application will have to include the protocol headers, since every packet is sent to the network 'as is'. The CRC of the packets needs not to be calculated, because it will be transparently added by the network interface.
@@ -35,5 +40,6 @@ namespace PcapDotNet { namespace Core
 
     private:
         pcap_send_queue *_pcapSendQueue;
+		int _length;
     };
 }}
