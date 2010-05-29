@@ -11,21 +11,21 @@ namespace PcapDotNet.TestUtils
         public static void IsBigger<T>(T expectedMinimum, T actual) where T : IComparable<T>
         {
             if (expectedMinimum.CompareTo(actual) >= 0)
-                throw new AssertFailedException("Assert.IsBigger failed. Expected minimum: <" + expectedMinimum +
+                throw new AssertFailedException("MoreAssert.IsBigger failed. Expected minimum: <" + expectedMinimum +
                                                 "> Actual: <" + actual + ">.");
         }
 
         public static void IsSmaller<T>(T expectedMaximum, T actual) where T : IComparable<T>
         {
             if (expectedMaximum.CompareTo(actual) <= 0)
-                throw new AssertFailedException("Assert.IsSmaller failed. Expected maximum: <" + expectedMaximum +
+                throw new AssertFailedException("MoreAssert.IsSmaller failed. Expected maximum: <" + expectedMaximum +
                                                 "> Actual: <" + actual + ">.");
         }
 
         public static void IsBiggerOrEqual<T>(T expectedMinimum, T actual, string message) where T : IComparable<T>
         {
             if (expectedMinimum.CompareTo(actual) > 0)
-                throw new AssertFailedException("Assert.IsBiggerOrEqual failed. Expected minimum: <" + expectedMinimum +
+                throw new AssertFailedException("MoreAssert.IsBiggerOrEqual failed. Expected minimum: <" + expectedMinimum +
                                                 "> Actual: <" + actual + ">. " + message);
         }
 
@@ -37,7 +37,7 @@ namespace PcapDotNet.TestUtils
         public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual, string message) where T : IComparable<T>
         {
             if (expectedMaximum.CompareTo(actual) < 0)
-                throw new AssertFailedException("Assert.IsSmallerOrEqual failed. Expected maximum: <" + expectedMaximum +
+                throw new AssertFailedException("MoreAssert.IsSmallerOrEqual failed. Expected maximum: <" + expectedMaximum +
                                                 "> Actual: <" + actual + ">. " + message);
         }
 
@@ -55,6 +55,13 @@ namespace PcapDotNet.TestUtils
         public static void IsInRange<T>(T expectedMinimum, T expectedMaximum, T actual) where T : IComparable<T>
         {
             IsInRange(expectedMinimum, expectedMaximum, actual, string.Empty);
+        }
+
+        public static void IsContains(string expectedContained, string actualValue, string message = "")
+        {
+            if (!actualValue.Contains(expectedContained))
+                throw new AssertFailedException(string.Format("MoreAssert.IsContains failed. Expected contained: <{0}> Actual: <{1}>. {2}",
+                                                              expectedContained, actualValue, message));
         }
 
         public static void IsMatch(string expectedPattern, string actualValue)

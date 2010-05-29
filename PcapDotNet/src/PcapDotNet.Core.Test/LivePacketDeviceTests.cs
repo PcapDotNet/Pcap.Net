@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using PcapDotNet.Base;
 using PcapDotNet.Core.Extensions;
 using PcapDotNet.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -160,7 +161,7 @@ namespace PcapDotNet.Core.Test
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend / 2, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.Ok, NumPacketsToSend / 2, 0, 0.02);
 
             // Wait for more packets
-            TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.071);
+            TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.14);
             TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.3);
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, PacketCommunicatorReceiveResult.None, NumPacketsToSend, 2, 2.051);
 
@@ -570,30 +571,30 @@ namespace PcapDotNet.Core.Test
                 communicator.SetSamplingMethod(new SamplingMethodFirstAfterInterval(TimeSpan.FromSeconds(1)));
                 int numPacketsGot;
                 communicator.ReceiveSomePackets(out numPacketsGot, 100, p => { });
-                Packet expectedPacket = _random.NextEthernetPacket(60, sourceMac, destinationMac);
+
+                Packet[] packetsToSend = new Packet[11];
+                packetsToSend[0] = _random.NextEthernetPacket(60, sourceMac, destinationMac);
+                for (int i = 0; i != 10; ++i)
+                    packetsToSend[i + 1] = _random.NextEthernetPacket(60 * (i + 2), sourceMac, destinationMac);
+
                 List<Packet> packets = new List<Packet>(6);
                 Thread thread = new Thread(() => packets.AddRange(communicator.ReceivePackets(6)));
                 thread.Start();
-                communicator.SendPacket(expectedPacket);
-                Thread.Sleep(TimeSpan.FromSeconds(0.75));
+
+                communicator.SendPacket(packetsToSend[0]);
+                Thread.Sleep(TimeSpan.FromSeconds(0.7));
                 for (int i = 0; i != 10; ++i)
                 {
-                    expectedPacket = _random.NextEthernetPacket(60 * (i + 2), sourceMac, destinationMac);
-                    communicator.SendPacket(expectedPacket);
-                    Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                    communicator.SendPacket(packetsToSend[i + 1]);
+                    Thread.Sleep(TimeSpan.FromSeconds(0.55));
                 }
 
                 if (!thread.Join(TimeSpan.FromSeconds(10)))
                     thread.Abort();
-                Assert.AreEqual(6, packets.Count);
+                Assert.AreEqual(6, packets.Count, packets.Select(p => (p.Timestamp-packets[0].Timestamp).TotalSeconds + "(" + p.Length + ")").SequenceToString(", "));
                 Packet packet;
                 for (int i = 0; i != 6; ++i)
-                {
-//                    result = communicator.ReceivePacket(out packet);
-//                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-//                    Assert.AreEqual(60 * (i * 2 + 1), packet.Length, i.ToString());
                     Assert.AreEqual(60 * (i * 2 + 1), packets[i].Length, i.ToString());
-                }
                 PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Timeout, result);
                 Assert.IsNull(packet);

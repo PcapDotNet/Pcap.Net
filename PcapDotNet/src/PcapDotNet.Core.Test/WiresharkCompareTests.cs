@@ -213,7 +213,7 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte RetryNumber = 244;
+                const byte RetryNumber = 89;
                 pcapFilename = Path.GetTempPath() + "temp." + RetryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
@@ -630,6 +630,7 @@ namespace PcapDotNet.Core.Test
                                   field.Show().StartsWith("Stream identifier (with option length = ") ||
                                   field.Show().Contains("with too") ||
                                   field.Show().Contains(" bytes says option goes past end of options") ||
+                                  field.Show().Contains("(length byte past end of options)") ||
                                   field.Fields().First().Show().StartsWith("Pointer: ") && field.Fields().First().Show().EndsWith(" (points to middle of address)") ||
                                   field.Fields().Where(value => value.Show() == "(suboption would go past end of option)").Count() != 0, field.Show());
                     break;
@@ -803,15 +804,28 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "data":
-                        field.AssertValue(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload);
+                        var casted1 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
+                        if (casted1 != null)
+                            field.AssertValue(casted1.IpV4.Payload);
+                        else
+                            field.AssertValue(icmpDatagram.Payload);
                         break;
 
                     case "data.data":
-                        field.AssertShow(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload);
+                        var casted2 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
+                        if (casted2 != null)
+                            field.AssertShow(casted2.IpV4.Payload);
+                        else
+                            field.AssertShow(icmpDatagram.Payload);
                         break;
 
                     case "data.len":
-                        field.AssertShowDecimal(((IcmpIpV4HeaderPlus64BitsPayloadDatagram)icmpDatagram).IpV4.Payload.Length);
+                        var casted3 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
+                        if (casted3 != null)
+                            field.AssertShowDecimal(casted3.IpV4.Payload.Length);
+                        else
+                            field.AssertShowDecimal(icmpDatagram.Payload.Length);
+
                         break;
 
                     case "":
@@ -924,19 +938,24 @@ namespace PcapDotNet.Core.Test
 
                             int currentInnerFieldIndex = 0;
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format("{0}... .... .... .... = {1}", greDatagram.ChecksumPresent.ToInt(),
-                                                                    (greDatagram.ChecksumPresent ? "Checksum" : "No checksum")));
+                                                                                           (greDatagram.ChecksumPresent ? "Checksum" : "No checksum")));
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".{0}.. .... .... .... = {1}", greDatagram.RoutingPresent.ToInt(),
-                                                                    (greDatagram.RoutingPresent ? "Routing" : "No routing")));
+                                                                                           (greDatagram.RoutingPresent ? "Routing" : "No routing")));
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format("..{0}. .... .... .... = {1}", greDatagram.KeyPresent.ToInt(),
-                                                                    (greDatagram.KeyPresent ? "Key" : "No key")));
-                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format("...{0} .... .... .... = {1}", greDatagram.SequenceNumberPresent.ToInt(),
-                                                                    (greDatagram.SequenceNumberPresent ? "Sequence number" : "No sequence number")));
+                                                                                           (greDatagram.KeyPresent ? "Key" : "No key")));
+                            innerFields[currentInnerFieldIndex++].AssertShow(string.Format("...{0} .... .... .... = {1}",
+                                                                                           greDatagram.SequenceNumberPresent.ToInt(),
+                                                                                           (greDatagram.SequenceNumberPresent
+                                                                                                ? "Sequence number"
+                                                                                                : "No sequence number")));
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... {0}... .... .... = {1}", greDatagram.StrictSourceRoute.ToInt(),
-                                                                    (greDatagram.StrictSourceRoute ? "Strict source route" : "No strict source route")));
+                                                                                           (greDatagram.StrictSourceRoute
+                                                                                                ? "Strict source route"
+                                                                                                : "No strict source route")));
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .{0} .... .... = Recursion control: {1}",
-                                                                    greDatagram.RecursionControl.ToBits().Skip(5).Select(b => b.ToInt()).
-                                                                        SequenceToString(),
-                                                                    greDatagram.RecursionControl));
+                                                                                           greDatagram.RecursionControl.ToBits().Skip(5).Select(b => b.ToInt()).
+                                                                                               SequenceToString(),
+                                                                                           greDatagram.RecursionControl));
                             if (isEnhanced)
                             {
                                 innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... {0}... .... = {1}",
@@ -946,10 +965,11 @@ namespace PcapDotNet.Core.Test
                                                                                                     : "No acknowledgment number")));
 
                                 innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... .{0}... = Flags: {1}",
-                                                                   greDatagram.FutureUseBits.ToBits().Skip(3).Take(4).Select(b => b.ToInt()).
-                                                                       SequenceToString().
-                                                                       Insert(3, " "),
-                                                                   greDatagram.FutureUseBits));
+                                                                                               greDatagram.FutureUseBits.ToBits().Skip(3).Take(4).Select(
+                                                                                                   b => b.ToInt()).
+                                                                                                   SequenceToString().
+                                                                                                   Insert(3, " "),
+                                                                                               greDatagram.FutureUseBits));
                             }
                             else
                             {
@@ -961,9 +981,9 @@ namespace PcapDotNet.Core.Test
                                                                                                fullFlags));
                             }
                             innerFields[currentInnerFieldIndex++].AssertShow(string.Format(".... .... .... .{0} = Version: {1}",
-                                                                    ((byte)greDatagram.Version).ToBits().Skip(5).Select(b => b.ToInt()).
-                                                                        SequenceToString(),
-                                                                    (byte)greDatagram.Version));
+                                                                                           ((byte)greDatagram.Version).ToBits().Skip(5).Select(b => b.ToInt()).
+                                                                                               SequenceToString(),
+                                                                                           (byte)greDatagram.Version));
                         }
                         else if (field.Show().StartsWith("Checksum: "))
                         {
@@ -1022,19 +1042,21 @@ namespace PcapDotNet.Core.Test
 
                     case "data":
                     case "data.data":
-                        if (greDatagram.Version != GreVersion.EnhancedGre &&
-                            greDatagram.AcknowledgmentSequenceNumberPresent)
+                        if (greDatagram.AcknowledgmentSequenceNumberPresent &&
+                            (greDatagram.Version != GreVersion.EnhancedGre || !greDatagram.SequenceNumberPresent))
                         {
                             Assert.AreEqual(field.Value().Skip(8).SequenceToString(), greDatagram.Payload.BytesSequenceToHexadecimalString(), "GRE data.data");
                         }
                         else
+                        {
                             field.AssertValue(greDatagram.Payload, "GRE data.data");
+                        }
                         break;
 
                     case "data.len":
                         field.AssertShowDecimal(
-                            greDatagram.Payload.Length + (greDatagram.Version != GreVersion.EnhancedGre &&
-                                                          greDatagram.AcknowledgmentSequenceNumberPresent
+                            greDatagram.Payload.Length + (greDatagram.AcknowledgmentSequenceNumberPresent &&
+                                                          (greDatagram.Version != GreVersion.EnhancedGre || !greDatagram.SequenceNumberPresent)
                                                               ? 4
                                                               : 0), "GRE data.len");
                         break;
@@ -1234,9 +1256,15 @@ namespace PcapDotNet.Core.Test
             {
                 if (currentOptionIndex >= options.Count)
                 {
-                    Assert.IsFalse(options.IsValid);
-                    Assert.IsTrue(field.Show().Contains("bytes says option goes past end of options"));
-                    Assert.AreEqual(options.Count, currentOptionIndex);
+                    Assert.IsFalse(options.IsValid, "Options IsValid");
+//                    if (field.Show().StartsWith("Unknown ("))
+//                    {
+//                        int.Parse()
+//                    }
+                    Assert.IsTrue(
+//                        field.Show().StartsWith("Unknown (") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
+                        field.Show().Contains("bytes says option goes past end of options"), "Options show: " + field.Show());
+                    Assert.AreEqual(options.Count, currentOptionIndex, "Options Count");
                     return;
                 }
 
