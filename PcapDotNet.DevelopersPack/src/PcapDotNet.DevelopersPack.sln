@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObtainingTheDeviceList", "ObtainingTheDeviceList\ObtainingTheDeviceList.csproj", "{58B6F829-2F7C-4ED3-9CEF-DBE55814D31E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObtainingAdvancedInformationAboutInstalledDevices", "ObtainingAdvancedInformationAboutInstalledDevices\ObtainingAdvancedInformationAboutInstalledDevices.csproj", "{BF87FF20-7F17-44E2-BE2B-9F96755F1468}"
