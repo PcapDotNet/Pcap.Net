@@ -47,7 +47,6 @@ namespace PcapDotNet.Analysis
         [PreEmptive.Attributes.Teardown]
         private static void ProcessExit(object sender, EventArgs e)
         {
-            Console.WriteLine("ProcessExit");
         }
 
         public static bool OptIn { get; set; }

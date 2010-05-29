@@ -22,6 +22,9 @@
     <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="PcapDotNet.Analysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b6f3e583145a652">
+      <HintPath>..\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -225,6 +228,9 @@
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
@@ -261,6 +267,9 @@
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
@@ -292,6 +301,9 @@
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
@@ -326,6 +338,9 @@
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

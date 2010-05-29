@@ -57,6 +57,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PcapDotNet.Analysis">
+      <HintPath>..\..\3rdParty\PcapDotNet\PcapDotNet.Analysis.dll</HintPath>
+    </Reference>
     <Reference Include="PcapDotNet.Base, Version=0.2.0.18201, Culture=neutral, PublicKeyToken=58cf32d85728e684, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\3rdParty\PcapDotNet\PcapDotNet.Base.dll</HintPath>

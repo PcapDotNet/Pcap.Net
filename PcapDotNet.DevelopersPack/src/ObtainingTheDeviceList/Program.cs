@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PcapDotNet.Core;
+using PcapDotNet.Packets;
 
 namespace ObtainingTheDeviceList
 {
@@ -8,6 +9,9 @@ namespace ObtainingTheDeviceList
     {
         static void Main(string[] args)
         {
+            PcapDotNet.Analysis.PcapDotNetAnalysis.OptIn = true;
+            PcapDotNet.Analysis.PcapDotNetAnalysis.Initialize();
+
             // Retrieve the device list from the local machine
             IList<LivePacketDevice> allDevices = LivePacketDevice.AllLocalMachine;
 
