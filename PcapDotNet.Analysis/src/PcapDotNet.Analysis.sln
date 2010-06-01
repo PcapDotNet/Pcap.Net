@@ -3,6 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDotNet.Analysis", "PcapDotNet.Analysis\PcapDotNet.Analysis.csproj", "{AB555DA6-785B-4270-9CF8-4DD9A216280B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC18EC16-4912-41E2-867D-6C477271F78D}"
+	ProjectSection(SolutionItems) = preProject
+		PcapDotNet.Analysis.5.0.ReSharper = PcapDotNet.Analysis.5.0.ReSharper
+		..\..\PcapDotNet\src\PcapDotNet.CodeAnalysisDictionary.xml = ..\..\PcapDotNet\src\PcapDotNet.CodeAnalysisDictionary.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2

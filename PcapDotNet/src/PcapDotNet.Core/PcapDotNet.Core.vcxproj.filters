@@ -80,6 +80,7 @@
     <ClCompile Include="PcapDataLink.cpp" />
     <ClCompile Include="PcapError.cpp" />
     <ClCompile Include="PcapLibrary.cpp" />
+    <ClCompile Include="GlobalSuppressions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceAddress.h">

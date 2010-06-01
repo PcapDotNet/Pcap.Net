@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -34,6 +35,8 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: CLSCompliant(false)]
 
 [assembly: PreEmptive.Attributes.Business("3E35F098-CE43-4F82-9E9D-05C8B1046A45")] // CodePlex
 [assembly: PreEmptive.Attributes.Application("A5F32868-8932-4CEC-B263-7D2CB74C3136")] // Pcap.Net

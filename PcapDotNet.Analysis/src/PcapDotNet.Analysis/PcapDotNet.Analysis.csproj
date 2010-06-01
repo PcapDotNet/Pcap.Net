@@ -26,6 +26,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Analysis.XML</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\..\PcapDotNet\src\PcapDotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,12 +37,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Analysis.XML</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\..\PcapDotNet\src\PcapDotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <DelaySign>true</DelaySign>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\..\PcapDotNet\src\PcapDotNet.snk</AssemblyOriginatorKeyFile>
@@ -66,7 +70,15 @@
       <Link>PcapDotNet.snk</Link>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\..\..\PcapDotNet\src\PcapDotNet.CodeAnalysisDictionary.xml">
+      <Link>PcapDotNet.CodeAnalysisDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(SolutionDir)..\..\PcapDotNet\src\PcapDotNet.snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)..\..\PcapDotNet\src\PcapDotNet.snk")</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
