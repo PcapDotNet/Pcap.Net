@@ -13,7 +13,7 @@
     </asmlist>
   </input>
   <output>
-    <file dir="${configdir}\Dotfuscated" />
+    <file dir="${configdir}\..\PcapDotNet\3rdParty\PcapDotNet.Analysis" />
   </output>
   <renaming>
     <option>disable</option>
@@ -24,11 +24,11 @@
       </mapoutput>
     </mapping>
     <referencerulelist>
-      <referencerule rulekey="{229FD6F8-5BCC-427b-8F72-A7A413ECDF1A}" />
+      <referencerule rulekey="{7D9C8B02-2383-420f-8740-A9760394C2C1}" />
       <referencerule rulekey="{6655B10A-FD58-462d-8D4F-5B1316DFF0FF}" />
       <referencerule rulekey="{2B7E7C8C-A39A-4db8-9DFC-6AFD38509061}" />
       <referencerule rulekey="{89769974-93E9-4e71-8D92-BE70E855ACFC}" />
-      <referencerule rulekey="{7D9C8B02-2383-420f-8740-A9760394C2C1}" />
+      <referencerule rulekey="{229FD6F8-5BCC-427b-8F72-A7A413ECDF1A}" />
     </referencerulelist>
   </renaming>
   <sos mergeruntime="true">
@@ -40,20 +40,20 @@
       <codetransformlist>
         <codetransform name="analytics" />
       </codetransformlist>
-      <type name="PcapDotNet.Analysis.CodePlexAnalysis">
-        <method name="Setup" signature="PcapDotNet.Analysis.CodePlexAnalysis()" />
+      <type name="PcapDotNet.Analysis.PcapDotNetAnalysis">
+        <method name="Setup" signature="void()" />
       </type>
       <propertylist>
-        <property name="OptInSourceName" value="OptIn" />
         <property name="OptInSourceElement" value="Property" />
         <property name="ExtendedKeySourceOwner" value="" />
         <property name="UseSSL" value="False" />
         <property name="InstanceIdSourceOwner" value="" />
         <property name="CustomEndpoint" value="so-s.info/PreEmptive.Web.Services.Messaging/MessagingServiceV2.asmx" />
+        <property name="OptInSourceOwner" value="PcapDotNet.Analysis.PcapDotNetAnalysis" />
         <property name="ExtendedKeySourceName" value="" />
         <property name="ExtendedKeySourceElement" value="None" />
         <property name="InstanceIdSourceName" value="" />
-        <property name="OptInSourceOwner" value="PcapDotNet.Analysis.CodePlexAnalysis" />
+        <property name="OptInSourceName" value="OptIn" />
         <property name="InstanceIdSourceElement" value="None" />
       </propertylist>
     </extattribute>
@@ -65,16 +65,16 @@
         <method name="Setup" signature="PcapDotNet.Packets.Analysis()" />
       </type>
       <propertylist>
-        <property name="OptInSourceName" value="OptIn" />
         <property name="OptInSourceElement" value="Property" />
         <property name="ExtendedKeySourceOwner" value="" />
         <property name="UseSSL" value="False" />
         <property name="InstanceIdSourceOwner" value="" />
         <property name="CustomEndpoint" value="so-s.info/PreEmptive.Web.Services.Messaging/MessagingServiceV2.asmx" />
+        <property name="OptInSourceOwner" value="PcapDotNet.Packets.Analysis" />
         <property name="ExtendedKeySourceName" value="" />
         <property name="ExtendedKeySourceElement" value="None" />
         <property name="InstanceIdSourceName" value="" />
-        <property name="OptInSourceOwner" value="PcapDotNet.Packets.Analysis" />
+        <property name="OptInSourceName" value="OptIn" />
         <property name="InstanceIdSourceElement" value="None" />
       </propertylist>
     </extattribute>
@@ -82,20 +82,20 @@
       <codetransformlist>
         <codetransform name="analytics" />
       </codetransformlist>
-      <type name="PcapDotNet.Analysis.PcapDotNetAnalysis">
-        <method name="Setup" signature="void()" />
+      <type name="PcapDotNet.Analysis.CodePlexAnalysis">
+        <method name="Setup" signature="PcapDotNet.Analysis.CodePlexAnalysis()" />
       </type>
       <propertylist>
-        <property name="OptInSourceName" value="OptIn" />
         <property name="OptInSourceElement" value="Property" />
         <property name="ExtendedKeySourceOwner" value="" />
         <property name="UseSSL" value="False" />
         <property name="InstanceIdSourceOwner" value="" />
         <property name="CustomEndpoint" value="so-s.info/PreEmptive.Web.Services.Messaging/MessagingServiceV2.asmx" />
+        <property name="OptInSourceOwner" value="PcapDotNet.Analysis.CodePlexAnalysis" />
         <property name="ExtendedKeySourceName" value="" />
         <property name="ExtendedKeySourceElement" value="None" />
         <property name="InstanceIdSourceName" value="" />
-        <property name="OptInSourceOwner" value="PcapDotNet.Analysis.PcapDotNetAnalysis" />
+        <property name="OptInSourceName" value="OptIn" />
         <property name="InstanceIdSourceElement" value="None" />
       </propertylist>
     </extattribute>

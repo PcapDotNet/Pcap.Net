@@ -27,7 +27,7 @@ void PacketCommunicator::DataLink::set(PcapDataLink value)
 
 ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
-    throw gcnew NotSupportedException("Unsupported property to avoid WinPcap memory leak");
+    throw gcnew NotSupportedException("Unsupported property to avoid memory leak");
 //	pcap_free_datalinks(NULL);
 /*
     int* dataLinks;
@@ -304,7 +304,7 @@ PacketCommunicator::PacketCommunicator(const char* source, int snapshotLength, P
                                        errorBuffer);               // error buffer
 
     if (pcapDescriptor == NULL)
-		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Unable to open the adapter. Adapter name: {0}. WinPcap Error: {1}", gcnew String(source), gcnew String(errorBuffer)));
+		throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Unable to open the adapter. Adapter name: {0}. Error: {1}", gcnew String(source), gcnew String(errorBuffer)));
 
     _pcapDescriptor = pcapDescriptor;
     _ipV4Netmask = dynamic_cast<IpV4SocketAddress^>(netmask);

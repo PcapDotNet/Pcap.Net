@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Management;
 using System.Net.NetworkInformation;
@@ -23,12 +24,17 @@ namespace PcapDotNet.Core.Extensions
         /// <param name="livePacketDevice">The <see cref="LivePacketDevice"/> instance.</param>
         /// <returns>The GUID (NetCfgInstanceId) of the <see cref="LivePacketDevice"/> instance.</returns>
         /// <exception cref="InvalidOperationException">When the <see cref="LivePacketDevice.Name"/> doesn't match the expectations.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static string GetGuid(this LivePacketDevice livePacketDevice)
         {
+            if (livePacketDevice == null) 
+                throw new ArgumentNullException("livePacketDevice");
+
             string livePacketDeviceName = livePacketDevice.Name;
-            if (!livePacketDeviceName.StartsWith(NamePrefix))
+            if (!livePacketDeviceName.StartsWith(NamePrefix, StringComparison.Ordinal))
             {
-                throw new InvalidOperationException(string.Format("Invalid LivePacketDevice.Name format: {0} (should start with: {1})",
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                                                                  "Invalid Device Name format: {0} (should start with: {1})",
                                                                   livePacketDevice.Name, NamePrefix));
             }
 
@@ -50,7 +56,7 @@ namespace PcapDotNet.Core.Extensions
             {
                 string pnpDeviceId = key.GetValue("PnpInstanceID") as string;
                 if (pnpDeviceId == null)
-                    throw new InvalidOperationException("Could not find PNPDeviceID in the registry");
+                    throw new InvalidOperationException("Could not find PNP Device ID in the registry");
                 return pnpDeviceId;
             }
         }
@@ -112,12 +118,12 @@ namespace PcapDotNet.Core.Extensions
             {
                 string macAddress = managementObject["MACAddress"] as string;
                 if (string.IsNullOrEmpty(macAddress))
-                    throw new InvalidOperationException("No MACAddress for WMI instance Win32_NetworkAdapter.PNPDeviceID: " + pnpDeviceId);
+                    throw new InvalidOperationException("No MAC Address for WMI instance with PNP Device ID: " + pnpDeviceId);
 
                 return new MacAddress(macAddress);
             }
 
-            throw new InvalidOperationException("No MACAddress for WMI instance Win32_NetworkAdapter.PNPDeviceID: " + pnpDeviceId);
+            throw new InvalidOperationException("No MAC Address for WMI instance with PNP Device ID: " + pnpDeviceId);
         }
     }
 }
