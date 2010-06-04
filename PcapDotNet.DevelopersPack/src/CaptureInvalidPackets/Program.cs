@@ -15,6 +15,9 @@ namespace UsingLinq
     {
         static void Main(string[] args)
         {
+            // Send anonymous statistics about the usage of Pcap.Net
+            PcapDotNet.Analysis.PcapDotNetAnalysis.OptIn = true;
+
             // Retrieve the device list from the local machine
             IList<LivePacketDevice> allDevices = LivePacketDevice.AllLocalMachine;
 
