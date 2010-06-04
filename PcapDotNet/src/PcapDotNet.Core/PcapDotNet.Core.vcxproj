@@ -22,7 +22,7 @@
     <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PcapDotNet.Analysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b6f3e583145a652">
+    <Reference Include="PcapDotNet.Analysis, Version=0.7.0.0, Culture=neutral, PublicKeyToken=4b6f3e583145a652">
       <HintPath>..\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll</HintPath>
     </Reference>
     <Reference Include="System">
@@ -305,8 +305,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
       <KeyFile>"$(SolutionDir)$(SolutionName).snk"</KeyFile>
-      <DelaySign>true</DelaySign>
       <Profile>true</Profile>
+      <DelaySign>true</DelaySign>
     </Link>
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
@@ -342,8 +342,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX64</TargetMachine>
       <KeyFile>"$(SolutionDir)$(SolutionName).snk"</KeyFile>
-      <DelaySign>true</DelaySign>
       <Profile>true</Profile>
+      <DelaySign>true</DelaySign>
     </Link>
     <PostBuildEvent>
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>

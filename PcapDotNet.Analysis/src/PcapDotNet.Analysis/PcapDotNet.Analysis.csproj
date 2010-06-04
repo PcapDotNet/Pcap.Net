@@ -79,6 +79,9 @@
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(SolutionDir)..\..\PcapDotNet\src\PcapDotNet.snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)..\..\PcapDotNet\src\PcapDotNet.snk")</PreBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(OutDir)$(TargetName).XML" $(SolutionDir)..\..\PcapDotNet\3rdParty\PcapDotNet.Analysis\</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -17,22 +17,23 @@
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>Pcap.Net</HtmlHelpName>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.dll" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.xml" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.dll" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.dll" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.xml" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.xml" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.dll" />
-      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.XML" />
-    </DocumentationSources>
-    <FrameworkVersion>3.5</FrameworkVersion>
+      <DocumentationSource sourceFile="..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" />
+<DocumentationSource sourceFile="..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.xml" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.dll" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.xml" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.dll" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.dll" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.xml" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.xml" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.dll" />
+<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.XML" /></DocumentationSources>
+    <FrameworkVersion>4.0.30319</FrameworkVersion>
     <Language>en-US</Language>
     <Preliminary>False</Preliminary>
     <CppCommentsFixup>True</CppCommentsFixup>
     <HelpTitle>Pcap.Net Documented Class Library</HelpTitle>
     <MissingTags>None</MissingTags>
-    <HelpFileVersion>0.6.0.0</HelpFileVersion>
+    <HelpFileVersion>0.7.0.0</HelpFileVersion>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <ShowFeedbackControl>False</ShowFeedbackControl>
     <IndentHtml>False</IndentHtml>
@@ -43,6 +44,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="PcapDotNet.Analysis.xml" />
+  </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
 </Project>
