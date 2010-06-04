@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using PcapDotNet.Core;
-using PcapDotNet.Packets;
 
 namespace ObtainingTheDeviceList
 {
