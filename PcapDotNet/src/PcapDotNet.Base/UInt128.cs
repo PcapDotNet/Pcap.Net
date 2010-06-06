@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace PcapDotNet.Base
@@ -8,7 +9,7 @@ namespace PcapDotNet.Base
     /// A 128 bit unsigned integer.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct UInt128
+    public struct UInt128 : IEquatable<UInt128>, IFormattable
     {
         /// <summary>
         /// The number of bytes this type will take.
@@ -16,15 +17,19 @@ namespace PcapDotNet.Base
         public const int SizeOf = 16;
 
         /// <summary>
+        /// The minimum UInt128 value.
+        /// </summary>
+        public static readonly UInt128 MinValue = 0;
+
+        /// <summary>
         /// The maximum value of this type.
         /// </summary>
-        public static readonly UInt128 MaxValue = Parse("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        public static readonly UInt128 MaxValue = new UInt128(ulong.MaxValue, ulong.MaxValue);
 
         /// <summary>
         /// A Zero UInt128 value.
-        /// The minimum UInt128 value.
         /// </summary>
-        public static readonly UInt128 Zero = Parse("00000000000000000000000000000000", NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        public static readonly UInt128 Zero = 0;
 
         /// <summary>
         /// Creates a value using two 64 bit values.
@@ -36,59 +41,36 @@ namespace PcapDotNet.Base
             _mostSignificant = mostSignificant;
             _leastSignificant = leastSignificant;
         }
-/*
+
         /// <summary>
-        /// Creates a value using 8 16 bits values.
+        /// Conversion of a <see cref="BigInteger"/> object to an unsigned 128-bit integer value.
         /// </summary>
-        /// <param name="values">The 16 bits values ordered so that the first value is the most significant.</param>
-//        public UInt128(ushort[] values)
-//        {
-//            if (values.Length != 8)
-//                throw new ArgumentException("UInt128 must be created by 8 ushorts and not " + values.Length + " ushorts");
-//
-//            _mostSignificant =
-//                ((ulong)values[0] << 48) +
-//                ((ulong)values[1] << 32) +
-//                ((ulong)values[2] << 16) +
-//                values[3];
-//
-//            _leastSignificant =
-//                ((ulong)values[4] << 48) +
-//                ((ulong)values[5] << 32) +
-//                ((ulong)values[6] << 16) +
-//                values[7];
-//        }
-        */
-        /// <summary>
-        /// Converts the string representation of a number in a specified style to its 128-bit unsigned integer equivalent.
-        /// </summary>
-        /// <param name="value">A string representing the number to convert.</param>
-        /// <param name="style">
-        /// A bitwise combination of NumberStyles values that indicates the permitted format of value.
-        /// A typical value to specify is NumberStyles.Integer.
-        /// </param>
-        /// <param name="provider">An System.IFormatProvider that supplies culture-specific formatting information about value.</param>
-        /// <returns>A 128-bit unsigned integer equivalent to the number specified in s.</returns>
-        public static UInt128 Parse(string value, NumberStyles style, IFormatProvider provider)
+        /// <param name="value">The value to convert to an unsigned 128-bit integer.</param>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        public UInt128(BigInteger value)
+            : this((ulong)(value >> 64), (ulong)(value & ulong.MaxValue))
         {
-            if (value == null) 
-                throw new ArgumentNullException("value");
+        }
 
-            if (style != NumberStyles.HexNumber)
-                throw new NotSupportedException("Only " + NumberStyles.HexNumber + " style is supported");
+        /// <summary>
+        /// Defines an explicit conversion of a <see cref="BigInteger"/> object to an unsigned 128-bit integer value.
+        /// </summary>
+        /// <param name="value">The value to convert to an unsigned 128-bit integer.</param>
+        /// <returns>The 128 bit value created by equivalent to <paramref name="value"/>.</returns>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        public static explicit operator UInt128(BigInteger value)
+        {
+            return new UInt128(value);
+        }
 
-            ulong mostSignficantLong = 0;
-            ulong leastSignficantLong;
-            if (value.Length > 16)
-            {
-                leastSignficantLong = ulong.Parse(value.Substring(value.Length - 16, 16), style, provider);
-                value = value.Substring(0, value.Length - 16);
-                mostSignficantLong = ulong.Parse(value, style, provider);
-            }
-            else
-                leastSignficantLong = ulong.Parse(value, style, provider);
-
-            return new UInt128(mostSignficantLong, leastSignficantLong);
+        /// <summary>
+        /// Converts the 128 bits unsigned integer to a <see cref="BigInteger"/>.
+        /// </summary>
+        /// <param name="value">The 128 bit value to convert.</param>
+        /// <returns>The <see cref="BigInteger"/> value converted from the 128 bit value.</returns>
+        public static implicit operator BigInteger(UInt128 value)
+        {
+            return value.ToBigInteger();
         }
 
         /// <summary>
@@ -108,7 +90,249 @@ namespace PcapDotNet.Base
         /// <returns>The 64 bit value converted from the 128 bit value.</returns>
         public static explicit operator ulong(UInt128 value)
         {
+            if (value._mostSignificant != 0)
+                throw new OverflowException("Value was either too large or too small for a UInt64.");
             return value._leastSignificant;
+        }
+
+        /// <summary>
+        /// Converts the string representation of a number in a specified style and culture-specific format to its <see cref="UInt128"/> equivalent.
+        /// </summary>
+        /// <param name="value">A string that contains a number to convert.</param>
+        /// <param name="style">
+        /// A bitwise combination of the enumeration values that specify the permitted format of value.
+        /// </param>
+        /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="value"/>.</param>
+        /// <returns>A value that is equivalent to the number specified in the value parameter.</returns>
+        /// <exception cref="ArgumentException"><paramref name="style"/> is not a <see cref="NumberStyles"/> value or <paramref name="style"/> includes the <see cref="NumberStyles.AllowHexSpecifier"/> or <see cref="NumberStyles.HexNumber"/> flag along with another value.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="FormatException"><paramref name="value"/> does not comply with the input pattern specified by <paramref name="style"/>.</exception>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        /// <remarks>
+        /// The <paramref name="style"/> parameter defines the style elements 
+        /// (such as white space, the positive or negative sign symbol, the group separator symbol, or the decimal point symbol) 
+        /// that are allowed in the <paramref name="value"/> parameter for the parse operation to succeed. 
+        /// <paramref name="style"/> must be a combination of bit flags from the <see cref="NumberStyles"/> enumeration. 
+        /// The <paramref name="style"/> parameter makes this method overload useful when <paramref name="value"/> contains the string representation of a hexadecimal value, 
+        /// when the number system (decimal or hexadecimal) represented by value is known only at run time, or when you want to disallow white space or a sign symbol in value.
+        /// <para>Depending on the value of <paramref name="style"/>, the <paramref name="value"/> parameter may include the following elements:</para>
+        /// <para>[ws][$][sign][digits,]digits[.fractional_digits][E[sign]exponential_digits][ws]</para>
+        /// <para>If <paramref name="style"/> includes <see cref="NumberStyles.AllowHexSpecifier"/>, the <paramref name="value"/> parameter may include the following elements:</para>
+        /// <para>[ws]hexdigits[ws]</para>
+        /// <para>Elements in square brackets ([ and ]) are optional. The following table describes each element.</para>
+        ///   <list type="table">
+        ///     <listheader>
+        ///       <term>Element</term>
+        ///       <description>Description</description>
+        ///     </listheader>
+        ///     <item>
+        ///       <term>ws</term>
+        ///       <description>
+        ///       Optional white space. 
+        ///       White space can appear at the start of value if <paramref name="style"/> includes the <see cref="NumberStyles.AllowLeadingWhite"/> flag, 
+        ///       and it can appear at the end of value if <paramref name="style"/> includes the <see cref="NumberStyles.AllowTrailingWhite"/> flag.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>$</term>
+        ///       <description>
+        ///       A culture-specific currency symbol. 
+        ///       Its position in the string is defined by the <see cref="NumberFormatInfo.CurrencyNegativePattern"/> and <see cref="NumberFormatInfo.CurrencyPositivePattern"/> properties of the culture indicated by the <paramref name="provider"/> parameter. 
+        ///       The current culture's currency symbol can appear in value if <paramref name="style"/> includes the <see cref="NumberStyles.AllowCurrencySymbol"/> flag.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>sign</term>
+        ///       <description>
+        ///       An optional sign. 
+        ///       The sign can appear at the start of <paramref name="value"/> if <paramref name="style"/> includes the <see cref="NumberStyles.AllowLeadingSign"/> flag, 
+        ///       and it can appear at the end of <paramref name="value"/> if <paramref name="style"/> includes the <see cref="NumberStyles.AllowTrailingSign"/> flag. 
+        ///       Parentheses can be used in <paramref name="value"/> to indicate a negative value if <paramref name="style"/> includes the <see cref="NumberStyles.AllowParentheses"/> flag. 
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>digits, fractional_digits, exponential_digits</term>
+        ///       <description>A sequence of digits from 0 through 9. A sequence of digits from 0 through 9. For fractional_digits, only the digit 0 is valid.</description>
+        ///     </item>
+        ///     <item>
+        ///       <term>,</term>
+        ///       <description>
+        ///       A culture-specific group separator symbol. 
+        ///       The group separator symbol of the culture specified by <paramref name="provider"/> can appear in <paramref name="value"/> if <paramref name="style"/> includes the <see cref="NumberStyles.AllowThousands"/> flag.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>.</term>
+        ///       <description>
+        ///       A culture-specific decimal point symbol. 
+        ///       The decimal point symbol of the culture designated by <paramref name="provider"/> can appear in <paramref name="value"/> if <paramref name="style"/> includes the <see cref="NumberStyles.AllowDecimalPoint"/> flag. 
+        ///       Only the digit 0 can appear as a fractional digit for the parse operation to succeed; 
+        ///       if fractional_digits includes any other digit, a <see cref="FormatException"/> is thrown.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>E</term>
+        ///       <description>
+        ///       The "e" or "E" character, which indicates that the value is represented in exponential (scientific) notation. 
+        ///       The <paramref name="value"/> parameter can represent a number in exponential notation if <paramref name="style"/> includes the <see cref="NumberStyles.AllowExponent"/> flag.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <term>hexdigits</term>
+        ///       <description>A sequence of hexadecimal digits from 0 through f, or 0 through F.</description>
+        ///     </item>
+        ///   </list>
+        /// If you use the <see cref="Parse(string, NumberStyles, IFormatProvider)"/> method to round-trip the string representation of a <see cref="UInt128"/> value that was output by the <see cref="ToString(string, IFormatProvider)"/> method, 
+        /// you should use the <see cref="ToString(string, IFormatProvider)"/> method with the "R" format specifier to generate the string representation of the <see cref="UInt128"/> value. 
+        /// Otherwise, the string representation of the <see cref="UInt128"/> preserves only the 50 most significant digits of the original value, and data may be lost when you use the <see cref="Parse(string, NumberStyles, IFormatProvider)"/>  method to restore the <see cref="UInt128"/> value.
+        /// <note>
+        /// Unlike the other <see cref="NumberStyles"/> values, which allow for but do not require the presence of particular style elements in <paramref name="value"/>, 
+        /// the <see cref="NumberStyles.AllowHexSpecifier"/> style value means that the individual numeric characters in <paramref name="value"/> are always interpreted as hexadecimal characters. 
+        /// Valid hexadecimal characters are 0-9, A-F, and a-f. 
+        /// The only other flags that can be combined with the <paramref name="style"/> parameter are <see cref="NumberStyles.AllowLeadingWhite"/> and <see cref="NumberStyles.AllowTrailingWhite"/>. 
+        /// (The <see cref="NumberStyles"/> enumeration includes a composite number style, <see cref="NumberStyles.HexNumber"/>, that includes both white-space flags.)
+        /// </note>
+        /// <note>
+        /// If <paramref name="value"/> is the string representation of a hexadecimal number, it cannot be preceded by any decoration (such as 0x or &amp;h) that differentiates it as a hexadecimal number. 
+        /// This causes the conversion to fail.
+        /// </note>
+        /// If <paramref name="value"/> is a hexadecimal string, the <see cref="Parse(String, NumberStyles, IFormatProvider)"/> method interprets <paramref name="value"/> as a negative number stored by using two's complement representation if its first two hexadecimal digits are greater than or equal to 0x80. 
+        /// In other words, the method interprets the highest-order bit of the first byte in <paramref name="value"/> as the sign bit. 
+        /// To make sure that a hexadecimal string is correctly interpreted as a positive number, the first digit in <paramref name="value"/> must have a value of zero. 
+        /// For example, the method interprets 0x80 as a negative value, but it interprets either 0x080 or 0x0080 as a positive value. 
+        /// <para>
+        /// The <paramref name="provider"/> parameter is an <see cref="IFormatProvider"/> implementation. 
+        /// Its <see cref="IFormatProvider.GetFormat"/> method returns a <see cref="NumberFormatInfo"/> object that provides culture-specific information about the format of value. 
+        /// Typically, <paramref name="provider"/> can be any one of the following: 
+        /// <list type="bullet">
+        ///   <item>
+        ///   A <see cref="CultureInfo"/> object that represents the culture that provides numeric formatting information. 
+        ///   Its <see cref="CultureInfo.GetFormat"/> method returns the <see cref="NumberFormatInfo"/> object that provides numeric formatting information.
+        ///   </item>
+        ///   <item>A <see cref="NumberFormatInfo"/> object that provides formatting information. (Its implementation of <see cref="NumberFormatInfo.GetFormat"/> just returns itself.)</item>
+        ///   <item>
+        ///   A custom object that implements <see cref="IFormatProvider"/> and uses the <see cref="IFormatProvider.GetFormat"/> method 
+        ///   to instantiate and return the <see cref="NumberFormatInfo"/> object that provides formatting information.
+        ///   </item>
+        /// </list>
+        /// If <paramref name="provider"/> is <see langword="null"/>, the <see cref="NumberFormatInfo"/> object for the current culture is used.
+        /// </para>
+        /// </remarks>
+        public static UInt128 Parse(string value, NumberStyles style, IFormatProvider provider)
+        {
+            BigInteger bigIntegerValue = BigInteger.Parse(value, style, provider);
+            if (bigIntegerValue < 0 || bigIntegerValue > MaxValue)
+                throw new OverflowException("Value was either too large or too small for an UInt128.");
+
+            return (UInt128)bigIntegerValue;
+        }
+
+        /// <summary>
+        /// Converts the string representation of a number in a specified culture-specific format to its <see cref="UInt128"/> equivalent.
+        /// Uses <see cref="NumberStyles.Integer"/> style.
+        /// </summary>
+        /// <param name="value">A string that contains a number to convert.</param>
+        /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="value"/>.</param>
+        /// <returns>A value that is equivalent to the number specified in the value parameter.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        /// <remarks>
+        /// See important remarks in <see cref="Parse(string, NumberStyles, IFormatProvider)"/>
+        /// </remarks>
+        public static UInt128 Parse(string value, IFormatProvider provider)
+        {
+            return Parse(value, NumberStyles.Integer, provider);
+        }
+
+        /// <summary>
+        /// Converts the string representation of a number in a specified style to its <see cref="UInt128"/> equivalent.
+        /// Uses <see cref="CultureInfo.CurrentCulture"/> as the format provider.
+        /// </summary>
+        /// <param name="value">A string that contains a number to convert.</param>
+        /// <param name="style"> A bitwise combination of the enumeration values that specify the permitted format of value.</param>
+        /// <returns>A value that is equivalent to the number specified in the value parameter.</returns>
+        /// <exception cref="ArgumentException"><paramref name="style"/> is not a <see cref="NumberStyles"/> value or <paramref name="style"/> includes the <see cref="NumberStyles.AllowHexSpecifier"/> or <see cref="NumberStyles.HexNumber"/> flag along with another value.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="FormatException"><paramref name="value"/> does not comply with the input pattern specified by <paramref name="style"/>.</exception>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        /// <remarks>
+        /// See important remarks in <see cref="Parse(string, NumberStyles, IFormatProvider)"/>
+        /// </remarks>
+        public static UInt128 Parse(string value, NumberStyles style)
+        {
+            return Parse(value, style, CultureInfo.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Converts the string representation of a number in a specified style to its <see cref="UInt128"/> equivalent.
+        /// Uses <see cref="NumberStyles.Integer"/> style.
+        /// Uses <see cref="CultureInfo.CurrentCulture"/> as the format provider.
+        /// </summary>
+        /// <param name="value">A string that contains a number to convert.</param>
+        /// <returns>A value that is equivalent to the number specified in the value parameter.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="OverflowException">The <paramref name="value"/> parameter represents a number less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>.</exception>
+        /// <remarks>
+        /// See important remarks in <see cref="Parse(string, NumberStyles, IFormatProvider)"/>
+        /// </remarks>
+        public static UInt128 Parse(string value)
+        {
+            return Parse(value, NumberStyles.Integer, CultureInfo.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Tries to convert the string representation of a number in a specified style and culture-specific format to its <see cref="UInt128"/> equivalent, 
+        /// and returns a value that indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="value">The string representation of a number. The string is interpreted using the style specified by <paramref name="style"/>.</param>
+        /// <param name="style">
+        /// A bitwise combination of enumeration values that indicates the style elements that can be present in <paramref name="value"/>. 
+        /// A typical value to specify is <see cref="NumberStyles.Integer"/>.
+        /// </param>
+        /// <param name="provider">An object that supplies culture-specific formatting information about <paramref name="value"/>.</param>
+        /// <param name="result">
+        /// When this method returns, contains the <see cref="UInt128"/> equivalent to the number that is contained in value, or <see cref="UInt128.Zero"/> if the conversion failed. 
+        /// The conversion fails if the value parameter is <see langword="null"/>, is not in a format that is compliant with <paramref name="style"/> or represents a number that is less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>. 
+        /// This parameter is passed uninitialized.</param>
+        /// <returns>true if the <paramref name="value"/> parameter was converted successfully; otherwise, false.</returns>
+        /// <remarks>
+        /// The <see cref="TryParse(string, NumberStyles, IFormatProvider, out UInt128)"/> method is like the <see cref="Parse(string, NumberStyles, IFormatProvider)"/> method, 
+        /// except that it does not throw an exception if the conversion fails. 
+        /// This method eliminates the need to use exception handling to test for a <see cref="FormatException"/> if <paramref name="value"/> is invalid and cannot be parsed successfully.
+        /// <para>For more information see <see cref="Parse(string, NumberStyles, IFormatProvider)"/></para>
+        /// </remarks>
+        public static bool TryParse(string value, NumberStyles style, IFormatProvider provider, out UInt128 result)
+        {
+            BigInteger bigIntegerValue;
+            bool success = BigInteger.TryParse(value, style, provider, out bigIntegerValue);
+            if (success && (bigIntegerValue < 0 || bigIntegerValue > MaxValue))
+            {
+                result = Zero;
+                return false;
+            }
+            result = (UInt128)bigIntegerValue;
+            return success;
+        }
+
+        /// <summary>
+        /// Tries to convert the string representation of a number to its <see cref="UInt128"/> equivalent, 
+        /// and returns a value that indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="value">The string representation of a number.</param>
+        /// <param name="result">
+        /// When this method returns, contains the <see cref="UInt128"/> equivalent to the number that is contained in value, or <see cref="UInt128.Zero"/> if the conversion failed. 
+        /// The conversion fails if the value parameter is <see langword="null"/> or represents a number that is less than <see cref="UInt128.MinValue"/> or greater than <see cref="UInt128.MaxValue"/>. 
+        /// This parameter is passed uninitialized.</param>
+        /// <returns>true if the <paramref name="value"/> parameter was converted successfully; otherwise, false.</returns>
+        /// <remarks>
+        /// The <see cref="TryParse(string, out UInt128)"/> method is like the <see cref="Parse(string)"/> method, 
+        /// except that it does not throw an exception if the conversion fails. 
+        /// This method eliminates the need to use exception handling to test for a <see cref="FormatException"/> if <paramref name="value"/> is invalid and cannot be parsed successfully.
+        /// <para>For more information see <see cref="Parse(string, NumberStyles, IFormatProvider)"/></para>
+        /// </remarks>
+        public static bool TryParse(string value, out UInt128 result)
+        {
+            return TryParse(value, NumberStyles.Integer, CultureInfo.CurrentCulture, out result);
         }
 
         /// <summary>
@@ -163,7 +387,7 @@ namespace PcapDotNet.Base
         /// <param name="value">The value to shift.</param>
         /// <param name="numberOfBits">The number of bits to shift.</param>
         /// <returns>The value after it was shifted by the given number of bits.</returns>
-        public static UInt128 operator >> (UInt128 value, int numberOfBits)
+        public static UInt128 operator >>(UInt128 value, int numberOfBits)
         {
             return RightShift(value, numberOfBits);
         }
@@ -215,26 +439,94 @@ namespace PcapDotNet.Base
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
-            return ((ulong)this).GetHashCode();
+            return _mostSignificant.GetHashCode() ^ _leastSignificant.GetHashCode();
         }
 
         /// <summary>
-        /// Returns the hexadecimal string representation of the 128 bits unsigned integer.
+        /// Converts the numeric value of the current <see cref="UInt128"/> object to its equivalent string representation by using the specified format and culture-specific format information.
         /// </summary>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The string representation of the current <see cref="UInt128"/> value as specified by the <paramref name="format"/> and <paramref name="formatProvider"/> parameters.</returns>
+        /// <exception cref="FormatException"><paramref name="format"/> is not a valid format string.</exception>
+        /// <remarks>
+        /// The <paramref name="format"/> parameter can be any valid standard numeric format specifier, or any combination of custom numeric format specifiers. 
+        /// If <paramref name="format"/> is equal to <see cref="String.Empty"/> or is <see langword="null"/>, the return value of the current <see cref="UInt128"/> object is formatted with the general format specifier ("G"). 
+        /// If <paramref name="format"/> is any other value, the method throws a <see cref="FormatException"/>.
+        /// <para>
+        /// The <paramref name="formatProvider"/> parameter is an <see cref="IFormatProvider"/> implementation. 
+        /// Its <see cref="IFormatProvider.GetFormat"/> method returns a <see cref="NumberFormatInfo"/> object that provides culture-specific information about the format of the string returned by this method. 
+        /// When the <see cref="ToString(String, IFormatProvider)"/> method is invoked, it calls the <paramref name="formatProvider"/> parameter's <see cref="IFormatProvider.GetFormat"/> method and passes it a <see cref="Type"/> object that represents the <see cref="NumberFormatInfo"/> type. 
+        /// The <see cref="IFormatProvider.GetFormat"/> method then returns the <see cref="NumberFormatInfo"/> object that provides information for formatting the <see cref="UInt128"/> object, such as the negative sign symbol, the group separator symbol, or the decimal point symbol. 
+        /// There are three ways to use the <paramref name="formatProvider"/> parameter to supply formatting information to the <see cref="ToString(String, IFormatProvider)"/> method: 
+        /// <list type="bullet">
+        ///   <item>
+        ///   You can pass a <see cref="CultureInfo"/> object that represents the culture that provides numeric formatting information. 
+        ///   Its <see cref="CultureInfo.GetFormat"/> method returns the <see cref="NumberFormatInfo"/> object that provides numeric formatting information.
+        ///   </item>
+        ///   <item>You can pass the actual <see cref="NumberFormatInfo"/> object that provides formatting information. (Its implementation of <see cref="NumberFormatInfo.GetFormat"/> just returns itself.)</item>
+        ///   <item>
+        ///   You can pas a custom object that implements <see cref="IFormatProvider"/> and uses the <see cref="IFormatProvider.GetFormat"/> method 
+        ///   to instantiate and return the <see cref="NumberFormatInfo"/> object that provides formatting information.
+        ///   </item>
+        /// </list>
+        /// If <paramref name="formatProvider"/> is <see langword="null"/>, the formatting of the returned string is based on the <see cref="NumberFormatInfo "/> object of the current culture.
+        /// </para>
+        /// </remarks>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return ((BigInteger)this).ToString(format, formatProvider);
+        }
+
+        /// <summary>
+        /// Converts the numeric value of the current <see cref="UInt128"/> object to its equivalent string representation by using the specified format.
+        /// Uses <see cref="CultureInfo.CurrentCulture"/> as the format provider.
+        /// </summary>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <returns>The string representation of the current <see cref="UInt128"/> value as specified by the <paramref name="format"/> parameter.</returns>
+        /// <exception cref="FormatException"><paramref name="format"/> is not a valid format string.</exception>
+        /// <remarks>
+        /// See <see cref="ToString(string, IFormatProvider)"/> for remarks.
+        /// </remarks>
         public string ToString(string format)
         {
-            if (format != "X32")
-                throw new NotSupportedException("Only X32 format is supported");
-            return _mostSignificant.ToString("X16", CultureInfo.InvariantCulture) + _leastSignificant.ToString("X16", CultureInfo.InvariantCulture);
+            return ToString(format, CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Currently not supported since only X32 string format is supported (and not decimal).
+        /// Converts the numeric value of the current <see cref="UInt128"/> object to its equivalent string representation by using the specified culture-specific format information.
+        /// Uses "G" format.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The string representation of the current <see cref="UInt128"/> value as specified by the <paramref name="provider"/> parameter.</returns>
+        /// <remarks>
+        /// See <see cref="ToString(string, IFormatProvider)"/> for remarks.
+        /// </remarks>
+        public string ToString(IFormatProvider provider)
+        {
+            return ToString("G", provider);
+        }
+
+        /// <summary>
+        /// Converts the numeric value of the current <see cref="UInt128"/> object to its equivalent string representation.
+        /// Uses "G" format.
+        /// Uses <see cref="CultureInfo.CurrentCulture"/> as the format provider.
+        /// </summary>
+        /// <returns>The string representation of the current <see cref="UInt128"/> value.</returns>
+        /// <remarks>
+        /// See <see cref="ToString(string, IFormatProvider)"/> for remarks.
+        /// </remarks>
         public override string ToString()
         {
-            throw new NotSupportedException("Only X32 format is supported");
+            return ToString(CultureInfo.CurrentCulture);
+        }
+
+        private BigInteger ToBigInteger()
+        {
+            BigInteger value = _mostSignificant;
+            value <<= 64;
+            value += _leastSignificant;
+            return value;
         }
 
         private readonly ulong _leastSignificant;

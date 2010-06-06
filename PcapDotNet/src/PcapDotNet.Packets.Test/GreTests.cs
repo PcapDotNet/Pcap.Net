@@ -205,62 +205,67 @@ namespace PcapDotNet.Packets.Test
 
             Random random = new Random();
 
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(IpV4Protocol.Gre);
-            ipV4Layer.HeaderChecksum = null;
+            for (int i = 0; i != 100; ++i)
+            {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(IpV4Protocol.Gre);
+                ipV4Layer.HeaderChecksum = null;
 
-            GreLayer greLayer = random.NextGreLayer();
-            greLayer.Checksum = null;
-            greLayer.Routing = new List<GreSourceRouteEntry>
-                               {
-                                   new GreSourceRouteEntryAs(new List<ushort> {123}.AsReadOnly(), 0),
-                                   new GreSourceRouteEntryIp(new List<IpV4Address> {random.NextIpV4Address()}.AsReadOnly(),
-                                                             0)
-                               }.AsReadOnly();
+                GreLayer greLayer = random.NextGreLayer();
+                greLayer.Checksum = null;
+                greLayer.Routing = new List<GreSourceRouteEntry>
+                                   {
+                                       new GreSourceRouteEntryAs(new List<ushort> {123}.AsReadOnly(), 0),
+                                       new GreSourceRouteEntryIp(new List<IpV4Address> {random.NextIpV4Address()}.AsReadOnly(),
+                                                                 0)
+                                   }.AsReadOnly();
 
-            PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
-            Packet packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsTrue(packet.IsValid, "IsValid");
+                PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
+                Packet packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsTrue(packet.IsValid || 
+                    new[]{EthernetType.IpV4, EthernetType.Arp}.Contains(greLayer.ProtocolType), 
+                    "IsValid. ProtoclType=" + greLayer.ProtocolType);
 
-            GreDatagram gre = packet.Ethernet.IpV4.Gre;
+                GreDatagram gre = packet.Ethernet.IpV4.Gre;
 
-            // Remove a byte from routing
-            Datagram newIpPayload = new Datagram(gre.Take(gre.Length - 1).ToArray());
-            packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
-            packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsNull(packet.Ethernet.IpV4.Gre.Payload);
-            Assert.IsFalse(packet.IsValid);
+                // Remove a byte from routing
+                Datagram newIpPayload = new Datagram(gre.Take(gre.Length - 1).ToArray());
+                packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
+                packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsNull(packet.Ethernet.IpV4.Gre.Payload);
+                Assert.IsFalse(packet.IsValid);
 
-            // SreLength is too big
-            byte[] buffer = gre.ToArray();
-            buffer[buffer.Length - 1] = 200;
-            newIpPayload = new Datagram(buffer);
-            packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer { Data = newIpPayload });
-            packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsFalse(packet.IsValid);
+                // SreLength is too big
+                byte[] buffer = gre.ToArray();
+                buffer[buffer.Length - 1] = 200;
+                newIpPayload = new Datagram(buffer);
+                packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
+                packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsFalse(packet.IsValid);
 
-            // PayloadOffset is too big
-            buffer = gre.ToArray();
-            buffer[gre.Length - 10] = 100;
-            newIpPayload = new Datagram(buffer);
-            packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer { Data = newIpPayload });
-            packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsFalse(packet.IsValid);
+                // PayloadOffset is too big
+                buffer = gre.ToArray();
+                buffer[gre.Length - 10] = 100;
+                newIpPayload = new Datagram(buffer);
+                packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
+                packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsFalse(packet.IsValid);
 
-            // PayloadOffset isn't aligned to ip
-            buffer = gre.ToArray();
-            buffer[gre.Length - 10] = 3;
-            newIpPayload = new Datagram(buffer);
-            packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer { Data = newIpPayload });
-            packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsFalse(packet.IsValid);
+                // PayloadOffset isn't aligned to ip
+                buffer = gre.ToArray();
+                buffer[gre.Length - 10] = 3;
+                newIpPayload = new Datagram(buffer);
+                packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
+                packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsFalse(packet.IsValid);
 
-            // PayloadOffset isn't aligned to as
-            buffer = gre.ToArray();
-            buffer[gre.Length - 16] = 1;
-            newIpPayload = new Datagram(buffer);
-            packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer { Data = newIpPayload });
-            packet = packetBuilder.Build(DateTime.Now);
-            Assert.IsFalse(packet.IsValid);
+                // PayloadOffset isn't aligned to as
+                buffer = gre.ToArray();
+                buffer[gre.Length - 16] = 1;
+                newIpPayload = new Datagram(buffer);
+                packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, new PayloadLayer {Data = newIpPayload});
+                packet = packetBuilder.Build(DateTime.Now);
+                Assert.IsFalse(packet.IsValid);
+            }
         }
     }
 }
