@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
 
@@ -47,6 +48,7 @@ namespace PcapDotNet.Base.Test
             {
                 UInt128 value = random.NextUInt128();
 
+                // Test equality
                 Assert.AreEqual(value, value);
                 Assert.AreNotEqual(value, string.Empty);
                 Assert.AreNotEqual(value, UInt128.MaxValue);
@@ -55,10 +57,63 @@ namespace PcapDotNet.Base.Test
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
                 // ReSharper restore EqualExpressionComparison
+
+                // Test GetHashCode
                 Assert.IsNotNull(value.GetHashCode());
-                Assert.AreEqual(value, UInt128.Parse(value.ToString("X32"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
-                Assert.AreEqual(value >> 64, UInt128.Parse(((ulong)(value >> 64)).ToString("X16"), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+
+                // Test Parse()
+                Assert.AreEqual(value, UInt128.Parse(value.ToString()));
+                Assert.AreEqual(value, UInt128.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                Assert.AreEqual(value, UInt128.Parse(value.ToString(), NumberStyles.Integer));
+
+                // Test TryParse()
+                UInt128 actualValue;
+                Assert.IsTrue(UInt128.TryParse(value.ToString(), out actualValue));
+                Assert.AreEqual(value, actualValue);
+                Assert.IsTrue(UInt128.TryParse(value.ToString(CultureInfo.InvariantCulture), out actualValue));
+                Assert.AreEqual(value, actualValue);
+
+                // Cast to UInt64
+                ulong smallValue = random.NextULong();
+                Assert.AreEqual(smallValue, (ulong)((UInt128)smallValue));
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OverflowException))]
+        public void CastToULongOverflow()
+        {
+            Random random = new Random();
+            UInt128 value;
+            try
+            {
+                 value = (UInt128)(((BigInteger)ulong.MaxValue) + random.NextULong(ulong.MaxValue) + 1);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                return;
+            }
+            Assert.AreEqual(value, (ulong)value); 
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OverflowException))]
+        public void ParseOverflow()
+        {
+            Assert.AreEqual(0, UInt128.Parse("-1"));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TryParseOverflow()
+        {
+            UInt128 actual;
+            Assert.IsFalse(UInt128.TryParse("-1", out actual));
+            Assert.AreEqual(UInt128.Zero, actual);
+            Assert.IsFalse(UInt128.TryParse((UInt128.MaxValue + BigInteger.One).ToString(), out actual));
+            Assert.AreEqual(UInt128.Zero, actual);
         }
 
         [TestMethod]
@@ -88,7 +143,7 @@ namespace PcapDotNet.Base.Test
             for (int i = 0; i <= 32; ++i)
             {
                 string andValueString = new string('0', i) + new string('F', ValueString.Length - i);
-                UInt128 andValue = UInt128.Parse(andValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                UInt128 andValue = UInt128.Parse("0" + andValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 string expectedValueString = new string('0', i) + ValueString.Substring(i, ValueString.Length - i);
                 UInt128 expectedValue = UInt128.Parse(expectedValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 UInt128 actualValue = value & andValue;

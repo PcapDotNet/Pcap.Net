@@ -135,18 +135,13 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override string ToString()
         {
+            string valueString = _value.ToString("X33", CultureInfo.InvariantCulture).Substring(1);
             StringBuilder stringBuilder = new StringBuilder(39);
-
             for (int i = 0; i != 8; ++i)
             {
                 if (i != 0)
                     stringBuilder.Append(':');
-                string andZerosBefore = new string('0', i * 4);
-                string andZerosAfter = new string('0', 28 - i * 4);
-                string andString = andZerosBefore + "FFFF" + andZerosAfter;
-                UInt128 andValue = UInt128.Parse(andString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-                ushort value = (ushort)((_value & andValue) >> (112 - i * 16));
-                stringBuilder.Append(value.ToString("X4", CultureInfo.InvariantCulture));
+                stringBuilder.Append(valueString.Substring(i * 4, 4));
             }
 
             return stringBuilder.ToString();

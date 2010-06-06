@@ -869,6 +869,7 @@ namespace PcapDotNet.Core.Test
                                        address.ToString());
                 }
             }
+            
             PacketCommunicator communicator = device.Open();
             try
             {

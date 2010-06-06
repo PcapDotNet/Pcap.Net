@@ -62,7 +62,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 50; ++i)
+            for (int i = 0; i != 10; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(200));
