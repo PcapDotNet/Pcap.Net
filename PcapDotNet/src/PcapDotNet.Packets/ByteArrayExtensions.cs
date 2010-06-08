@@ -12,6 +12,16 @@ namespace PcapDotNet.Packets
     /// </summary>
     public static class ByteArrayExtensions
     {
+        public static int Compare(this byte[] array, int offset, byte[] other, int otherOffset, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool SequenceEqual(this byte[] array, int offset, byte[] other, int otherOffset, int count)
+        {
+            return array.Compare(offset, other, otherOffset, count) == 0;
+        }
+
         /// <summary>
         /// Copies a specified number of bytes from a source array starting at a particular offset to a destination array starting at a particular offset.
         /// </summary>
