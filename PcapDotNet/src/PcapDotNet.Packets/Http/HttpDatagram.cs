@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using PcapDotNet.Base;
 using System.Linq;
 using System.Text;
 
@@ -167,83 +169,242 @@ namespace PcapDotNet.Packets.Http
     /// entity-body     := Content-Encoding( Content-Type( data ) )
     /// </pre>
     /// </summary>
-    public abstract class HttpStartLineDatagram : Datagram
+    public abstract class HttpDatagram : Datagram
     {
-        private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
-//        public HttpHeaderDatagram Header
-//        {
-//            get {return }
-//        }
+        public abstract bool IsRequest { get; }
+        public bool IsResponse { get { return !IsRequest; } }
 
-        internal HttpStartLineDatagram CreateDatagram(byte[] buffer, int offset, int length)
+        public HttpHeader Header
+        {
+            get
+            {
+                if (_header == null)
+                    _header = new HttpHeader(Buffer, StartOffset + HeaderOffset, Length - HeaderOffset);
+                return _header;
+            }
+        }
+
+        protected abstract int HeaderOffset { get; }
+
+        internal HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
-                return new HttpResponseStartLineDatagram(buffer, offset, length);
-            return new HttpRequestStartLineDatagram(buffer, offset, length);
+                return new HttpResponseDatagram(buffer, offset, length);
+            return new HttpRequestDatagram(buffer, offset, length);
         }
 
-        internal HttpStartLineDatagram(byte[] buffer, int offset, int length) 
+        internal HttpDatagram(byte[] buffer, int offset, int length) 
             : base(buffer, offset, length)
         {
+        }
+
+        private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
+        private HttpHeader _header;
+    }
+
+    public class HttpHeader
+    {
+        private class Parser
+        {
+            public Parser(byte[] buffer, int offset, int length)
+            {
+                _buffer = buffer;
+                _offset = offset;
+                _totalLength = offset + length;
+                Success = offset >= 0 && length >= 0 && offset + length <= buffer.Length;
+            }
+
+            public bool Success { get; private set;}
+
+            public Parser Token(out string token)
+            {
+                if (!Success)
+                {
+                    token = null;
+                    return this;
+                }
+
+                int tokenLength = Range.TakeWhile(value => value.IsToken()).Count();
+                if (tokenLength == 0)
+                {
+                    token = null;
+                    return Fail();
+                }
+
+                token = Encoding.ASCII.GetString(_buffer, _offset, tokenLength);
+                _offset += token.Length;
+                return this;
+            }
+
+            public Parser Colon()
+            {
+                if (!Success)
+                    return this;
+
+                if (Range.First() != AsciiBytes.Colon)
+                    return Fail();
+
+                ++_offset;
+                return this;
+            }
+
+            public Parser FieldValue()
+            {
+                if (!Success)
+                    return this;
+
+                throw new NotImplementedException();
+//                SkipLws();
+//                while (Success)
+//                {
+//                    
+//                }
+            }
+
+            private Parser Fail()
+            {
+                Success = false;
+                return this;
+            }
+
+            private IEnumerable<byte> Range
+            {
+                get { return _buffer.Range(_offset, _totalLength - _offset);}
+            }
+
+            private readonly byte[] _buffer;
+            private int _offset;
+            private readonly int _totalLength;
+        }
+
+        internal HttpHeader(byte[] buffer, int offset, int length)
+        {
+            Parser parser = new Parser(buffer, offset, length);
+            string fieldName;
+            parser.Token(out fieldName).Colon().FieldValue();
+//            int totalLength = offset + length;
+//            Datagram data = new Datagram(buffer, offset, totalLength - offset);
+
+            // Parse field-name = token
+//            string fieldName;
+//            if (!TryParseToken(buffer, offset, totalLength - offset, out fieldName))
+//                return;
+//            offset += fieldName.Length;
+//            data = new Datagram(buffer, offset, totalLength - offset);
+
+            // Parse ":"
+//            if (data.FirstOrDefault() != AsciiBytes.Colon)
+//                return;
+//
+//            ++offset;
+            
+            // Parse field-value
+//            if (!TryParseFieldValue(buffer, offset, totalLength - offset))
+//                return;
+
+//            data = new Datagram(buffer, offset, totalLength - offset);
+
+            // Parse field-value = *( field-content | LWS )
+//            IEnumerable<byte> fieldValue = new byte[0];
+//
+//            int lwsCount = data.CountLinearWhiteSpaces();
+//            if (lwsCount != 0)
+//            {
+//                offset += lwsCount;
+//                data = new Datagram(buffer, offset, totalLength - offset);
+//            }
+//
+//            int fieldContentCount;
+//            IEnumerable<byte> fieldContent = data.TakeFieldContent(out fieldContentCount);
+//
+//            if (fieldContentCount != 0)
+//            {
+//                if (fieldValue.Any())
+//                    fieldValue = fieldValue.Concat(AsciiBytes.Space);
+//                fieldValue = fieldValue.Concat(fieldContent);
+//                offset += fieldContentCount;
+//            }
+//            data.SkipWhile
+//            buffer..Take(count).TakeWhile(value => value.IsToken()).Count))
+//            Encoding.ASCII.GetString()
+        }
+
+//        private HttpHeaderPart _generalHeader;
+//        private HttpHeaderPart _requestHeader;
+//        private HttpHeaderPart _responseHeader;
+//        private HttpHeaderPart _entityHeader;
+//        private Dictionary<string, >
+    }
+
+    public class HttpRequestDatagram : HttpDatagram
+    {
+        internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
+            : base(buffer, offset, length)
+        {
+        }
+
+        public override bool IsRequest
+        {
+            get { return true; }
+        }
+
+        protected override int HeaderOffset
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 
-    public class HttpRequestStartLineDatagram : HttpStartLineDatagram
+    public class HttpResponseDatagram : HttpDatagram
     {
-        internal HttpRequestStartLineDatagram(byte[] buffer, int offset, int length) 
+        internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
             : base(buffer, offset, length)
         {
         }
-    }
 
-    public class HttpResponseStartLineDatagram : HttpStartLineDatagram
-    {
-        internal HttpResponseStartLineDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
+        public override bool IsRequest
         {
+            get { return false; }
+        }
+
+        protected override int HeaderOffset
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 
-    public class HttpHeaderDatagram : Datagram
+    internal static class IEnumerableExtensions
     {
-        internal HttpHeaderDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
+        public static int CountLinearWhiteSpaces(this IEnumerable<byte> sequence)
         {
-        }
-        
-//        public HttpEntityBodyDatagram EntityBody { get;}
-    }
-
-    public class HttpEntityBodyDatagram : Datagram
-    {
-        internal HttpEntityBodyDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-//        public HttpMessageBodyDatagram MessageBody { get;}
-    }
-
-    public class HttpMessageBodyDatagram : Datagram
-    {
-        internal HttpMessageBodyDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-    }
-
-    public class HttpRequestHeaderDatagram : HttpHeaderDatagram
-    {
-        internal HttpRequestHeaderDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-    }
-
-    public class HttpResponseHeaderDatagram : HttpHeaderDatagram
-    {
-        internal HttpResponseHeaderDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
+            int count = 0;
+            while (true)
+            {
+                byte first = sequence.FirstOrDefault();
+                if (first == AsciiBytes.CarriageReturn) // CR
+                {
+                    IEnumerable<byte> skippedSequence = sequence.Skip(1);
+                    if (skippedSequence.FirstOrDefault() == AsciiBytes.LineFeed) // CRLF
+                    {
+                        skippedSequence = skippedSequence.Skip(1);
+                        if (skippedSequence.FirstOrDefault().IsSpaceOrHorizontalTab()) // CRLF ( SP | HT )
+                        {
+                            sequence = skippedSequence.Skip(1);
+                            count += 3;
+                        }
+                        else // CRLF without ( SP | HT )
+                            return count;
+                    }
+                    else // CR without LF
+                        return count;
+                }
+                else if (first.IsSpaceOrHorizontalTab()) // ( SP | HT )
+                {
+                    ++count;
+                    sequence = sequence.Skip(1);
+                }
+                else // Doesn't start with ( CR | SP | HT )
+                    return count;
+            }
         }
     }
 
@@ -283,7 +444,6 @@ namespace PcapDotNet.Packets.Http
 
     internal static class ByteExtensions
     {
-
         // CHAR
         public static bool IsChar(this byte value)
         {
@@ -320,6 +480,11 @@ namespace PcapDotNet.Packets.Http
             return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperF ||
                    value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerF ||
                    value.IsDigit();
+        }
+
+        public static bool IsSpaceOrHorizontalTab(this byte value)
+        {
+            return value == AsciiBytes.Space || value == AsciiBytes.HorizontalTab;
         }
 
         // CTL            
