@@ -14,7 +14,13 @@ namespace PcapDotNet.Packets
     {
         public static int Compare(this byte[] array, int offset, byte[] other, int otherOffset, int count)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i != count; ++i)
+            {
+                int compare = array[offset + i].CompareTo(other[otherOffset + i]);
+                if (compare != 0)
+                    return compare;
+            }
+            return 0;
         }
 
         public static bool SequenceEqual(this byte[] array, int offset, byte[] other, int otherOffset, int count)

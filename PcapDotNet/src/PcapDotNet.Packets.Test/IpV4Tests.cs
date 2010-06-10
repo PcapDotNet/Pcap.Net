@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void HttpTest()
+        public void IpV4HttpTest()
         {
             Packet packet = HexToPacket(
                 "feff200001000000010000000800" +

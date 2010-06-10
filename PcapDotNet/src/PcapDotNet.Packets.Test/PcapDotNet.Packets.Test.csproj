@@ -74,6 +74,7 @@
     <Compile Include="EndianitiyTests.cs" />
     <Compile Include="EthernetTests.cs" />
     <Compile Include="GreTests.cs" />
+    <Compile Include="HttpTests.cs" />
     <Compile Include="IcmpTests.cs" />
     <Compile Include="IgmpTests.cs" />
     <Compile Include="IpV4Tests.cs" />

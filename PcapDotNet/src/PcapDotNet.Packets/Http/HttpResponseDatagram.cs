@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.Http
 {
@@ -16,8 +17,10 @@ namespace PcapDotNet.Packets.Http
 
         internal override void ParseFirstLine(HttpParser parser)
         {
-            int statusCode;
-            parser.Version().Space().DecimalNumber(3, out statusCode).Space().ReasonPhrase().CarraigeReturnLineFeed();
+            uint statusCode;
+            HttpVersion version;
+            IEnumerable<byte> reasonPhrase;
+            parser.Version(out version).Space().DecimalNumber(3, out statusCode).Space().ReasonPhrase(out reasonPhrase).CarraigeReturnLineFeed();
         }
     }
 }

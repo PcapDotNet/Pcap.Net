@@ -32,5 +32,7 @@
         public const byte EqualsSign = (byte)'=';
         public const byte LeftCurlyBracket = (byte)'{';
         public const byte RightCurlyBracket = (byte)'}';
+        public const byte Asterisk = (byte)'*';
+        public const byte Dot = (byte)'.';
     }
 }

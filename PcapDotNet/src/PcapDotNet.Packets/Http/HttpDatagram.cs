@@ -60,6 +60,34 @@ namespace PcapDotNet.Packets.Http
     /// extension-method = token
     /// 
     /// Request-URI      = "*" | absoluteURI | abs_path | authority
+    /// absoluteURI      = scheme ":" ( hier_part | opaque_part )
+    /// scheme           = alpha *( alpha | digit | "+" | "-" | "." )
+    /// hier_part        = ( net_path | abs_path ) [ "?" query ]
+    /// opaque_part      = uric_no_slash *uric
+    /// net_path         = "//" authority [ abs_path ]
+    /// abs_path         = "/"  path_segments
+    /// query            = *uric
+    /// uric_no_slash    = unreserved | escaped | ";" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// uric             = reserved | unreserved | escaped
+    /// authority        = server | reg_name
+    /// path_segments    = segment *( "/" segment )
+    /// unreserved       = alphanum | mark
+    /// escaped          = "%" hex hex
+    /// reserved         = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// server           = [ [ userinfo "@" ] hostport ]
+    /// reg_name         = 1*( unreserved | escaped | "$" | "," | ";" | ":" | "@" | "&" | "=" | "+" )
+    /// segment          = *pchar *( ";" param )
+    /// mark             = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+    /// userinfo         = *( unreserved | escaped | ";" | ":" | "&" | "=" | "+" | "$" | "," )
+    /// hostport         = host [ ":" port ]
+    /// pchar            = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// param            = *pchar
+    /// host             = hostname | IPv4address
+    /// port             = *digit
+    /// hostname         = *( domainlabel "." ) toplabel [ "." ]
+    /// IPv4address      = 1*digit "." 1*digit "." 1*digit "." 1*digit
+    /// domainlabel      = alphanum | alphanum *( alphanum | "-" ) alphanum
+    /// toplabel         = alpha | alpha *( alphanum | "-" ) alphanum
     /// 
     /// request-header   = Accept                  
     ///                  | Accept-Charset          
@@ -188,7 +216,7 @@ namespace PcapDotNet.Packets.Http
             _header = new HttpHeader(ParseHeader(parser));
         }
 
-        internal HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
+        internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
                 return new HttpResponseDatagram(buffer, offset, length);

@@ -234,7 +234,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             get
             {
-                if (_icmp == null && Length >= HeaderLength)
+                if (_icmp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
                     _icmp = IcmpDatagram.CreateDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _icmp;
@@ -248,7 +248,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             get
             {
-                if (_igmp == null && Length >= HeaderLength)
+                if (_igmp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
                     _igmp = new IgmpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _igmp;
@@ -262,7 +262,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             get
             {
-                if (_tcp == null && Length >= HeaderLength)
+                if (_tcp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
                     _tcp = new TcpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _tcp;
@@ -276,7 +276,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             get
             {
-                if (_gre == null && Length >= HeaderLength)
+                if (_gre == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
                     _gre = new GreDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _gre;
@@ -290,7 +290,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             get
             {
-                if (_udp == null && Length >= HeaderLength)
+                if (_udp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
                     _udp = new UdpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
 
                 return _udp;
