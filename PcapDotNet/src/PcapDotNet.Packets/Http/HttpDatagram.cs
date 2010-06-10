@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using PcapDotNet.Base;
 using System.Linq;
 using System.Text;
 
@@ -178,13 +176,17 @@ namespace PcapDotNet.Packets.Http
         {
             get
             {
-                if (_header == null)
-                    _header = new HttpHeader(Buffer, StartOffset + HeaderOffset, Length - HeaderOffset);
+                Parse();
                 return _header;
             }
         }
-
-        protected abstract int HeaderOffset { get; }
+        
+        private void Parse()
+        {
+            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
+            ParseFirstLine(parser);
+            _header = new HttpHeader(ParseHeader(parser));
+        }
 
         internal HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
@@ -198,336 +200,59 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
+        internal abstract void ParseFirstLine(HttpParser parser);
+
+        private IEnumerable<KeyValuePair<string, IEnumerable<byte>>> ParseHeader(HttpParser parser)
+        {
+            while (parser.Success)
+            {
+                string fieldName;
+                IEnumerable<byte> fieldValue;
+                parser.Token(out fieldName).Colon().FieldValue(out fieldValue);
+                if (parser.Success)
+                    yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
+            }
+        }
+
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
+
         private HttpHeader _header;
     }
 
-    public class HttpHeader
-    {
-        private class Parser
-        {
-            public Parser(byte[] buffer, int offset, int length)
-            {
-                _buffer = buffer;
-                _offset = offset;
-                _totalLength = offset + length;
-                Success = offset >= 0 && length >= 0 && offset + length <= buffer.Length;
-            }
 
-            public bool Success { get; private set;}
-
-            public Parser Token(out string token)
-            {
-                if (!Success)
-                {
-                    token = null;
-                    return this;
-                }
-
-                int tokenLength = Range.TakeWhile(value => value.IsToken()).Count();
-                if (tokenLength == 0)
-                {
-                    token = null;
-                    return Fail();
-                }
-
-                token = Encoding.ASCII.GetString(_buffer, _offset, tokenLength);
-                _offset += token.Length;
-                return this;
-            }
-
-            public Parser Colon()
-            {
-                if (!Success)
-                    return this;
-
-                if (Range.First() != AsciiBytes.Colon)
-                    return Fail();
-
-                ++_offset;
-                return this;
-            }
-
-            public Parser FieldValue()
-            {
-                if (!Success)
-                    return this;
-
-                throw new NotImplementedException();
-//                SkipLws();
-//                while (Success)
+    //    internal static class IEnumerableExtensions
+//    {
+//        public static int CountLinearWhiteSpaces(this IEnumerable<byte> sequence)
+//        {
+//            int count = 0;
+//            while (true)
+//            {
+//                byte first = sequence.FirstOrDefault();
+//                if (first == AsciiBytes.CarriageReturn) // CR
 //                {
-//                    
+//                    IEnumerable<byte> skippedSequence = sequence.Skip(1);
+//                    if (skippedSequence.FirstOrDefault() == AsciiBytes.LineFeed) // CRLF
+//                    {
+//                        skippedSequence = skippedSequence.Skip(1);
+//                        if (skippedSequence.FirstOrDefault().IsSpaceOrHorizontalTab()) // CRLF ( SP | HT )
+//                        {
+//                            sequence = skippedSequence.Skip(1);
+//                            count += 3;
+//                        }
+//                        else // CRLF without ( SP | HT )
+//                            return count;
+//                    }
+//                    else // CR without LF
+//                        return count;
 //                }
-            }
-
-            private Parser Fail()
-            {
-                Success = false;
-                return this;
-            }
-
-            private IEnumerable<byte> Range
-            {
-                get { return _buffer.Range(_offset, _totalLength - _offset);}
-            }
-
-            private readonly byte[] _buffer;
-            private int _offset;
-            private readonly int _totalLength;
-        }
-
-        internal HttpHeader(byte[] buffer, int offset, int length)
-        {
-            Parser parser = new Parser(buffer, offset, length);
-            string fieldName;
-            parser.Token(out fieldName).Colon().FieldValue();
-//            int totalLength = offset + length;
-//            Datagram data = new Datagram(buffer, offset, totalLength - offset);
-
-            // Parse field-name = token
-//            string fieldName;
-//            if (!TryParseToken(buffer, offset, totalLength - offset, out fieldName))
-//                return;
-//            offset += fieldName.Length;
-//            data = new Datagram(buffer, offset, totalLength - offset);
-
-            // Parse ":"
-//            if (data.FirstOrDefault() != AsciiBytes.Colon)
-//                return;
-//
-//            ++offset;
-            
-            // Parse field-value
-//            if (!TryParseFieldValue(buffer, offset, totalLength - offset))
-//                return;
-
-//            data = new Datagram(buffer, offset, totalLength - offset);
-
-            // Parse field-value = *( field-content | LWS )
-//            IEnumerable<byte> fieldValue = new byte[0];
-//
-//            int lwsCount = data.CountLinearWhiteSpaces();
-//            if (lwsCount != 0)
-//            {
-//                offset += lwsCount;
-//                data = new Datagram(buffer, offset, totalLength - offset);
+//                else if (first.IsSpaceOrHorizontalTab()) // ( SP | HT )
+//                {
+//                    ++count;
+//                    sequence = sequence.Skip(1);
+//                }
+//                else // Doesn't start with ( CR | SP | HT )
+//                    return count;
 //            }
-//
-//            int fieldContentCount;
-//            IEnumerable<byte> fieldContent = data.TakeFieldContent(out fieldContentCount);
-//
-//            if (fieldContentCount != 0)
-//            {
-//                if (fieldValue.Any())
-//                    fieldValue = fieldValue.Concat(AsciiBytes.Space);
-//                fieldValue = fieldValue.Concat(fieldContent);
-//                offset += fieldContentCount;
-//            }
-//            data.SkipWhile
-//            buffer..Take(count).TakeWhile(value => value.IsToken()).Count))
-//            Encoding.ASCII.GetString()
-        }
-
-//        private HttpHeaderPart _generalHeader;
-//        private HttpHeaderPart _requestHeader;
-//        private HttpHeaderPart _responseHeader;
-//        private HttpHeaderPart _entityHeader;
-//        private Dictionary<string, >
-    }
-
-    public class HttpRequestDatagram : HttpDatagram
-    {
-        internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-
-        public override bool IsRequest
-        {
-            get { return true; }
-        }
-
-        protected override int HeaderOffset
-        {
-            get { throw new NotImplementedException(); }
-        }
-    }
-
-    public class HttpResponseDatagram : HttpDatagram
-    {
-        internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-
-        public override bool IsRequest
-        {
-            get { return false; }
-        }
-
-        protected override int HeaderOffset
-        {
-            get { throw new NotImplementedException(); }
-        }
-    }
-
-    internal static class IEnumerableExtensions
-    {
-        public static int CountLinearWhiteSpaces(this IEnumerable<byte> sequence)
-        {
-            int count = 0;
-            while (true)
-            {
-                byte first = sequence.FirstOrDefault();
-                if (first == AsciiBytes.CarriageReturn) // CR
-                {
-                    IEnumerable<byte> skippedSequence = sequence.Skip(1);
-                    if (skippedSequence.FirstOrDefault() == AsciiBytes.LineFeed) // CRLF
-                    {
-                        skippedSequence = skippedSequence.Skip(1);
-                        if (skippedSequence.FirstOrDefault().IsSpaceOrHorizontalTab()) // CRLF ( SP | HT )
-                        {
-                            sequence = skippedSequence.Skip(1);
-                            count += 3;
-                        }
-                        else // CRLF without ( SP | HT )
-                            return count;
-                    }
-                    else // CR without LF
-                        return count;
-                }
-                else if (first.IsSpaceOrHorizontalTab()) // ( SP | HT )
-                {
-                    ++count;
-                    sequence = sequence.Skip(1);
-                }
-                else // Doesn't start with ( CR | SP | HT )
-                    return count;
-            }
-        }
-    }
-
-    internal static class AsciiBytes
-    {
-        public const byte UpperA = (byte)'A';
-        public const byte UpperF = (byte)'F';
-        public const byte UpperZ = (byte)'Z';
-        public const byte LowerA = (byte)'a';
-        public const byte LowerF = (byte)'f';
-        public const byte LowerZ = (byte)'z';
-        public const byte Zero = (byte)'0';
-        public const byte Nine = (byte)'9';
-        public const byte Delete = 127; // DEL
-        public const byte CarriageReturn = 13; // CR
-        public const byte LineFeed = 10; // LF
-        public const byte Space = (byte)' '; // SP
-        public const byte HorizontalTab = 9; // HT
-        public const byte DoubleQuotationMark = (byte)'"';
-        public const byte LeftRoundBracket = (byte)'(';
-        public const byte RightRoundBracket = (byte)')';
-        public const byte LowerThan = (byte)'<';
-        public const byte BiggerThan = (byte)'>';
-        public const byte AtSign = (byte)'@';
-        public const byte Comma = (byte)',';
-        public const byte Semicolon = (byte)';';
-        public const byte Colon = (byte)':';
-        public const byte BackSlash = (byte)'\\';
-        public const byte Slash = (byte)'/';
-        public const byte LeftSquareBracket = (byte)'[';
-        public const byte RightSquareBracket = (byte)']';
-        public const byte QuestionMark = (byte)'?';
-        public const byte EqualsSign = (byte)'=';
-        public const byte LeftCurlyBracket = (byte)'{';
-        public const byte RightCurlyBracket = (byte)'}';
-    }
-
-    internal static class ByteExtensions
-    {
-        // CHAR
-        public static bool IsChar(this byte value)
-        {
-            return value <= 127;
-        }
-
-        // UPALPHA        
-        public static bool IsUpAlpha(this byte value)
-        {
-            return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperZ;
-        }
-
-        // LOALPHA        
-        public static bool IsLowerAlpha(this byte value)
-        {
-            return value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerZ;
-        }
-
-        // ALPHA          
-        public static bool IsAlpha(this byte value)
-        {
-            return value.IsUpAlpha() || value.IsLowerAlpha();
-        }
-
-        // DIGIT          
-        public static bool IsDigit(this byte value)
-        {
-            return value >= AsciiBytes.Zero && value <= AsciiBytes.Nine;
-        }
-
-        // HEX
-        public static bool IsHexadecimalDigit(this byte value)
-        {
-            return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperF ||
-                   value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerF ||
-                   value.IsDigit();
-        }
-
-        public static bool IsSpaceOrHorizontalTab(this byte value)
-        {
-            return value == AsciiBytes.Space || value == AsciiBytes.HorizontalTab;
-        }
-
-        // CTL            
-        public static bool IsControl(this byte value)
-        {
-            return value <= 31 || value == AsciiBytes.Delete;
-        }
-
-        // separators     
-        public static bool IsSeparator(this byte value)
-        {
-            switch (value)
-            {
-                case AsciiBytes.LeftRoundBracket:
-                case AsciiBytes.RightRoundBracket:
-                case AsciiBytes.LowerThan:
-                case AsciiBytes.BiggerThan:
-                case AsciiBytes.AtSign:
-                case AsciiBytes.Comma:
-                case AsciiBytes.Semicolon:
-                case AsciiBytes.Colon:
-                case AsciiBytes.BackSlash:
-                case AsciiBytes.DoubleQuotationMark:
-                case AsciiBytes.Slash:
-                case AsciiBytes.LeftSquareBracket:
-                case AsciiBytes.RightSquareBracket:
-                case AsciiBytes.QuestionMark:
-                case AsciiBytes.EqualsSign:
-                case AsciiBytes.LeftCurlyBracket:
-                case AsciiBytes.RightCurlyBracket:
-                case AsciiBytes.Space:
-                case AsciiBytes.HorizontalTab:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        // token          
-        public static bool IsToken(this byte value)
-        {
-            return value.IsChar() && !value.IsControl() && !value.IsSeparator();
-        }
-    }
+//        }
+//    }
 }

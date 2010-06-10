@@ -107,7 +107,13 @@
     <Compile Include="Gre\GreSourceRouteEntryIp.cs" />
     <Compile Include="Gre\GreSourceRouteEntryUnknown.cs" />
     <Compile Include="Gre\GreVersion.cs" />
+    <Compile Include="Http\AsciiBytes.cs" />
+    <Compile Include="Http\ByteExtensions.cs" />
     <Compile Include="Http\HttpDatagram.cs" />
+    <Compile Include="Http\HttpHeader.cs" />
+    <Compile Include="Http\HttpParser.cs" />
+    <Compile Include="Http\HttpRequestDatagram.cs" />
+    <Compile Include="Http\HttpResponseDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskRequestLayer.cs" />
