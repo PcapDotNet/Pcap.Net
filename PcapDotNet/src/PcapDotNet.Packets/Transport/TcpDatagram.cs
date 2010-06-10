@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Http;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -253,12 +254,28 @@ namespace PcapDotNet.Packets.Transport
                        };
         }
 
+        public HttpDatagram Http
+        {
+            get
+            {
+                if (_http == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
+                    _http = HttpDatagram.CreateDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                return _http;
+            }
+        }
+
         /// <summary>
         /// The payload of the TCP datagram.
         /// </summary>
         public Datagram Payload
         {
-            get { return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength); }
+            get
+            {
+                if (Length < HeaderMinimumLength || Length < HeaderLength)
+                    return null;
+
+                return new Datagram(Buffer, StartOffset + HeaderLength, PayloadLength);
+            }
         }
 
         /// <summary>
@@ -297,5 +314,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         private TcpOptions _options;
+        private HttpDatagram _http;
     }
 }

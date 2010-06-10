@@ -17,7 +17,9 @@ namespace PcapDotNet.Packets.Http
         internal override void ParseFirstLine(HttpParser parser)
         {
             string method;
-            parser.Token(out method).Space().RequestUri().Space().Version().CarraigeReturnLineFeed();
+            string uri;
+            HttpVersion version;
+            parser.Token(out method).Space().RequestUri(out uri).Space().Version(out version).CarraigeReturnLineFeed();
         }
     }
 }

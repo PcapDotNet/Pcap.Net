@@ -38,26 +38,44 @@ namespace PcapDotNet.Packets.Http
             return this;
         }
 
-        private HttpParser Single(byte value)
+        private HttpParser Bytes(byte value)
         {
             if (!Success)
                 return this;
 
-            if (Range.First() != value)
+            var range = Range;
+            if (!range.Any() || range.First() != value)
                 return Fail();
 
             ++_offset;
             return this;
         }
 
+        private HttpParser Bytes(params byte[] values)
+        {
+            if (!Success)
+                return this;
+
+            if (!Range.Take(values.Length).SequenceEqual(values))
+                return Fail();
+
+            _offset += values.Length;
+            return this;
+        }
+
         public HttpParser Colon()
         {
-            return Single(AsciiBytes.Colon);
+            return Bytes(AsciiBytes.Colon);
+        }
+
+        public HttpParser Dot()
+        {
+            return Bytes(AsciiBytes.Dot);
         }
 
         public HttpParser Space()
         {
-            return Single(AsciiBytes.Space);
+            return Bytes(AsciiBytes.Space);
         }
 
 
@@ -142,37 +160,100 @@ namespace PcapDotNet.Packets.Http
         private int _offset;
         private readonly int _totalLength;
 
-        public HttpParser RequestUri()
+        public HttpParser RequestUri(out string uri)
         {
-            throw new NotImplementedException();
+            if (!Success)
+            {
+                uri = null;
+                return this;
+            }
+
+            var range = Range;
+            int numChars = range.TakeWhile(value => value > 32 && value < 127).Count();
+            uri = Encoding.ASCII.GetString(_buffer, _offset, numChars);
+            _offset += numChars;
+            return this;
         }
 
-        public HttpParser Version()
+        public HttpParser Version(out HttpVersion version)
         {
-            throw new NotImplementedException();
+            uint major;
+            uint minor;
+            Bytes(_httpSlash).DecimalNumber(out major).Dot().DecimalNumber(out minor);
+            version = new HttpVersion(major, minor);
+            return this;
         }
 
         public HttpParser CarraigeReturnLineFeed()
         {
-            return Single(AsciiBytes.CarriageReturn).Single(AsciiBytes.LineFeed);
+            return Bytes(AsciiBytes.CarriageReturn, AsciiBytes.LineFeed);
         }
 
-        public HttpParser DecimalNumber(int numDigits, out int number)
+        public HttpParser DecimalNumber(int numDigits, out uint number)
         {
+            if (!Success)
+            {
+                number = 0;
+                return this;
+            }
+
             var digits = Range.Take(numDigits).TakeWhile(value => value.IsDigit());
             if (digits.Count() != numDigits)
             {
                 number = 0;
                 return Fail();
             }
-            number = digits.Select(value => value - AsciiBytes.Zero).Aggregate(0, (accumulated, value) => 10 * accumulated + value);
+            number = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
             _offset += numDigits;
             return this;
         }
 
-        public HttpParser ReasonPhrase()
+        public HttpParser DecimalNumber(out uint number)
         {
-            throw new NotImplementedException();
+            if (!Success)
+            {
+                number = 0;
+                return this;
+            }
+
+            var digits = Range.TakeWhile(value => value.IsDigit());
+            if (!digits.Any())
+            {
+                number = 0;
+                return Fail();
+            }
+
+            int numDigits = digits.Count();
+            number = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
+            _offset += numDigits;
+            return this;
         }
+
+        public HttpParser ReasonPhrase(out IEnumerable<byte> reasonPhrase)
+        {
+            if (!Success)
+            {
+                reasonPhrase = null;
+                return this;
+            }
+
+            reasonPhrase = Range.TakeWhile(value => !value.IsControl() || value == AsciiBytes.HorizontalTab);
+            _offset += reasonPhrase.Count();
+            return this;
+        }
+
+        private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
+    }
+
+    public class HttpVersion
+    {
+        public HttpVersion(uint major, uint minor)
+        {
+            Major = major;
+            Minor = minor;
+        }
+
+        public uint Major { get; private set; }
+        public uint Minor { get; private set; }
     }
 }
