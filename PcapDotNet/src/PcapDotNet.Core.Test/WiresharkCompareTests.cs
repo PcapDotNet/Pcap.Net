@@ -84,10 +84,10 @@ namespace PcapDotNet.Core.Test
             // Compare packet to wireshark
             ComparePacketsToWireshark(new[] { packet });
 
-            // BUG: Limited timestamp due to Wireshark bug: https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=4766
+            // BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
             // Now check different dates.
-            //packet = new Packet(new byte[14], new DateTime(2004,08,25,10,36,41, DateTimeKind.Utc).ToLocalTime(), DataLinkKind.Ethernet);
-            //ComparePacketsToWireshark(new[] { packet });
+//            packet = new Packet(new byte[14], new DateTime(2004,08,25,10,36,41, DateTimeKind.Utc).ToLocalTime(), DataLinkKind.Ethernet);
+//            ComparePacketsToWireshark(new[] { packet });
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace PcapDotNet.Core.Test
 
         private static Packet CreateRandomPacket(Random random)
         {
-            // BUG: Limited timestamp due to Wireshark bug: https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=4766
+            // BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
             DateTime packetTimestamp =
                 random.NextDateTime(new DateTime(2010,1,1), new DateTime(2010,12,31)).ToUniversalTime().ToLocalTime();
                 //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
