@@ -18,6 +18,11 @@ namespace PcapDotNet.Packets.Http
 
         public bool Success { get; private set; }
 
+        public int Offset
+        {
+            get { return _offset; }
+        }
+
         public HttpParser Token(out string token)
         {
             if (!Success)
@@ -156,10 +161,6 @@ namespace PcapDotNet.Packets.Http
             get { return _buffer.Range(_offset, _totalLength - _offset); }
         }
 
-        private readonly byte[] _buffer;
-        private int _offset;
-        private readonly int _totalLength;
-
         public HttpParser RequestUri(out string uri)
         {
             if (!Success)
@@ -177,10 +178,10 @@ namespace PcapDotNet.Packets.Http
 
         public HttpParser Version(out HttpVersion version)
         {
-            uint major;
-            uint minor;
+            uint? major;
+            uint? minor;
             Bytes(_httpSlash).DecimalNumber(out major).Dot().DecimalNumber(out minor);
-            version = new HttpVersion(major, minor);
+            version = major != null && minor != null ? new HttpVersion(major.Value, minor.Value) : null;
             return this;
         }
 
@@ -189,18 +190,21 @@ namespace PcapDotNet.Packets.Http
             return Bytes(AsciiBytes.CarriageReturn, AsciiBytes.LineFeed);
         }
 
-        public HttpParser DecimalNumber(int numDigits, out uint number)
+        public HttpParser DecimalNumber(int numDigits, out uint? number)
         {
+            if (numDigits > 8 || numDigits < 0)
+                throw new ArgumentOutOfRangeException("numDigits", numDigits, "Only between 0 and 8 digits are supported");
+
             if (!Success)
             {
-                number = 0;
+                number = null;
                 return this;
             }
 
             var digits = Range.Take(numDigits).TakeWhile(value => value.IsDigit());
             if (digits.Count() != numDigits)
             {
-                number = 0;
+                number = null;
                 return Fail();
             }
             number = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
@@ -208,28 +212,35 @@ namespace PcapDotNet.Packets.Http
             return this;
         }
 
-        public HttpParser DecimalNumber(out uint number)
+        public HttpParser DecimalNumber(out uint? number)
         {
             if (!Success)
             {
-                number = 0;
+                number = null;
                 return this;
             }
 
             var digits = Range.TakeWhile(value => value.IsDigit());
             if (!digits.Any())
             {
-                number = 0;
+                number = null;
                 return Fail();
             }
 
             int numDigits = digits.Count();
-            number = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
+            int numInsignificantDigits = digits.TakeWhile(value => value == AsciiBytes.Zero).Count();
+            uint numberValue = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
+            if (numDigits - numInsignificantDigits >= 8)
+            {
+                number = null;
+                return Fail();
+            }
+            number = numberValue;
             _offset += numDigits;
             return this;
         }
 
-        public HttpParser ReasonPhrase(out IEnumerable<byte> reasonPhrase)
+        public HttpParser ReasonPhrase(out Datagram reasonPhrase)
         {
             if (!Success)
             {
@@ -237,23 +248,16 @@ namespace PcapDotNet.Packets.Http
                 return this;
             }
 
-            reasonPhrase = Range.TakeWhile(value => !value.IsControl() || value == AsciiBytes.HorizontalTab);
-            _offset += reasonPhrase.Count();
+            int reasonPhraseLength = Range.Count(value => !value.IsControl() || value == AsciiBytes.HorizontalTab);
+            reasonPhrase = new Datagram(_buffer, _offset, reasonPhraseLength);
+            _offset += reasonPhraseLength;
             return this;
         }
 
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
-    }
-
-    public class HttpVersion
-    {
-        public HttpVersion(uint major, uint minor)
-        {
-            Major = major;
-            Minor = minor;
-        }
-
-        public uint Major { get; private set; }
-        public uint Minor { get; private set; }
+    
+        private readonly byte[] _buffer;
+        private int _offset;
+        private readonly int _totalLength;
     }
 }

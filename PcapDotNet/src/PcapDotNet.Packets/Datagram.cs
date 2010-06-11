@@ -148,6 +148,11 @@ namespace PcapDotNet.Packets
             return Length.GetHashCode() ^ this.BytesSequenceGetHashCode();
         }
 
+        public override string ToString()
+        {
+            return _buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
+        }
+
         internal void Write(byte[] buffer, int offset)
         {
             _buffer.BlockCopy(StartOffset, buffer, offset, Length);

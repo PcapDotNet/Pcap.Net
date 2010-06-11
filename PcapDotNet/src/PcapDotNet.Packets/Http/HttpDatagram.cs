@@ -200,22 +200,24 @@ namespace PcapDotNet.Packets.Http
         public abstract bool IsRequest { get; }
         public bool IsResponse { get { return !IsRequest; } }
 
-        public HttpHeader Header
+        public HttpVersion Version
         {
             get
             {
-                Parse();
-                return _header;
-            }
-        }
-        
-        private void Parse()
-        {
-            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
-            ParseFirstLine(parser);
-            _header = new HttpHeader(ParseHeader(parser));
+                ParseFirstLine();
+                return _version;
+            } 
         }
 
+//        public HttpHeader Header
+//        {
+//            get
+//            {
+//                Parse();
+//                return _header;
+//            }
+//        }
+        
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
@@ -228,22 +230,50 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
-        internal abstract void ParseFirstLine(HttpParser parser);
-
-        private IEnumerable<KeyValuePair<string, IEnumerable<byte>>> ParseHeader(HttpParser parser)
+        internal void ParseFirstLine()
         {
-            while (parser.Success)
-            {
-                string fieldName;
-                IEnumerable<byte> fieldValue;
-                parser.Token(out fieldName).Colon().FieldValue(out fieldValue);
-                if (parser.Success)
-                    yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
-            }
+            if (_isParsedFirstLine)
+                return;
+
+            ParseSpecificFirstLine(out _version, out _headerOffset);
+            _isParsedFirstLine = true;
         }
+
+        internal abstract void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset);
+
+//        private void ParseHeader()
+//        {
+//            ParseFirstLine();
+//            if (_headerStart == null)
+//                return;
+//
+//            int headerStartValue = _headerStart.Value;
+//            HttpParser parser = new HttpParser(Buffer, StartOffset + headerStartValue, Length - headerStartValue);
+//            if (_isParsed)
+//                return;
+//            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
+//            HttpVersion version;
+//            ParseFirstLine(parser, out _version);
+//            _header = new HttpHeader(ParseHeader(parser));
+//        }
+
+//        private IEnumerable<KeyValuePair<string, IEnumerable<byte>>> ParseHeader(HttpParser parser)
+//        {
+//            while (parser.Success)
+//            {
+//                string fieldName;
+//                IEnumerable<byte> fieldValue;
+//                parser.Token(out fieldName).Colon().FieldValue(out fieldValue);
+//                if (parser.Success)
+//                    yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
+//            }
+//        }
 
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
 
+        private bool _isParsedFirstLine;
+        private int? _headerOffset;
+        private HttpVersion _version;
         private HttpHeader _header;
     }
 
