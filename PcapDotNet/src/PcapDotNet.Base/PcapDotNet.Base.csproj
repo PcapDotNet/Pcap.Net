@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FuncExtensions.cs" />
+    <Compile Include="IDictionaryExtensions.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="IListExtensions.cs" />
     <Compile Include="PropertyInfoExtensions.cs" />
