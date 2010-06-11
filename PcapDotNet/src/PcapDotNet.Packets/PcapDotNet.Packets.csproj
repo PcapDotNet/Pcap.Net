@@ -114,6 +114,7 @@
     <Compile Include="Http\HttpParser.cs" />
     <Compile Include="Http\HttpRequestDatagram.cs" />
     <Compile Include="Http\HttpResponseDatagram.cs" />
+    <Compile Include="Http\HttpVersion.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyLayer.cs" />
     <Compile Include="Icmp\IcmpAddressMaskRequestLayer.cs" />

@@ -14,12 +14,32 @@ namespace PcapDotNet.Packets.Http
             get { return true; }
         }
 
-        internal override void ParseFirstLine(HttpParser parser)
+        public string Method
         {
-            string method;
-            string uri;
-            HttpVersion version;
-            parser.Token(out method).Space().RequestUri(out uri).Space().Version(out version).CarraigeReturnLineFeed();
+            get
+            {
+                ParseFirstLine();
+                return _method;
+            }
         }
+        
+        public string Uri
+        {
+            get
+            {
+                ParseFirstLine();
+                return _uri;
+            }
+        }
+
+        internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
+        {
+            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
+            parser.Token(out _method).Space().RequestUri(out _uri).Space().Version(out version).CarraigeReturnLineFeed();
+            headerOffset = parser.Success ? (int?)(parser.Offset - StartOffset) : null;
+        }
+
+        private string _uri;
+        private string _method;
     }
 }

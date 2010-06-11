@@ -44,16 +44,74 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void RandomHttpTest()
+        public void HttpParsingTest()
+        {
+            TestHttpRequest("", null, null, null);
+            TestHttpRequest(" ", null, null, null);
+            TestHttpRequest("GET", "GET", null, null);
+            TestHttpRequest("GET /url", "GET", "/url", null);
+            TestHttpRequest("GET /url HTTP/1.0", "GET", "/url", HttpVersion.Version10);
+            TestHttpRequest("GET /url HTTP/1.1", "GET", "/url", HttpVersion.Version11);
+            TestHttpRequest("GET /url  HTTP/1.1", "GET", "/url", null);
+            TestHttpRequest("GET  HTTP/1.1", "GET", "", HttpVersion.Version11);
+
+            TestHttpResponse("HTTP/", null, null, null);
+            TestHttpResponse("HTTP/1", null, null, null);
+            TestHttpResponse("HTTP/1.", null, null, null);
+            TestHttpResponse("HTTP/1.0", HttpVersion.Version10, null, null);
+            TestHttpResponse("HTTP/1.0 ", HttpVersion.Version10, null, null);
+            TestHttpResponse("HTTP/1.0 A", HttpVersion.Version10, null, null);
+            TestHttpResponse("HTTP/1.0 200", HttpVersion.Version10, 200, null);
+            TestHttpResponse("HTTP/1.0 200 ", HttpVersion.Version10, 200, "");
+            TestHttpResponse("HTTP/1.0 200 OK", HttpVersion.Version10, 200, "OK");
+            TestHttpResponse("HTTP/1.1 200 OK", HttpVersion.Version11, 200, "OK");
+            TestHttpResponse("HTTP/1.1  200 OK", HttpVersion.Version11, null, null);
+            TestHttpResponse("HTTP/1.1 200  OK", HttpVersion.Version11, 200, " OK");
+        }
+
+        private static void TestHttpRequest(string httpString, string expectedMethod, string expectedUri, HttpVersion expectedVersion)
+        {
+            Packet packet = BuildPacket(httpString);
+
+            // HTTP
+            HttpDatagram http = packet.Ethernet.IpV4.Tcp.Http;
+            Assert.IsTrue(http.IsRequest, "IsRequest " + httpString);
+            Assert.IsFalse(http.IsResponse, "IsResponse " + httpString);
+            Assert.AreEqual(expectedVersion, http.Version, "Version " + httpString);
+
+            HttpRequestDatagram request = (HttpRequestDatagram)http;
+            Assert.AreEqual(expectedMethod, request.Method, "Method " + httpString);
+            Assert.AreEqual(expectedUri, request.Uri, "Uri " + httpString);
+
+//            HttpHeader header = http.Header;
+//            Assert.IsNotNull(header);
+        }
+
+        private static void TestHttpResponse(string httpString, HttpVersion expectedVersion, uint? expectedStatusCode, string expectedReasonPhrase)
+        {
+            Packet packet = BuildPacket(httpString);
+
+            // HTTP
+            HttpDatagram http = packet.Ethernet.IpV4.Tcp.Http;
+            Assert.IsFalse(http.IsRequest, "IsRequest " + httpString);
+            Assert.IsTrue(http.IsResponse, "IsResponse " + httpString);
+            Assert.AreEqual(expectedVersion, http.Version, "Version " + httpString);
+
+            HttpResponseDatagram response = (HttpResponseDatagram)http;
+            Assert.AreEqual(expectedStatusCode, response.StatusCode, "StatusCode " + httpString);
+            Assert.AreEqual(expectedReasonPhrase == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedReasonPhrase)), response.ReasonPhrase, "ReasonPhrase " + httpString);
+        }
+
+        private static Packet BuildPacket(string httpString)
         {
             MacAddress ethernetSource = new MacAddress("00:01:02:03:04:05");
             MacAddress ethernetDestination = new MacAddress("A0:A1:A2:A3:A4:A5");
 
             EthernetLayer ethernetLayer = new EthernetLayer
-                                          {
-                                              Source = ethernetSource,
-                                              Destination = ethernetDestination
-                                          };
+            {
+                Source = ethernetSource,
+                Destination = ethernetDestination
+            };
 
             Random random = new Random();
 
@@ -61,36 +119,30 @@ namespace PcapDotNet.Packets.Test
             ipV4Layer.HeaderChecksum = null;
             TcpLayer tcpLayer = random.NextTcpLayer();
 
-            for (int i = 0; i != 1000; ++i)
+            PayloadLayer payloadLayer = new PayloadLayer
             {
-                PayloadLayer payloadLayer = new PayloadLayer
-                                            {
-                                                Data = new Datagram(Encoding.ASCII.GetBytes("GET /url HTTP/1.1"))
-                                            };
+                Data = new Datagram(Encoding.ASCII.GetBytes(httpString))
+            };
 
-                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
+            Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
 
-                Assert.IsTrue(packet.IsValid);
+            Assert.IsTrue(packet.IsValid);
 
-                // Ethernet
-                ethernetLayer.EtherType = EthernetType.IpV4;
-                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+            // Ethernet
+            ethernetLayer.EtherType = EthernetType.IpV4;
+            Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
 
-                // IpV4
-                ipV4Layer.Protocol = IpV4Protocol.Tcp;
-                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
-                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
-                ipV4Layer.HeaderChecksum = null;
+            // IpV4
+            ipV4Layer.Protocol = IpV4Protocol.Tcp;
+            ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
+            Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+            ipV4Layer.HeaderChecksum = null;
 
-                // TCP
-                tcpLayer.Checksum = packet.Ethernet.IpV4.Tcp.Checksum;
-                Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
+            // TCP
+            tcpLayer.Checksum = packet.Ethernet.IpV4.Tcp.Checksum;
+            Assert.AreEqual(tcpLayer, packet.Ethernet.IpV4.Tcp.ExtractLayer(), "TCP Layer");
 
-                // HTTP
-                HttpDatagram http = packet.Ethernet.IpV4.Tcp.Http;
-                HttpHeader header = http.Header;
-                Assert.IsNotNull(header);
-            }
+            return packet;
         }
     }
 }

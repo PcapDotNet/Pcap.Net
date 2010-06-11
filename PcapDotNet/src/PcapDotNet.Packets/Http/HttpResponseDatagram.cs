@@ -15,12 +15,32 @@ namespace PcapDotNet.Packets.Http
             get { return false; }
         }
 
-        internal override void ParseFirstLine(HttpParser parser)
+        public uint? StatusCode
         {
-            uint statusCode;
-            HttpVersion version;
-            IEnumerable<byte> reasonPhrase;
-            parser.Version(out version).Space().DecimalNumber(3, out statusCode).Space().ReasonPhrase(out reasonPhrase).CarraigeReturnLineFeed();
+            get
+            {
+                ParseFirstLine();
+                return _statusCode;
+            }
         }
+
+        public Datagram ReasonPhrase
+        {
+            get
+            {
+                ParseFirstLine();
+                return _reasonPhrase;
+            }
+        }
+
+        internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
+        {
+            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
+            parser.Version(out version).Space().DecimalNumber(3, out _statusCode).Space().ReasonPhrase(out _reasonPhrase).CarraigeReturnLineFeed();
+            headerOffset = parser.Success ? (int?)(parser.Offset - StartOffset) : null;
+        }
+
+        private uint? _statusCode;
+        private Datagram _reasonPhrase;
     }
 }
