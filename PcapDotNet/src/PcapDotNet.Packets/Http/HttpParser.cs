@@ -8,6 +8,11 @@ namespace PcapDotNet.Packets.Http
 {
     internal class HttpParser
     {
+        public HttpParser(byte[] buffer)
+            :this(buffer, 0, buffer.Length)
+        {
+        }
+
         public HttpParser(byte[] buffer, int offset, int length)
         {
             _buffer = buffer;
@@ -43,31 +48,6 @@ namespace PcapDotNet.Packets.Http
             return this;
         }
 
-        private HttpParser Bytes(byte value)
-        {
-            if (!Success)
-                return this;
-
-            var range = Range;
-            if (!range.Any() || range.First() != value)
-                return Fail();
-
-            ++_offset;
-            return this;
-        }
-
-        private HttpParser Bytes(params byte[] values)
-        {
-            if (!Success)
-                return this;
-
-            if (!Range.Take(values.Length).SequenceEqual(values))
-                return Fail();
-
-            _offset += values.Length;
-            return this;
-        }
-
         public HttpParser Colon()
         {
             return Bytes(AsciiBytes.Colon);
@@ -82,8 +62,6 @@ namespace PcapDotNet.Packets.Http
         {
             return Bytes(AsciiBytes.Space);
         }
-
-
 
         public HttpParser SkipLws()
         {
@@ -148,17 +126,6 @@ namespace PcapDotNet.Packets.Http
             }
 
             return this;
-        }
-
-        private HttpParser Fail()
-        {
-            Success = false;
-            return this;
-        }
-
-        private IEnumerable<byte> Range
-        {
-            get { return _buffer.Range(_offset, _totalLength - _offset); }
         }
 
         public HttpParser RequestUri(out string uri)
@@ -248,9 +215,54 @@ namespace PcapDotNet.Packets.Http
                 return this;
             }
 
-            int reasonPhraseLength = Range.Count(value => !value.IsControl() || value == AsciiBytes.HorizontalTab);
+            int count = 0;
+            foreach (byte b in Range)
+            {
+                if (!b.IsControl() || b == AsciiBytes.HorizontalTab)
+                    ++count;
+                else
+                    break;
+            }
+            Console.WriteLine(count);
+            int reasonPhraseLength = Range.TakeWhile(value => !value.IsControl() || value == AsciiBytes.HorizontalTab).Count();
             reasonPhrase = new Datagram(_buffer, _offset, reasonPhraseLength);
             _offset += reasonPhraseLength;
+            return this;
+        }
+
+        private HttpParser Fail()
+        {
+            Success = false;
+            return this;
+        }
+
+        private IEnumerable<byte> Range
+        {
+            get { return _buffer.Range(_offset, _totalLength - _offset); }
+        }
+
+        private HttpParser Bytes(byte value)
+        {
+            if (!Success)
+                return this;
+
+            var range = Range;
+            if (!range.Any() || range.First() != value)
+                return Fail();
+
+            ++_offset;
+            return this;
+        }
+
+        private HttpParser Bytes(params byte[] values)
+        {
+            if (!Success)
+                return this;
+
+            if (!Range.Take(values.Length).SequenceEqual(values))
+                return Fail();
+
+            _offset += values.Length;
             return this;
         }
 
