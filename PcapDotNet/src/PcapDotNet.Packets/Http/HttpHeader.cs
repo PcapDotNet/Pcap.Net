@@ -47,10 +47,10 @@ namespace PcapDotNet.Packets.Http
                     mergedFields.Add(fieldName, fieldValue);
                 }
                 else
-                    mergedFields[fieldName] = fieldValue.Concat(AsciiBytes.Space).Concat(fieldValue);
+                    mergedFields[fieldName] = fieldValue.Concat(AsciiBytes.Comma).Concat(field.Value);
             }
 
-            _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.Create(field.Key, field.Value));
+            _fields = mergedFields.ToDictionary(field => field.Key, field => new HttpField(field.Key, field.Value));
         }
 
         public IEnumerator<HttpField> GetEnumerator()

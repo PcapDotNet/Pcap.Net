@@ -262,7 +262,7 @@ namespace PcapDotNet.Packets.Http
             {
                 string fieldName;
                 IEnumerable<byte> fieldValue;
-                parser.Token(out fieldName).Colon().FieldValue(out fieldValue);
+                parser.Token(out fieldName).Colon().FieldValue(out fieldValue).CarraigeReturnLineFeed();
                 if (parser.Success)
                     yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
             }

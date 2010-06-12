@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.IpV4;
@@ -55,8 +57,59 @@ namespace PcapDotNet.Packets.Test
             TestHttpRequest("GET /url  HTTP/1.1", "GET", "/url");
             TestHttpRequest("GET  HTTP/1.1", "GET", "", HttpVersion.Version11);
 
-            TestHttpRequest("GET /url HTTP/1.1\r\nCache-Control: no-cache", "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(HttpField.Create("Cache-Control", Encoding.ASCII.GetBytes("no-cache"))));
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "Cache-Control: no-cache\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(
+                                new HttpField("Cache-Control", "no-cache")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                "A:B\r\n" +
+                "B: C\r\n" +
+                "C: \r\n \r\n D\r\n" +
+                "D: E\r\n" +
+                "D: F\r\n" +
+                "E: G,H\r\n" +
+                "E: I,J\r\n",
+                "GET", "/url", HttpVersion.Version11,
+                new HttpHeader(
+                    new HttpField("A", "B"),
+                    new HttpField("B", "C"),
+                    new HttpField("C", "D"),
+                    new HttpField("D", "E,F"),
+                    new HttpField("E", "G,H,I,J")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "\r\n" +
+                            "A: B\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader());
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A: B\r\n" +
+                            "\r\n" +
+                            "B: C\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(
+                                new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A: B\r\n" +
+                            "abc\r\n" +
+                            "B: C\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(
+                                new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A: B\r\n" +
+                            "abc:\r\n" +
+                            "B: C\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(
+                                new HttpField("A", "B"),
+                                new HttpField("abc", ""),
+                                new HttpField("B", "C")));
 
             TestHttpResponse("HTTP/");
             TestHttpResponse("HTTP/1");
@@ -70,6 +123,12 @@ namespace PcapDotNet.Packets.Test
             TestHttpResponse("HTTP/1.1 200 OK", HttpVersion.Version11, 200, "OK");
             TestHttpResponse("HTTP/1.1  200 OK", HttpVersion.Version11);
             TestHttpResponse("HTTP/1.1 200  OK", HttpVersion.Version11, 200, " OK");
+
+            TestHttpResponse("HTTP/1.1 200 OK\r\n" +
+                    "Cache-Control: no-cache\r\n",
+                     HttpVersion.Version11, 200, "OK",
+                    new HttpHeader(
+                        new HttpField("Cache-Control", "no-cache")));
         }
 
         private static void TestHttpRequest(string httpString, string expectedMethod = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null)
@@ -91,7 +150,7 @@ namespace PcapDotNet.Packets.Test
 //            Assert.IsNotNull(header);
         }
 
-        private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null)
+        private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null)
         {
             Packet packet = BuildPacket(httpString);
 
@@ -100,6 +159,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(http.IsRequest, "IsRequest " + httpString);
             Assert.IsTrue(http.IsResponse, "IsResponse " + httpString);
             Assert.AreEqual(expectedVersion, http.Version, "Version " + httpString);
+            Assert.AreEqual(expectedHeader, http.Header, "Header " + httpString);
 
             HttpResponseDatagram response = (HttpResponseDatagram)http;
             Assert.AreEqual(expectedStatusCode, response.StatusCode, "StatusCode " + httpString);
