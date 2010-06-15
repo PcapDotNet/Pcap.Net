@@ -9,6 +9,18 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpField : IEquatable<HttpField>
     {
+        public static HttpField CreateField(string fieldName, byte[] fieldValue)
+        {
+            switch (fieldName)
+            {
+                case HttpTransferEncodingField.Name:
+                    return new HttpTransferEncodingField(fieldValue);
+
+                default:
+                    return new HttpField(fieldName, fieldValue.ToArray());
+            }
+        }
+
         public HttpField(string name, string value)
             : this(name, value, _defaultEncoding)
         {

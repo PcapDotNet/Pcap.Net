@@ -217,6 +217,23 @@ namespace PcapDotNet.Packets.Http
                 return _header;
             }
         }
+
+        public Datagram Body
+        {
+            get
+            {
+                if (_body == null)
+                {
+                    ParseHeader();
+                    if (_bodyOffset != null)
+                    {
+                        int bodyOffsetValue = _bodyOffset.Value;
+                        _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Length - bodyOffsetValue);
+                    }
+                }
+                return _body;
+            }
+        }
         
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
@@ -260,6 +277,11 @@ namespace PcapDotNet.Packets.Http
             HttpParser parser = new HttpParser(Buffer, StartOffset + headerOffsetValue, Length - headerOffsetValue);
             while (parser.Success)
             {
+                if (parser.CarraigeReturnLineFeed().Success)
+                {
+                    _bodyOffset = parser.Offset - StartOffset;
+                    break;
+                }
                 string fieldName;
                 IEnumerable<byte> fieldValue;
                 parser.Token(out fieldName).Colon().FieldValue(out fieldValue).CarraigeReturnLineFeed();
@@ -273,8 +295,11 @@ namespace PcapDotNet.Packets.Http
         private bool _isParsedFirstLine;
         private bool _isParsedHeader;
         private int? _headerOffset;
+        private int? _bodyOffset;
         private HttpVersion _version;
         private HttpHeader _header;
+
+        private Datagram _body;
     }
 
 
