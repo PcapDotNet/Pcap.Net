@@ -1,11 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
+    public class HttpTransferCoding
+    {
+        public HttpTransferCoding(string codingName, ReadOnlyCollection<HttpParameter> parameters)
+        {
+            CodingName = codingName;
+            Parameters = parameters;
+        }
+
+        public string CodingName { get; private set; }
+        public ReadOnlyCollection<HttpParameter> Parameters { get; private set; }
+    }
+
+    public class HttpParameter
+    {
+        public HttpParameter(string attribute, Datagram value)
+        {
+            Attribute = attribute;
+            Value = value;
+        }
+
+        public string Attribute { get; private set; }
+        public Datagram Value { get; private set; }
+    }
+
     internal class HttpParser
     {
         public HttpParser(byte[] buffer)
@@ -28,7 +53,7 @@ namespace PcapDotNet.Packets.Http
             get { return _offset; }
         }
 
-        public HttpParser Token(out string token)
+        public HttpParser Token(out Datagram token)
         {
             if (!Success)
             {
@@ -42,9 +67,17 @@ namespace PcapDotNet.Packets.Http
                 token = null;
                 return Fail();
             }
-
-            token = Encoding.ASCII.GetString(_buffer, _offset, tokenLength);
+            
+            token = new Datagram(_buffer, _offset, tokenLength);
             _offset += token.Length;
+            return this;
+        }
+
+        public HttpParser Token(out string token)
+        {
+            Datagram bytesToken;
+            Token(out bytesToken);
+            token = Success ? bytesToken.ToString(Encoding.ASCII) : null;
             return this;
         }
 
@@ -228,6 +261,127 @@ namespace PcapDotNet.Packets.Http
             reasonPhrase = new Datagram(_buffer, _offset, reasonPhraseLength);
             _offset += reasonPhraseLength;
             return this;
+        }
+
+        public HttpParser CommaSeparated<T>(Func<T> commaSeparatedParsing, out List<T> commaSeparated)
+        {
+            commaSeparated = new List<T>();
+            bool more = true;
+            while (Success && more)
+            {
+                commaSeparated.Add(commaSeparatedParsing());
+                SkipLws();
+                more = false;
+                while (IsNext(AsciiBytes.Comma))
+                {
+                    ++_offset;
+                    more = true;
+                    SkipLws();
+                }
+            }
+
+            if (!Success)
+                commaSeparated = null;
+            return this;
+        }
+
+        public HttpTransferCoding TransferCoding()
+        {
+            string codingName;
+            Token(out codingName);
+            List<HttpParameter> parameters = new List<HttpParameter>();
+            while (Success && IsNext(AsciiBytes.Semicolon))
+            {
+                ++_offset;
+                HttpParameter parameter;
+                Parameter(out parameter);
+            }
+
+            return Success ? new HttpTransferCoding(codingName, parameters.AsReadOnly()) : null;
+        }
+
+        public HttpParser Parameter(out HttpParameter parameter)
+        {
+            string attribute;
+            Token(out attribute).Bytes(AsciiBytes.EqualsSign);
+
+            Datagram value;
+            if (IsNext(AsciiBytes.DoubleQuotationMark))
+                QuotedString(out value);
+            else
+                Token(out value);
+
+            parameter = Success ? new HttpParameter(attribute, value) : null;
+            return this;
+        }
+
+        public HttpParser QuotedString(out Datagram quotedString)
+        {
+            quotedString = null;
+            int startOffset = _offset;
+
+            // Parse first "
+            if (!Bytes(AsciiBytes.DoubleQuotationMark).Success)
+                return this;
+
+            while (IsNext())
+            {
+                byte next = Next();
+
+                // Parse last "
+                if (next == AsciiBytes.DoubleQuotationMark)
+                {
+                    ++_offset;
+                    quotedString = new Datagram(_buffer, startOffset, _offset - startOffset);
+                    return this;
+                }
+
+                // Parse \char
+                if (next == AsciiBytes.BackSlash && IsNextNext() && NextNext().IsChar())
+                    _offset += 2;
+                else
+                {
+                    // parse text
+                    int original = _offset;
+                    SkipLws();
+                    if (original == _offset)
+                    {
+                        // text isn't LWS - parse a byte that isn't control
+                        if (!next.IsControl())
+                            ++_offset;
+                        else
+                            return Fail(); // illegal byte
+                    }
+                }
+            }
+
+            // no " found
+            return Fail();
+        }
+
+        private bool IsNextNext()
+        {
+            return _offset + 1 < _totalLength;
+        }
+
+        private bool IsNext()
+        {
+            return _offset < _totalLength;
+        }
+
+        private byte Next()
+        {
+            return _buffer[_offset];
+        }
+
+        private byte NextNext()
+        {
+            return _buffer[_offset + 1];
+        }
+
+        private bool IsNext(byte next)
+        {
+            return (IsNext() && Next() == next);
         }
 
         private HttpParser Fail()

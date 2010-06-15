@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -150,7 +151,12 @@ namespace PcapDotNet.Packets
 
         public override string ToString()
         {
-            return _buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
+            return Buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
+        }
+
+        public string ToString(Encoding encoding)
+        {
+            return encoding.GetString(Buffer, StartOffset, Length);
         }
 
         internal void Write(byte[] buffer, int offset)
