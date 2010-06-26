@@ -48,6 +48,8 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void HttpParsingTest()
         {
+//            Console.WriteLine(Encoding.GetEncodings().Where(e => e.Name == "iso-8859-1").Select(e => e.CodePage).SequenceToString(", "));
+
             TestHttpRequest("");
             TestHttpRequest(" ");
             TestHttpRequest("GET", "GET");
@@ -129,6 +131,12 @@ namespace PcapDotNet.Packets.Test
                      HttpVersion.Version11, 200, "OK",
                     new HttpHeader(
                         new HttpField("Cache-Control", "no-cache")));
+
+            TestHttpResponse("HTTP/1.1 200 OK\r\n" +
+            "Transfer-Encoding: chunked,a,   b   , c\r\n\t,d   , e;f=g;h=\"ijk lmn\"\r\n",
+             HttpVersion.Version11, 200, "OK",
+            new HttpHeader(
+                new HttpTransferEncodingField("chunked", "a", "b", "c", "d", "e;f=g;h=\"ijk lmn\"")));
         }
 
         private static void TestHttpRequest(string httpString, string expectedMethod = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null)
@@ -145,9 +153,6 @@ namespace PcapDotNet.Packets.Test
             HttpRequestDatagram request = (HttpRequestDatagram)http;
             Assert.AreEqual(expectedMethod, request.Method, "Method " + httpString);
             Assert.AreEqual(expectedUri, request.Uri, "Uri " + httpString);
-
-//            HttpHeader header = http.Header;
-//            Assert.IsNotNull(header);
         }
 
         private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null)

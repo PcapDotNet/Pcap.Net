@@ -115,6 +115,7 @@
     <Compile Include="Http\HttpField.cs" />
     <Compile Include="Http\HttpHeader.cs" />
     <Compile Include="Http\HttpParser.cs" />
+    <Compile Include="Http\HttpRegex.cs" />
     <Compile Include="Http\HttpRequestDatagram.cs" />
     <Compile Include="Http\HttpResponseDatagram.cs" />
     <Compile Include="Http\HttpTransferEncodingField.cs" />

@@ -185,9 +185,14 @@ namespace PcapDotNet.Packets.Http
             return this;
         }
 
-        public HttpParser CarraigeReturnLineFeed()
+        public HttpParser CarriageReturnLineFeed()
         {
             return Bytes(AsciiBytes.CarriageReturn, AsciiBytes.LineFeed);
+        }
+
+        public bool IsCarriageReturnLineFeed()
+        {
+            return IsNext(AsciiBytes.CarriageReturn) && IsNextNext(AsciiBytes.LineFeed);
         }
 
         public HttpParser DecimalNumber(int numDigits, out uint? number)
@@ -256,7 +261,7 @@ namespace PcapDotNet.Packets.Http
                 else
                     break;
             }
-            Console.WriteLine(count);
+//            Console.WriteLine(count);
             int reasonPhraseLength = Range.TakeWhile(value => !value.IsControl() || value == AsciiBytes.HorizontalTab).Count();
             reasonPhrase = new Datagram(_buffer, _offset, reasonPhraseLength);
             _offset += reasonPhraseLength;
@@ -359,14 +364,24 @@ namespace PcapDotNet.Packets.Http
             return Fail();
         }
 
+        private bool IsNext()
+        {
+            return _offset < _totalLength;
+        }
+
+        private bool IsNext(byte next)
+        {
+            return (IsNext() && Next() == next);
+        }
+
         private bool IsNextNext()
         {
             return _offset + 1 < _totalLength;
         }
 
-        private bool IsNext()
+        private bool IsNextNext(byte nextNext)
         {
-            return _offset < _totalLength;
+            return (IsNextNext() && NextNext() == nextNext);
         }
 
         private byte Next()
@@ -377,11 +392,6 @@ namespace PcapDotNet.Packets.Http
         private byte NextNext()
         {
             return _buffer[_offset + 1];
-        }
-
-        private bool IsNext(byte next)
-        {
-            return (IsNext() && Next() == next);
         }
 
         private HttpParser Fail()
