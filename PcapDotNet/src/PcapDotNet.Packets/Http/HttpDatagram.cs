@@ -277,14 +277,14 @@ namespace PcapDotNet.Packets.Http
             HttpParser parser = new HttpParser(Buffer, StartOffset + headerOffsetValue, Length - headerOffsetValue);
             while (parser.Success)
             {
-                if (parser.CarraigeReturnLineFeed().Success)
+                if (parser.IsCarriageReturnLineFeed())
                 {
-                    _bodyOffset = parser.Offset - StartOffset;
+                    _bodyOffset = parser.Offset + 2 - StartOffset;
                     break;
                 }
                 string fieldName;
                 IEnumerable<byte> fieldValue;
-                parser.Token(out fieldName).Colon().FieldValue(out fieldValue).CarraigeReturnLineFeed();
+                parser.Token(out fieldName).Colon().FieldValue(out fieldValue).CarriageReturnLineFeed();
                 if (parser.Success)
                     yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
             }

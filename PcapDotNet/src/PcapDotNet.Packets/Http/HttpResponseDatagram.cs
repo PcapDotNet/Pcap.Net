@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Http
         internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
         {
             HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
-            parser.Version(out version).Space().DecimalNumber(3, out _statusCode).Space().ReasonPhrase(out _reasonPhrase).CarraigeReturnLineFeed();
+            parser.Version(out version).Space().DecimalNumber(3, out _statusCode).Space().ReasonPhrase(out _reasonPhrase).CarriageReturnLineFeed();
             headerOffset = parser.Success ? (int?)(parser.Offset - StartOffset) : null;
         }
 
