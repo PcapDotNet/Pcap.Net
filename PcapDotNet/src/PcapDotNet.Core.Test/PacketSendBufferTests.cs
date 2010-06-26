@@ -129,15 +129,15 @@ namespace PcapDotNet.Core.Test
                                                                 MoreAssert.IsInRange(
                                                                     expectedDiff.Subtract(TimeSpan.FromSeconds(0.06)),
                                                                     expectedDiff.Add(TimeSpan.FromSeconds(0.06)),
-                                                                    actualDiff);
+                                                                    actualDiff, "actualDiff");
                                                             }
                                                             lastTimestamp = packet.Timestamp;
                                                             ++numPacketsHandled;
                                                         });
 
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-                    Assert.AreEqual(numPacketsToSend, numPacketsGot);
-                    Assert.AreEqual(numPacketsToSend, numPacketsHandled);
+                    Assert.AreEqual(numPacketsToSend, numPacketsGot, "numPacketsGot");
+                    Assert.AreEqual(numPacketsToSend, numPacketsHandled, "numPacketsHandled");
                 }
             }
         }
