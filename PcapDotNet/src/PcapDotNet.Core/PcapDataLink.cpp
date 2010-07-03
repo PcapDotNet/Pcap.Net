@@ -36,7 +36,11 @@ DataLinkKind PcapDataLink::Kind::get()
     {
     case 1:
         return DataLinkKind::Ethernet;
-    default:
+
+	case 143:
+		return DataLinkKind::Docsis;
+
+	default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
     }
 }
@@ -109,7 +113,11 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
     {
     case DataLinkKind::Ethernet:
         return 1;
-    default:
+
+	case DataLinkKind::Docsis:
+        return 143;
+
+	default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " kind " + kind.ToString() + " is unsupported");
     }
 }

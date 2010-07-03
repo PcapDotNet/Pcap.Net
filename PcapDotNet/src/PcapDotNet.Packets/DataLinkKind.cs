@@ -8,6 +8,11 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// Ethernet data link kind.
         /// </summary>
-        Ethernet
+        Ethernet,
+
+        /// <summary>
+        /// Data Over Cable Service Interface Specification.
+        /// </summary>
+        Docsis,
     }
 }

@@ -869,10 +869,11 @@ namespace PcapDotNet.Core.Test
                                        address.ToString());
                 }
             }
-            
+
             PacketCommunicator communicator = device.Open();
             try
             {
+                MoreAssert.AreSequenceEqual(new[] {DataLinkKind.Ethernet, DataLinkKind.Docsis}.Select(kind => new PcapDataLink(kind)), communicator.SupportedDataLinks);
                 PacketTotalStatistics totalStatistics = communicator.TotalStatistics;
                 Assert.AreEqual<object>(totalStatistics, totalStatistics);
                 Assert.AreNotEqual(null, totalStatistics);
