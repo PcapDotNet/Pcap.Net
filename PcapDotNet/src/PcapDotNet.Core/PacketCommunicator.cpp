@@ -27,9 +27,6 @@ void PacketCommunicator::DataLink::set(PcapDataLink value)
 
 ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
 {
-    throw gcnew NotSupportedException("Unsupported property to avoid memory leak");
-//	pcap_free_datalinks(NULL);
-/*
     int* dataLinks;
     int numDatalinks = pcap_list_datalinks(_pcapDescriptor, &dataLinks);
     if (numDatalinks == -1)
@@ -44,11 +41,8 @@ ReadOnlyCollection<PcapDataLink>^ PacketCommunicator::SupportedDataLinks::get()
     }
     finally
     {
-        // This doesn't work because of a bug. See http://www.winpcap.org/pipermail/winpcap-users/2008-May/002500.html
-        // todo look for pcap_free_datalinks()
-        // free(dataLinks);
+		pcap_free_datalinks(dataLinks);
     }
-    */
 }
 
 int PacketCommunicator::SnapshotLength::get()

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
@@ -356,6 +357,7 @@ namespace PcapDotNet.Core.Test
             communicator = device.Open();
             try
             {
+                MoreAssert.AreSequenceEqual(new[] {DataLinkKind.Ethernet}.Select(kind => new PcapDataLink(kind)), communicator.SupportedDataLinks);
                 Assert.AreEqual(DataLinkKind.Ethernet, communicator.DataLink.Kind);
                 Assert.AreEqual("EN10MB (Ethernet)", communicator.DataLink.ToString());
                 Assert.AreEqual(communicator.DataLink, new PcapDataLink(communicator.DataLink.Name));
