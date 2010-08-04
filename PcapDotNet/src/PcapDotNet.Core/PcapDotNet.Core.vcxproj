@@ -127,7 +127,7 @@
     <ProjectGuid>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</ProjectGuid>
     <RootNamespace>WinPCapDotNet</RootNamespace>
     <SccProjectName>$/PcapDotNet/PcapDotNet/src/PcapDotNet.Core</SccProjectName>
-    <SccAuxPath>https://tfs06.codeplex.com</SccAuxPath>
+    <SccAuxPath>https://tfs.codeplex.com/tfs/tfs06</SccAuxPath>
     <SccLocalPath>.</SccLocalPath>
     <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
     <Keyword>ManagedCProj</Keyword>
