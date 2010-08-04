@@ -32,7 +32,7 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs06.codeplex.com/
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = PcapDotNet.Core.Test\\PcapDotNet.Core.Test.csproj
 		SccProjectName1 = PcapDotNet.Core.Test
