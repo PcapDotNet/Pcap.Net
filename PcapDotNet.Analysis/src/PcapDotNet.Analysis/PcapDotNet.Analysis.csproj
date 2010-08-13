@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)..\..\PcapDotNet\3rdParty\PcapDotNet.Analysis\" (mkdir "$(SolutionDir)..\..\PcapDotNet\3rdParty\PcapDotNet.Analysis\")
-copy "$(TargetDir)$(TargetName).XML" $(SolutionDir)..\..\PcapDotNet\3rdParty\PcapDotNet.Analysis\</PostBuildEvent>
+copy "$(TargetDir)$(TargetName).XML" "$(SolutionDir)..\..\PcapDotNet\3rdParty\PcapDotNet.Analysis\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
