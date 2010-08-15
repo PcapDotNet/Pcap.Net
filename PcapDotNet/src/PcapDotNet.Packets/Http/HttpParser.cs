@@ -234,12 +234,41 @@ namespace PcapDotNet.Packets.Http
 
             int numDigits = digits.Count();
             int numInsignificantDigits = digits.TakeWhile(value => value == AsciiBytes.Zero).Count();
-            uint numberValue = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
-            if (numDigits - numInsignificantDigits >= 8)
+            if (numDigits - numInsignificantDigits > 9)
             {
                 number = null;
                 return Fail();
             }
+
+            uint numberValue = digits.Select(value => (uint)(value - AsciiBytes.Zero)).Aggregate<uint, uint>(0, (accumulated, value) => 10 * accumulated + value);
+            number = numberValue;
+            _offset += numDigits;
+            return this;
+        }
+
+        public HttpParser HexadecimalNumber(out uint? number)
+        {
+            if (!Success)
+            {
+                number = null;
+                return this;
+            }
+
+            var digits = Range.TakeWhile(value => value.IsHexadecimalDigit());
+            if (!digits.Any())
+            {
+                number = null;
+                return Fail();
+            }
+
+            int numDigits = digits.Count();
+            int numInsignificantDigits = digits.TakeWhile(value => value == AsciiBytes.Zero).Count();
+            if (numDigits - numInsignificantDigits > 8)
+            {
+                number = null;
+                return Fail();
+            }
+            uint numberValue = digits.Select(value => (uint)(value.ToHexadecimalValue())).Aggregate<uint, uint>(0, (accumulated, value) => 16 * accumulated + value);
             number = numberValue;
             _offset += numDigits;
             return this;
@@ -364,6 +393,29 @@ namespace PcapDotNet.Packets.Http
             return Fail();
         }
 
+        public HttpParser SkipChunkExtensions()
+        {
+            while (IsNext(AsciiBytes.Semicolon))
+            {
+                Bytes(AsciiBytes.Semicolon);
+                
+                string chunkExtensionName;
+                Token(out chunkExtensionName);
+                if (IsNext(AsciiBytes.EqualsSign))
+                {
+                    Bytes(AsciiBytes.EqualsSign);
+
+                    Datagram chunkExtensionValue;
+                    if (IsNext(AsciiBytes.DoubleQuotationMark))
+                        QuotedString(out chunkExtensionValue);
+                    else
+                        Token(out chunkExtensionValue);
+                }
+            }
+
+            return this;
+        }
+
         private bool IsNext()
         {
             return _offset < _totalLength;
@@ -427,6 +479,14 @@ namespace PcapDotNet.Packets.Http
                 return Fail();
 
             _offset += values.Length;
+            return this;
+        }
+
+        public HttpParser Skip(int count)
+        {
+            _offset += count;
+            if (_offset > _totalLength)
+                return Fail();
             return this;
         }
 

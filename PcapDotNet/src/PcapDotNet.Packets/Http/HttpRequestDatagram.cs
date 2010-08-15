@@ -32,6 +32,11 @@ namespace PcapDotNet.Packets.Http
             }
         }
 
+        protected override bool IsBodyPossible
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
         {
             HttpParser parser = new HttpParser(Buffer, StartOffset, Length);

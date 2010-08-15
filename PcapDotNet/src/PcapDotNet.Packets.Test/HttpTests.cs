@@ -113,6 +113,13 @@ namespace PcapDotNet.Packets.Test
                                 new HttpField("abc", ""),
                                 new HttpField("B", "C")));
 
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                "\r\n",
+                "GET", "/url", HttpVersion.Version11,
+                new HttpHeader(),
+                Datagram.Empty);
+
+
             TestHttpResponse("HTTP/");
             TestHttpResponse("HTTP/1");
             TestHttpResponse("HTTP/1.");
@@ -133,13 +140,14 @@ namespace PcapDotNet.Packets.Test
                         new HttpField("Cache-Control", "no-cache")));
 
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
-            "Transfer-Encoding: chunked,a,   b   , c\r\n\t,d   , e;f=g;h=\"ijk lmn\"\r\n",
-             HttpVersion.Version11, 200, "OK",
-            new HttpHeader(
-                new HttpTransferEncodingField("chunked", "a", "b", "c", "d", "e;f=g;h=\"ijk lmn\"")));
+                             "Transfer-Encoding: chunked,a,   b   , c\r\n\t,d   , e;f=g;h=\"ijk lmn\"\r\n",
+                             HttpVersion.Version11, 200, "OK",
+                             new HttpHeader(
+                                 new HttpTransferEncodingField("chunked", "a", "b", "c", "d", "e;f=g;h=\"ijk lmn\"")));
+
         }
 
-        private static void TestHttpRequest(string httpString, string expectedMethod = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null)
+        private static void TestHttpRequest(string httpString, string expectedMethod = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, Datagram expectedBody = null)
         {
             Packet packet = BuildPacket(httpString);
 
@@ -153,9 +161,10 @@ namespace PcapDotNet.Packets.Test
             HttpRequestDatagram request = (HttpRequestDatagram)http;
             Assert.AreEqual(expectedMethod, request.Method, "Method " + httpString);
             Assert.AreEqual(expectedUri, request.Uri, "Uri " + httpString);
+            Assert.AreEqual(expectedBody, request.Body);
         }
 
-        private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null)
+        private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null, Datagram expectedBody = null)
         {
             Packet packet = BuildPacket(httpString);
 
@@ -169,6 +178,7 @@ namespace PcapDotNet.Packets.Test
             HttpResponseDatagram response = (HttpResponseDatagram)http;
             Assert.AreEqual(expectedStatusCode, response.StatusCode, "StatusCode " + httpString);
             Assert.AreEqual(expectedReasonPhrase == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedReasonPhrase)), response.ReasonPhrase, "ReasonPhrase " + httpString);
+            Assert.AreEqual(expectedBody, response.Body);
         }
 
         private static Packet BuildPacket(string httpString)

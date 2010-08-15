@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Http
         public HttpTransferEncodingField(IList<string> transferCodings)
             :base(Name, transferCodings.SequenceToString(","))
         {
-            TransferCodings = transferCodings.AsReadOnly();
+            SetTransferCodings(transferCodings);
         }
 
         public HttpTransferEncodingField(params string[] transferCodings)
@@ -24,7 +24,30 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
-            internal HttpTransferEncodingField(byte[] fieldValue)
+
+        public bool Equals(HttpTransferEncodingField other)
+        {
+            return other != null &&
+                    (ReferenceEquals(TransferCodings, other.TransferCodings) ||
+                    TransferCodings != null && other.TransferCodings != null && TransferCodings.SequenceEqual(other.TransferCodings));
+        }
+
+        public ReadOnlyCollection<string> TransferCodings{get{return _transferCodings;}}
+        
+        private void SetTransferCodings(IList<string> transferCodings)
+        {
+            if (transferCodings.Any(coding => coding.Any(c => c.IsUpperCaseAlpha())))
+                _transferCodings = transferCodings.Select(coding => coding.ToLowerInvariant()).ToArray().AsReadOnly();
+            else
+                _transferCodings = _transferCodings.AsReadOnly();
+        }
+
+        public override bool Equals(HttpField other)
+        {
+            return Equals(other as HttpTransferEncodingField);
+        }
+
+        internal HttpTransferEncodingField(byte[] fieldValue)
             : base(Name, fieldValue)
         {
             string fieldValueString = HttpRegex.GetString(fieldValue);
@@ -32,27 +55,15 @@ namespace PcapDotNet.Packets.Http
             if (!match.Success)
                 return;
 
-            TransferCodings = match.Groups[RegexTransferCodingGroupName].Captures.Cast<Capture>().Select(capture => capture.Value).ToArray().AsReadOnly();
-        }
-
-            public bool Equals(HttpTransferEncodingField other)
-            {
-                return other != null &&
-                       (ReferenceEquals(TransferCodings, other.TransferCodings) ||
-                        TransferCodings != null && other.TransferCodings != null && TransferCodings.SequenceEqual(other.TransferCodings));
-            }
-
-        public ReadOnlyCollection<string> TransferCodings { get; private set; }
-
-        public override bool Equals(HttpField other)
-        {
-            return Equals(other as HttpTransferEncodingField);
+            SetTransferCodings(match.Groups[RegexTransferCodingGroupName].Captures.Cast<Capture>().Select(capture => capture.Value).ToArray());
         }
 
         protected override string ValueToString()
         {
             return TransferCodings == null ? string.Empty : TransferCodings.SequenceToString(",");
         }
+
+        private ReadOnlyCollection<string> _transferCodings;
 
         private static readonly Regex _valueRegex = HttpRegex.Or(HttpRegex.Token, HttpRegex.QuotedString);
         private static readonly Regex _attributeRegex = HttpRegex.Token;

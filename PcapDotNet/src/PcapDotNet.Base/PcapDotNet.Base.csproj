@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharExtensions.cs" />
     <Compile Include="FuncExtensions.cs" />
     <Compile Include="IDictionaryExtensions.cs" />
     <Compile Include="IEnumerableExtensions.cs" />

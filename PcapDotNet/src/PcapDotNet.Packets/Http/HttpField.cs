@@ -15,6 +15,8 @@ namespace PcapDotNet.Packets.Http
             {
                 case HttpTransferEncodingField.Name:
                     return new HttpTransferEncodingField(fieldValue);
+                case HttpContentLengthField.Name:
+                    return new HttpContentLengthField(fieldValue);
 
                 default:
                     return new HttpField(fieldName, fieldValue.ToArray());

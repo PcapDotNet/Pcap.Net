@@ -111,6 +111,7 @@
     <Compile Include="Http\ByteExtensions.cs" />
     <Compile Include="Http\HttpCommaSeparatedField.cs" />
     <Compile Include="Http\HttpCommaSeparatedInnerField.cs" />
+    <Compile Include="Http\HttpContentLengthField.cs" />
     <Compile Include="Http\HttpDatagram.cs" />
     <Compile Include="Http\HttpField.cs" />
     <Compile Include="Http\HttpHeader.cs" />
