@@ -1,4 +1,6 @@
-﻿namespace PcapDotNet.Packets.Http
+﻿using System;
+
+namespace PcapDotNet.Packets.Http
 {
     internal static class ByteExtensions
     {
@@ -38,6 +40,21 @@
             return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperF ||
                    value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerF ||
                    value.IsDigit();
+        }
+
+        public static int ToHexadecimalValue(this byte value)
+        {
+            if (value >= AsciiBytes.Zero && value <= AsciiBytes.Nine)
+                return value - AsciiBytes.Zero;
+            if (value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerF)
+                return value - AsciiBytes.LowerA + 10;
+            if (value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperF)
+                return value - AsciiBytes.UpperA + 10;
+            throw new ArgumentOutOfRangeException("value", value,
+                                                  string.Format("Must be a valid ASCII hexadecimal character ({0}-{1}, {2}-{3}, {4}-{5})",
+                                                                AsciiBytes.Zero, AsciiBytes.Nine,
+                                                                AsciiBytes.LowerA, AsciiBytes.LowerF,
+                                                                AsciiBytes.UpperA, AsciiBytes.UpperF));
         }
 
         public static bool IsSpaceOrHorizontalTab(this byte value)

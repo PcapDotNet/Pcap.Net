@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -228,13 +229,85 @@ namespace PcapDotNet.Packets.Http
                     if (_bodyOffset != null)
                     {
                         int bodyOffsetValue = _bodyOffset.Value;
+                        if (!IsBodyPossible)
+                        {
+                            _body = new Datagram(new byte[0]);
+                            return _body;
+                        }
+
+                        HttpTransferEncodingField transferEncodingField = Header.TransferEncoding;
+                        if (transferEncodingField != null)
+                        {
+                            if (transferEncodingField.TransferCodings.Any(coding => coding != "identity"))
+                            {
+                                _body = ReadChunked();
+                                return _body;
+                            }
+                        }
+
+//                        HttpContentLengthField contentLengthField = Header.ContentLength;
+//                        if (contentLengthField != null)
+//                        {
+//                            int contentLength = contentLengthField.ContentLength;
+//                            _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min(contentLength, Length - bodyOffsetValue));
+//                            return _body;
+//                        }
+//
+//                        HttpContentTypeField contentTypeField = Header.ContentType;
+//                        if (contentTypeField != null)
+//                        {
+//                            if (contentTypeField.MediaTypes.Contains("multipart/byteranges"))
+//                            {
+//                                int transferLength = contentTypeField.TransferLength;
+//                                _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min(transferLength, Length - bodyOffsetValue));
+//                            }
+//                                
+//                        }
+
                         _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Length - bodyOffsetValue);
                     }
                 }
                 return _body;
             }
         }
-        
+
+        private Datagram ReadChunked()
+        {
+            List<Datagram> contentData = new List<Datagram>();
+            HttpParser parser = new HttpParser(Buffer, StartOffset + _bodyOffset.Value, Length - _bodyOffset.Value);
+            uint? chunkSize;
+            while (parser.HexadecimalNumber(out chunkSize).SkipChunkExtensions().CarriageReturnLineFeed().Success)
+            {
+                uint chunkSizeValue = chunkSize.Value;
+                if (chunkSizeValue == 0)
+                {
+                    int? endOffset;
+                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, Buffer, parser.Offset, Buffer.Length - parser.Offset));
+                    parser.CarriageReturnLineFeed();
+                    break;
+                }
+
+                int actualChunkSize = (int)Math.Min(chunkSizeValue, Buffer.Length - parser.Offset);
+                contentData.Add(new Datagram(Buffer, parser.Offset, actualChunkSize));
+                parser.Skip(actualChunkSize);
+                parser.CarriageReturnLineFeed();
+            }
+
+            int contentLength = contentData.Sum(datagram => datagram.Length);
+            byte[] contentBuffer = new byte[contentLength];
+            int contentBufferOffset = 0;
+            foreach (Datagram datagram in contentData)
+            {
+                datagram.Write(contentBuffer, contentBufferOffset);
+                contentBufferOffset += datagram.Length;
+            }
+            Datagram content = new Datagram(contentBuffer);
+
+            return new Datagram(Buffer, StartOffset + _bodyOffset.Value, parser.Offset - StartOffset);
+        }
+
+        protected abstract bool IsBodyPossible { get; }
+
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
@@ -271,23 +344,35 @@ namespace PcapDotNet.Packets.Http
             _header = new HttpHeader(GetHeaderFields());
         }
 
-        private IEnumerable<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields()
+        private List<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields()
         {
             int headerOffsetValue = _headerOffset.Value;
-            HttpParser parser = new HttpParser(Buffer, StartOffset + headerOffsetValue, Length - headerOffsetValue);
+            int? endOffset;
+            var result = GetHeaderFields(out endOffset, Buffer, StartOffset + headerOffsetValue, Length - headerOffsetValue);
+            if (endOffset != null)
+                _bodyOffset = endOffset.Value - StartOffset;
+            return result;
+        }
+
+        private static List<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields(out int? endOffset, byte[] buffer, int offset, int length)
+        {
+            endOffset = null;
+            var headerFields = new List<KeyValuePair<string, IEnumerable<byte>>>();
+            HttpParser parser = new HttpParser(buffer, offset, length);
             while (parser.Success)
             {
                 if (parser.IsCarriageReturnLineFeed())
                 {
-                    _bodyOffset = parser.Offset + 2 - StartOffset;
+                    endOffset = parser.Offset + 2;
                     break;
                 }
                 string fieldName;
                 IEnumerable<byte> fieldValue;
                 parser.Token(out fieldName).Colon().FieldValue(out fieldValue).CarriageReturnLineFeed();
                 if (parser.Success)
-                    yield return new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue);
+                    headerFields.Add(new KeyValuePair<string, IEnumerable<byte>>(fieldName, fieldValue));
             }
+            return headerFields;
         }
 
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");

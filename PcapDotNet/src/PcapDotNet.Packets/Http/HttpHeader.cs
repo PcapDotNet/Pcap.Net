@@ -18,6 +18,17 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
+        public HttpTransferEncodingField TransferEncoding
+        {
+            get
+            {
+                HttpField field;
+                if (!_fields.TryGetValue(HttpTransferEncodingField.Name, out field))
+                    return null;
+                return (HttpTransferEncodingField)field;
+            }
+        }
+
         public bool Equals(HttpHeader other)
         {
             return other != null &&
@@ -32,6 +43,16 @@ namespace PcapDotNet.Packets.Http
         public override string ToString()
         {
             return this.SequenceToString("\r\n");
+        }
+
+        public IEnumerator<HttpField> GetEnumerator()
+        {
+            return _fields.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         internal HttpHeader(IEnumerable<KeyValuePair<string, IEnumerable<byte>>> fields)
@@ -51,16 +72,6 @@ namespace PcapDotNet.Packets.Http
             }
 
             _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()));
-        }
-
-        public IEnumerator<HttpField> GetEnumerator()
-        {
-            return _fields.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private readonly Dictionary<string, HttpField> _fields = new Dictionary<string, HttpField>();
