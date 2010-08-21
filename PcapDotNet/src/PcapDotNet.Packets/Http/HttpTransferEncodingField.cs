@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Http
             if (transferCodings.Any(coding => coding.Any(c => c.IsUpperCaseAlpha())))
                 _transferCodings = transferCodings.Select(coding => coding.ToLowerInvariant()).ToArray().AsReadOnly();
             else
-                _transferCodings = _transferCodings.AsReadOnly();
+                _transferCodings = transferCodings.AsReadOnly();
         }
 
         public override bool Equals(HttpField other)
@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.Http
             if (!match.Success)
                 return;
 
-            SetTransferCodings(match.Groups[RegexTransferCodingGroupName].Captures.Cast<Capture>().Select(capture => capture.Value).ToArray());
+            SetTransferCodings(match.GroupCapturesValues(RegexTransferCodingGroupName).ToArray());
         }
 
         protected override string ValueToString()
@@ -65,10 +65,7 @@ namespace PcapDotNet.Packets.Http
 
         private ReadOnlyCollection<string> _transferCodings;
 
-        private static readonly Regex _valueRegex = HttpRegex.Or(HttpRegex.Token, HttpRegex.QuotedString);
-        private static readonly Regex _attributeRegex = HttpRegex.Token;
-        private static readonly Regex _parameterRegex = HttpRegex.Concat(_attributeRegex, HttpRegex.Build("="), _valueRegex);
-        private static readonly Regex _transferExtensionRegex = HttpRegex.Concat(HttpRegex.Token, HttpRegex.Any(HttpRegex.Concat(HttpRegex.Build(";"), _parameterRegex)));
+        private static readonly Regex _transferExtensionRegex = HttpRegex.Concat(HttpRegex.Token, HttpRegex.OptionalParameters);
         private static readonly Regex _transferCodingRegex = HttpRegex.Capture(HttpRegex.Or(HttpRegex.Build("chunked"), _transferExtensionRegex), RegexTransferCodingGroupName);
         private static readonly Regex _regex = HttpRegex.MatchEntire(HttpRegex.CommaSeparatedRegex(_transferCodingRegex, 1));
     }

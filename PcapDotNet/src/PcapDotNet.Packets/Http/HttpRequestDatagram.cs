@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Http
 
         protected override bool IsBodyPossible
         {
-            get { throw new NotImplementedException(); }
+            get { return Header.ContentLength != null; }
         }
 
         internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)

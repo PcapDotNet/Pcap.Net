@@ -6,6 +6,9 @@ namespace PcapDotNet.Packets.Http
 {
     internal static class HttpRegex
     {
+        public const string ParameterNameGroupName = "ParameterName";
+        public const string ParameterValueGroupName = "ParameterValue";
+
         public static Regex LinearWhiteSpace
         {
             get { return _linearWhiteSpaceRegex; }
@@ -19,6 +22,11 @@ namespace PcapDotNet.Packets.Http
         public static Regex QuotedString
         {
             get { return _quotedStringRegex; }
+        }
+
+        public static Regex OptionalParameters
+        {
+            get { return _optionalParametersRegex; }
         }
 
         public static string GetString(byte[] buffer)
@@ -99,6 +107,9 @@ namespace PcapDotNet.Packets.Http
         private static readonly Regex _qdtextRegex = Or(_linearWhiteSpaceRegex, Build(@"[^\x00-\x31\x127\""]"));
         private static readonly Regex _quotedStringRegex = Concat(Build('"'), Any(Or(_qdtextRegex, _quotedPairRegex)), Build('"'));
         private static readonly Regex _tokenRegex = AtLeastOne(Build(@"[\x21\x23-\x27\x2A\x2B\x2D\x2E0-9A-Z\x5E-\x7A\x7C\x7E-\xFE]"));
+        private static readonly Regex _valueRegex = Or(Token, QuotedString); 
+        private static readonly Regex _parameterRegex = Concat(Capture(_tokenRegex, ParameterNameGroupName), Build("="), Capture(_valueRegex, ParameterValueGroupName));
+        private static readonly Regex _optionalParametersRegex = Any(Concat(Build(";"), _parameterRegex));
 
         private static readonly Encoding _encoding = Encoding.GetEncoding(28591);
     }
