@@ -112,8 +112,10 @@
     <Compile Include="Http\HttpCommaSeparatedField.cs" />
     <Compile Include="Http\HttpCommaSeparatedInnerField.cs" />
     <Compile Include="Http\HttpContentLengthField.cs" />
+    <Compile Include="Http\HttpContentTypeField.cs" />
     <Compile Include="Http\HttpDatagram.cs" />
     <Compile Include="Http\HttpField.cs" />
+    <Compile Include="Http\HttpFieldParameters.cs" />
     <Compile Include="Http\HttpHeader.cs" />
     <Compile Include="Http\HttpParser.cs" />
     <Compile Include="Http\HttpRegex.cs" />

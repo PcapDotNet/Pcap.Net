@@ -28,6 +28,27 @@ namespace PcapDotNet.Packets
             return array.Compare(offset, other, otherOffset, count) == 0;
         }
 
+        public static int Find(this byte[] array, int offset, int count, byte[] other, int otherOffset, int otherCount)
+        {
+            if (otherCount > count)
+                return array.Length;
+
+            int maxOffset = offset + count - otherCount;
+            while (offset < maxOffset)
+            {
+                if (Compare(array, offset, other, otherOffset, otherCount) == 0)
+                    return offset;
+                ++offset;
+            }
+
+            return array.Length;
+        }
+
+        public static int Find(this byte[] array, int offset, int count, byte[] other)
+        {
+            return array.Find(offset, count, other, 0, other.Length);
+        }
+
         /// <summary>
         /// Copies a specified number of bytes from a source array starting at a particular offset to a destination array starting at a particular offset.
         /// </summary>

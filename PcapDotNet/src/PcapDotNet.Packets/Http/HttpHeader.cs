@@ -22,10 +22,31 @@ namespace PcapDotNet.Packets.Http
         {
             get
             {
-                HttpField field;
-                if (!_fields.TryGetValue(HttpTransferEncodingField.Name, out field))
-                    return null;
-                return (HttpTransferEncodingField)field;
+                return GetField<HttpTransferEncodingField>(HttpTransferEncodingField.Name);
+            }
+        }
+
+        private T GetField<T>(string fieldName) where T : HttpField
+        {
+            HttpField field;
+            if (!_fields.TryGetValue(fieldName, out field))
+                return null;
+            return (T)field;
+        }
+
+        public HttpContentLengthField ContentLength
+        {
+            get
+            {
+                return GetField<HttpContentLengthField>(HttpContentLengthField.Name);
+            }
+        }
+
+        public HttpContentTypeField ContentType
+        {
+            get
+            {
+                return GetField<HttpContentTypeField>(HttpContentTypeField.Name);
             }
         }
 

@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Test
                             "\r\n" +
                             "A: B\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader());
+                            new HttpHeader(), Datagram.Empty);
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A: B\r\n" +
@@ -93,7 +93,7 @@ namespace PcapDotNet.Packets.Test
                             "B: C\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("A", "B")));
+                                new HttpField("A", "B")), Datagram.Empty);
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A: B\r\n" +
@@ -161,7 +161,7 @@ namespace PcapDotNet.Packets.Test
             HttpRequestDatagram request = (HttpRequestDatagram)http;
             Assert.AreEqual(expectedMethod, request.Method, "Method " + httpString);
             Assert.AreEqual(expectedUri, request.Uri, "Uri " + httpString);
-            Assert.AreEqual(expectedBody, request.Body);
+            Assert.AreEqual(expectedBody, request.Body, "Body " + httpString);
         }
 
         private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null, Datagram expectedBody = null)

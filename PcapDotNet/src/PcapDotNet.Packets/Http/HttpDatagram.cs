@@ -231,7 +231,7 @@ namespace PcapDotNet.Packets.Http
                         int bodyOffsetValue = _bodyOffset.Value;
                         if (!IsBodyPossible)
                         {
-                            _body = new Datagram(new byte[0]);
+                            _body = Empty;
                             return _body;
                         }
 
@@ -245,24 +245,35 @@ namespace PcapDotNet.Packets.Http
                             }
                         }
 
-//                        HttpContentLengthField contentLengthField = Header.ContentLength;
-//                        if (contentLengthField != null)
-//                        {
-//                            int contentLength = contentLengthField.ContentLength;
-//                            _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min(contentLength, Length - bodyOffsetValue));
-//                            return _body;
-//                        }
-//
-//                        HttpContentTypeField contentTypeField = Header.ContentType;
-//                        if (contentTypeField != null)
-//                        {
-//                            if (contentTypeField.MediaTypes.Contains("multipart/byteranges"))
-//                            {
-//                                int transferLength = contentTypeField.TransferLength;
-//                                _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min(transferLength, Length - bodyOffsetValue));
-//                            }
-//                                
-//                        }
+                        HttpContentLengthField contentLengthField = Header.ContentLength;
+                        if (contentLengthField != null)
+                        {
+                            uint? contentLength = contentLengthField.ContentLength;
+                            if (contentLength != null)
+                            {
+                                _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min((int)contentLength.Value, Length - bodyOffsetValue));
+                                return _body;
+                            }
+                        }
+
+                        HttpContentTypeField contentTypeField = Header.ContentType;
+                        if (contentTypeField != null)
+                        {
+                            if (contentTypeField.MediaType == "multipart" &&
+                                contentTypeField.MediaSubType == "byteranges")
+                            {
+                                string boundary = contentTypeField.Parameters["boundary"];
+                                if (boundary != null)
+                                {
+                                    byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("--{0}--\r\n", boundary));
+                                    int lastBoundaryOffset = Buffer.Find(StartOffset + bodyOffsetValue, Length - bodyOffsetValue, lastBoundaryBuffer);
+                                    int lastBoundaryEnd = lastBoundaryOffset + lastBoundaryBuffer.Length;
+                                    _body = new Datagram(Buffer, StartOffset + bodyOffsetValue,
+                                                         Math.Min(lastBoundaryEnd - StartOffset - bodyOffsetValue, Length - bodyOffsetValue));
+                                    return _body;
+                                }
+                            }
+                        }
 
                         _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Length - bodyOffsetValue);
                     }
