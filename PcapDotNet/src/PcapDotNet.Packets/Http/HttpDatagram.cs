@@ -198,94 +198,85 @@ namespace PcapDotNet.Packets.Http
     /// </summary>
     public abstract class HttpDatagram : Datagram
     {
+        internal class ParseInfoBase
+        {
+            public int Length { get; set; }
+            public HttpVersion Version { get; set; }
+            public HttpHeader Header { get; set; }
+            public Datagram Body { get; set; }
+        }
+
         public abstract bool IsRequest { get; }
         public bool IsResponse { get { return !IsRequest; } }
 
-        public HttpVersion Version
+        public HttpVersion Version  { get; private set;}
+        
+        public HttpHeader Header { get; private set;}
+
+        public Datagram Body { get; private set; }
+
+        internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
-            get
-            {
-                ParseFirstLine();
-                return _version;
-            } 
+            if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
+                return new HttpResponseDatagram(buffer, offset, length);
+            return new HttpRequestDatagram(buffer, offset, length);
         }
 
-        public HttpHeader Header
+        internal HttpDatagram(byte[] buffer, int offset, int length, 
+            HttpVersion version, HttpHeader header, Datagram body) 
+            : base(buffer, offset, length)
         {
-            get
+            Version = version;
+            Header = header;
+            Body = body;
+        }
+
+        internal static Datagram ParseBody(byte[] buffer, int offset, int length,
+            bool isBodyPossible, HttpHeader header)
+        {
+            if (!isBodyPossible)
+                return Empty;
+
+            HttpTransferEncodingField transferEncodingField = header.TransferEncoding;
+            if (transferEncodingField != null)
             {
-                ParseHeader();
-                return _header;
+                if (transferEncodingField.TransferCodings.Any(coding => coding != "identity"))
+                    return ParseChunkedBody(buffer, offset, length);
             }
-        }
 
-        public Datagram Body
-        {
-            get
+            HttpContentLengthField contentLengthField = header.ContentLength;
+            if (contentLengthField != null)
             {
-                if (_body == null)
+                uint? contentLength = contentLengthField.ContentLength;
+                if (contentLength != null)
+                    return new Datagram(buffer, offset, Math.Min((int)contentLength.Value, length));
+            }
+
+            HttpContentTypeField contentTypeField = header.ContentType;
+            if (contentTypeField != null)
+            {
+                if (contentTypeField.MediaType == "multipart" &&
+                    contentTypeField.MediaSubType == "byteranges")
                 {
-                    ParseHeader();
-                    if (_bodyOffset != null)
+                    string boundary = contentTypeField.Parameters["boundary"];
+                    if (boundary != null)
                     {
-                        int bodyOffsetValue = _bodyOffset.Value;
-                        if (!IsBodyPossible)
-                        {
-                            _body = Empty;
-                            return _body;
-                        }
-
-                        HttpTransferEncodingField transferEncodingField = Header.TransferEncoding;
-                        if (transferEncodingField != null)
-                        {
-                            if (transferEncodingField.TransferCodings.Any(coding => coding != "identity"))
-                            {
-                                _body = ReadChunked();
-                                return _body;
-                            }
-                        }
-
-                        HttpContentLengthField contentLengthField = Header.ContentLength;
-                        if (contentLengthField != null)
-                        {
-                            uint? contentLength = contentLengthField.ContentLength;
-                            if (contentLength != null)
-                            {
-                                _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Math.Min((int)contentLength.Value, Length - bodyOffsetValue));
-                                return _body;
-                            }
-                        }
-
-                        HttpContentTypeField contentTypeField = Header.ContentType;
-                        if (contentTypeField != null)
-                        {
-                            if (contentTypeField.MediaType == "multipart" &&
-                                contentTypeField.MediaSubType == "byteranges")
-                            {
-                                string boundary = contentTypeField.Parameters["boundary"];
-                                if (boundary != null)
-                                {
-                                    byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("--{0}--\r\n", boundary));
-                                    int lastBoundaryOffset = Buffer.Find(StartOffset + bodyOffsetValue, Length - bodyOffsetValue, lastBoundaryBuffer);
-                                    int lastBoundaryEnd = lastBoundaryOffset + lastBoundaryBuffer.Length;
-                                    _body = new Datagram(Buffer, StartOffset + bodyOffsetValue,
-                                                         Math.Min(lastBoundaryEnd - StartOffset - bodyOffsetValue, Length - bodyOffsetValue));
-                                    return _body;
-                                }
-                            }
-                        }
-
-                        _body = new Datagram(Buffer, StartOffset + bodyOffsetValue, Length - bodyOffsetValue);
+                        byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("--{0}--\r\n", boundary));
+                        int lastBoundaryOffset = buffer.Find(offset, length, lastBoundaryBuffer);
+                        int lastBoundaryEnd = lastBoundaryOffset + lastBoundaryBuffer.Length;
+                        return new Datagram(buffer, offset,
+                                             Math.Min(lastBoundaryEnd - offset, length));
                     }
                 }
-                return _body;
             }
+
+            return new Datagram(buffer, offset, length);
         }
 
-        private Datagram ReadChunked()
+        private static Datagram ParseChunkedBody(byte[] buffer, int offset, int length)
         {
             List<Datagram> contentData = new List<Datagram>();
-            HttpParser parser = new HttpParser(Buffer, StartOffset + _bodyOffset.Value, Length - _bodyOffset.Value);
+            HttpParser parser = new HttpParser(buffer, offset, length);
             uint? chunkSize;
             while (parser.HexadecimalNumber(out chunkSize).SkipChunkExtensions().CarriageReturnLineFeed().Success)
             {
@@ -293,13 +284,13 @@ namespace PcapDotNet.Packets.Http
                 if (chunkSizeValue == 0)
                 {
                     int? endOffset;
-                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, Buffer, parser.Offset, Buffer.Length - parser.Offset));
+                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, buffer, parser.Offset, buffer.Length - parser.Offset));
                     parser.CarriageReturnLineFeed();
                     break;
                 }
 
-                int actualChunkSize = (int)Math.Min(chunkSizeValue, Buffer.Length - parser.Offset);
-                contentData.Add(new Datagram(Buffer, parser.Offset, actualChunkSize));
+                int actualChunkSize = (int)Math.Min(chunkSizeValue, buffer.Length - parser.Offset);
+                contentData.Add(new Datagram(buffer, parser.Offset, actualChunkSize));
                 parser.Skip(actualChunkSize);
                 parser.CarriageReturnLineFeed();
             }
@@ -314,58 +305,10 @@ namespace PcapDotNet.Packets.Http
             }
             Datagram content = new Datagram(contentBuffer);
 
-            return new Datagram(Buffer, StartOffset + _bodyOffset.Value, parser.Offset - StartOffset);
+            return new Datagram(buffer, offset, parser.Offset - offset);
         }
 
-        protected abstract bool IsBodyPossible { get; }
-
-        internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
-        {
-            if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
-                return new HttpResponseDatagram(buffer, offset, length);
-            return new HttpRequestDatagram(buffer, offset, length);
-        }
-
-        internal HttpDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
-        {
-        }
-
-        internal void ParseFirstLine()
-        {
-            if (_isParsedFirstLine)
-                return;
-            _isParsedFirstLine = true;
-
-            ParseSpecificFirstLine(out _version, out _headerOffset);
-        }
-
-        internal abstract void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset);
-
-        private void ParseHeader()
-        {
-            if (_isParsedHeader)
-                return;
-            _isParsedHeader = true;
-
-            ParseFirstLine();
-            if (_headerOffset == null)
-                return;
-
-            _header = new HttpHeader(GetHeaderFields());
-        }
-
-        private List<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields()
-        {
-            int headerOffsetValue = _headerOffset.Value;
-            int? endOffset;
-            var result = GetHeaderFields(out endOffset, Buffer, StartOffset + headerOffsetValue, Length - headerOffsetValue);
-            if (endOffset != null)
-                _bodyOffset = endOffset.Value - StartOffset;
-            return result;
-        }
-
-        private static List<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields(out int? endOffset, byte[] buffer, int offset, int length)
+        internal static List<KeyValuePair<string, IEnumerable<byte>>> GetHeaderFields(out int? endOffset, byte[] buffer, int offset, int length)
         {
             endOffset = null;
             var headerFields = new List<KeyValuePair<string, IEnumerable<byte>>>();

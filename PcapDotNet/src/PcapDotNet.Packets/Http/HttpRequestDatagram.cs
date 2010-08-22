@@ -4,9 +4,10 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpRequestDatagram : HttpDatagram
     {
-        internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
+        private class ParseInfo : ParseInfoBase
         {
+            public string Method { get; set; }
+            public string Uri { get; set; }
         }
 
         public override bool IsRequest
@@ -14,37 +15,60 @@ namespace PcapDotNet.Packets.Http
             get { return true; }
         }
 
-        public string Method
+        public string Method { get; private set; }
+        public string Uri { get; private set; }
+
+        internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
+            : this(buffer, offset, Parse(buffer, offset, length))
         {
-            get
-            {
-                ParseFirstLine();
-                return _method;
-            }
-        }
-        
-        public string Uri
-        {
-            get
-            {
-                ParseFirstLine();
-                return _uri;
-            }
         }
 
-        protected override bool IsBodyPossible
+        private HttpRequestDatagram(byte[] buffer, int offset, ParseInfo parseInfo)
+            :base(buffer, offset, parseInfo.Length, parseInfo.Version, parseInfo.Header, parseInfo.Body)
         {
-            get { return Header.ContentLength != null; }
+            Method = parseInfo.Method;
+            Uri = parseInfo.Uri;
         }
 
-        internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
+        private static ParseInfo Parse(byte[] buffer, int offset, int length)
         {
-            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
-            parser.Token(out _method).Space().RequestUri(out _uri).Space().Version(out version).CarriageReturnLineFeed();
-            headerOffset = parser.Success ? (int?)(parser.Offset - StartOffset) : null;
+            // First Line
+            HttpParser parser = new HttpParser(buffer, offset, length);
+            string method;
+            string uri;
+            HttpVersion version;
+            parser.Token(out method).Space().RequestUri(out uri).Space().Version(out version).CarriageReturnLineFeed();
+            ParseInfo parseInfo = new ParseInfo
+                                  {
+                                      Length = length,
+                                      Version = version,
+                                      Method = method,
+                                      Uri = uri,
+                                  };
+            if (!parser.Success)
+                return parseInfo;
+
+            int firstLineLength = parser.Offset - offset;
+
+            // Header
+            int? endHeaderOffset;
+            HttpHeader header = new HttpHeader(GetHeaderFields(out endHeaderOffset, buffer, offset + firstLineLength, length - firstLineLength));
+            parseInfo.Header = header;
+            if (endHeaderOffset == null)
+                return parseInfo;
+
+            int headerLength = endHeaderOffset.Value - offset - firstLineLength;
+
+            // Body
+            Datagram body = ParseBody(buffer, offset + firstLineLength + headerLength, length - firstLineLength - headerLength, IsBodyPossible(header), header);
+            parseInfo.Body = body;
+            parseInfo.Length = firstLineLength + headerLength + body.Length;
+            return parseInfo;
         }
 
-        private string _uri;
-        private string _method;
+        private static bool IsBodyPossible(HttpHeader header)
+        {
+            return header.ContentLength != null;
+        }
     }
 }

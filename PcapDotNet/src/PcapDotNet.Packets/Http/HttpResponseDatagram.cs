@@ -5,9 +5,10 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpResponseDatagram : HttpDatagram
     {
-        internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
-            : base(buffer, offset, length)
+        private class ParseInfo : ParseInfoBase
         {
+            public Datagram ReasonPhrase { get; set; }
+            public uint? StatusCode{ get; set;}
         }
 
         public override bool IsRequest
@@ -15,45 +16,65 @@ namespace PcapDotNet.Packets.Http
             get { return false; }
         }
 
-        public uint? StatusCode
+        public uint? StatusCode{get; private set;}
+
+        public Datagram ReasonPhrase { get; private set;}
+
+        internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
+            : this(buffer, offset, Parse(buffer, offset, length))
         {
-            get
-            {
-                ParseFirstLine();
-                return _statusCode;
-            }
         }
 
-        public Datagram ReasonPhrase
+        private HttpResponseDatagram(byte[] buffer, int offset, ParseInfo parseInfo)
+            :base(buffer, offset, parseInfo.Length, parseInfo.Version, parseInfo.Header, parseInfo.Body)
         {
-            get
-            {
-                ParseFirstLine();
-                return _reasonPhrase;
-            }
+            StatusCode = parseInfo.StatusCode;
+            ReasonPhrase = parseInfo.ReasonPhrase;
         }
 
-        protected override bool IsBodyPossible
+        private static ParseInfo Parse(byte[] buffer, int offset, int length)
         {
-            get
-            {
-                uint statusCodeValue = StatusCode.Value;
-                if (statusCodeValue >= 100 && statusCodeValue <= 199 || statusCodeValue == 204 || statusCodeValue == 205 || statusCodeValue == 304)
-                    return false;
-                // if (IsResponseToHeadRequest)
-                //     return false;
-                return true;
-            }
+            // First Line
+            HttpParser parser = new HttpParser(buffer, offset, length);
+            HttpVersion version;
+            uint? statusCode;
+            Datagram reasonPhrase;
+            parser.Version(out version).Space().DecimalNumber(3, out statusCode).Space().ReasonPhrase(out reasonPhrase).CarriageReturnLineFeed();
+            ParseInfo parseInfo = new ParseInfo
+                                  {
+                                      Length = length,
+                                      Version = version,
+                                      StatusCode = statusCode,
+                                      ReasonPhrase = reasonPhrase
+                                  };
+            if (!parser.Success)
+                return parseInfo;
+
+            int firstLineLength = parser.Offset - offset;
+
+            // Header
+            int? endHeaderOffset;
+            HttpHeader header = new HttpHeader(GetHeaderFields(out endHeaderOffset, buffer, offset + firstLineLength, length - firstLineLength));
+            parseInfo.Header = header;
+            if (endHeaderOffset == null)
+                return parseInfo;
+
+            int headerLength = endHeaderOffset.Value - offset - firstLineLength;
+
+            // Body
+            Datagram body = ParseBody(buffer, offset + firstLineLength + headerLength, length - firstLineLength - headerLength, IsBodyPossible(statusCode.Value), header);
+            parseInfo.Body = body;
+            parseInfo.Length = firstLineLength + headerLength + body.Length;
+            return parseInfo;
         }
 
-        internal override void ParseSpecificFirstLine(out HttpVersion version, out int? headerOffset)
+        private static bool IsBodyPossible(uint statusCode)
         {
-            HttpParser parser = new HttpParser(Buffer, StartOffset, Length);
-            parser.Version(out version).Space().DecimalNumber(3, out _statusCode).Space().ReasonPhrase(out _reasonPhrase).CarriageReturnLineFeed();
-            headerOffset = parser.Success ? (int?)(parser.Offset - StartOffset) : null;
+            if (statusCode >= 100 && statusCode <= 199 || statusCode == 204 || statusCode == 205 || statusCode == 304)
+                return false;
+            // if (IsResponseToHeadRequest)
+            //     return false;
+            return true;
         }
-
-        private uint? _statusCode;
-        private Datagram _reasonPhrase;
     }
 }
