@@ -25,9 +25,9 @@ namespace PcapDotNet.Packets
             if (buffer == null) 
                 throw new ArgumentNullException("buffer");
 
-            _buffer = buffer;
-            _startOffset = 0;
-            _length = buffer.Length;
+            Buffer = buffer;
+            StartOffset = 0;
+            Length = buffer.Length;
         }
 
         /// <summary>
@@ -38,9 +38,9 @@ namespace PcapDotNet.Packets
         /// <param name="length">The number of bytes to take.</param>
         public Datagram(byte[] buffer, int offset, int length)
         {
-            _buffer = buffer;
-            _startOffset = offset;
-            _length = length;
+            Buffer = buffer;
+            StartOffset = offset;
+            Length = length;
         }
 
         /// <summary>
@@ -55,10 +55,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// The number of bytes in this datagram.
         /// </summary>
-        public int Length
-        {
-            get { return _length; }
-        }
+        public int Length { get; private set; }
 
         /// <summary>
         /// The value of the byte in the given offset in the datagram.
@@ -66,7 +63,7 @@ namespace PcapDotNet.Packets
         /// <param name="offset">The offset in the datagram to take the byte from.</param>
         public byte this[int offset]
         {
-            get { return _buffer[StartOffset + offset]; }
+            get { return Buffer[StartOffset + offset]; }
         }
 
         /// <summary>
@@ -161,25 +158,19 @@ namespace PcapDotNet.Packets
 
         internal void Write(byte[] buffer, int offset)
         {
-            _buffer.BlockCopy(StartOffset, buffer, offset, Length);
+            Buffer.BlockCopy(StartOffset, buffer, offset, Length);
         }
 
         /// <summary>
         /// The original buffer that holds all the data for the datagram.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-        internal byte[] Buffer
-        {
-            get { return _buffer; }
-        }
+        internal byte[] Buffer { get; private set; }
 
         /// <summary>
         /// The offset of the first byte of the datagram in the buffer.
         /// </summary>
-        internal int StartOffset
-        {
-            get { return _startOffset; }
-        }
+        internal int StartOffset { get; private set; }
 
         /// <summary>
         /// The default validity check always returns true.
@@ -324,9 +315,6 @@ namespace PcapDotNet.Packets
         }
 
         private static readonly Datagram _empty = new Datagram(new byte[0], 0, 0);
-        private readonly byte[] _buffer;
-        private readonly int _startOffset;
-        private readonly int _length;
         private bool? _isValid;
     }
 }
