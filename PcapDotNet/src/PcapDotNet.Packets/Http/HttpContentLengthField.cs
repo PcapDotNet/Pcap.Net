@@ -3,6 +3,7 @@
     public class HttpContentLengthField : HttpField
     {
         public const string Name = "Content-Length";
+        public const string NameLower = "content-length";
 
         public HttpContentLengthField(uint contentLength)
             :base(Name, contentLength.ToString())

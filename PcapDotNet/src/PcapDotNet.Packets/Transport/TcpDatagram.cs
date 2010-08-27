@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using PcapDotNet.Packets.Http;
 
 namespace PcapDotNet.Packets.Transport
@@ -258,9 +260,29 @@ namespace PcapDotNet.Packets.Transport
         {
             get
             {
-                if (_http == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _http = HttpDatagram.CreateDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _http;
+                return HttpCollection == null ? null : HttpCollection[0];
+            }
+        }
+
+        public ReadOnlyCollection<HttpDatagram> HttpCollection
+        {
+            get
+            {
+                if (_httpCollection == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
+                {
+                    List<HttpDatagram> httpList = new List<HttpDatagram>();
+
+                    int httpParsed = 0;
+                    do
+                    {
+                        HttpDatagram httpDatagram = HttpDatagram.CreateDatagram(Buffer, StartOffset + HeaderLength + httpParsed, Length - HeaderLength - httpParsed);
+                        httpParsed += httpDatagram.Length;
+                        httpList.Add(httpDatagram);
+                    } while (Length > HeaderLength + httpParsed);
+
+                    _httpCollection = httpList.AsReadOnly();
+                }
+                return _httpCollection;
             }
         }
 
@@ -314,6 +336,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         private TcpOptions _options;
-        private HttpDatagram _http;
+        private ReadOnlyCollection<HttpDatagram> _httpCollection;
     }
 }

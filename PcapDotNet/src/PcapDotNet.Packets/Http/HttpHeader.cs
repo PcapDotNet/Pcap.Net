@@ -8,9 +8,11 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpHeader : IEnumerable<HttpField>, IEquatable<HttpHeader>
     {
+        public static HttpHeader Empty { get { return _empty; } }
+
         public HttpHeader(IEnumerable<HttpField> fields)
         {
-            _fields = fields.ToDictionary(field => field.Name, field => field);
+            _fields = fields.ToDictionary(field => field.Name, field => field, StringComparer.InvariantCultureIgnoreCase);
         }
 
         public HttpHeader(params HttpField[] fields)
@@ -78,7 +80,7 @@ namespace PcapDotNet.Packets.Http
 
         internal HttpHeader(IEnumerable<KeyValuePair<string, IEnumerable<byte>>> fields)
         {
-            var mergedFields = new Dictionary<string, IEnumerable<byte>>();
+            var mergedFields = new Dictionary<string, IEnumerable<byte>>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var field in fields)
             {
                 string fieldName = field.Key;
@@ -92,9 +94,10 @@ namespace PcapDotNet.Packets.Http
                     mergedFields[fieldName] = fieldValue.Concat(AsciiBytes.Comma).Concat(field.Value);
             }
 
-            _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()));
+            _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()), StringComparer.InvariantCultureIgnoreCase);
         }
 
-        private readonly Dictionary<string, HttpField> _fields = new Dictionary<string, HttpField>();
+        private static readonly HttpHeader _empty = new HttpHeader();
+        private readonly Dictionary<string, HttpField> _fields = new Dictionary<string, HttpField>(StringComparer.InvariantCultureIgnoreCase);
     }
 }

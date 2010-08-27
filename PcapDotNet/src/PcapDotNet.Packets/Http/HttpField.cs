@@ -11,12 +11,14 @@ namespace PcapDotNet.Packets.Http
     {
         public static HttpField CreateField(string fieldName, byte[] fieldValue)
         {
-            switch (fieldName)
+            switch (fieldName.ToLowerInvariant())
             {
-                case HttpTransferEncodingField.Name:
+                case HttpTransferEncodingField.NameLower:
                     return new HttpTransferEncodingField(fieldValue);
-                case HttpContentLengthField.Name:
+                case HttpContentLengthField.NameLower:
                     return new HttpContentLengthField(fieldValue);
+                case HttpContentTypeField.NameLower:
+                    return new HttpContentTypeField(fieldValue);
 
                 default:
                     return new HttpField(fieldName, fieldValue.ToArray());
@@ -74,7 +76,7 @@ namespace PcapDotNet.Packets.Http
 
         public virtual bool Equals(HttpField other)
         {
-            return other != null && Name.Equals(other.Name) && Value.SequenceEqual(other.Value);
+            return other != null && Name.Equals(other.Name, StringComparison.InvariantCultureIgnoreCase) && Value.SequenceEqual(other.Value);
         }
 
         public override bool Equals(object obj)

@@ -2,11 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
-    public class HttpFieldParameters : IEnumerable<KeyValuePair<string, string>>
+    public class HttpFieldParameters : IEnumerable<KeyValuePair<string, string>>, IEquatable<HttpFieldParameters>
     {
+        public HttpFieldParameters(params KeyValuePair<string, string>[] parameters)
+            :this((IEnumerable<KeyValuePair<string, string>>)parameters)
+        {
+        }
+
+        public HttpFieldParameters(IEnumerable<KeyValuePair<string, string>> parameters)
+        {
+            _parameters = parameters.ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
         internal HttpFieldParameters(IEnumerable<string> parametersNames, IEnumerable<string> parametersValues)
         {
             var nameEnumerator = parametersNames.GetEnumerator();
@@ -41,6 +53,34 @@ namespace PcapDotNet.Packets.Http
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public bool Equals(HttpFieldParameters other)
+        {
+            return _parameters.DictionaryEquals(other._parameters);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as HttpFieldParameters);
+        }
+
+        public override string ToString()
+        {
+            if (!this.Any())
+                return string.Empty;
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(" ");
+            foreach (var parameter in this)
+            {
+                stringBuilder.Append(";");
+                stringBuilder.Append(parameter.Key);
+                stringBuilder.Append("=");
+                stringBuilder.Append(parameter.Value);
+            }
+
+            return stringBuilder.ToString();
         }
 
         private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();

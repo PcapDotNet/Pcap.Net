@@ -261,7 +261,7 @@ namespace PcapDotNet.Packets.Http
                     string boundary = contentTypeField.Parameters["boundary"];
                     if (boundary != null)
                     {
-                        byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("--{0}--\r\n", boundary));
+                        byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("\r\n--{0}--", boundary));
                         int lastBoundaryOffset = buffer.Find(offset, length, lastBoundaryBuffer);
                         int lastBoundaryEnd = lastBoundaryOffset + lastBoundaryBuffer.Length;
                         return new Datagram(buffer, offset,
