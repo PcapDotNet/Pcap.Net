@@ -11,22 +11,22 @@ namespace PcapDotNet.Packets.Http
         }
 
         // UPALPHA        
-        public static bool IsUpAlpha(this byte value)
-        {
-            return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperZ;
-        }
+//        public static bool IsUpAlpha(this byte value)
+//        {
+//            return value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperZ;
+//        }
 
         // LOALPHA        
-        public static bool IsLowerAlpha(this byte value)
-        {
-            return value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerZ;
-        }
+//        public static bool IsLowerAlpha(this byte value)
+//        {
+//            return value >= AsciiBytes.LowerA && value <= AsciiBytes.LowerZ;
+//        }
 
         // ALPHA          
-        public static bool IsAlpha(this byte value)
-        {
-            return value.IsUpAlpha() || value.IsLowerAlpha();
-        }
+//        public static bool IsAlpha(this byte value)
+//        {
+//            return value.IsUpAlpha() || value.IsLowerAlpha();
+//        }
 
         // DIGIT          
         public static bool IsDigit(this byte value)
