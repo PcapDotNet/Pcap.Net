@@ -155,22 +155,22 @@ namespace PcapDotNet.Packets.Test
                              "\r\n" +
                              "5\r\n" +
                              "This \r\n" +
-                             "3\r\n" +
+                             "3;Extension\r\n" +
                              "is \r\n" +
-                             "4\r\n" +
-                             "the \r\n" +
-                             "4\r\n" +
-                             "body\r\n" +
+                             "a;Extension=Value\r\n" +
+                             "the 123456\r\n" +
+                             "A;Extension=\"Quoted \\\" Value\"\r\n" +
+                             "body 12345\r\n" +
                              "0\r\n",
                              HttpVersion.Version11, 200, "OK", new HttpHeader(new HttpTransferEncodingField("chunked")),
                              "5\r\n" +
                              "This \r\n" +
-                             "3\r\n" +
+                             "3;Extension\r\n" +
                              "is \r\n" +
-                             "4\r\n" +
-                             "the \r\n" +
-                             "4\r\n" +
-                             "body\r\n" +
+                             "a;Extension=Value\r\n" +
+                             "the 123456\r\n" +
+                             "A;Extension=\"Quoted \\\" Value\"\r\n" +
+                             "body 12345\r\n" +
                              "0\r\n");
 
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
@@ -227,6 +227,8 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(http.IsResponse, "IsResponse " + httpString);
             Assert.AreEqual(expectedVersion, http.Version, "Version " + httpString);
             Assert.AreEqual(expectedHeader, http.Header, "Header " + httpString);
+            if (expectedHeader != null)
+                Assert.AreEqual(expectedHeader.ToString(), http.Header.ToString(), "Header " + httpString);
 
             HttpRequestDatagram request = (HttpRequestDatagram)http;
             Assert.AreEqual(expectedMethod, request.Method, "Method " + httpString);
@@ -246,6 +248,8 @@ namespace PcapDotNet.Packets.Test
             Assert.IsTrue(http.IsResponse, "IsResponse " + httpString);
             Assert.AreEqual(expectedVersion, http.Version, "Version " + httpString);
             Assert.AreEqual(expectedHeader, http.Header, "Header " + httpString);
+            if (expectedHeader != null)
+                Assert.IsNotNull(http.Header.ToString());
 
             HttpResponseDatagram response = (HttpResponseDatagram)http;
             Assert.AreEqual(expectedStatusCode, response.StatusCode, "StatusCode " + httpString);

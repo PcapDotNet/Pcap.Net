@@ -297,58 +297,6 @@ namespace PcapDotNet.Packets.Http
             return this;
         }
 
-        public HttpParser CommaSeparated<T>(Func<T> commaSeparatedParsing, out List<T> commaSeparated)
-        {
-            commaSeparated = new List<T>();
-            bool more = true;
-            while (Success && more)
-            {
-                commaSeparated.Add(commaSeparatedParsing());
-                SkipLws();
-                more = false;
-                while (IsNext(AsciiBytes.Comma))
-                {
-                    ++_offset;
-                    more = true;
-                    SkipLws();
-                }
-            }
-
-            if (!Success)
-                commaSeparated = null;
-            return this;
-        }
-
-        public HttpTransferCoding TransferCoding()
-        {
-            string codingName;
-            Token(out codingName);
-            List<HttpParameter> parameters = new List<HttpParameter>();
-            while (Success && IsNext(AsciiBytes.Semicolon))
-            {
-                ++_offset;
-                HttpParameter parameter;
-                Parameter(out parameter);
-            }
-
-            return Success ? new HttpTransferCoding(codingName, parameters.AsReadOnly()) : null;
-        }
-
-        public HttpParser Parameter(out HttpParameter parameter)
-        {
-            string attribute;
-            Token(out attribute).Bytes(AsciiBytes.EqualsSign);
-
-            Datagram value;
-            if (IsNext(AsciiBytes.DoubleQuotationMark))
-                QuotedString(out value);
-            else
-                Token(out value);
-
-            parameter = Success ? new HttpParameter(attribute, value) : null;
-            return this;
-        }
-
         public HttpParser QuotedString(out Datagram quotedString)
         {
             quotedString = null;
