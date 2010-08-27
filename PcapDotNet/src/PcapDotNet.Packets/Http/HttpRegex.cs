@@ -109,7 +109,7 @@ namespace PcapDotNet.Packets.Http
         private static readonly Regex _tokenRegex = AtLeastOne(Build(@"[\x21\x23-\x27\x2A\x2B\x2D\x2E0-9A-Z\x5E-\x7A\x7C\x7E-\xFE]"));
         private static readonly Regex _valueRegex = Or(Token, QuotedString); 
         private static readonly Regex _parameterRegex = Concat(Capture(_tokenRegex, ParameterNameGroupName), Build("="), Capture(_valueRegex, ParameterValueGroupName));
-        private static readonly Regex _optionalParametersRegex = Any(Concat(Build(";"), _parameterRegex));
+        private static readonly Regex _optionalParametersRegex = Any(Concat(Build(";"), Optional(_linearWhiteSpaceRegex), _parameterRegex));
 
         private static readonly Encoding _encoding = Encoding.GetEncoding(28591);
     }

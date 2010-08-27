@@ -9,13 +9,22 @@ namespace PcapDotNet.Packets.Http
     public class HttpContentTypeField : HttpField, IEquatable<HttpContentTypeField>
     {
         public const string Name = "Content-Type";
+        public const string NameLower = "content-type";
+
+        public HttpContentTypeField(string mediaType, string mediaSubType, HttpFieldParameters parameters)
+            :base(Name, string.Format("{0}/{1}{2}", mediaType, mediaSubType, parameters))
+        {
+            MediaType = mediaType;
+            MediaSubType = mediaSubType;
+            Parameters = parameters;
+        }
 
         public bool Equals(HttpContentTypeField other)
         {
             return other != null &&
                    MediaType == other.MediaType &&
                    MediaSubType == other.MediaSubType &&
-                   Parameters == other.Parameters;
+                   Parameters.Equals(other.Parameters);
         }
 
         public string MediaType { get; private set; }

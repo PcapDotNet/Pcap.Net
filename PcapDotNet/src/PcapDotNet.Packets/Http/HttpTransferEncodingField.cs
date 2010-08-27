@@ -11,6 +11,7 @@ namespace PcapDotNet.Packets.Http
     public class HttpTransferEncodingField : HttpField, IEquatable<HttpTransferEncodingField>
     {
         public const string Name = "Transfer-Encoding";
+        public const string NameLower = "transfer-encoding";
         private const string RegexTransferCodingGroupName = "TransferCoding";
 
         public HttpTransferEncodingField(IList<string> transferCodings)
