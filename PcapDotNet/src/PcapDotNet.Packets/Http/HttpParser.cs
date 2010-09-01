@@ -7,30 +7,6 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
-    public class HttpTransferCoding
-    {
-        public HttpTransferCoding(string codingName, ReadOnlyCollection<HttpParameter> parameters)
-        {
-            CodingName = codingName;
-            Parameters = parameters;
-        }
-
-        public string CodingName { get; private set; }
-        public ReadOnlyCollection<HttpParameter> Parameters { get; private set; }
-    }
-
-    public class HttpParameter
-    {
-        public HttpParameter(string attribute, Datagram value)
-        {
-            Attribute = attribute;
-            Value = value;
-        }
-
-        public string Attribute { get; private set; }
-        public Datagram Value { get; private set; }
-    }
-
     internal class HttpParser
     {
         public HttpParser(byte[] buffer)

@@ -49,15 +49,24 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void HttpParsingTest()
         {
+            // Request First Line
             TestHttpRequest("");
             TestHttpRequest(" ");
+            TestHttpRequest("G", "G");
             TestHttpRequest("GET", "GET");
+            TestHttpRequest("GET ", "GET", "");
             TestHttpRequest("GET /url", "GET", "/url");
+            TestHttpRequest("GET /url ", "GET", "/url");
+            TestHttpRequest("GET /url H", "GET", "/url");
+            TestHttpRequest("GET /url HTTP/", "GET", "/url");
             TestHttpRequest("GET /url HTTP/1.0", "GET", "/url", HttpVersion.Version10);
             TestHttpRequest("GET /url HTTP/1.1", "GET", "/url", HttpVersion.Version11);
+            TestHttpRequest("GET /url HTTP/1.1A", "GET", "/url", HttpVersion.Version11);
             TestHttpRequest("GET /url  HTTP/1.1", "GET", "/url");
             TestHttpRequest("GET  HTTP/1.1", "GET", "", HttpVersion.Version11);
+            TestHttpRequest("GET /url HTTP/1.1\r\n", "GET", "/url", HttpVersion.Version11, HttpHeader.Empty);
 
+            // Request Header
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "Cache-Control: no-cache\r\n",
                             "GET", "/url", HttpVersion.Version11,
@@ -113,11 +122,62 @@ namespace PcapDotNet.Packets.Test
                                 new HttpField("B", "C")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B\r\n" +
+                            "C:D\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B:",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B")));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B:\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B"),
+                                           new HttpField("B", string.Empty)));
+
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                            "A:B\r\n" +
+                            "B:\r\n" +
+                            "C:D\r\n",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpField("A", "B"),
+                                           new HttpField("B", string.Empty),
+                                           new HttpField("C", "D")));
+
+            // Request Body
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(),
+                            HttpHeader.Empty,
                             string.Empty);
 
+            TestHttpRequest("GET /url HTTP/1.1\r\n" +
+                "Content-Length: 10\r\n" +
+                            "\r\n" +
+                            "1234567890",
+                            "GET", "/url", HttpVersion.Version11,
+                            new HttpHeader(new HttpContentLengthField(10)),
+                            "1234567890");
+
+            // Response
 
             TestHttpResponse("HTTP/");
             TestHttpResponse("HTTP/1");
@@ -132,6 +192,8 @@ namespace PcapDotNet.Packets.Test
             TestHttpResponse("HTTP/1.1  200 OK", HttpVersion.Version11);
             TestHttpResponse("HTTP/1.1 200  OK", HttpVersion.Version11, 200, " OK");
 
+            // Response Header
+
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
                              "Cache-Control: no-cache\r\n",
                              HttpVersion.Version11, 200, "OK",
@@ -143,6 +205,8 @@ namespace PcapDotNet.Packets.Test
                              HttpVersion.Version11, 200, "OK",
                              new HttpHeader(
                                  new HttpTransferEncodingField("chunked", "a", "b", "c", "d", "e;f=g;h=\"ijk lmn\"")));
+
+            // Respone Body
 
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
                              "\r\n" +
@@ -172,6 +236,15 @@ namespace PcapDotNet.Packets.Test
                              "A;Extension=\"Quoted \\\" Value\"\r\n" +
                              "body 12345\r\n" +
                              "0\r\n");
+
+            TestHttpResponse("HTTP/1.1 200 OK\r\n" +
+                             "Transfer-Encoding: chunked\r\n" +
+                             "\r\n" +
+                             "g\r\n" +
+                             "12345678901234567890\r\n" +
+                             "0\r\n",
+                             HttpVersion.Version11, 200, "OK", new HttpHeader(new HttpTransferEncodingField("chunked")),
+                             string.Empty);
 
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
                              "Content-Length: 16\r\n" +
@@ -254,7 +327,7 @@ namespace PcapDotNet.Packets.Test
             HttpResponseDatagram response = (HttpResponseDatagram)http;
             Assert.AreEqual(expectedStatusCode, response.StatusCode, "StatusCode " + httpString);
             Assert.AreEqual(expectedReasonPhrase == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedReasonPhrase)), response.ReasonPhrase, "ReasonPhrase " + httpString);
-            Assert.AreEqual(expectedBody, response.Body);
+            Assert.AreEqual(expectedBody, response.Body, "Body " + httpString);
         }
 
         private static Packet BuildPacket(string httpString)
