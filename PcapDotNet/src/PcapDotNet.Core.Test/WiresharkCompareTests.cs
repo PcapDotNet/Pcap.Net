@@ -13,6 +13,7 @@ using PcapDotNet.Packets;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
+using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
@@ -30,6 +31,10 @@ namespace PcapDotNet.Core.Test
     {
         private const string WiresharkDiretory = @"C:\Program Files\Wireshark\";
         private const string WiresharkTsharkPath = WiresharkDiretory + @"tshark.exe";
+
+        private const bool IsRetry
+//                        = true;
+            = false;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -201,9 +206,6 @@ namespace PcapDotNet.Core.Test
         private static void ComparePacketsToWireshark(IEnumerable<Packet> packets)
         {
             string pcapFilename = Path.GetTempPath() + "temp." + new Random().NextByte() + ".pcap";
-            const bool IsRetry 
-//                = true;
-                = false;
 #pragma warning disable 162
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
@@ -216,7 +218,10 @@ namespace PcapDotNet.Core.Test
                 const byte RetryNumber = 89;
                 pcapFilename = Path.GetTempPath() + "temp." + RetryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
-                new OfflinePacketDevice(pcapFilename).Open().ReceivePackets(1000, packetsList.Add);
+                using (PacketCommunicator communicator = new OfflinePacketDevice(pcapFilename).Open())
+                {
+                    communicator.ReceivePackets(-1, packetsList.Add);
+                }
                 packets = packetsList;
             }
 // ReSharper restore HeuristicUnreachableCode
@@ -375,6 +380,16 @@ namespace PcapDotNet.Core.Test
                             Datagram ipDatagram = (Datagram)currentDatagram;
                             currentDatagram = tcpProperty.GetValue(currentDatagram);
                             CompareTcp(layer, (IpV4Datagram)ipDatagram);
+                        }
+                        break;
+
+                    case "http":
+                        PropertyInfo httpProperty = currentDatagram.GetType().GetProperty("Http");
+                        if (httpProperty == null)
+                            break;
+                        {
+                            currentDatagram = httpProperty.GetValue(currentDatagram);
+                            CompareHttp(layer, (HttpDatagram)currentDatagram);
                         }
                         break;
 
@@ -1338,6 +1353,159 @@ namespace PcapDotNet.Core.Test
                 
                 var optionShows = from f in field.Fields() select f.Show();
                 MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
+            }
+        }
+
+        private static void CompareHttp(XElement httpElement, HttpDatagram httpDatagram)
+        {
+            string httpFieldName;
+            StringBuilder data = new StringBuilder();
+            bool isFirstEmptyName = true;
+            foreach (var field in httpElement.Fields())
+            {
+                if (field.Name() == "data" || field.Name() == "data.data")
+                {
+                    if (field.Name() == "data")
+                        field.AssertNoShow();
+
+                    string previousData = data.ToString();
+                    for (int i = 0; i != previousData.Length / 2; ++i)
+                    {
+                        byte value = Convert.ToByte(previousData.Substring(i * 2, 2), 16);
+                        Assert.AreEqual(httpDatagram[i], value);
+                    }
+                    field.AssertValue(httpDatagram.Skip(previousData.Length / 2), field.Name());
+                    continue;
+                }
+
+                string fieldShow = field.Show();
+                switch (field.Name())
+                {
+                    case "http.request":
+                        field.AssertShowDecimal(httpDatagram.IsRequest);
+                        break;
+
+                    case "http.response":
+                        field.AssertShowDecimal(httpDatagram.IsResponse);
+                        break;
+
+                    case "":
+                        data.Append(field.Value());
+                        if (fieldShow == @"\r\n")
+                            break;
+                        else if (isFirstEmptyName)
+                        {
+                            CompareHttpFirstLine(field, httpDatagram);
+                            isFirstEmptyName = false;
+                        }
+                        else if (fieldShow.StartsWith("Content-encoded entity body"))
+                        {
+                            break;
+                        }
+                        else if (fieldShow == "HTTP chunked response")
+                        {
+                            field.AssertValue(httpDatagram.Body);
+                        }
+                        else
+                        {
+                            int colonIndex = fieldShow.IndexOf(':');
+                            MoreAssert.IsBiggerOrEqual(0, colonIndex, "Can't find colon in field with empty name");
+
+                            if (httpDatagram.Header == null)
+                            {
+                                Assert.IsTrue(httpDatagram.IsRequest);
+                                Assert.IsNull(httpDatagram.Version);
+                                break;
+                            }
+                            httpFieldName = fieldShow.Substring(0, colonIndex);
+                            string fieldValue = fieldShow.Substring(colonIndex + 1).SkipWhile(c => c == ' ').TakeWhile(c => c != '\\').SequenceToString();
+                            string expectedFieldValue = httpDatagram.Header[httpFieldName].ValueString;
+                            Assert.IsTrue(expectedFieldValue.Contains(fieldValue),
+                                          string.Format("{0} <{1}> doesn't contain <{2}>", field.Name(), expectedFieldValue, fieldValue));
+                        }
+                        break;
+
+                    case "data.len":
+                        field.AssertShowDecimal(httpDatagram.Length - data.Length / 2);
+                        break;
+
+                    case "http.host":
+                    case "http.user_agent":
+                    case "http.accept":
+                    case "http.accept_language":
+                    case "http.accept_encoding":
+                    case "http.connection":
+                    case "http.cookie":
+                    case "http.cache_control":
+                    case "http.content_encoding":
+                    case "http.date":
+                    case "http.referer":
+                    case "http.last_modified":
+                    case "http.server":
+                    case "http.set_cookie":
+                    case "http.location":
+                        httpFieldName = field.Name().Substring(5).Replace('_', '-');
+                        HttpField httpField = httpDatagram.Header[httpFieldName];
+                        if (!field.Value().EndsWith("0d0a"))
+                            Assert.IsNull(httpField);
+                        else
+                        {
+                            string fieldValue = field.Show().Replace("\\\"", "\"");
+                            string expectedFieldValue = httpField.ValueString;
+                            Assert.IsTrue(expectedFieldValue.Contains(fieldValue),
+                                          string.Format("{0} <{1}> doesn't contain <{2}>", field.Name(), expectedFieldValue, fieldValue));
+                        }
+                        break;
+
+                    case "http.content_length_header":
+                        field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
+                        break;
+
+                    case "http.content_type":
+                        string[] mediaType = fieldShow.Split(new[] {';', ' ', '/'}, StringSplitOptions.RemoveEmptyEntries);
+                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
+                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubType, mediaType[1]);
+                        MoreAssert.AreSequenceEqual(httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value), mediaType.Skip(2));
+                        break;
+
+                    case "http.transfer_encoding":
+                        field.AssertShow(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(','));
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid HTTP field " + field.Name());
+                }
+            }
+        }
+
+        private static void CompareHttpFirstLine(XElement httpFirstLineElement, HttpDatagram httpDatagram)
+        {
+            foreach (var field in httpFirstLineElement.Fields())
+            {
+                switch (field.Name())
+                {
+                    case "http.request.method":
+                        Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
+                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Method);
+                        break;
+
+                    case "http.request.uri":
+                        Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
+                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri);
+                        break;
+
+                    case "http.request.version":
+                        field.AssertShow(httpDatagram.Version.ToString());
+                        break;
+
+                    case "http.response.code":
+                        Assert.IsTrue(httpDatagram.IsResponse, field.Name() + " IsResponse");
+                        field.AssertShowDecimal(((HttpResponseDatagram)httpDatagram).StatusCode.Value);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid HTTP first line field " + field.Name());
+                }
             }
         }
     }

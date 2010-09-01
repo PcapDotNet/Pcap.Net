@@ -59,10 +59,10 @@ namespace PcapDotNet.Packets.Http
             SetTransferCodings(match.GroupCapturesValues(RegexTransferCodingGroupName).ToArray());
         }
 
-        protected override string ValueToString()
-        {
-            return TransferCodings == null ? string.Empty : TransferCodings.SequenceToString(",");
-        }
+//        protected override string ValueToString()
+//        {
+//            return TransferCodings == null ? string.Empty : TransferCodings.SequenceToString(",");
+//        }
 
         private ReadOnlyCollection<string> _transferCodings;
 
