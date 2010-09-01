@@ -20,20 +20,17 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
+        public HttpField this[string fieldName]
+        {
+            get { return GetField<HttpField>(fieldName); }
+        }
+
         public HttpTransferEncodingField TransferEncoding
         {
             get
             {
                 return GetField<HttpTransferEncodingField>(HttpTransferEncodingField.Name);
             }
-        }
-
-        private T GetField<T>(string fieldName) where T : HttpField
-        {
-            HttpField field;
-            if (!_fields.TryGetValue(fieldName, out field))
-                return null;
-            return (T)field;
         }
 
         public HttpContentLengthField ContentLength
@@ -95,6 +92,14 @@ namespace PcapDotNet.Packets.Http
             }
 
             _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()), StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        private T GetField<T>(string fieldName) where T : HttpField
+        {
+            HttpField field;
+            if (!_fields.TryGetValue(fieldName, out field))
+                return null;
+            return (T)field;
         }
 
         private static readonly HttpHeader _empty = new HttpHeader();

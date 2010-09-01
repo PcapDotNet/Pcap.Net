@@ -73,6 +73,13 @@ namespace PcapDotNet.Packets.Http
 
         public string Name { get; private set; }
         public ReadOnlyCollection<byte> Value { get; private set; }
+        public string ValueString
+        {
+            get
+            {
+                return _defaultEncoding.GetString(Value.ToArray());
+            }
+        }
 
         public virtual bool Equals(HttpField other)
         {
@@ -86,12 +93,7 @@ namespace PcapDotNet.Packets.Http
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", Name, ValueToString());
-        }
-
-        protected virtual string ValueToString()
-        {
-            return _defaultEncoding.GetString(Value.ToArray());
+            return string.Format("{0}: {1}", Name, ValueString);
         }
 
         private static readonly Encoding _defaultEncoding = Encoding.GetEncoding(28591);

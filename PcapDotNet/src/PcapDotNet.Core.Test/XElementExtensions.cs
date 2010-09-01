@@ -47,6 +47,11 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(element.Name(), expectedName);
         }
 
+        public static void AssertNoShow(this XElement element)
+        {
+            Assert.IsNull(element.Attribute("show"));
+        }
+
         public static void AssertShow(this XElement element, string expectedValue, string message = null)
         {
             Assert.AreEqual(expectedValue, element.Show(), message ?? element.Name());
@@ -134,7 +139,7 @@ namespace PcapDotNet.Core.Test
 
         public static void AssertValue(this XElement element, string expectedValue, string message = null)
         {
-            Assert.AreEqual(element.Value(), expectedValue, message ?? element.Name());
+            Assert.AreEqual(expectedValue, element.Value(), message ?? element.Name());
         }
 
         public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue, string message = null)

@@ -29,9 +29,9 @@ namespace PcapDotNet.TestUtils
                                                 "> Actual: <" + actual + ">. " + message);
         }
 
-        public static void IsBiggerOrEqual<T>(T expectedMaximum, T actual) where T : IComparable<T>
+        public static void IsBiggerOrEqual<T>(T expectedMinimum, T actual) where T : IComparable<T>
         {
-            IsBiggerOrEqual(expectedMaximum, actual, string.Empty);
+            IsBiggerOrEqual(expectedMinimum, actual, string.Empty);
         }
 
         public static void IsSmallerOrEqual<T>(T expectedMaximum, T actual, string message) where T : IComparable<T>
