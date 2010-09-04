@@ -198,6 +198,9 @@ namespace PcapDotNet.Packets.Http
     /// </summary>
     public abstract class HttpDatagram : Datagram
     {
+        private const string FieldNameGroupName = "FieldNameGroupName";
+        private const string FieldValueGroupName = "FieldValueGroupName";
+
         internal class ParseInfoBase
         {
             public int Length { get; set; }
@@ -238,10 +241,11 @@ namespace PcapDotNet.Packets.Http
                 return Empty;
 
             HttpTransferEncodingField transferEncodingField = header.TransferEncoding;
-            if (transferEncodingField != null)
+            if (transferEncodingField != null &&
+                transferEncodingField.TransferCodings != null &&
+                transferEncodingField.TransferCodings.Any(coding => coding != "identity"))
             {
-                if (transferEncodingField.TransferCodings.Any(coding => coding != "identity"))
-                    return ParseChunkedBody(buffer, offset, length);
+                return ParseChunkedBody(buffer, offset, length);
             }
 
             HttpContentLengthField contentLengthField = header.ContentLength;
@@ -284,12 +288,13 @@ namespace PcapDotNet.Packets.Http
                 if (chunkSizeValue == 0)
                 {
                     int? endOffset;
-                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, buffer, parser.Offset, buffer.Length - parser.Offset));
-                    parser.CarriageReturnLineFeed();
+                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, buffer, parser.Offset, offset + length - parser.Offset));
+                    if (endOffset != null)
+                        parser.Skip(endOffset.Value - parser.Offset);
                     break;
                 }
 
-                int actualChunkSize = (int)Math.Min(chunkSizeValue, buffer.Length - parser.Offset);
+                int actualChunkSize = (int)Math.Min(chunkSizeValue, offset + length - parser.Offset);
                 contentData.Add(new Datagram(buffer, parser.Offset, actualChunkSize));
                 parser.Skip(actualChunkSize);
                 parser.CarriageReturnLineFeed();
@@ -330,51 +335,5 @@ namespace PcapDotNet.Packets.Http
         }
 
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
-
-        private bool _isParsedFirstLine;
-        private bool _isParsedHeader;
-        private int? _headerOffset;
-        private int? _bodyOffset;
-        private HttpVersion _version;
-        private HttpHeader _header;
-
-        private Datagram _body;
     }
-
-
-    //    internal static class IEnumerableExtensions
-//    {
-//        public static int CountLinearWhiteSpaces(this IEnumerable<byte> sequence)
-//        {
-//            int count = 0;
-//            while (true)
-//            {
-//                byte first = sequence.FirstOrDefault();
-//                if (first == AsciiBytes.CarriageReturn) // CR
-//                {
-//                    IEnumerable<byte> skippedSequence = sequence.Skip(1);
-//                    if (skippedSequence.FirstOrDefault() == AsciiBytes.LineFeed) // CRLF
-//                    {
-//                        skippedSequence = skippedSequence.Skip(1);
-//                        if (skippedSequence.FirstOrDefault().IsSpaceOrHorizontalTab()) // CRLF ( SP | HT )
-//                        {
-//                            sequence = skippedSequence.Skip(1);
-//                            count += 3;
-//                        }
-//                        else // CRLF without ( SP | HT )
-//                            return count;
-//                    }
-//                    else // CR without LF
-//                        return count;
-//                }
-//                else if (first.IsSpaceOrHorizontalTab()) // ( SP | HT )
-//                {
-//                    ++count;
-//                    sequence = sequence.Skip(1);
-//                }
-//                else // Doesn't start with ( CR | SP | HT )
-//                    return count;
-//            }
-//        }
-//    }
 }

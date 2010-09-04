@@ -51,10 +51,22 @@ namespace PcapDotNet.Packets.Http
         internal HttpTransferEncodingField(byte[] fieldValue)
             : base(Name, fieldValue)
         {
+//            string str = "\"h2ÇõX{âDv¼¯Ñ)ËX?´ÈÔ\"";
+//            string str = "\"h2ÇõX{âDv¼¯Ñ)\"";
+//            Match tmpMatch = HttpRegex.QuotedString.Match(str);
+//            Console.WriteLine(tmpMatch.Success);
+                
             string fieldValueString = HttpRegex.GetString(fieldValue);
             Match match = _regex.Match(fieldValueString);
             if (!match.Success)
+            {
+                while (!match.Success && fieldValueString.Length > 0)
+                {
+                    fieldValueString = fieldValueString.Substring(0, fieldValueString.Length - 1);
+                    match = _regex.Match(fieldValueString);
+                }
                 return;
+            }
 
             SetTransferCodings(match.GroupCapturesValues(RegexTransferCodingGroupName).ToArray());
         }

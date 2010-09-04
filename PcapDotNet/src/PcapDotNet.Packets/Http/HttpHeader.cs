@@ -20,6 +20,14 @@ namespace PcapDotNet.Packets.Http
         {
         }
 
+        public int BytesLength
+        {
+            get
+            {
+                return this.Sum(field => field.Length) + 2;
+            }
+        }
+
         public HttpField this[string fieldName]
         {
             get { return GetField<HttpField>(fieldName); }
@@ -92,6 +100,18 @@ namespace PcapDotNet.Packets.Http
             }
 
             _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()), StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        public void Write(byte[] buffer, int offset)
+        {
+            Write(buffer, ref offset);
+        }
+
+        public void Write(byte[] buffer, ref int offset)
+        {
+            foreach (HttpField field in this)
+                field.Write(buffer, ref offset);
+            buffer.WriteCarriageReturnLineFeed(ref offset);
         }
 
         private T GetField<T>(string fieldName) where T : HttpField

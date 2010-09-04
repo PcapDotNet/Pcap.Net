@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
@@ -15,6 +17,11 @@ namespace PcapDotNet.Packets.Http
 
         public uint Major { get; private set; }
         public uint Minor { get; private set; }
+
+        public int Length
+        {
+            get { return _httpSlashBytes.Length + Major.NumDigits(10) + 1 + Minor.NumDigits(10); }
+        }
 
         public override string ToString()
         {
@@ -33,7 +40,16 @@ namespace PcapDotNet.Packets.Http
             return Equals(obj as HttpVersion);
         }
 
+        internal void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, _httpSlashBytes);
+            buffer.WriteDecimal(ref offset, Major);
+            buffer.Write(ref offset, AsciiBytes.Dot);
+            buffer.WriteDecimal(ref offset, Minor);
+        }
+
         private static readonly HttpVersion _version10 = new HttpVersion(1,0);
         private static readonly HttpVersion _version11 = new HttpVersion(1,1);
+        private static readonly byte[] _httpSlashBytes = Encoding.ASCII.GetBytes("HTTP/");
     }
 }

@@ -20,6 +20,18 @@ namespace PcapDotNet.Packets.Http
 
         public Datagram ReasonPhrase { get; private set;}
 
+        public override ILayer ExtractLayer()
+        {
+            return new HttpResponseLayer
+            {
+                Version = Version,
+                StatusCode = StatusCode,
+                ReasonPhrase = ReasonPhrase,
+                Header = Header,
+                Body = Body,
+            };
+        }
+
         internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
             : this(buffer, offset, Parse(buffer, offset, length))
         {

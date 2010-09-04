@@ -9,6 +9,11 @@ namespace PcapDotNet.Packets.Http
         public const string ParameterNameGroupName = "ParameterName";
         public const string ParameterValueGroupName = "ParameterValue";
 
+        public static Regex CarriageReturnLineFeed
+        {
+            get { return _carriageReturnLineFeed; }
+        }
+
         public static Regex LinearWhiteSpace
         {
             get { return _linearWhiteSpaceRegex; }
@@ -29,9 +34,19 @@ namespace PcapDotNet.Packets.Http
             get { return _optionalParametersRegex; }
         }
 
+        public static string GetString(byte[] buffer, int offset, int count)
+        {
+            return _encoding.GetString(buffer, offset, count);
+        }
+
         public static string GetString(byte[] buffer)
         {
-            return _encoding.GetString(buffer);
+            return GetString(buffer, 0, buffer.Length);
+        }
+
+        public static byte[] GetBytes(string pattern)
+        {
+            return _encoding.GetBytes(pattern);
         }
 
         public static Regex Build(string pattern)
@@ -91,6 +106,11 @@ namespace PcapDotNet.Packets.Http
             return Build(string.Format("(?<{0}>{1})", captureName, regex));
         }
 
+        public static Regex MatchStart(Regex regex)
+        {
+            return Build(string.Format("^{0}", regex));
+        }
+
         public static Regex MatchEntire(Regex regex)
         {
             return Build(string.Format("^{0}$", regex));
@@ -101,10 +121,11 @@ namespace PcapDotNet.Packets.Http
             return string.Format("(?:{0})", pattern);
         }
 
-        private static readonly Regex _charRegex = Build(@"[\x00-\x127]");
+        private static readonly Regex _carriageReturnLineFeed = Build(@"\r\n");
+        private static readonly Regex _charRegex = Build(@"[\x00-\x7F]");
         private static readonly Regex _quotedPairRegex = Concat(Build(@"\\"), _charRegex);
-        private static readonly Regex _linearWhiteSpaceRegex = Concat(Optional(Build(@"\r\n")), AtLeastOne(Build(@"[ \t]")));
-        private static readonly Regex _qdtextRegex = Or(_linearWhiteSpaceRegex, Build(@"[^\x00-\x31\x127\""]"));
+        private static readonly Regex _linearWhiteSpaceRegex = Concat(Optional(CarriageReturnLineFeed), AtLeastOne(Build(@"[ \t]")));
+        private static readonly Regex _qdtextRegex = Or(_linearWhiteSpaceRegex, Build(@"[^\x00-\x1F\x7F""]"));
         private static readonly Regex _quotedStringRegex = Concat(Build('"'), Any(Or(_qdtextRegex, _quotedPairRegex)), Build('"'));
         private static readonly Regex _tokenRegex = AtLeastOne(Build(@"[\x21\x23-\x27\x2A\x2B\x2D\x2E0-9A-Z\x5E-\x7A\x7C\x7E-\xFE]"));
         private static readonly Regex _valueRegex = Or(Token, QuotedString); 

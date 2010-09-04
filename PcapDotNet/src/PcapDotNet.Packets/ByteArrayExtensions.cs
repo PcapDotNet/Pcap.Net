@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets
@@ -551,6 +553,11 @@ namespace PcapDotNet.Packets
             offset += UInt48.SizeOf;
         }
 
+        public static void Write(this byte[] buffer, ref int offset, string value, Encoding encoding)
+        {
+            buffer.Write(ref offset, encoding.GetBytes(value));
+        }
+
         /// <summary>
         /// Writes the given value to the buffer.
         /// </summary>
@@ -650,6 +657,23 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, ref int offset, IpV4TimeOfDay value, Endianity endianity)
         {
             buffer.Write(ref offset, value.MillisecondsSinceMidnightUniversalTime, endianity);
+        }
+
+        public static void WriteCarriageReturnLineFeed(this byte[] buffer, int offset)
+        {
+            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
+            buffer.Write(offset, AsciiBytes.LineFeed);
+        }
+
+        public static void WriteCarriageReturnLineFeed(this byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
+            buffer.Write(ref offset, AsciiBytes.LineFeed);
+        }
+
+        public static void WriteDecimal(this byte[] buffer, ref int offset, uint value)
+        {
+            buffer.Write(ref offset, value.ToString(), Encoding.ASCII);
         }
 
         private static bool IsWrongEndianity(Endianity endianity)

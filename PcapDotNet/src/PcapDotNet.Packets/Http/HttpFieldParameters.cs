@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.Http
                 return string.Empty;
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(" ");
+//            stringBuilder.Append(" ");
             foreach (var parameter in this)
             {
                 stringBuilder.Append(";");

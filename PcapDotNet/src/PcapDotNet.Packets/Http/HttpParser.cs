@@ -103,8 +103,29 @@ namespace PcapDotNet.Packets.Http
 
         public HttpParser FieldContent(out IEnumerable<byte> fieldContent)
         {
-            fieldContent = Range.TakeWhile(value => !value.IsSpaceOrHorizontalTab() && value != AsciiBytes.CarriageReturn);
-            _offset += fieldContent.Count();
+            int originalOffset = Offset;
+            fieldContent = null;
+            while (Success)
+            {
+                fieldContent = new Datagram(_buffer, originalOffset, Offset - originalOffset);
+
+                if (IsNext(AsciiBytes.Space) || IsNext(AsciiBytes.CarriageReturn) || IsNext(AsciiBytes.HorizontalTab) || IsNext(AsciiBytes.LineFeed))
+                    break;
+
+                if (IsNext(AsciiBytes.DoubleQuotationMark))
+                {
+                    Datagram quotedString;
+                    QuotedString(out quotedString);
+                }
+                else
+                {
+                    var text = Range.TakeWhile(value => value > 0x20 && value != AsciiBytes.DoubleQuotationMark);
+                    if (!text.Any())
+                        return Fail();
+                    _offset += text.Count();
+                }
+            }
+            
             return this;
         }
 
@@ -319,7 +340,7 @@ namespace PcapDotNet.Packets.Http
 
         public HttpParser SkipChunkExtensions()
         {
-            while (IsNext(AsciiBytes.Semicolon))
+            while (Success && IsNext(AsciiBytes.Semicolon))
             {
                 Bytes(AsciiBytes.Semicolon);
                 
