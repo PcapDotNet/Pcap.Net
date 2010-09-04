@@ -18,6 +18,18 @@ namespace PcapDotNet.Packets.Http
         public string Method { get; private set; }
         public string Uri { get; private set; }
 
+        public override ILayer ExtractLayer()
+        {
+            return new HttpRequestLayer
+                   {
+                       Version = Version,
+                       Method = Method,
+                       Uri = Uri,
+                       Header = Header,
+                       Body = Body,
+                   };
+        }
+
         internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
             : this(buffer, offset, Parse(buffer, offset, length))
         {

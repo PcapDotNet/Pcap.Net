@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -45,6 +46,44 @@ namespace PcapDotNet.Packets.Test
         // public void MyTestCleanup() { }
         //
         #endregion
+
+        [TestMethod]
+        public void RandomHttpTest()
+        {
+           Random random = new Random(1);
+
+            for (int i = 0; i != 1000; ++i)
+            {
+                EthernetLayer ethernetLayer = random.NextEthernetLayer(EthernetType.None);
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                TcpLayer tcpLayer = random.NextTcpLayer();
+                tcpLayer.Checksum = null;
+                HttpLayer httpLayer = random.NextHttpLayer();
+
+                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, httpLayer).Build(DateTime.Now);
+                Assert.IsTrue(packet.IsValid, "IsValid");
+
+                HttpDatagram httpDatagram = packet.Ethernet.IpV4.Tcp.Http;
+                Assert.AreEqual(httpLayer.Version, httpDatagram.Version);
+                if (httpLayer is HttpRequestLayer)
+                {
+                    Assert.IsTrue(httpDatagram.IsRequest);
+                    Assert.IsFalse(httpDatagram.IsResponse);
+                    
+                    HttpRequestLayer httpRequestLayer = (HttpRequestLayer)httpLayer;
+                    HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
+                    Assert.AreEqual(httpRequestLayer.Method, httpRequestDatagram.Method);
+                    Assert.AreEqual(httpRequestLayer.Uri, httpRequestDatagram.Uri);
+                }
+                Assert.AreEqual(httpLayer.Header, httpDatagram.Header);
+                Assert.AreEqual(httpLayer.Body, httpDatagram.Body);
+                Assert.AreEqual(httpLayer, httpDatagram.ExtractLayer(), "HTTP Layer");
+                Assert.AreEqual(httpLayer.Length, httpDatagram.Length);
+
+                // Ethernet
+            }
+        }
 
         [TestMethod]
         public void HttpParsingTest()

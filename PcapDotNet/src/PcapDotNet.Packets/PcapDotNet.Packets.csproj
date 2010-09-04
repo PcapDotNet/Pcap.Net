@@ -117,10 +117,13 @@
     <Compile Include="Http\HttpField.cs" />
     <Compile Include="Http\HttpFieldParameters.cs" />
     <Compile Include="Http\HttpHeader.cs" />
+    <Compile Include="Http\HttpLayer.cs" />
     <Compile Include="Http\HttpParser.cs" />
     <Compile Include="Http\HttpRegex.cs" />
     <Compile Include="Http\HttpRequestDatagram.cs" />
+    <Compile Include="Http\HttpRequestLayer.cs" />
     <Compile Include="Http\HttpResponseDatagram.cs" />
+    <Compile Include="Http\HttpResponseLayer.cs" />
     <Compile Include="Http\HttpTransferEncodingField.cs" />
     <Compile Include="Http\HttpVersion.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />

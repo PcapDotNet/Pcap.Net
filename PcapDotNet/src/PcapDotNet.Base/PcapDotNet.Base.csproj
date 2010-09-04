@@ -98,6 +98,7 @@
     <Compile Include="UInt24.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UInt48.cs" />
+    <Compile Include="UIntExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />

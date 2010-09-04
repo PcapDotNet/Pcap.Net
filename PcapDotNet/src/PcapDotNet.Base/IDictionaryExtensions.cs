@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace PcapDotNet.Base
@@ -18,7 +19,26 @@ namespace PcapDotNet.Base
                 if (!dictionary2.TryGetValue(pair.Key, out otherValue))
                     return false;
                 if (!valueComparer.Equals(pair.Value, otherValue))
+                {
+                    if (otherValue is string)
+                    {
+                        string otherString = otherValue as string;
+                        string thisString = pair.Value as string;
+                        for (int i = 0; i != otherString.Length; ++i)
+                        {
+                            if (!thisString[i].Equals(otherString[i]))
+                            {
+                                Console.WriteLine("a");
+                            }
+                            else
+                            {
+                                Console.WriteLine("b");
+                            }
+                        }
+                    }
+
                     return false;
+                }
             }
 
             return true;

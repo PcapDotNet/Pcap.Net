@@ -1,0 +1,63 @@
+﻿using System;
+using PcapDotNet.Base;
+
+namespace PcapDotNet.Packets.Http
+{
+    public class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
+    {
+        public uint? StatusCode { get; set; }
+        public Datagram ReasonPhrase { get; set; }
+
+        public override bool Equals(HttpLayer other)
+        {
+            return Equals(other as HttpResponseLayer);
+        }
+
+        public bool Equals(HttpResponseLayer other)
+        {
+            return base.Equals(other) &&
+                   StatusCode == other.StatusCode &&
+                   ReasonPhrase == other.ReasonPhrase;
+        }
+
+        protected override int FirstLineLength
+        {
+            get
+            {
+                int length = 0;
+
+                if (Version == null)
+                    return length;
+                length += Version.Length + 1;
+
+                if (StatusCode == null)
+                    return length;
+                length += StatusCode.Value.NumDigits(10) + 1;
+
+                if (ReasonPhrase == null)
+                    return length;
+
+                return length + ReasonPhrase.Length + 2;
+            }
+        }
+
+        protected override void WriteFirstLine(byte[] buffer, ref int offset)
+        {
+            if (Version == null)
+                return;
+            Version.Write(buffer, ref offset);
+            buffer.Write(ref offset, AsciiBytes.Space);
+
+            if (StatusCode == null)
+                return;
+            buffer.WriteDecimal(ref offset, StatusCode.Value);
+            buffer.Write(ref offset, AsciiBytes.Space);
+
+            if (ReasonPhrase == null)
+                return;
+            buffer.Write(ref offset, ReasonPhrase);
+
+            buffer.WriteCarriageReturnLineFeed(ref offset);
+        }
+    }
+}
