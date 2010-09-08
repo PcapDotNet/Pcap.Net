@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets.Http
     {
         private class ParseInfo : ParseInfoBase
         {
-            public string Method { get; set; }
+            public HttpRequestMethod Method { get; set; }
             public string Uri { get; set; }
         }
 
@@ -15,7 +15,7 @@ namespace PcapDotNet.Packets.Http
             get { return true; }
         }
 
-        public string Method { get; private set; }
+        public HttpRequestMethod Method { get; private set; }
         public string Uri { get; private set; }
 
         public override ILayer ExtractLayer()
@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.Http
                                   {
                                       Length = length,
                                       Version = version,
-                                      Method = method,
+                                      Method = method == null ? null : new HttpRequestMethod(method),
                                       Uri = uri,
                                   };
             if (!parser.Success)

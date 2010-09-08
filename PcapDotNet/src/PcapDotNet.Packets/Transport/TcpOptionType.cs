@@ -26,6 +26,11 @@ namespace PcapDotNet.Packets.Transport
         WindowScale = 3,
 
         /// <summary>
+        /// Denote Packet Mood (RFC5841)
+        /// </summary>
+        Mood = 25,
+
+        /// <summary>
         /// SACK Permitted (RFC2018)
         /// </summary>
         SelectiveAcknowledgmentPermitted = 4,

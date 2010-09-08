@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpRequestLayer : HttpLayer, IEquatable<HttpRequestLayer>
     {
-        public string Method { get; set; }
+        public HttpRequestMethod Method { get; set; }
         public string Uri { get; set; }
 
         public override bool Equals(HttpLayer other)
@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Http
         {
             if (Method == null)
                 return;
-            buffer.Write(ref offset, Method, Encoding.ASCII);
+            Method.Write(buffer, ref offset);
             buffer.Write(ref offset, AsciiBytes.Space);
 
             if (Uri == null)

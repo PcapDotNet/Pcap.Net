@@ -198,9 +198,6 @@ namespace PcapDotNet.Packets.Http
     /// </summary>
     public abstract class HttpDatagram : Datagram
     {
-        private const string FieldNameGroupName = "FieldNameGroupName";
-        private const string FieldValueGroupName = "FieldValueGroupName";
-
         internal class ParseInfoBase
         {
             public int Length { get; set; }

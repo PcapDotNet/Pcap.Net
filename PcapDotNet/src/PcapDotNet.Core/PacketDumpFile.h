@@ -20,6 +20,8 @@ namespace PcapDotNet { namespace Core
         /// <param name="snapshotLength">The dimension of the packet portion (in bytes) that is used when writing the packets. 65536 guarantees that the whole packet will be captured on all the link layers.</param>
         /// <param name="packets">The packets to save to the dump file.</param>
         static void Dump(System::String^ fileName, PcapDataLink dataLink, int snapshotLength, System::Collections::Generic::IEnumerable<Packets::Packet^>^ packets);
+        
+		static void Dump(System::String^ fileName, PcapDotNet::Packets::DataLinkKind dataLink, int snapshotLength, System::Collections::Generic::IEnumerable<Packets::Packet^>^ packets);
 
         /// <summary>
         /// Save a packet to disk.

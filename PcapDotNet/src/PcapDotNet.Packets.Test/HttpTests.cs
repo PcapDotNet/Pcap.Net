@@ -327,9 +327,10 @@ namespace PcapDotNet.Packets.Test
                              "--THIS_STRING_SEPARATES--");
         }
 
-        private static void TestHttpRequest(string httpString, string expectedMethod = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
+        private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
         {
             Datagram expectedBody = expectedBodyString == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedBodyString));
+            HttpRequestMethod expectedMethod = expectedMethodString == null ? null : new HttpRequestMethod(expectedMethodString);
 
             Packet packet = BuildPacket(httpString);
 

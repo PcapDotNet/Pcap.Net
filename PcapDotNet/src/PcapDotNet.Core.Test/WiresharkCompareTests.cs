@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
+using Microsoft.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
@@ -129,6 +131,7 @@ namespace PcapDotNet.Core.Test
             Gre,
             Udp,
             Tcp,
+            Http,
         }
 
         private static Packet CreateRandomPacket(Random random)
@@ -142,7 +145,8 @@ namespace PcapDotNet.Core.Test
             IpV4Layer ipV4Layer = random.NextIpV4Layer();
             PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
-            switch (random.NextEnum<PacketType>())
+//            switch (random.NextEnum<PacketType>())
+            switch (PacketType.Http)
             {
                 case PacketType.Ethernet:
                     return PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
@@ -184,7 +188,17 @@ namespace PcapDotNet.Core.Test
                     ipV4Layer.Protocol = null;
                     if (random.NextBool())
                         ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextTcpLayer(), payloadLayer);
+
+                case PacketType.Http:
+                    ethernetLayer.EtherType = EthernetType.None;
+                    ipV4Layer.Protocol = null;
+                    if (random.NextBool())
+                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
+                    TcpLayer tcpLayer = random.NextTcpLayer();
+                    tcpLayer.DestinationPort = 80;
+                    tcpLayer.SourcePort = 80;
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, random.NextHttpLayer());
 
                 default:
                     throw new InvalidOperationException();
@@ -578,7 +592,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "ip.proto":
-                        field.AssertShowHex((byte)ipV4Datagram.Protocol);
+                        field.AssertShowDecimal((byte)ipV4Datagram.Protocol);
                         break;
 
                     case "ip.checksum":
@@ -1344,6 +1358,22 @@ namespace PcapDotNet.Core.Test
                         Assert.AreEqual((TcpOptionType)21, option.OptionType);
                         break;
 
+                    case "tcp.options.sack_perm":
+                        Assert.AreEqual(TcpOptionType.SelectiveAcknowledgmentPermitted, option.OptionType);
+                        ++currentOptionIndex;
+                        break;
+
+                    case "tcp.options.mood":
+                        Assert.AreEqual(TcpOptionType.Mood, option.OptionType);
+                        field.AssertValue(Encoding.ASCII.GetBytes(((TcpOptionMood)option).EmotionString));
+                        break;
+
+                    case "tcp.options.mood_val":
+                        Assert.AreEqual(TcpOptionType.Mood, option.OptionType);
+                        field.AssertShow(((TcpOptionMood)option).EmotionString);
+                        ++currentOptionIndex;
+                        break;
+
                     default:
                         throw new InvalidOperationException("Invalid tcp options field " + field.Name());
                 }
@@ -1358,7 +1388,9 @@ namespace PcapDotNet.Core.Test
 
         private static void CompareHttp(XElement httpElement, HttpDatagram httpDatagram)
         {
-            string httpFieldName;
+            if (httpDatagram.Header != null && httpDatagram.Header.ContentLength != null && httpDatagram.Header.TransferEncoding != null)
+                return; // todo https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=5182
+
             StringBuilder data = new StringBuilder();
             bool isFirstEmptyName = true;
             foreach (var field in httpElement.Fields())
@@ -1368,17 +1400,19 @@ namespace PcapDotNet.Core.Test
                     if (field.Name() == "data")
                         field.AssertNoShow();
 
-                    string previousData = data.ToString();
-                    for (int i = 0; i != previousData.Length / 2; ++i)
-                    {
-                        byte value = Convert.ToByte(previousData.Substring(i * 2, 2), 16);
-                        Assert.AreEqual(httpDatagram[i], value);
-                    }
-                    field.AssertValue(httpDatagram.Skip(previousData.Length / 2), field.Name());
+                    MoreAssert.AreSequenceEqual(httpDatagram.Take(data.Length / 2), HexEncoding.Instance.GetBytes(data.ToString()));
+//                    string previousData = data.ToString();
+//                    for (int i = 0; i != previousData.Length / 2; ++i)
+//                    {
+//                        byte value = Convert.ToByte(previousData.Substring(i * 2, 2), 16);
+//                        Assert.AreEqual(httpDatagram[i], value);
+//                    }
+                    field.AssertValue(httpDatagram.Skip(data.Length / 2));
                     continue;
                 }
 
                 string fieldShow = field.Show();
+                string httpFieldName;
                 switch (field.Name())
                 {
                     case "http.request":
@@ -1408,6 +1442,8 @@ namespace PcapDotNet.Core.Test
                         }
                         else
                         {
+                            fieldShow = Encoding.GetEncoding(28591).GetString(HexEncoding.Instance.GetBytes(field.Value()));
+                            fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
                             int colonIndex = fieldShow.IndexOf(':');
                             MoreAssert.IsBiggerOrEqual(0, colonIndex, "Can't find colon in field with empty name");
 
@@ -1444,6 +1480,7 @@ namespace PcapDotNet.Core.Test
                     case "http.server":
                     case "http.set_cookie":
                     case "http.location":
+                        data.Append(field.Value());
                         httpFieldName = field.Name().Substring(5).Replace('_', '-');
                         HttpField httpField = httpDatagram.Header[httpFieldName];
                         if (!field.Value().EndsWith("0d0a"))
@@ -1458,18 +1495,25 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "http.content_length_header":
+                        data.Append(field.Value());
                         field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
                         break;
 
                     case "http.content_type":
+                        data.Append(field.Value());
                         string[] mediaType = fieldShow.Split(new[] {';', ' ', '/'}, StringSplitOptions.RemoveEmptyEntries);
                         Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
                         Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubType, mediaType[1]);
-                        MoreAssert.AreSequenceEqual(httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value), mediaType.Skip(2));
+                        int fieldShowParametersStart = fieldShow.IndexOf(';');
+                        if (fieldShowParametersStart == -1)
+                            Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
+                        else
+                            Assert.AreEqual(httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToLiteral()).SequenceToString(';'), fieldShow.Substring(fieldShowParametersStart + 1));
                         break;
 
                     case "http.transfer_encoding":
-                        field.AssertShow(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(','));
+                        data.Append(field.Value());
+                        Assert.AreEqual(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToLiteral(), fieldShow.ToLowerLiteral());
                         break;
 
                     default:
@@ -1486,12 +1530,12 @@ namespace PcapDotNet.Core.Test
                 {
                     case "http.request.method":
                         Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
-                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Method);
+                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Method.Method);
                         break;
 
                     case "http.request.uri":
                         Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
-                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri);
+                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri.ToLiteral());
                         break;
 
                     case "http.request.version":

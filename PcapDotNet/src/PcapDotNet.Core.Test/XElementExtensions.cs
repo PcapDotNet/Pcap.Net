@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
@@ -52,9 +54,14 @@ namespace PcapDotNet.Core.Test
             Assert.IsNull(element.Attribute("show"));
         }
 
-        public static void AssertShow(this XElement element, string expectedValue, string message = null)
+        public static void AssertShow(this XElement element, string expectedValue, bool ignoreCase = false, string message = null)
         {
-            Assert.AreEqual(expectedValue, element.Show(), message ?? element.Name());
+            Assert.AreEqual(expectedValue, element.Show(), ignoreCase, message ?? element.Name());
+        }
+
+        public static void AssertShow(this XElement element, string expectedValue, string message)
+        {
+            element.AssertShow(expectedValue, false, message);
         }
 
         public static void AssertShow(this XElement element, IEnumerable<byte> expectedValue)

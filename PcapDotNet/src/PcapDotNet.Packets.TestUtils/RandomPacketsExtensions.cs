@@ -442,6 +442,8 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.AlternateChecksumData);
             if (maximumOptionLength < TcpOptionMd5Signature.OptionLength)
                 impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
+            if (maximumOptionLength < TcpOptionMood.OptionMaximumLength)
+                impossibleOptionTypes.Add(TcpOptionType.Mood);
 
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
@@ -503,6 +505,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.Md5Signature:
                     return new TcpOptionMd5Signature(random.NextBytes(TcpOptionMd5Signature.OptionValueLength));
+
+                case TcpOptionType.Mood:
+                    return new TcpOptionMood(random.NextEnum(TcpOptionMoodEmotion.None));
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);
@@ -958,7 +963,7 @@ namespace PcapDotNet.Packets.TestUtils
                 HttpRequestLayer httpRequestLayer = new HttpRequestLayer();
                 if (random.NextBool())
                 {
-                    httpRequestLayer.Method = random.NextHttpToken();
+                    httpRequestLayer.Method = random.NextHttpRequestMethod();
                     httpRequestLayer.Uri = httpRequestLayer.Method == null ? null : random.NextHttpUri();
                     httpRequestLayer.Version = httpRequestLayer.Uri == null ? null : random.NextHttpVersion();
                     httpRequestLayer.Header = httpRequestLayer.Version == null ? null : random.NextHttpHeader();
@@ -974,6 +979,14 @@ namespace PcapDotNet.Packets.TestUtils
 //
 //                            };
 //            }
+        }
+
+        public static HttpRequestMethod NextHttpRequestMethod(this Random random)
+        {
+            HttpRequestKnownMethod knownMethod = random.NextEnum<HttpRequestKnownMethod>();
+            if (knownMethod == HttpRequestKnownMethod.Unknown)
+                return new HttpRequestMethod(random.NextHttpToken());
+            return new HttpRequestMethod(knownMethod);
         }
 
         public static string NextHttpToken(this Random random)
