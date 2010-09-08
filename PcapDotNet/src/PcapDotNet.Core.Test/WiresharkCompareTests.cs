@@ -145,8 +145,8 @@ namespace PcapDotNet.Core.Test
             IpV4Layer ipV4Layer = random.NextIpV4Layer();
             PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
-//            switch (random.NextEnum<PacketType>())
-            switch (PacketType.Http)
+            switch (random.NextEnum<PacketType>())
+//            switch (PacketType.Http)
             {
                 case PacketType.Ethernet:
                     return PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
@@ -821,7 +821,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "icmp.code":
-                        field.AssertShowHex(icmpDatagram.Code);
+                        field.AssertShowDecimal(icmpDatagram.Code);
                         break;
 
                     case "icmp.checksum_bad":
@@ -926,6 +926,13 @@ namespace PcapDotNet.Core.Test
 
                     case "icmp.seq":
                         field.AssertShowDecimal(((IcmpIdentifiedDatagram)icmpDatagram).SequenceNumber);
+                        break;
+
+                    case "icmp.seq_le":
+                        byte[] sequenceNumberBuffer = new byte[sizeof(ushort)];
+                        sequenceNumberBuffer.Write(0, ((IcmpIdentifiedDatagram)icmpDatagram).SequenceNumber, Endianity.Big);
+                        ushort lowerEndianSequenceNumber = sequenceNumberBuffer.ReadUShort(0, Endianity.Small);
+                        field.AssertShowDecimal(lowerEndianSequenceNumber);
                         break;
 
                     case "icmp.redir_gw":
@@ -1508,12 +1515,12 @@ namespace PcapDotNet.Core.Test
                         if (fieldShowParametersStart == -1)
                             Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
                         else
-                            Assert.AreEqual(httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToLiteral()).SequenceToString(';'), fieldShow.Substring(fieldShowParametersStart + 1));
+                            Assert.AreEqual(httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).SequenceToString(';'), fieldShow.Substring(fieldShowParametersStart + 1));
                         break;
 
                     case "http.transfer_encoding":
                         data.Append(field.Value());
-                        Assert.AreEqual(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToLiteral(), fieldShow.ToLowerLiteral());
+                        Assert.AreEqual(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral(), fieldShow.ToWiresharkLowerLiteral());
                         break;
 
                     default:
@@ -1535,7 +1542,7 @@ namespace PcapDotNet.Core.Test
 
                     case "http.request.uri":
                         Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
-                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri.ToLiteral());
+                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri.ToWiresharkLiteral());
                         break;
 
                     case "http.request.version":

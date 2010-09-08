@@ -74,6 +74,7 @@
     <Compile Include="MarshalingServicesTests.cs" />
     <Compile Include="MoreIpV4Option.cs" />
     <Compile Include="MoreTcpOption.cs" />
+    <Compile Include="WiresharkStringExtensions.cs" />
     <Compile Include="XElementExtensions.cs" />
     <Compile Include="PacketDumpFileTests.cs" />
     <Compile Include="PacketHandler.cs" />
