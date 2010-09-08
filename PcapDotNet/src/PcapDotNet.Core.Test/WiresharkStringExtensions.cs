@@ -1,15 +1,11 @@
-using System.CodeDom;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.CSharp;
 
-namespace PcapDotNet.Base
+namespace PcapDotNet.Core.Test
 {
-    public static class StringExtensions
+    public static class WiresharkStringExtensions
     {
-        public static string ToLiteral(this string value)
+        public static string ToWiresharkLiteral(this string value)
         {
             StringBuilder result = new StringBuilder();
             for (int i = 0; i != value.Length; ++i)
@@ -21,11 +17,6 @@ namespace PcapDotNet.Base
                     case '"':
                         result.Append('\\');
                         result.Append(currentChar);
-                        break;
-
-                    case '\t':
-//                        result.Append(@"\t");
-                        result.Append(@"\x9");
                         break;
 
                     case '\r':
@@ -52,7 +43,7 @@ namespace PcapDotNet.Base
             return result.ToString();
         }
 
-        public static string ToLowerLiteral(this string literalString)
+        public static string ToWiresharkLowerLiteral(this string literalString)
         {
             literalString = literalString.ToLowerInvariant();
             foreach (byte charValue in Enumerable.Range(0xC0, 0xD7 - 0xC0).Concat(Enumerable.Range(0xD8, 0xDF - 0xD8)))

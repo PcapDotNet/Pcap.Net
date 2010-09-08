@@ -26,11 +26,6 @@ namespace PcapDotNet.Packets.Transport
         WindowScale = 3,
 
         /// <summary>
-        /// Denote Packet Mood (RFC5841)
-        /// </summary>
-        Mood = 25,
-
-        /// <summary>
         /// SACK Permitted (RFC2018)
         /// </summary>
         SelectiveAcknowledgmentPermitted = 4,
@@ -95,6 +90,11 @@ namespace PcapDotNet.Packets.Transport
         /// MD5 Signature Option (RFC2385)
         /// </summary>
         Md5Signature = 19,
+
+        /// <summary>
+        /// Denote Packet Mood (RFC5841)
+        /// </summary>
+        Mood = 25,
 
         /// <summary>
         /// Quick-Start Response (RFC4782)
