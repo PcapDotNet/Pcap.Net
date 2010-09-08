@@ -41,6 +41,11 @@ void PacketDumpFile::Dump(String^ fileName, PcapDataLink dataLink, int snapshotL
     }
 }
 
+void PacketDumpFile::Dump(String^ fileName, DataLinkKind dataLink, int snapshotLength, IEnumerable<Packet^>^ packets)
+{
+	Dump(fileName, PcapDataLink(dataLink), snapshotLength, packets);
+}
+
 void PacketDumpFile::Dump(Packet^ packet)
 {
 	if (packet == nullptr) 

@@ -121,7 +121,9 @@
     <Compile Include="Http\HttpParser.cs" />
     <Compile Include="Http\HttpRegex.cs" />
     <Compile Include="Http\HttpRequestDatagram.cs" />
+    <Compile Include="Http\HttpRequestKnownMethod.cs" />
     <Compile Include="Http\HttpRequestLayer.cs" />
+    <Compile Include="Http\HttpRequestMethod.cs" />
     <Compile Include="Http\HttpResponseDatagram.cs" />
     <Compile Include="Http\HttpResponseLayer.cs" />
     <Compile Include="Http\HttpTransferEncodingField.cs" />
@@ -251,6 +253,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleLayer.cs" />
     <Compile Include="Transport\TcpLayer.cs" />
+    <Compile Include="Transport\TcpOptionMood.cs" />
+    <Compile Include="Transport\TcpOptionMoodEmotion.cs" />
     <Compile Include="Transport\TransportLayer.cs" />
     <Compile Include="Transport\TcpDatagram.cs" />
     <Compile Include="Transport\TcpControlBits.cs" />

@@ -108,6 +108,7 @@ namespace PcapDotNet.Core.Test
                 case TcpOptionType.AlternateChecksumRequest:
                 case TcpOptionType.AlternateChecksumData:
                 case TcpOptionType.Md5Signature:
+                case TcpOptionType.Mood:
                     break;
 
                 case TcpOptionType.SelectiveAcknowledgment:

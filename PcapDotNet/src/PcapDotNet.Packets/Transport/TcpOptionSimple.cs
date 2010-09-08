@@ -1,7 +1,7 @@
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
-    /// A simple IPv4 option - holds only the type.
+    /// A simple TCP option - holds only the type.
     /// </summary>
     public class TcpOptionSimple : TcpOption
     {
