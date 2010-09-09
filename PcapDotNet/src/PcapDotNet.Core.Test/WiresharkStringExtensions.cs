@@ -31,7 +31,7 @@ namespace PcapDotNet.Core.Test
                         if (currentChar >= 0x7F || currentChar < 0x20)
                         {
                             result.Append(@"\x");
-                            result.Append(((int)currentChar).ToString("x"));
+                            result.Append(((int)currentChar).ToString("x2"));
                             break;
                         }
 

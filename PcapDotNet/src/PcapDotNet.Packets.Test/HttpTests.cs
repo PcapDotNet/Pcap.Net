@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomHttpTest()
         {
-           Random random = new Random(1);
+           Random random = new Random();
 
             for (int i = 0; i != 1000; ++i)
             {
@@ -75,6 +75,16 @@ namespace PcapDotNet.Packets.Test
                     HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
                     Assert.AreEqual(httpRequestLayer.Method, httpRequestDatagram.Method);
                     Assert.AreEqual(httpRequestLayer.Uri, httpRequestDatagram.Uri);
+                }
+                else
+                {
+                    Assert.IsFalse(httpDatagram.IsRequest);
+                    Assert.IsTrue(httpDatagram.IsResponse);
+
+                    HttpResponseLayer httpResponseLayer = (HttpResponseLayer)httpLayer;
+                    HttpResponseDatagram httpResponseDatagram = (HttpResponseDatagram)httpDatagram;
+                    Assert.AreEqual(httpResponseLayer.StatusCode, httpResponseDatagram.StatusCode);
+                    Assert.AreEqual(httpResponseLayer.ReasonPhrase, httpResponseDatagram.ReasonPhrase);
                 }
                 Assert.AreEqual(httpLayer.Header, httpDatagram.Header);
                 Assert.AreEqual(httpLayer.Body, httpDatagram.Body);
