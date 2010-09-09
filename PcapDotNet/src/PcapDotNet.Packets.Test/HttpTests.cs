@@ -74,6 +74,8 @@ namespace PcapDotNet.Packets.Test
                     HttpRequestLayer httpRequestLayer = (HttpRequestLayer)httpLayer;
                     HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
                     Assert.AreEqual(httpRequestLayer.Method, httpRequestDatagram.Method);
+                    if (httpRequestLayer.Method != null)
+                        Assert.AreEqual(httpRequestLayer.Method.KnownMethod, httpRequestDatagram.Method.KnownMethod);
                     Assert.AreEqual(httpRequestLayer.Uri, httpRequestDatagram.Uri);
                 }
                 else

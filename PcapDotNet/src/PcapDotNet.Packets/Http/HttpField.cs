@@ -74,11 +74,6 @@ namespace PcapDotNet.Packets.Http
             return stringBuilder.ToString();
         }
 
-        public HttpField(string name, IEnumerable<byte> value)
-            : this(name, value.ToArray())
-        {
-        }
-
         public HttpField(string name, IList<byte> value)
             :this(name, value.AsReadOnly())
         {
@@ -89,26 +84,6 @@ namespace PcapDotNet.Packets.Http
             Name = name;
             Value = value;
         }
-//        public static HttpField Create(string name, byte[] value)
-//        {
-//            switch (name)
-//            {
-                // general-header
-//                case "Cache-Control":
-//                    return new HttpCommaSeparatedField(name, value);
-//                case "Connection":
-//                case "Date":
-//                case "Pragma":
-//                case "Trailer":
-//                case "Transfer-Encoding":
-//                case "Upgrade":
-//                case "Via":
-//                case "Warning":
-//                    break;
-//            }
-//
-//            return new HttpField(name);
-//        }
 
         public string Name { get; private set; }
         public ReadOnlyCollection<byte> Value { get; private set; }
