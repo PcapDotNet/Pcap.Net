@@ -958,27 +958,47 @@ namespace PcapDotNet.Packets.TestUtils
         // HTTP
         public static HttpLayer NextHttpLayer(this Random random)
         {
-//            if (random.NextBool())
-//            {
+            if (random.NextBool())
+            {
                 HttpRequestLayer httpRequestLayer = new HttpRequestLayer();
-                if (random.NextBool())
+                if (random.NextBool(10))
                 {
                     httpRequestLayer.Method = random.NextHttpRequestMethod();
                     httpRequestLayer.Uri = httpRequestLayer.Method == null ? null : random.NextHttpUri();
-                    httpRequestLayer.Version = httpRequestLayer.Uri == null ? null : random.NextHttpVersion();
+                    httpRequestLayer.Version = httpRequestLayer.Uri == null || random.NextBool(10)  ? null : random.NextHttpVersion();
                     httpRequestLayer.Header = httpRequestLayer.Version == null ? null : random.NextHttpHeader();
                     httpRequestLayer.Body = httpRequestLayer.Header == null ? null : random.NextHttpBody(true, null, httpRequestLayer.Header);
                 }
 
-            return httpRequestLayer;
-//            }
-//            else
-//            {
-//                httpLayer = new HttpResponseLayer
-//                            {
-//
-//                            };
-//            }
+                return httpRequestLayer;
+            }
+
+            HttpResponseLayer httpResponseLayer = new HttpResponseLayer
+                            {
+                                Version = random.NextHttpVersion(),
+                                StatusCode = random.NextBool(10) ? null : (uint?)random.NextUInt(100, 999),
+                            };
+            httpResponseLayer.ReasonPhrase = httpResponseLayer.StatusCode == null ? null : random.NextHttpReasonPhrase();
+            httpResponseLayer.Header = httpResponseLayer.ReasonPhrase == null ? null : random.NextHttpHeader();
+            httpResponseLayer.Body = httpResponseLayer.Header == null ? null : random.NextHttpBody(false , httpResponseLayer.StatusCode, httpResponseLayer.Header);
+
+            return httpResponseLayer;
+        }
+
+        public static Datagram NextHttpReasonPhrase(this Random random)
+        {
+            int reasonPhraseLength = random.Next(100);
+            StringBuilder reasonPhrase = new StringBuilder(reasonPhraseLength);
+            for (int i = 0; i != reasonPhraseLength; ++i)
+            {
+                if (random.NextBool())
+                    reasonPhrase.Append(random.NextHttpTextChar());
+                else if (random.NextBool())
+                    reasonPhrase.Append(' ');
+                else
+                    reasonPhrase.Append('\t');
+            }
+            return new Datagram(Encoding.GetEncoding(28591).GetBytes(reasonPhrase.ToString()));
         }
 
         public static HttpRequestMethod NextHttpRequestMethod(this Random random)
@@ -1127,7 +1147,13 @@ namespace PcapDotNet.Packets.TestUtils
             int numParameters = random.Next(10);
             List<KeyValuePair<string, string>> parameters = new List<KeyValuePair<string, string>>(numParameters);
             for (int i = 0; i != numParameters; ++i)
-                parameters.Add(new KeyValuePair<string, string>(random.NextHttpToken(), random.NextBool() ? random.NextHttpToken() : random.NextHttpQuotedString()));
+            {
+                string parameterName = random.NextHttpToken();
+                while (parameters.Any(pair => pair.Key == parameterName))
+                    parameterName = random.NextHttpToken();
+                parameters.Add(new KeyValuePair<string, string>(parameterName,
+                                                                random.NextBool() ? random.NextHttpToken() : random.NextHttpQuotedString()));
+            }
             return new HttpFieldParameters(parameters);
         }
 

@@ -1,5 +1,4 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
-using Microsoft.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
@@ -37,6 +35,7 @@ namespace PcapDotNet.Core.Test
         private const bool IsRetry
 //                        = true;
             = false;
+        private const byte RetryNumber = 101;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -69,7 +68,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
-            for (int i = 0; i != 10; ++i)
+            for (int i = 0; i != 100; ++i)
             {
                 // Create packets
                 List<Packet> packets = new List<Packet>(CreateRandomPackets(200));
@@ -229,7 +228,6 @@ namespace PcapDotNet.Core.Test
             }
             else
             {
-                const byte RetryNumber = 89;
                 pcapFilename = Path.GetTempPath() + "temp." + RetryNumber + ".pcap";
                 List<Packet> packetsList = new List<Packet>();
                 using (PacketCommunicator communicator = new OfflinePacketDevice(pcapFilename).Open())
@@ -248,6 +246,7 @@ namespace PcapDotNet.Core.Test
             {
                 process.StartInfo = new ProcessStartInfo
                                     {
+                                        // Wireshark's preferences file is %APPDATA%\Wireshark\preferences
                                             FileName = WiresharkTsharkPath,
                                             Arguments = "-o udp.check_checksum:TRUE " +
                                                         "-o tcp.relative_sequence_numbers:FALSE " +
@@ -255,6 +254,7 @@ namespace PcapDotNet.Core.Test
                                                         "-o tcp.track_bytes_in_flight:FALSE " +
                                                         "-o tcp.desegment_tcp_streams:FALSE " +
                                                         "-o tcp.check_checksum:TRUE " +
+                                                        "-o http.dechunk_body:FALSE " +
                                                         "-t r -n -r \"" + pcapFilename + "\" -T pdml",
                                             WorkingDirectory = WiresharkDiretory,
                                             UseShellExecute = false,
@@ -478,7 +478,7 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "arp.hw.type":
-                        field.AssertShowHex((ushort)arpDatagram.HardwareType);
+                        field.AssertShowDecimal((ushort)arpDatagram.HardwareType);
                         break;
 
                     case "arp.proto.type":
@@ -494,7 +494,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "arp.opcode":
-                        field.AssertShowHex((ushort)arpDatagram.Operation);
+                        field.AssertShowDecimal((ushort)arpDatagram.Operation);
                         break;
 
                     case "arp.src.hw":
@@ -1431,10 +1431,16 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "":
+                        if (fieldShow == "HTTP chunked response")
+                        {
+                            throw new InvalidOperationException("HTTP chunked response");
+                        }
+
                         data.Append(field.Value());
                         if (fieldShow == @"\r\n")
                             break;
-                        else if (isFirstEmptyName)
+
+                        if (isFirstEmptyName)
                         {
                             CompareHttpFirstLine(field, httpDatagram);
                             isFirstEmptyName = false;
@@ -1442,10 +1448,6 @@ namespace PcapDotNet.Core.Test
                         else if (fieldShow.StartsWith("Content-encoded entity body"))
                         {
                             break;
-                        }
-                        else if (fieldShow == "HTTP chunked response")
-                        {
-                            field.AssertValue(httpDatagram.Body);
                         }
                         else
                         {
@@ -1546,7 +1548,10 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "http.request.version":
-                        field.AssertShow(httpDatagram.Version.ToString());
+                        if (httpDatagram.Version == null)
+                            field.AssertShow(string.Empty);
+                        else
+                            field.AssertShow(httpDatagram.Version.ToString());
                         break;
 
                     case "http.response.code":

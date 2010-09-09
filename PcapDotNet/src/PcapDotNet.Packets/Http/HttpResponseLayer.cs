@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets.Http
         {
             return base.Equals(other) &&
                    StatusCode == other.StatusCode &&
-                   ReasonPhrase == other.ReasonPhrase;
+                   (ReferenceEquals(ReasonPhrase, other.ReasonPhrase) || ReasonPhrase.Equals(other.ReasonPhrase));
         }
 
         protected override int FirstLineLength

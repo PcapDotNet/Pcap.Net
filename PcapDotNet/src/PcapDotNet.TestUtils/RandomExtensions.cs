@@ -7,9 +7,11 @@ namespace PcapDotNet.TestUtils
 {
     public static class RandomExtensions
     {
-        public static bool NextBool(this Random random)
+        public static bool NextBool(this Random random, int chance = 2)
         {
-            return random.Next() % 2 == 0;
+            if (chance < 1)
+                throw new ArgumentOutOfRangeException("chance", chance, "must be at least 1");
+            return random.Next() % chance == 0;
         }
 
         public static byte NextByte(this Random random, int minValue, int maxValue)
@@ -62,6 +64,11 @@ namespace PcapDotNet.TestUtils
         public static uint NextUInt(this Random random, uint maxValue)
         {
             return random.NextUInt() % maxValue;
+        }
+
+        public static uint NextUInt(this Random random, uint minvalue, uint maxValue)
+        {
+            return random.NextUInt() % (maxValue - minvalue + 1) + minvalue;
         }
 
         public static UInt48 NextUInt48(this Random random)
