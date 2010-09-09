@@ -42,14 +42,15 @@ namespace PcapDotNet.Packets.Http
             string fieldValueString = HttpRegex.GetString(fieldValue);
             Match match = _regex.Match(fieldValueString);
             if (!match.Success)
-            {
-                while (!match.Success && fieldValueString.Length > 0)
-                {
-                    fieldValueString = fieldValueString.Substring(0, fieldValueString.Length - 1);
-                    match = _regex.Match(fieldValueString);
-                }
                 return;
-            }
+//            {
+//                while (!match.Success && fieldValueString.Length > 0)
+//                {
+//                    fieldValueString = fieldValueString.Substring(0, fieldValueString.Length - 1);
+//                    match = _regex.Match(fieldValueString);
+//                }
+//                return;
+//            }
 
             MediaType = match.Groups[MediaTypeGroupName].Captures.Cast<Capture>().First().Value;
             MediaSubType = match.Groups[MediaSubTypeGroupName].Captures.Cast<Capture>().First().Value;

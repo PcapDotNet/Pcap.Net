@@ -44,10 +44,10 @@ namespace PcapDotNet.Packets.Http
             return GetString(buffer, 0, buffer.Length);
         }
 
-        public static byte[] GetBytes(string pattern)
-        {
-            return _encoding.GetBytes(pattern);
-        }
+//        public static byte[] GetBytes(string pattern)
+//        {
+//            return _encoding.GetBytes(pattern);
+//        }
 
         public static Regex Build(string pattern)
         {
@@ -104,11 +104,6 @@ namespace PcapDotNet.Packets.Http
         public static Regex Capture(Regex regex, string captureName)
         {
             return Build(string.Format("(?<{0}>{1})", captureName, regex));
-        }
-
-        public static Regex MatchStart(Regex regex)
-        {
-            return Build(string.Format("^{0}", regex));
         }
 
         public static Regex MatchEntire(Regex regex)
