@@ -56,9 +56,9 @@ namespace PcapDotNet.Core.Test
                                                         {
                                                             Data = new Datagram(new byte[] {1, 2, 3})
                                                         });
-            PacketDumpFile.Dump(filename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength,
+            PacketDumpFile.Dump(filename, DataLinkKind.Ethernet, PacketDevice.DefaultSnapshotLength,
                                 new[] {expectedPacket});
-
+  
             using (PacketCommunicator communicator = new OfflinePacketDevice(filename).Open())
             {
                 Packet actualPacket;

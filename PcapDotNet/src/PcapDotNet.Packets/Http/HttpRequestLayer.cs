@@ -5,7 +5,10 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpRequestLayer : HttpLayer, IEquatable<HttpRequestLayer>
     {
+        public override bool IsRequest { get { return true; } }
+
         public HttpRequestMethod Method { get; set; }
+
         public string Uri { get; set; }
 
         public override bool Equals(HttpLayer other)
