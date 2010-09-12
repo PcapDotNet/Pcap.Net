@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using PcapDotNet.Base;
 
-namespace PcapDotNet.Base
+namespace PcapDotNet.Core.Test
 {
     public class HexEncoding : Encoding 
     {
@@ -26,7 +26,7 @@ namespace PcapDotNet.Base
         public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
         {
             int originalByteIndex = byteIndex;
-            IEnumerable<char> hexChars = chars.Range(charIndex, charCount).Where(IsHexDigit);
+            IEnumerable<char> hexChars = Enumerable.Where<char>(chars.Range(charIndex, charCount), IsHexDigit);
             IEnumerator<char> hexCharsEnumerator = hexChars.GetEnumerator();
             while (hexCharsEnumerator.MoveNext())
             {
