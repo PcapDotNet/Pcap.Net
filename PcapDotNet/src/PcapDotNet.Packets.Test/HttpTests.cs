@@ -339,6 +339,87 @@ namespace PcapDotNet.Packets.Test
                              "--THIS_STRING_SEPARATES--");
         }
 
+        [TestMethod]
+        public void HttpParsingMultipeRequestsTest()
+        {
+            const string HttpString = "GET /url1 HTTP/1.1\r\n" +
+                                      "A: B\r\n" +
+                                      "B: C\r\n" +
+                                      "\r\n" +
+                                      "GET /url2 HTTP/1.1\r\n" +
+                                      "C: D\r\n" +
+                                      "D: E\r\n" +
+                                      "\r\n";
+
+            Packet packet = BuildPacket(HttpString);
+            var https = packet.Ethernet.IpV4.Tcp.HttpCollection;
+            Assert.AreEqual(2, https.Count);
+            foreach (HttpDatagram http in https)
+            {
+                Assert.IsTrue(http.IsRequest);
+                Assert.IsFalse(http.IsResponse);
+                Assert.AreEqual(HttpVersion.Version11, http.Version);
+                Assert.AreEqual(Datagram.Empty, http.Body);
+            }
+            HttpRequestDatagram request = (HttpRequestDatagram)https[0];
+            Assert.AreEqual(new HttpRequestMethod(HttpRequestKnownMethod.Get), request.Method);
+            Assert.AreEqual("/url1", request.Uri);
+            Assert.AreEqual(new HttpHeader(new HttpField("A", "B"), new HttpField("B", "C")), request.Header);
+
+            request = (HttpRequestDatagram)https[1];
+            Assert.AreEqual(new HttpRequestMethod(HttpRequestKnownMethod.Get), request.Method);
+            Assert.AreEqual("/url2", request.Uri);
+            Assert.AreEqual(new HttpHeader(new HttpField("C", "D"), new HttpField("D", "E")), request.Header);
+        }
+
+        [TestMethod]
+        public void HttpParsingMultipeResponsesTest()
+        {
+            const string HttpString = "HTTP/1.1 200 OK\r\n" +
+                                      "Transfer-Encoding: chunked\r\n" +
+                                      "\r\n" +
+                                      "b\r\n" +
+                                      "12345678901\r\n" +
+                                      "0\r\n" +
+                                      "HTTP/1.1 404 Not Found\r\n" +
+                                      "Content-Length: 6\r\n" +
+                                      "\r\n" +
+                                      "123456" +
+                                      "HTTP/1.1 302 Moved\r\n" +
+                                      "Transfer-Encoding: chunked\r\n" +
+                                      "\r\n" +
+                                      "8\r\n" +
+                                      "12345678\r\n" +
+                                      "0\r\n";
+
+            Packet packet = BuildPacket(HttpString);
+            var https = packet.Ethernet.IpV4.Tcp.HttpCollection;
+            Assert.AreEqual(3, https.Count);
+            foreach (HttpDatagram http in https)
+            {
+                Assert.IsFalse(http.IsRequest);
+                Assert.IsTrue(http.IsResponse);
+                Assert.AreEqual(HttpVersion.Version11, http.Version);
+            }
+            HttpResponseDatagram response = (HttpResponseDatagram)https[0];
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("b\r\n12345678901\r\n0\r\n")), response.Body);
+            Assert.AreEqual(new HttpHeader(new HttpTransferEncodingField("chunked")), response.Header);
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("OK")), response.ReasonPhrase);
+            Assert.AreEqual<uint>(200, response.StatusCode.Value);
+
+            response = (HttpResponseDatagram)https[1];
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("123456")), response.Body);
+            Assert.AreEqual(new HttpHeader(new HttpContentLengthField(6)), response.Header);
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("Not Found")), response.ReasonPhrase);
+            Assert.AreEqual<uint>(404, response.StatusCode.Value);
+
+            response = (HttpResponseDatagram)https[2];
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("8\r\n12345678\r\n0\r\n")), response.Body);
+            Assert.AreEqual(new HttpHeader(new HttpTransferEncodingField("chunked")), response.Header);
+            Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("Moved")), response.ReasonPhrase);
+            Assert.AreEqual<uint>(302, response.StatusCode.Value);
+        }
+
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
         {
             Datagram expectedBody = expectedBodyString == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedBodyString));
