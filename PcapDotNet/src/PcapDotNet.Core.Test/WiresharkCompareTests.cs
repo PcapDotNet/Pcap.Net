@@ -195,8 +195,12 @@ namespace PcapDotNet.Core.Test
                     if (random.NextBool())
                         ipV4Layer.Fragmentation = IpV4Fragmentation.None;
                     TcpLayer tcpLayer = random.NextTcpLayer();
-                    tcpLayer.DestinationPort = 80;
-                    tcpLayer.SourcePort = 80;
+
+                    HttpLayer httpLayer = random.NextHttpLayer();
+                    if (httpLayer.IsRequest)
+                        tcpLayer.DestinationPort = 80;
+                    else
+                        tcpLayer.SourcePort = 80;
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, random.NextHttpLayer());
 
                 default:

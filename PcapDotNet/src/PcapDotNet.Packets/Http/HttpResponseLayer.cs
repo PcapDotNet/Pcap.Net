@@ -5,9 +5,12 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
     {
-        public uint? StatusCode { get; set; }
-        public Datagram ReasonPhrase { get; set; }
+        public override bool IsRequest { get { return false; } }
 
+        public uint? StatusCode { get; set; }
+
+        public Datagram ReasonPhrase { get; set; }
+        
         public override bool Equals(HttpLayer other)
         {
             return Equals(other as HttpResponseLayer);

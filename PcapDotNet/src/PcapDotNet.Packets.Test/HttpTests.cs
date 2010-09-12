@@ -69,7 +69,9 @@ namespace PcapDotNet.Packets.Test
                 if (httpLayer is HttpRequestLayer)
                 {
                     Assert.IsTrue(httpDatagram.IsRequest);
+                    Assert.IsTrue(httpLayer.IsRequest);
                     Assert.IsFalse(httpDatagram.IsResponse);
+                    Assert.IsFalse(httpLayer.IsResponse);
                     
                     HttpRequestLayer httpRequestLayer = (HttpRequestLayer)httpLayer;
                     HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
@@ -81,7 +83,9 @@ namespace PcapDotNet.Packets.Test
                 else
                 {
                     Assert.IsFalse(httpDatagram.IsRequest);
+                    Assert.IsFalse(httpLayer.IsRequest);
                     Assert.IsTrue(httpDatagram.IsResponse);
+                    Assert.IsTrue(httpLayer.IsResponse);
 
                     HttpResponseLayer httpResponseLayer = (HttpResponseLayer)httpLayer;
                     HttpResponseDatagram httpResponseDatagram = (HttpResponseDatagram)httpDatagram;
@@ -89,6 +93,19 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(httpResponseLayer.ReasonPhrase, httpResponseDatagram.ReasonPhrase);
                 }
                 Assert.AreEqual(httpLayer.Header, httpDatagram.Header);
+                if (httpLayer.Header != null)
+                {
+                    foreach (var field in httpLayer.Header)
+                        Assert.AreNotEqual("abc", field);
+
+                    if (httpLayer.Header.ContentType != null)
+                    {
+                        var parameters = httpLayer.Header.ContentType.Parameters;
+                        Assert.AreEqual<object>(parameters, httpDatagram.Header.ContentType.Parameters);
+                        int maxParameterNameLength = parameters.Any() ? parameters.Max(pair => pair.Key.Length) : 0;
+                        Assert.IsNull(parameters[new string('a', maxParameterNameLength + 1)]);
+                    }
+                }
                 Assert.AreEqual(httpLayer.Body, httpDatagram.Body);
                 Assert.AreEqual(httpLayer, httpDatagram.ExtractLayer(), "HTTP Layer");
                 Assert.AreEqual(httpLayer.Length, httpDatagram.Length);
@@ -418,6 +435,13 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(new HttpHeader(new HttpTransferEncodingField("chunked")), response.Header);
             Assert.AreEqual(new Datagram(Encoding.ASCII.GetBytes("Moved")), response.ReasonPhrase);
             Assert.AreEqual<uint>(302, response.StatusCode.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void HttpRequestMethodBadKnownTest()
+        {
+            Assert.IsNotNull(new HttpRequestMethod(HttpRequestKnownMethod.Unknown));
         }
 
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)

@@ -53,23 +53,10 @@ namespace PcapDotNet.Packets.Http
             string fieldValueString = HttpRegex.GetString(fieldValue);
             Match match = _regex.Match(fieldValueString);
             if (!match.Success)
-            {
                 return;
-//                while (!match.Success && fieldValueString.Length > 0)
-//                {
-//                    fieldValueString = fieldValueString.Substring(0, fieldValueString.Length - 1);
-//                    match = _regex.Match(fieldValueString);
-//                }
-//                return;
-            }
 
             SetTransferCodings(match.GroupCapturesValues(RegexTransferCodingGroupName).ToArray());
         }
-
-//        protected override string ValueToString()
-//        {
-//            return TransferCodings == null ? string.Empty : TransferCodings.SequenceToString(",");
-//        }
 
         private ReadOnlyCollection<string> _transferCodings;
 

@@ -4,6 +4,8 @@ namespace PcapDotNet.Packets.Http
 {
     public abstract class HttpLayer : SimpleLayer, IEquatable<HttpLayer>
     {
+        public abstract bool IsRequest { get; }
+        public bool IsResponse { get { return !IsRequest; } }
         public HttpVersion Version { get; set; }
         public HttpHeader Header { get; set; }
         public Datagram Body { get; set; }
