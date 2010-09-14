@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                Packet packet = new PacketBuilder(ethernetLayer,ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, tcpLayer, payloadLayer);
 
                 Assert.IsTrue(packet.IsValid);
 

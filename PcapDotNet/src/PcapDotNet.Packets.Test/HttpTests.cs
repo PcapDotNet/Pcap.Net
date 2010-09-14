@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,7 +53,7 @@ namespace PcapDotNet.Packets.Test
         {
            Random random = new Random();
 
-            for (int i = 0; i != 1000; ++i)
+            for (int i = 0; i != 200; ++i)
             {
                 EthernetLayer ethernetLayer = random.NextEthernetLayer(EthernetType.None);
                 IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
@@ -61,7 +62,7 @@ namespace PcapDotNet.Packets.Test
                 tcpLayer.Checksum = null;
                 HttpLayer httpLayer = random.NextHttpLayer();
 
-                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, httpLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, tcpLayer, httpLayer);
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 HttpDatagram httpDatagram = packet.Ethernet.IpV4.Tcp.Http;
@@ -96,11 +97,12 @@ namespace PcapDotNet.Packets.Test
                 if (httpLayer.Header != null)
                 {
                     foreach (var field in httpLayer.Header)
-                        Assert.AreNotEqual("abc", field);
+                        Assert.AreNotEqual<object>("abc", field);
 
                     if (httpLayer.Header.ContentType != null)
                     {
                         var parameters = httpLayer.Header.ContentType.Parameters;
+                        Assert.AreEqual(parameters.Count, parameters.OfType<KeyValuePair<string, string>>().Count());
                         Assert.AreEqual<object>(parameters, httpDatagram.Header.ContentType.Parameters);
                         int maxParameterNameLength = parameters.Any() ? parameters.Max(pair => pair.Key.Length) : 0;
                         Assert.IsNull(parameters[new string('a', maxParameterNameLength + 1)]);
@@ -466,6 +468,42 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(expectedBody, request.Body, "Body " + httpString);
         }
 
+        [TestMethod]
+        public void HttpResponseWithoutVersionStatusCodeOrReasonPhraseTest()
+        {
+            HttpResponseLayer httpLayer = new HttpResponseLayer();
+            PacketBuilder builder = new PacketBuilder(new EthernetLayer(),
+                                                      new IpV4Layer(),
+                                                      new TcpLayer(),
+                                                      httpLayer);
+
+            // null version
+            Packet packet = builder.Build(DateTime.Now);
+            Assert.IsNull(packet.Ethernet.IpV4.Tcp.Http.Version);
+
+            // null status code
+            httpLayer.Version = HttpVersion.Version11;
+            packet = builder.Build(DateTime.Now);
+            Assert.IsNotNull(packet.Ethernet.IpV4.Tcp.Http.Version);
+            Assert.IsNull(((HttpResponseDatagram)packet.Ethernet.IpV4.Tcp.Http).StatusCode);
+
+            // null reason phrase
+            httpLayer.StatusCode = 200;
+            packet = builder.Build(DateTime.Now);
+            Assert.IsNotNull(packet.Ethernet.IpV4.Tcp.Http.Version);
+            Assert.IsNotNull(((HttpResponseDatagram)packet.Ethernet.IpV4.Tcp.Http).StatusCode);
+            Assert.AreEqual(Datagram.Empty, ((HttpResponseDatagram)packet.Ethernet.IpV4.Tcp.Http).ReasonPhrase, "ReasonPhrase");
+        }
+
+        [TestMethod]
+        public void HttpBadTransferCodingsRegexTest()
+        {
+            Packet packet = BuildPacket("GET /url HTTP/1.1\r\n" +
+                                        "Transfer-Encoding: ///\r\n" +
+                                        "\r\n");
+            Assert.IsNull(packet.Ethernet.IpV4.Tcp.Http.Header.TransferEncoding.TransferCodings);
+        }
+
         private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
         {
             Datagram expectedBody = expectedBodyString == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedBodyString));
@@ -509,7 +547,7 @@ namespace PcapDotNet.Packets.Test
                 Data = new Datagram(Encoding.ASCII.GetBytes(httpString))
             };
 
-            Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, payloadLayer).Build(DateTime.Now);
+            Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, tcpLayer, payloadLayer);
 
             Assert.IsTrue(packet.IsValid);
 

@@ -98,7 +98,7 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(0, 50 * 1024));
 
-                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, payloadLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, payloadLayer);
 
                 Assert.IsTrue(ipV4Layer.Protocol == IpV4Protocol.Udp ||
                               ipV4Layer.Protocol == IpV4Protocol.Tcp ||
