@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.Test
                                                 {
                                                     Data = random.NextDatagram(ethernetPayloadLength),
                                                 };
-                Packet packet = new PacketBuilder(ethernetLayer, payloadLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
 
                 // Ethernet
                 Assert.IsTrue(new[] {EthernetType.IpV4, EthernetType.Arp}.Contains(packet.Ethernet.EtherType) ||

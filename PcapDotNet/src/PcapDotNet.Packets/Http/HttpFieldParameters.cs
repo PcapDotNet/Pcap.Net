@@ -19,20 +19,7 @@ namespace PcapDotNet.Packets.Http
             _parameters = parameters.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
-        internal HttpFieldParameters(IEnumerable<string> parametersNames, IEnumerable<string> parametersValues)
-        {
-            var nameEnumerator = parametersNames.GetEnumerator();
-            var valueEnumerator = parametersValues.GetEnumerator();
-            while (nameEnumerator.MoveNext())
-            {
-                if (!valueEnumerator.MoveNext())
-                    throw new ArgumentException(string.Format("more names ({0}) were given than values ({1})", parametersNames.Count(), parametersValues.Count()), "parametersValues");
-
-                _parameters.Add(nameEnumerator.Current, valueEnumerator.Current);
-            }
-            if (valueEnumerator.MoveNext())
-                throw new ArgumentException(string.Format("more values ({0}) were given than names ({1})", parametersValues.Count(), parametersNames.Count()), "parametersNames");
-        }
+        public int Count { get { return _parameters.Count; } }
 
         public string this[string name]
         {
@@ -83,6 +70,21 @@ namespace PcapDotNet.Packets.Http
             return stringBuilder.ToString();
         }
 
+        internal HttpFieldParameters(IEnumerable<string> parametersNames, IEnumerable<string> parametersValues)
+        {
+            var nameEnumerator = parametersNames.GetEnumerator();
+            var valueEnumerator = parametersValues.GetEnumerator();
+            while (nameEnumerator.MoveNext())
+            {
+                if (!valueEnumerator.MoveNext())
+                    throw new ArgumentException(string.Format("more names ({0}) were given than values ({1})", parametersNames.Count(), parametersValues.Count()), "parametersValues");
+
+                _parameters.Add(nameEnumerator.Current, valueEnumerator.Current);
+            }
+            if (valueEnumerator.MoveNext())
+                throw new ArgumentException(string.Format("more values ({0}) were given than names ({1})", parametersValues.Count(), parametersNames.Count()), "parametersNames");
+        }
+        
         private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
     }
 }

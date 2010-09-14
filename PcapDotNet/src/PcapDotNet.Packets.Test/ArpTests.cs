@@ -57,7 +57,7 @@ namespace PcapDotNet.Packets.Test
 
                 ArpLayer arpLayer = random.NextArpLayer();
 
-                Packet packet = new PacketBuilder(ethernetLayer, arpLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, arpLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 

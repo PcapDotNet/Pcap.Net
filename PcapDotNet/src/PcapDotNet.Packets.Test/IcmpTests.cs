@@ -102,7 +102,7 @@ namespace PcapDotNet.Packets.Test
                                     icmpBuffer);
 
                     Assert.AreEqual(illegalPacket,
-                                    new PacketBuilder(ethernetLayer, ipV4Layer, illegalPacket.Ethernet.IpV4.Icmp.ExtractLayer()).Build(DateTime.Now));
+                                    PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, illegalPacket.Ethernet.IpV4.Icmp.ExtractLayer()));
                 }
 
                 // Ethernet

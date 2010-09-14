@@ -58,11 +58,11 @@ namespace PcapDotNet.Packets.Test
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
             ipV4Layer.HeaderChecksum = null;
 
-            for (int i = 0; i != 1000; ++i)
+            for (int i = 0; i != 200; ++i)
             {
                 IgmpLayer igmpLayer = random.NextIgmpLayer();
 
-                Packet packet = new PacketBuilder(ethernetLayer, ipV4Layer, igmpLayer).Build(DateTime.Now);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, igmpLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
