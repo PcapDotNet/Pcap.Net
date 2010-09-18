@@ -1,5 +1,8 @@
 ﻿namespace PcapDotNet.Packets.Transport
 {
+    /// <summary>
+    /// An emotion that can be set in a TCP mood option.
+    /// </summary>
     public enum TcpOptionMoodEmotion
     {
         /// <summary>

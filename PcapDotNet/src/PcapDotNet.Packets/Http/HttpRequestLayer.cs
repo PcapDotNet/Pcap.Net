@@ -3,6 +3,10 @@ using System.Text;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// RFC 2616.
+    /// Represents an HTTP request layer.
+    /// </summary>
     public class HttpRequestLayer : HttpLayer, IEquatable<HttpRequestLayer>
     {
         public override bool IsRequest { get { return true; } }

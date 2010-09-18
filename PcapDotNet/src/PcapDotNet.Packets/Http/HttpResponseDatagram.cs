@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// RFC 2616.
+    /// Represents an HTTP response.
+    /// </summary>
     public class HttpResponseDatagram : HttpDatagram
     {
         private class ParseInfo : ParseInfoBase

@@ -2,6 +2,10 @@ using System;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// RFC 2616.
+    /// Represents an HTTP layer.
+    /// </summary>
     public abstract class HttpLayer : SimpleLayer, IEquatable<HttpLayer>
     {
         public abstract bool IsRequest { get; }
