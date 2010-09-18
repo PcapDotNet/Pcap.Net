@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets
                 where attribute.OptionTypeType == typeof(TOptionType)
                 select attribute;
 
-            if (registraionAttributes.IsEmpty())
+            if (!registraionAttributes.Any())
                 return null;
 
             return registraionAttributes.First();

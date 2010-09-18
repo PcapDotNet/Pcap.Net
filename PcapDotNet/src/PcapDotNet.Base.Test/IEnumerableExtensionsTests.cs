@@ -74,14 +74,6 @@ namespace PcapDotNet.Base.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void IsEmptyNullTest()
-        {
-            Assert.IsFalse(IEnumerableExtensions.IsEmpty<int>(null));
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void SequenceToStringNullTest()
         {
             Assert.IsNotNull(IEnumerableExtensions.SequenceToString<int>(null));

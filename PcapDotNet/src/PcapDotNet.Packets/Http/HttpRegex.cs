@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using PcapDotNet.Base;
 
@@ -71,17 +72,17 @@ namespace PcapDotNet.Packets.Http
 
         public static Regex Optional(Regex regex)
         {
-            return Build(Bracket(string.Format("{0}?", regex)));
+            return Build(Bracket(string.Format(CultureInfo.InvariantCulture, "{0}?", regex)));
         }
 
         public static Regex Any(Regex regex)
         {
-            return Build(Bracket(string.Format("{0}*", regex)));
+            return Build(Bracket(string.Format(CultureInfo.InvariantCulture, "{0}*", regex)));
         }
 
         public static Regex AtLeastOne(Regex regex)
         {
-            return Build(Bracket(string.Format("{0}+", regex)));
+            return Build(Bracket(string.Format(CultureInfo.InvariantCulture, "{0}+", regex)));
         }
 
         public static Regex AtLeast(Regex regex, int minCount)
@@ -90,30 +91,30 @@ namespace PcapDotNet.Packets.Http
                 return Any(regex);
             if (minCount == 1)
                 return AtLeastOne(regex);
-            return Build(string.Format("(?:{0}){{{1},}}", regex, minCount));
+            return Build(string.Format(CultureInfo.InvariantCulture, "(?:{0}){{{1},}}", regex, minCount));
         }
         
         public static Regex CommaSeparatedRegex(Regex element, int minCount)
         {
             Regex linearWhiteSpacesRegex = Any(LinearWhiteSpace);
-            Regex regex = Concat(Build(string.Format("{0}{1}", linearWhiteSpacesRegex, element)),
-                                 AtLeast(Build(string.Format("{0},{1}{2}", linearWhiteSpacesRegex, linearWhiteSpacesRegex, element)), minCount - 1));
+            Regex regex = Concat(Build(string.Format(CultureInfo.InvariantCulture, "{0}{1}", linearWhiteSpacesRegex, element)),
+                                 AtLeast(Build(string.Format(CultureInfo.InvariantCulture, "{0},{1}{2}", linearWhiteSpacesRegex, linearWhiteSpacesRegex, element)), minCount - 1));
             return minCount <= 0 ? Optional(regex) : regex;
         }
 
         public static Regex Capture(Regex regex, string captureName)
         {
-            return Build(string.Format("(?<{0}>{1})", captureName, regex));
+            return Build(string.Format(CultureInfo.InvariantCulture, "(?<{0}>{1})", captureName, regex));
         }
 
         public static Regex MatchEntire(Regex regex)
         {
-            return Build(string.Format("^{0}$", regex));
+            return Build(string.Format(CultureInfo.InvariantCulture, "^{0}$", regex));
         }
 
         private static string Bracket(string pattern)
         {
-            return string.Format("(?:{0})", pattern);
+            return string.Format(CultureInfo.InvariantCulture, "(?:{0})", pattern);
         }
 
         private static readonly Regex _carriageReturnLineFeed = Build(@"\r\n");

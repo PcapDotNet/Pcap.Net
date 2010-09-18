@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.Http
                 return;
             buffer.Write(ref offset, ReasonPhrase);
 
-            buffer.WriteCarriageReturnLineFeed(ref offset);
+            buffer.WriteCarriageReturnLinefeed(ref offset);
         }
     }
 }

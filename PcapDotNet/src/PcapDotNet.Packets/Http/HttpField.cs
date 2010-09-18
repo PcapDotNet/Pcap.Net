@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,13 +15,16 @@ namespace PcapDotNet.Packets.Http
     {
         public static HttpField CreateField(string fieldName, byte[] fieldValue)
         {
-            switch (fieldName.ToLowerInvariant())
+            if (fieldName == null)
+                throw new ArgumentNullException("fieldName");
+
+            switch (fieldName.ToUpperInvariant())
             {
-                case HttpTransferEncodingField.NameLower:
+                case HttpTransferEncodingField.FieldNameUpper:
                     return new HttpTransferEncodingField(fieldValue);
-                case HttpContentLengthField.NameLower:
+                case HttpContentLengthField.FieldNameUpper:
                     return new HttpContentLengthField(fieldValue);
-                case HttpContentTypeField.NameLower:
+                case HttpContentTypeField.FieldNameUpper:
                     return new HttpContentTypeField(fieldValue);
 
                 default:
@@ -34,7 +38,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         public HttpField(string name, string value, Encoding encoding)
-            : this(name, encoding.GetBytes(NormalizeValue(value)))
+            : this(name, encoding == null ? null : encoding.GetBytes(NormalizeValue(value)))
         {
         }
 
@@ -105,7 +109,7 @@ namespace PcapDotNet.Packets.Http
 
         public virtual bool Equals(HttpField other)
         {
-            return other != null && Name.Equals(other.Name, StringComparison.InvariantCultureIgnoreCase) && Value.SequenceEqual(other.Value);
+            return other != null && Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) && Value.SequenceEqual(other.Value);
         }
 
         public override bool Equals(object obj)
@@ -113,9 +117,14 @@ namespace PcapDotNet.Packets.Http
             return Equals(obj as HttpField);
         }
 
+        public override int GetHashCode()
+        {
+            return Name.ToUpperInvariant().GetHashCode() ^ Value.BytesSequenceGetHashCode();
+        }
+
         public override string ToString()
         {
-            return string.Format("{0}: {1}", Name, ValueString);
+            return string.Format(CultureInfo.InvariantCulture, "{0}: {1}", Name, ValueString);
         }
 
         internal void Write(byte[] buffer, ref int offset)
@@ -124,7 +133,7 @@ namespace PcapDotNet.Packets.Http
             buffer.Write(ref offset, AsciiBytes.Colon);
             buffer.Write(ref offset, AsciiBytes.Space);
             buffer.Write(ref offset, Value);
-            buffer.WriteCarriageReturnLineFeed(ref offset);
+            buffer.WriteCarriageReturnLinefeed(ref offset);
         }
 
         private static readonly Encoding _defaultEncoding = Encoding.GetEncoding(28591);

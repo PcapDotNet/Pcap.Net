@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using PcapDotNet.Base;
@@ -16,6 +17,11 @@ namespace PcapDotNet.Packets
     {
         public static int Compare(this byte[] array, int offset, byte[] other, int otherOffset, int count)
         {
+            if (array == null)
+                throw new ArgumentNullException("array");
+            if (other == null)
+                throw new ArgumentNullException("other");
+
             for (int i = 0; i != count; ++i)
             {
                 int compare = array[offset + i].CompareTo(other[otherOffset + i]);
@@ -27,11 +33,17 @@ namespace PcapDotNet.Packets
 
         public static bool SequenceEqual(this byte[] array, int offset, byte[] other, int otherOffset, int count)
         {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
             return array.Compare(offset, other, otherOffset, count) == 0;
         }
 
         public static int Find(this byte[] array, int offset, int count, byte[] other, int otherOffset, int otherCount)
         {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
             if (otherCount > count)
                 return array.Length;
 
@@ -48,6 +60,11 @@ namespace PcapDotNet.Packets
 
         public static int Find(this byte[] array, int offset, int count, byte[] other)
         {
+            if (array == null)
+                throw new ArgumentNullException("array");
+            if (other == null)
+                throw new ArgumentNullException("other");
+
             return array.Find(offset, count, other, 0, other.Length);
         }
 
@@ -555,6 +572,9 @@ namespace PcapDotNet.Packets
 
         public static void Write(this byte[] buffer, ref int offset, string value, Encoding encoding)
         {
+            if (encoding == null)
+                throw new ArgumentNullException("encoding");
+
             buffer.Write(ref offset, encoding.GetBytes(value));
         }
 
@@ -665,15 +685,15 @@ namespace PcapDotNet.Packets
 //            buffer.Write(offset, AsciiBytes.LineFeed);
 //        }
 //
-        public static void WriteCarriageReturnLineFeed(this byte[] buffer, ref int offset)
+        public static void WriteCarriageReturnLinefeed(this byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, AsciiBytes.CarriageReturn);
-            buffer.Write(ref offset, AsciiBytes.LineFeed);
+            buffer.Write(ref offset, AsciiBytes.Linefeed);
         }
 
         public static void WriteDecimal(this byte[] buffer, ref int offset, uint value)
         {
-            buffer.Write(ref offset, value.ToString(), Encoding.ASCII);
+            buffer.Write(ref offset, value.ToString(CultureInfo.InvariantCulture), Encoding.ASCII);
         }
 
         private static bool IsWrongEndianity(Endianity endianity)

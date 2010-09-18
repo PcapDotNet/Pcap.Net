@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.Http
 {
@@ -51,7 +52,7 @@ namespace PcapDotNet.Packets.Http
             if (value >= AsciiBytes.UpperA && value <= AsciiBytes.UpperF)
                 return value - AsciiBytes.UpperA + 10;
             throw new ArgumentOutOfRangeException("value", value,
-                                                  string.Format("Must be a valid ASCII hexadecimal character ({0}-{1}, {2}-{3}, {4}-{5})",
+                                                  string.Format(CultureInfo.InvariantCulture, "Must be a valid ASCII hexadecimal character ({0}-{1}, {2}-{3}, {4}-{5})",
                                                                 AsciiBytes.Zero, AsciiBytes.Nine,
                                                                 AsciiBytes.LowerA, AsciiBytes.LowerF,
                                                                 AsciiBytes.UpperA, AsciiBytes.UpperF));

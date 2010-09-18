@@ -1,4 +1,6 @@
-﻿namespace PcapDotNet.Packets.Http
+﻿using System.Globalization;
+
+namespace PcapDotNet.Packets.Http
 {
     /// <summary>
     /// RFC 2616.
@@ -10,15 +12,15 @@
         /// <summary>
         /// The field name.
         /// </summary>
-        public const string Name = "Content-Length";
+        public const string FieldName = "Content-Length";
 
         /// <summary>
         /// The field name in lowercase.
         /// </summary>
-        public const string NameLower = "content-length";
+        public const string FieldNameUpper = "CONTENT-LENGTH";
 
         public HttpContentLengthField(uint contentLength)
-            :base(Name, contentLength.ToString())
+            :base(FieldName, contentLength.ToString(CultureInfo.InvariantCulture))
         {
             ContentLength = contentLength;
         }
@@ -26,7 +28,7 @@
         public uint? ContentLength { get; private set;}
 
         internal HttpContentLengthField(byte[] fieldValue)
-            :base(Name, fieldValue)
+            :base(FieldName, fieldValue)
         {
             HttpParser parser = new HttpParser(fieldValue);
             uint? contentLength;
