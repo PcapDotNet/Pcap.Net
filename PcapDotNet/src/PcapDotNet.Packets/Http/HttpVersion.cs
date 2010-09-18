@@ -4,6 +4,9 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// Represents an HTTP version.
+    /// </summary>
     public class HttpVersion : IEquatable<HttpVersion>
     {
         public HttpVersion(uint major, uint minor)
@@ -38,6 +41,11 @@ namespace PcapDotNet.Packets.Http
         public override bool Equals(object obj)
         {
             return Equals(obj as HttpVersion);
+        }
+
+        public override int GetHashCode()
+        {
+            return Minor.GetHashCode() ^ Major.GetHashCode();
         }
 
         internal void Write(byte[] buffer, ref int offset)

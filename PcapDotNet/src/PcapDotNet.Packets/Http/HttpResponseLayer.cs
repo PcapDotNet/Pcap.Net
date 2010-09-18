@@ -3,6 +3,10 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// RFC 2616.
+    /// Represents an HTTP response layer.
+    /// </summary>
     public class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
     {
         public override bool IsRequest { get { return false; } }
