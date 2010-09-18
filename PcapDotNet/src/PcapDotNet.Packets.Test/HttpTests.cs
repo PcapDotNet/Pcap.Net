@@ -97,12 +97,12 @@ namespace PcapDotNet.Packets.Test
                 if (httpLayer.Header != null)
                 {
                     foreach (var field in httpLayer.Header)
-                        Assert.AreNotEqual<object>("abc", field);
+                        Assert.IsFalse(field.Equals("abc"));
 
                     if (httpLayer.Header.ContentType != null)
                     {
                         var parameters = httpLayer.Header.ContentType.Parameters;
-                        Assert.AreEqual(parameters.Count, parameters.OfType<KeyValuePair<string, string>>().Count());
+                        Assert.IsNotNull(((IEnumerable)parameters).GetEnumerator());
                         Assert.AreEqual<object>(parameters, httpDatagram.Header.ContentType.Parameters);
                         int maxParameterNameLength = parameters.Any() ? parameters.Max(pair => pair.Key.Length) : 0;
                         Assert.IsNull(parameters[new string('a', maxParameterNameLength + 1)]);
@@ -493,6 +493,23 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(packet.Ethernet.IpV4.Tcp.Http.Version);
             Assert.IsNotNull(((HttpResponseDatagram)packet.Ethernet.IpV4.Tcp.Http).StatusCode);
             Assert.AreEqual(Datagram.Empty, ((HttpResponseDatagram)packet.Ethernet.IpV4.Tcp.Http).ReasonPhrase, "ReasonPhrase");
+        }
+
+        [TestMethod]
+        public void HttpRequestWithoutUriTest()
+        {
+           PacketBuilder builder = new PacketBuilder(new EthernetLayer(),
+                                                      new IpV4Layer(),
+                                                      new TcpLayer(),
+                                                      new HttpRequestLayer
+                                                      {
+                                                          Method = new HttpRequestMethod("UnknownMethod")
+                                                      });
+
+            Packet packet = builder.Build(DateTime.Now);
+            Assert.IsNotNull(((HttpRequestDatagram)packet.Ethernet.IpV4.Tcp.Http).Method);
+            Assert.AreEqual(HttpRequestKnownMethod.Unknown, ((HttpRequestDatagram)packet.Ethernet.IpV4.Tcp.Http).Method.KnownMethod);
+            Assert.AreEqual(string.Empty, ((HttpRequestDatagram)packet.Ethernet.IpV4.Tcp.Http).Uri, "Uri");
         }
 
         [TestMethod]

@@ -35,7 +35,7 @@ namespace PcapDotNet.Core.Test
         private const bool IsRetry
 //                        = true;
             = false;
-        private const byte RetryNumber = 101;
+        private const byte RetryNumber = 61;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -68,10 +68,17 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
+            if (IsRetry)
+            {
+                ComparePacketsToWireshark(null);
+                return;
+            }
+
+            Random random = new Random();
             for (int i = 0; i != 10; ++i)
             {
                 // Create packets
-                List<Packet> packets = new List<Packet>(CreateRandomPackets(200));
+                List<Packet> packets = new List<Packet>(CreateRandomPackets(random, 200));
 
                 // Compare packets to wireshark
                 ComparePacketsToWireshark(packets);
@@ -125,6 +132,7 @@ namespace PcapDotNet.Core.Test
             Ethernet,
             Arp,
             IpV4,
+            IpV4OverIpV4,
             Igmp,
             Icmp,
             Gre,
@@ -145,17 +153,24 @@ namespace PcapDotNet.Core.Test
             PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
             switch (random.NextEnum<PacketType>())
-//            switch (PacketType.Http)
+//            switch (PacketType.IpV4OverIpV4)
             {
                 case PacketType.Ethernet:
                     return PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
 
                 case PacketType.Arp:
+                    ethernetLayer.EtherType = EthernetType.None;
                     ethernetLayer.Destination = MacAddress.Zero;
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, random.NextArpLayer());
 
                 case PacketType.IpV4:
+                    ethernetLayer.EtherType = EthernetType.None;
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, payloadLayer);
+
+                case PacketType.IpV4OverIpV4:
+                    ethernetLayer.EtherType = EthernetType.None;
+                    ipV4Layer.Protocol = null;
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextIpV4Layer(), payloadLayer);
 
                 case PacketType.Igmp:
                     ethernetLayer.EtherType = EthernetType.None;
@@ -208,9 +223,8 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static IEnumerable<Packet> CreateRandomPackets(int numPackets)
+        private static IEnumerable<Packet> CreateRandomPackets(Random random, int numPackets)
         {
-            Random random = new Random();
             for (int i = 0; i != numPackets; ++i)
                 yield return CreateRandomPacket(random);
         }
@@ -770,6 +784,10 @@ namespace PcapDotNet.Core.Test
                         // todo support IGMP version 0 and IGMP identifier.
                         break;
 
+                    case "igmp.mtrace.max_hops":
+                        // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
+                        break;
+
                     default:
                         throw new InvalidOperationException("Invalid igmp field " + field.Name());
                 }
@@ -1052,18 +1070,24 @@ namespace PcapDotNet.Core.Test
                         else if (field.Show().StartsWith("Address family: "))
                         {
                             ++currentEntry;
-                            if (currentEntry != greDatagram.Routing.Count)
+                            if (currentEntry < greDatagram.Routing.Count)
                                 field.AssertValue((ushort)greDatagram.Routing[currentEntry].AddressFamily);
+                            else if (currentEntry > greDatagram.Routing.Count)
+                                Assert.IsFalse(greDatagram.IsValid);
                         }
                         else if (field.Show().StartsWith("SRE offset: "))
                         {
-                            if (currentEntry != greDatagram.Routing.Count)
+                            if (currentEntry < greDatagram.Routing.Count)
                                 field.AssertValue(greDatagram.Routing[currentEntry].PayloadOffset);
+                            else if (currentEntry > greDatagram.Routing.Count)
+                                Assert.IsFalse(greDatagram.IsValid);
                         }
                         else if (field.Show().StartsWith("SRE length: "))
                         {
-                            if (currentEntry != greDatagram.Routing.Count)
+                            if (currentEntry < greDatagram.Routing.Count)
                                 field.AssertValue(greDatagram.Routing[currentEntry].PayloadLength);
+                            else if (currentEntry > greDatagram.Routing.Count)
+                                Assert.IsFalse(greDatagram.IsValid);
                         }
                         else
                         {
@@ -1175,7 +1199,14 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "tcp.len":
-                        field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                        if (tcpDatagram.Payload == null)
+                        {
+                            // todo seems like a bug in tshark https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=5235
+                            break;
+                            field.AssertShowDecimal(tcpDatagram.Length);
+                        }
+                        else
+                            field.AssertShowDecimal(tcpDatagram.Payload.Length);
                         break;
 
                     case "tcp.srcport":
@@ -1297,12 +1328,8 @@ namespace PcapDotNet.Core.Test
                 if (currentOptionIndex >= options.Count)
                 {
                     Assert.IsFalse(options.IsValid, "Options IsValid");
-//                    if (field.Show().StartsWith("Unknown ("))
-//                    {
-//                        int.Parse()
-//                    }
                     Assert.IsTrue(
-//                        field.Show().StartsWith("Unknown (") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
+                        field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
                         field.Show().Contains("bytes says option goes past end of options"), "Options show: " + field.Show());
                     Assert.AreEqual(options.Count, currentOptionIndex, "Options Count");
                     return;

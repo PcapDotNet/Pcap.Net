@@ -659,12 +659,12 @@ namespace PcapDotNet.Packets
             buffer.Write(ref offset, value.MillisecondsSinceMidnightUniversalTime, endianity);
         }
 
-        public static void WriteCarriageReturnLineFeed(this byte[] buffer, int offset)
-        {
-            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
-            buffer.Write(offset, AsciiBytes.LineFeed);
-        }
-
+//        public static void WriteCarriageReturnLineFeed(this byte[] buffer, int offset)
+//        {
+//            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
+//            buffer.Write(offset, AsciiBytes.LineFeed);
+//        }
+//
         public static void WriteCarriageReturnLineFeed(this byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, AsciiBytes.CarriageReturn);

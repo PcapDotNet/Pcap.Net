@@ -67,6 +67,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDictionaryExtensionsTests.cs" />
     <Compile Include="FuncExtensionsTest.cs" />
     <Compile Include="IEnumerableExtensionsTests.cs" />
     <Compile Include="MemberInfoExtensionsTests.cs" />

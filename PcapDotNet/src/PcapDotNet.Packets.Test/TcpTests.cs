@@ -171,5 +171,12 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(new TcpOptionMd5Signature(null));
             Assert.Fail();
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TcpOptionMoodBadEmotionStringTest()
+        {
+            Assert.IsNotNull(new TcpOptionMood((TcpOptionMoodEmotion)202).EmotionString);
+        }
     }
 }
