@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Http
 
                 if (StatusCode == null)
                     return length;
-                length += StatusCode.Value.NumDigits(10) + 1;
+                length += StatusCode.Value.DigitsCount(10) + 1;
 
                 if (ReasonPhrase == null)
                     return length;

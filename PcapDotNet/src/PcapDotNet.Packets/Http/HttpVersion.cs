@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Http
 
         public int Length
         {
-            get { return _httpSlashBytes.Length + Major.NumDigits(10) + 1 + Minor.NumDigits(10); }
+            get { return _httpSlashBytes.Length + Major.DigitsCount(10) + 1 + Minor.DigitsCount(10); }
         }
 
         public override string ToString()

@@ -90,6 +90,13 @@ namespace PcapDotNet.Base
             return sequence.SequenceToString(separator, string.Empty);
         }
 
+        /// <summary>
+        /// Converts a sequence to a string by converting each element to a string.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the sequence.</typeparam>
+        /// <param name="sequence">The sequence with the elements to translate to string.</param>
+        /// <param name="separator">A separator between the elements.</param>
+        /// <returns>A string of all the elements.</returns>
         public static string SequenceToString<T>(this IEnumerable<T> sequence, char separator)
         {
             return sequence.SequenceToString(separator.ToString());

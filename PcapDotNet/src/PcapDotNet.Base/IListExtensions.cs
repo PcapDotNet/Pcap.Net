@@ -22,6 +22,14 @@ namespace PcapDotNet.Base
             return new ReadOnlyCollection<T>(list);
         }
 
+        /// <summary>
+        /// Returns an enumerable of all the elements in the given list starting in a specific offset and taking no more than a specific count.
+        /// </summary>
+        /// <typeparam name="T">The type of an element in the collection.</typeparam>
+        /// <param name="list">The list to take the elements from.</param>
+        /// <param name="offset">The offset of the first element to take.</param>
+        /// <param name="count">The maximum number of elements to take.</param>
+        /// <returns>An enumerable of all the elements in the given list starting in a specific offset and taking no more than a specific count.</returns>
         public static IEnumerable<T> Range<T>(this IList<T> list, int offset, int count)
         {
             int length = Math.Min(offset + count, list.Count);
