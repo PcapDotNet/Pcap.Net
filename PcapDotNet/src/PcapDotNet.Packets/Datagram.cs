@@ -153,6 +153,9 @@ namespace PcapDotNet.Packets
 
         public string ToString(Encoding encoding)
         {
+            if (encoding == null)
+                throw new ArgumentNullException("encoding");
+
             return encoding.GetString(Buffer, StartOffset, Length);
         }
 

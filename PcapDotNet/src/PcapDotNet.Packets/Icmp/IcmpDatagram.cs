@@ -229,7 +229,7 @@ namespace PcapDotNet.Packets.Icmp
                 from attribute in type.GetCustomAttributes<IcmpDatagramRegistrationAttribute>(false)
                 select attribute;
 
-            if (registrationAttributes.IsEmpty())
+            if (!registrationAttributes.Any())
                 return null;
 
             return registrationAttributes.First();

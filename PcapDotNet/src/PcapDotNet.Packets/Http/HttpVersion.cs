@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using PcapDotNet.Base;
 
@@ -28,7 +29,7 @@ namespace PcapDotNet.Packets.Http
 
         public override string ToString()
         {
-            return string.Format("HTTP/{0}.{1}", Major, Minor);
+            return string.Format(CultureInfo.InvariantCulture, "HTTP/{0}.{1}", Major, Minor);
         }
 
         public bool Equals(HttpVersion other)

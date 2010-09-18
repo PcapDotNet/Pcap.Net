@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.Http
 
         public HttpHeader(IEnumerable<HttpField> fields)
         {
-            _fields = fields.ToDictionary(field => field.Name, field => field, StringComparer.InvariantCultureIgnoreCase);
+            _fields = fields.ToDictionary(field => field.Name, field => field, StringComparer.OrdinalIgnoreCase);
         }
 
         public HttpHeader(params HttpField[] fields)
@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.Http
         {
             get
             {
-                return GetField<HttpTransferEncodingField>(HttpTransferEncodingField.Name);
+                return GetField<HttpTransferEncodingField>(HttpTransferEncodingField.FieldName);
             }
         }
 
@@ -45,7 +45,7 @@ namespace PcapDotNet.Packets.Http
         {
             get
             {
-                return GetField<HttpContentLengthField>(HttpContentLengthField.Name);
+                return GetField<HttpContentLengthField>(HttpContentLengthField.FieldName);
             }
         }
 
@@ -53,7 +53,7 @@ namespace PcapDotNet.Packets.Http
         {
             get
             {
-                return GetField<HttpContentTypeField>(HttpContentTypeField.Name);
+                return GetField<HttpContentTypeField>(HttpContentTypeField.FieldName);
             }
         }
 
@@ -66,6 +66,11 @@ namespace PcapDotNet.Packets.Http
         public override bool Equals(object obj)
         {
             return Equals(obj as HttpHeader);
+        }
+
+        public override int GetHashCode()
+        {
+            return _fields.Select(pair => pair.Value).SequenceGetHashCode();
         }
 
         public override string ToString()
@@ -85,7 +90,7 @@ namespace PcapDotNet.Packets.Http
 
         internal HttpHeader(IEnumerable<KeyValuePair<string, IEnumerable<byte>>> fields)
         {
-            var mergedFields = new Dictionary<string, IEnumerable<byte>>(StringComparer.InvariantCultureIgnoreCase);
+            var mergedFields = new Dictionary<string, IEnumerable<byte>>(StringComparer.OrdinalIgnoreCase);
             foreach (var field in fields)
             {
                 string fieldName = field.Key;
@@ -99,7 +104,7 @@ namespace PcapDotNet.Packets.Http
                     mergedFields[fieldName] = fieldValue.Concat(AsciiBytes.Comma).Concat(field.Value);
             }
 
-            _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()), StringComparer.InvariantCultureIgnoreCase);
+            _fields = mergedFields.ToDictionary(field => field.Key, field => HttpField.CreateField(field.Key, field.Value.ToArray()), StringComparer.OrdinalIgnoreCase);
         }
 
         public void Write(byte[] buffer, int offset)
@@ -111,7 +116,7 @@ namespace PcapDotNet.Packets.Http
         {
             foreach (HttpField field in this)
                 field.Write(buffer, ref offset);
-            buffer.WriteCarriageReturnLineFeed(ref offset);
+            buffer.WriteCarriageReturnLinefeed(ref offset);
         }
 
         private T GetField<T>(string fieldName) where T : HttpField
@@ -123,6 +128,6 @@ namespace PcapDotNet.Packets.Http
         }
 
         private static readonly HttpHeader _empty = new HttpHeader();
-        private readonly Dictionary<string, HttpField> _fields = new Dictionary<string, HttpField>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, HttpField> _fields = new Dictionary<string, HttpField>(StringComparer.OrdinalIgnoreCase);
     }
 }

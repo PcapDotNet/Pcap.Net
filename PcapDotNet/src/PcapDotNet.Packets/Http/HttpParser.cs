@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Http
                 else if (first == AsciiBytes.CarriageReturn) // CR
                 {
                     range = range.Skip(1);
-                    if (range.FirstOrDefault() != AsciiBytes.LineFeed) // CR without LF
+                    if (range.FirstOrDefault() != AsciiBytes.Linefeed) // CR without LF
                         break;
 
                     // CRLF
@@ -109,7 +109,7 @@ namespace PcapDotNet.Packets.Http
             {
                 fieldContent = new Datagram(_buffer, originalOffset, Offset - originalOffset);
 
-                if (IsNext(AsciiBytes.Space) || IsNext(AsciiBytes.CarriageReturn) || IsNext(AsciiBytes.HorizontalTab) || IsNext(AsciiBytes.LineFeed))
+                if (IsNext(AsciiBytes.Space) || IsNext(AsciiBytes.CarriageReturn) || IsNext(AsciiBytes.HorizontalTab) || IsNext(AsciiBytes.Linefeed))
                     break;
 
                 if (IsNext(AsciiBytes.DoubleQuotationMark))
@@ -184,12 +184,12 @@ namespace PcapDotNet.Packets.Http
 
         public HttpParser CarriageReturnLineFeed()
         {
-            return Bytes(AsciiBytes.CarriageReturn, AsciiBytes.LineFeed);
+            return Bytes(AsciiBytes.CarriageReturn, AsciiBytes.Linefeed);
         }
 
         public bool IsCarriageReturnLineFeed()
         {
-            return IsNext(AsciiBytes.CarriageReturn) && IsNextNext(AsciiBytes.LineFeed);
+            return IsNext(AsciiBytes.CarriageReturn) && IsNextNext(AsciiBytes.Linefeed);
         }
 
         public HttpParser DecimalNumber(int numDigits, out uint? number)

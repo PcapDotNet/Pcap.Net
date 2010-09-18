@@ -10,12 +10,12 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpTransferEncodingField : HttpField, IEquatable<HttpTransferEncodingField>
     {
-        public const string Name = "Transfer-Encoding";
-        public const string NameLower = "transfer-encoding";
+        public const string FieldName = "Transfer-Encoding";
+        public const string FieldNameUpper = "TRANSFER-ENCODING";
         private const string RegexTransferCodingGroupName = "TransferCoding";
 
         public HttpTransferEncodingField(IList<string> transferCodings)
-            :base(Name, transferCodings.SequenceToString(","))
+            :base(FieldName, transferCodings.SequenceToString(","))
         {
             SetTransferCodings(transferCodings);
         }
@@ -33,7 +33,8 @@ namespace PcapDotNet.Packets.Http
         }
 
         public ReadOnlyCollection<string> TransferCodings{get{return _transferCodings;}}
-        
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
         private void SetTransferCodings(IList<string> transferCodings)
         {
             if (transferCodings.Any(coding => coding.Any(c => c.IsUppercaseAlpha())))
@@ -48,7 +49,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         internal HttpTransferEncodingField(byte[] fieldValue)
-            : base(Name, fieldValue)
+            : base(FieldName, fieldValue)
         {
             string fieldValueString = HttpRegex.GetString(fieldValue);
             Match match = _regex.Match(fieldValueString);

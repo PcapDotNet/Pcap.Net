@@ -534,7 +534,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                               IgmpMessageType.JoinGroupReplyVersion0, IgmpMessageType.LeaveGroupRequestVersion0,
                                                               IgmpMessageType.LeaveGroupReplyVersion0, IgmpMessageType.ConfirmGroupRequestVersion0,
                                                               IgmpMessageType.ConfirmGroupReplyVersion0,
-                                                              IgmpMessageType.MulticastTracerouteResponse); // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
+                                                              IgmpMessageType.MulticastTraceRouteResponse); // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
             IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
             TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
             IpV4Address igmpGroupAddress = random.NextIpV4Address();
@@ -674,7 +674,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                     }
                     routingOffset = 0;
-                    if (!routing.IsEmpty())
+                    if (routing.Any())
                     {
                         int routingIndex = random.Next(routing.Length);
                         for (int i = 0; i != routingIndex; ++i)
@@ -1105,7 +1105,7 @@ namespace PcapDotNet.Packets.TestUtils
         public static HttpField NextHttpField(this Random random, HashSet<string> fieldNames)
         {
             const string unknownField = "Unknown Name";
-            List<string> allOptions = new List<string> { unknownField, HttpTransferEncodingField.NameLower, HttpContentLengthField.NameLower, HttpContentTypeField.NameLower };
+            List<string> allOptions = new List<string> { unknownField, HttpTransferEncodingField.FieldNameUpper, HttpContentLengthField.FieldNameUpper, HttpContentTypeField.FieldNameUpper };
             List<string> possibleOptions = new List<string>(allOptions.Count);
             foreach (string option in allOptions)
             {
@@ -1124,17 +1124,17 @@ namespace PcapDotNet.Packets.TestUtils
                     } while (fieldNames.Contains(fieldName));
                     return new HttpField(fieldName, random.NextHttpFieldValue());
 
-                case HttpTransferEncodingField.NameLower:
+                case HttpTransferEncodingField.FieldNameUpper:
                     int numTransferCodings = random.Next(1, 10);
                     List<string> transferCodings = new List<string>(numTransferCodings);
                     for (int i = 0; i != numTransferCodings; ++i)
                         transferCodings.Add(random.NextHttpTransferCoding());
                     return new HttpTransferEncodingField(transferCodings);
 
-                case HttpContentLengthField.NameLower:
+                case HttpContentLengthField.FieldNameUpper:
                     return new HttpContentLengthField(random.NextUInt(1000));
 
-                case HttpContentTypeField.NameLower:
+                case HttpContentTypeField.FieldNameUpper:
 
                     return new HttpContentTypeField(random.NextHttpToken(), random.NextHttpToken(), random.NextHttpFieldParameters());
 
@@ -1255,7 +1255,7 @@ namespace PcapDotNet.Packets.TestUtils
 
             if (httpHeader.ContentType != null &&
                 httpHeader.ContentType.MediaType == "multipart" &&
-                httpHeader.ContentType.MediaSubType == "byteranges" &&
+                httpHeader.ContentType.MediaSubtype == "byteranges" &&
                 httpHeader.ContentType.Parameters["boundary"] != null)
 
             {

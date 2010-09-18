@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using PcapDotNet.Base;
@@ -8,14 +9,14 @@ namespace PcapDotNet.Packets.Http
 {
     public class HttpContentTypeField : HttpField, IEquatable<HttpContentTypeField>
     {
-        public const string Name = "Content-Type";
-        public const string NameLower = "content-type";
+        public const string FieldName = "Content-Type";
+        public const string FieldNameUpper = "CONTENT-TYPE";
 
-        public HttpContentTypeField(string mediaType, string mediaSubType, HttpFieldParameters parameters)
-            :base(Name, string.Format("{0}/{1}{2}", mediaType, mediaSubType, parameters))
+        public HttpContentTypeField(string mediaType, string mediaSubtype, HttpFieldParameters parameters)
+            : base(FieldName, string.Format(CultureInfo.InvariantCulture, "{0}/{1}{2}", mediaType, mediaSubtype, parameters))
         {
             MediaType = mediaType;
-            MediaSubType = mediaSubType;
+            MediaSubtype = mediaSubtype;
             Parameters = parameters;
         }
 
@@ -23,12 +24,12 @@ namespace PcapDotNet.Packets.Http
         {
             return other != null &&
                    MediaType == other.MediaType &&
-                   MediaSubType == other.MediaSubType &&
+                   MediaSubtype == other.MediaSubtype &&
                    Parameters.Equals(other.Parameters);
         }
 
         public string MediaType { get; private set; }
-        public string MediaSubType { get; private set; }
+        public string MediaSubtype { get; private set; }
         public HttpFieldParameters Parameters { get; private set;}
 
         public override bool Equals(HttpField other)
@@ -37,7 +38,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         internal HttpContentTypeField(byte[] fieldValue)
-            : base(Name, fieldValue)
+            : base(FieldName, fieldValue)
         {
             string fieldValueString = HttpRegex.GetString(fieldValue);
             Match match = _regex.Match(fieldValueString);
@@ -45,7 +46,7 @@ namespace PcapDotNet.Packets.Http
                 return;
 
             MediaType = match.Groups[MediaTypeGroupName].Captures.Cast<Capture>().First().Value;
-            MediaSubType = match.Groups[MediaSubTypeGroupName].Captures.Cast<Capture>().First().Value;
+            MediaSubtype = match.Groups[MediaSubTypeGroupName].Captures.Cast<Capture>().First().Value;
             Parameters = new HttpFieldParameters(match.GroupCapturesValues(HttpRegex.ParameterNameGroupName),
                                                  match.GroupCapturesValues(HttpRegex.ParameterValueGroupName));
         }

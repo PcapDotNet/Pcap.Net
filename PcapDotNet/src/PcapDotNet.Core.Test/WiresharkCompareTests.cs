@@ -1543,7 +1543,7 @@ namespace PcapDotNet.Core.Test
                         data.Append(field.Value());
                         string[] mediaType = fieldShow.Split(new[] {';', ' ', '/'}, StringSplitOptions.RemoveEmptyEntries);
                         Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
-                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubType, mediaType[1]);
+                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubtype, mediaType[1]);
                         int fieldShowParametersStart = fieldShow.IndexOf(';');
                         if (fieldShowParametersStart == -1)
                             Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());

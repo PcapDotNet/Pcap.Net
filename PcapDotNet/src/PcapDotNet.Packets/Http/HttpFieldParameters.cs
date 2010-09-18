@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
@@ -44,12 +45,20 @@ namespace PcapDotNet.Packets.Http
 
         public bool Equals(HttpFieldParameters other)
         {
-            return _parameters.DictionaryEquals(other._parameters);
+            return other != null && _parameters.DictionaryEquals(other._parameters);
         }
 
         public override bool Equals(object obj)
         {
             return Equals(obj as HttpFieldParameters);
+        }
+
+        public override int GetHashCode()
+        {
+            return
+                _parameters.Select(pair => new KeyValuePair<string, string>(pair.Key.ToUpperInvariant(), pair.Value))
+                    .OrderBy(pair => pair.Key)
+                    .Xor(pair => pair.Key.GetHashCode() ^ pair.Value.GetHashCode());
         }
 
         public override string ToString()
@@ -77,12 +86,12 @@ namespace PcapDotNet.Packets.Http
             while (nameEnumerator.MoveNext())
             {
                 if (!valueEnumerator.MoveNext())
-                    throw new ArgumentException(string.Format("more names ({0}) were given than values ({1})", parametersNames.Count(), parametersValues.Count()), "parametersValues");
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "more names ({0}) were given than values ({1})", parametersNames.Count(), parametersValues.Count()), "parametersValues");
 
                 _parameters.Add(nameEnumerator.Current, valueEnumerator.Current);
             }
             if (valueEnumerator.MoveNext())
-                throw new ArgumentException(string.Format("more values ({0}) were given than names ({1})", parametersValues.Count(), parametersNames.Count()), "parametersNames");
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "more values ({0}) were given than names ({1})", parametersValues.Count(), parametersNames.Count()), "parametersNames");
         }
         
         private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();

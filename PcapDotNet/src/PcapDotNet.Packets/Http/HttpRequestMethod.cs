@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.Http
         
         public HttpRequestMethod(HttpRequestKnownMethod method)
         {
-            Method = method.ToString().ToUpper();
+            Method = method.ToString().ToUpperInvariant();
             if (!_knownMethods.ContainsKey(Method))
                 throw new ArgumentException("Invalid known request method given: " + method, "method");
         }
@@ -62,6 +62,11 @@ namespace PcapDotNet.Packets.Http
         public override bool Equals(object obj)
         {
             return Equals(obj as HttpRequestMethod);
+        }
+
+        public override int GetHashCode()
+        {
+            return Method.GetHashCode();
         }
 
         private static readonly Dictionary<string, HttpRequestKnownMethod> _knownMethods = CreateKnownMethodsTable();

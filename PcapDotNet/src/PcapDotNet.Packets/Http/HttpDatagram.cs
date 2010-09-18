@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -257,12 +258,12 @@ namespace PcapDotNet.Packets.Http
             if (contentTypeField != null)
             {
                 if (contentTypeField.MediaType == "multipart" &&
-                    contentTypeField.MediaSubType == "byteranges")
+                    contentTypeField.MediaSubtype == "byteranges")
                 {
                     string boundary = contentTypeField.Parameters["boundary"];
                     if (boundary != null)
                     {
-                        byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format("\r\n--{0}--", boundary));
+                        byte[] lastBoundaryBuffer = Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--", boundary));
                         int lastBoundaryOffset = buffer.Find(offset, length, lastBoundaryBuffer);
                         int lastBoundaryEnd = lastBoundaryOffset + lastBoundaryBuffer.Length;
                         return new Datagram(buffer, offset,
@@ -285,7 +286,10 @@ namespace PcapDotNet.Packets.Http
                 if (chunkSizeValue == 0)
                 {
                     int? endOffset;
-                    HttpHeader trailerHeader = new HttpHeader(GetHeaderFields(out endOffset, buffer, parser.Offset, offset + length - parser.Offset));
+//                    HttpHeader trailerHeader = new HttpHeader(
+                        GetHeaderFields(out endOffset, buffer, parser.Offset, offset + length - parser.Offset)
+//                        )
+                        ;
                     if (endOffset != null)
                         parser.Skip(endOffset.Value - parser.Offset);
                     break;
@@ -305,7 +309,7 @@ namespace PcapDotNet.Packets.Http
                 datagram.Write(contentBuffer, contentBufferOffset);
                 contentBufferOffset += datagram.Length;
             }
-            Datagram content = new Datagram(contentBuffer);
+//            Datagram content = new Datagram(contentBuffer);
 
             return new Datagram(buffer, offset, parser.Offset - offset);
         }

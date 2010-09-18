@@ -12,7 +12,7 @@
         public const byte Nine = (byte)'9';
         public const byte Delete = 127; // DEL
         public const byte CarriageReturn = 13; // CR
-        public const byte LineFeed = 10; // LF
+        public const byte Linefeed = 10; // LF
         public const byte Space = (byte)' '; // SP
         public const byte HorizontalTab = 9; // HT
         public const byte DoubleQuotationMark = (byte)'"';

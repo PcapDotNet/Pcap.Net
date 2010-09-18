@@ -14,17 +14,6 @@ namespace PcapDotNet.Base
 // ReSharper restore InconsistentNaming
     {
         /// <summary>
-        /// True iff the sequence has no elements.
-        /// </summary>
-        public static bool IsEmpty<T>(this IEnumerable<T> sequence)
-        {
-            if (sequence == null) 
-                throw new ArgumentNullException("sequence");
-
-            return !sequence.GetEnumerator().MoveNext();
-        }
-
-        /// <summary>
         /// Concatenates a sequence with more values.
         /// </summary>
         /// <typeparam name="T">The type of an element in the sequence.</typeparam>
@@ -34,6 +23,26 @@ namespace PcapDotNet.Base
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> sequence, params T[] values)
         {
             return sequence.Concat((IEnumerable<T>)values);
+        }
+
+        public static long Xor(this IEnumerable<long> sequence)
+        {
+            return sequence.Xor(value => value);
+        }
+
+        public static int Xor(this IEnumerable<int> sequence)
+        {
+            return sequence.Xor(value => value);
+        }
+
+        public static long Xor<T>(this IEnumerable<T> sequence, Func<T, long> selector)
+        {
+            return sequence.Aggregate((long)0, (xorTotal, current) => xorTotal ^ selector(current));
+        }
+
+        public static int Xor<T>(this IEnumerable<T> sequence, Func<T, int> selector)
+        {
+            return sequence.Aggregate(0, (xorTotal, current) => xorTotal ^ selector(current));
         }
 
         /// <summary>
@@ -148,7 +157,7 @@ namespace PcapDotNet.Base
         /// <returns>The hash code created by xoring all the hash codes of the elements in the sequence.</returns>
         public static int SequenceGetHashCode<T>(this IEnumerable<T> sequence)
         {
-            return sequence.Aggregate(0, (valueSoFar, element) => valueSoFar ^ element.GetHashCode());
+            return sequence.Xor(value => value.GetHashCode());
         }
 
         /// <summary>
@@ -160,7 +169,7 @@ namespace PcapDotNet.Base
         public static int BytesSequenceGetHashCode(this IEnumerable<byte> sequence)
         {
             int i = 0;
-            return sequence.Aggregate(0, (value, b) => value ^ (b << (8 * (i++ % 4))));
+            return sequence.Xor(b => (b << (8 * (i++ % 4))));
         }
 
         /// <summary>
@@ -172,7 +181,7 @@ namespace PcapDotNet.Base
         public static int UShortsSequenceGetHashCode(this IEnumerable<ushort> sequence)
         {
             int i = 0;
-            return sequence.Aggregate(0, (value, b) => value ^ (b << (16 * (i++ % 2))));
+            return sequence.Xor(b => (b << (16 * (i++ % 2))));
         }
 
         /// <summary>
