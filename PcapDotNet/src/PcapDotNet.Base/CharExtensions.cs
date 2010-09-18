@@ -1,10 +1,18 @@
 namespace PcapDotNet.Base
 {
+    /// <summary>
+    /// Extension methods for char structure.
+    /// </summary>
     public static class CharExtensions
     {
-        public static bool IsUpperCaseAlpha(this char c)
+        /// <summary>
+        /// True iff the given character is one of the capital english letters.
+        /// </summary>
+        /// <param name="character">The input character to check.</param>
+        /// <returns>True for capital english letters.</returns>
+        public static bool IsUppercaseAlpha(this char character)
         {
-            return c >= 'A' && c <= 'Z';
+            return character >= 'A' && character <= 'Z';
         }
     }
 }
