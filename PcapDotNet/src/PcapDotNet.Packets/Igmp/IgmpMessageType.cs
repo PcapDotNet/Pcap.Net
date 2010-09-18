@@ -73,6 +73,8 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// Version 2 Leave Group (RFC2236).
         /// </summary>
-        LeaveGroupVersion2 = 0x17
+        LeaveGroupVersion2 = 0x17,
+
+        MulticastTracerouteResponse = 0x1E,
     }
 }

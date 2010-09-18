@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Represents IPv4 layer.
     /// <seealso cref="IpV4Datagram"/>
     /// </summary>
-    public class IpV4Layer : Layer, IEthernetNextLayer
+    public class IpV4Layer : Layer, IEthernetNextLayer, IIpV4NextLayer
     {
         /// <summary>
         /// Creates an IPv4 layer with all zero values.
@@ -78,6 +78,11 @@ namespace PcapDotNet.Packets.IpV4
         public EthernetType PreviousLayerEtherType
         {
             get { return EthernetType.IpV4; }
+        }
+
+        public IpV4Protocol PreviousLayerProtocol
+        {
+            get { return IpV4Protocol.Ip; }
         }
 
         /// <summary>

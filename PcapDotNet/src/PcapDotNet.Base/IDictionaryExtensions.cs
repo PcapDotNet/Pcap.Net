@@ -6,8 +6,11 @@ namespace PcapDotNet.Base
     {
         public static bool DictionaryEquals<TKey, TValue>(this IDictionary<TKey, TValue> dictionary1, IDictionary<TKey, TValue> dictionary2, IEqualityComparer<TValue> valueComparer)
         {
+            if (ReferenceEquals(dictionary1, dictionary2))
+                return true;
+
             if (dictionary1 == null || dictionary2 == null)
-                return dictionary1 == null && dictionary2 == null;
+                return false;
 
             if (dictionary1.Count != dictionary2.Count)
                 return false;

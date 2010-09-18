@@ -6,6 +6,24 @@ namespace PcapDotNet.Packets.Icmp
     public enum IcmpMessageType : byte
     {
         /// <summary>
+        /// RFC 792.
+        /// <para>
+        /// The data received in the echo message must be returned in the echo reply message.
+        /// </para>
+        /// 
+        /// <para>
+        /// The identifier and sequence number may be used by the echo sender to aid in matching the replies with the echo requests.  
+        /// For example, the identifier might be used like a port in TCP or UDP to identify a session, and the sequence number might be incremented on each echo request sent.  
+        /// The echoer returns these same values in the echo reply.
+        /// </para>
+        /// 
+        /// <para>
+        /// Code 0 may be received from a gateway or a host.
+        /// </para>
+        /// </summary>
+        EchoReply = 0x00,
+
+        /// <summary>
         /// RFC 792
         /// 
         /// <para>
@@ -32,43 +50,6 @@ namespace PcapDotNet.Packets.Icmp
         /// </para>
         /// </summary>
         DestinationUnreachable = 0x03,
-
-        /// <summary>
-        /// RFC 792.
-        /// 
-        /// <para>
-        /// If the gateway processing a datagram finds the time to live field is zero it must discard the datagram.  
-        /// The gateway may also notify the source host via the time exceeded message.
-        /// </para>
-        /// 
-        /// <para>
-        /// If a host reassembling a fragmented datagram cannot complete the reassembly due to missing fragments within its time limit it discards the datagram, 
-        /// and it may send a time exceeded message.
-        /// If fragment zero is not available then no time exceeded need be sent at all.
-        /// </para>
-        /// 
-        /// <para>
-        /// Code 0 may be received from a gateway.  
-        /// Code 1 may be received from a host.
-        /// </para>
-        /// </summary>
-        TimeExceeded = 0x0B,
-
-        /// <summary>
-        /// RFC 792.
-        /// 
-        /// <para>
-        /// If the gateway or host processing a datagram finds a problem with the header parameters such that it cannot complete processing the datagram it must discard the datagram.  
-        /// One potential source of such a problem is with incorrect arguments in an option.  
-        /// The gateway or host may also notify the source host via the parameter problem message. 
-        /// This message is only sent if the error caused the datagram to be discarded.
-        /// </para>
-        /// 
-        /// <para>
-        /// Code 0 may be received from a gateway or a host.
-        /// </para>
-        /// </summary>
-        ParameterProblem = 0x0C,
 
         /// <summary>
         /// RFC 792.
@@ -137,22 +118,51 @@ namespace PcapDotNet.Packets.Icmp
         Echo = 0x08,
 
         /// <summary>
+        /// RFC 1256.
+        /// </summary>
+        RouterAdvertisement = 0x09,
+
+        /// <summary>
+        /// RFC 1256.
+        /// </summary>
+        RouterSolicitation = 0x0A,
+
+        /// <summary>
         /// RFC 792.
+        /// 
         /// <para>
-        /// The data received in the echo message must be returned in the echo reply message.
+        /// If the gateway processing a datagram finds the time to live field is zero it must discard the datagram.  
+        /// The gateway may also notify the source host via the time exceeded message.
         /// </para>
         /// 
         /// <para>
-        /// The identifier and sequence number may be used by the echo sender to aid in matching the replies with the echo requests.  
-        /// For example, the identifier might be used like a port in TCP or UDP to identify a session, and the sequence number might be incremented on each echo request sent.  
-        /// The echoer returns these same values in the echo reply.
+        /// If a host reassembling a fragmented datagram cannot complete the reassembly due to missing fragments within its time limit it discards the datagram, 
+        /// and it may send a time exceeded message.
+        /// If fragment zero is not available then no time exceeded need be sent at all.
+        /// </para>
+        /// 
+        /// <para>
+        /// Code 0 may be received from a gateway.  
+        /// Code 1 may be received from a host.
+        /// </para>
+        /// </summary>
+        TimeExceeded = 0x0B,
+
+        /// <summary>
+        /// RFC 792.
+        /// 
+        /// <para>
+        /// If the gateway or host processing a datagram finds a problem with the header parameters such that it cannot complete processing the datagram it must discard the datagram.  
+        /// One potential source of such a problem is with incorrect arguments in an option.  
+        /// The gateway or host may also notify the source host via the parameter problem message. 
+        /// This message is only sent if the error caused the datagram to be discarded.
         /// </para>
         /// 
         /// <para>
         /// Code 0 may be received from a gateway or a host.
         /// </para>
         /// </summary>
-        EchoReply = 0x00,
+        ParameterProblem = 0x0C,
 
         /// <summary>
         /// RFC 792
@@ -243,14 +253,21 @@ namespace PcapDotNet.Packets.Icmp
         InformationReply = 0x10,
 
         /// <summary>
-        /// RFC 1256.
+        /// RFC 950.
+        /// 
+        /// <para>
+        /// A gateway receiving an address mask request should return it with the address mask field set to the 32-bit mask of the bits identifying the subnet and network, 
+        /// for the subnet on which the request was received.
+        /// </para>
+        /// 
+        /// <para>
+        /// If the requesting host does not know its own IP address, it may leave the source field zero; the reply should then be broadcast.  
+        /// However, this approach should be avoided if at all possible, since it increases the superfluous broadcast load on the network.  
+        /// Even when the replies are broadcast, since there is only one possible address mask for a subnet, there is no need to match requests with replies.  
+        /// The "Identifier" and "Sequence Number" fields can be ignored.
+        /// </para>
         /// </summary>
-        RouterAdvertisement = 0x09,
-
-        /// <summary>
-        /// RFC 1256.
-        /// </summary>
-        RouterSolicitation = 0x0A,
+        AddressMaskRequest = 0x11,
 
         /// <summary>
         /// RFC 950.
@@ -267,24 +284,7 @@ namespace PcapDotNet.Packets.Icmp
         /// The "Identifier" and "Sequence Number" fields can be ignored.
         /// </para>
         /// </summary>
-        AddressMaskRequest = 0xA1,
-
-        /// <summary>
-        /// RFC 950.
-        /// 
-        /// <para>
-        /// A gateway receiving an address mask request should return it with the address mask field set to the 32-bit mask of the bits identifying the subnet and network, 
-        /// for the subnet on which the request was received.
-        /// </para>
-        /// 
-        /// <para>
-        /// If the requesting host does not know its own IP address, it may leave the source field zero; the reply should then be broadcast.  
-        /// However, this approach should be avoided if at all possible, since it increases the superfluous broadcast load on the network.  
-        /// Even when the replies are broadcast, since there is only one possible address mask for a subnet, there is no need to match requests with replies.  
-        /// The "Identifier" and "Sequence Number" fields can be ignored.
-        /// </para>
-        /// </summary>
-        AddressMaskReply = 0xA2,
+        AddressMaskReply = 0x12,
 
         /// <summary>
         /// RFC 1393.
@@ -309,7 +309,6 @@ namespace PcapDotNet.Packets.Icmp
         /// Parsing of this datagram isn't supported because its parsing is not clear from the RFC.
         /// </summary>
         DomainNameReply = 0x26,
-
 
         /// <summary>
         /// RFC 2521.
