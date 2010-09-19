@@ -15,9 +15,11 @@
       <Word>cbt</Word>
       <Word>ccitt</Word>
       <Word>cftp</Word> <!-- maybe Configurable Fault Tolerant Processor -->
+      <Word>codings</Word>
       <Word>datagrams</Word>
       <Word>datakit</Word>
       <Word>dcn</Word>
+      <Word>docsis</Word>
       <Word>emcon</Word>
       <Word>endianity</Word>
       <Word>enqueueing</Word>

@@ -146,11 +146,20 @@ namespace PcapDotNet.Packets
             return Length.GetHashCode() ^ this.BytesSequenceGetHashCode();
         }
 
+        /// <summary>
+        /// Converts the datagram to a hexadecimal string representing every bytes as two hexadecimal digits.
+        /// </summary>
+        /// <returns>A hexadecimal string representing every bytes as two hexadecimal digits.</returns>
         public override string ToString()
         {
             return Buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
         }
 
+        /// <summary>
+        /// Converts the datagram to a string using the given encoding.
+        /// </summary>
+        /// <param name="encoding">The encoding to use to convert the bytes sequence in the Datagram to a string.</param>
+        /// <returns>A string of the bytes in the Datagram converted using the given encoding.</returns>
         public string ToString(Encoding encoding)
         {
             if (encoding == null)

@@ -25,21 +25,43 @@ namespace PcapDotNet.Base
             return sequence.Concat((IEnumerable<T>)values);
         }
 
+        /// <summary>
+        /// Returns the bitwise xor of all the elements in the sequence.
+        /// </summary>
+        /// <param name="sequence">The elements to xor.</param>
+        /// <returns>The bitwise xor of all the elements in the sequence.</returns>
         public static long Xor(this IEnumerable<long> sequence)
         {
             return sequence.Xor(value => value);
         }
 
+        /// <summary>
+        /// Returns the bitwise xor of all the elements in the sequence.
+        /// </summary>
+        /// <param name="sequence">The elements to xor.</param>
+        /// <returns>The bitwise xor of all the elements in the sequence.</returns>
         public static int Xor(this IEnumerable<int> sequence)
         {
             return sequence.Xor(value => value);
         }
 
+        /// <summary>
+        /// Returns the bitwise xor of all the selected values of the elements in the sequence.
+        /// </summary>
+        /// <param name="sequence">The elements to select values to xor.</param>
+        /// <param name="selector">The selector used to select the values.</param>
+        /// <returns>The bitwise xor of all the selected values of the elements in the sequence.</returns>
         public static long Xor<T>(this IEnumerable<T> sequence, Func<T, long> selector)
         {
             return sequence.Aggregate((long)0, (xorTotal, current) => xorTotal ^ selector(current));
         }
 
+        /// <summary>
+        /// Returns the bitwise xor of all the selected values of the elements in the sequence.
+        /// </summary>
+        /// <param name="sequence">The elements to select values to xor.</param>
+        /// <param name="selector">The selector used to select the values.</param>
+        /// <returns>The bitwise xor of all the selected values of the elements in the sequence.</returns>
         public static int Xor<T>(this IEnumerable<T> sequence, Func<T, int> selector)
         {
             return sequence.Aggregate(0, (xorTotal, current) => xorTotal ^ selector(current));

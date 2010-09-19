@@ -15,6 +15,16 @@ namespace PcapDotNet.Packets
     /// </summary>
     public static class ByteArrayExtensions
     {
+        /// <summary>
+        /// Compares all the bytes in the two ranges of the arrays.
+        /// Returns the first non-zero compare value of the bytes in the ranges or zero if the ranges have the same byte values.
+        /// </summary>
+        /// <param name="array">The first array to compare.</param>
+        /// <param name="offset">The offset of the first byte to compare in the first array.</param>
+        /// <param name="other">The second array to compare.</param>
+        /// <param name="otherOffset">The offset of the first byte to compare in the second array.</param>
+        /// <param name="count">The number of bytes to compare.</param>
+        /// <returns>The first non-zero compare value of the bytes in the ranges or zero if the ranges have the same byte values.</returns>
         public static int Compare(this byte[] array, int offset, byte[] other, int otherOffset, int count)
         {
             if (array == null)
@@ -31,6 +41,16 @@ namespace PcapDotNet.Packets
             return 0;
         }
 
+        /// <summary>
+        /// Compares all the bytes in the two ranges of the arrays.
+        /// Returns true iff the ranges have the same byte values.
+        /// </summary>
+        /// <param name="array">The first array to compare.</param>
+        /// <param name="offset">The offset of the first byte to compare in the first array.</param>
+        /// <param name="other">The second array to compare.</param>
+        /// <param name="otherOffset">The offset of the first byte to compare in the second array.</param>
+        /// <param name="count">The number of bytes to compare.</param>
+        /// <returns>True iff the ranges have the same byte values.</returns>
         public static bool SequenceEqual(this byte[] array, int offset, byte[] other, int otherOffset, int count)
         {
             if (array == null)
@@ -39,6 +59,16 @@ namespace PcapDotNet.Packets
             return array.Compare(offset, other, otherOffset, count) == 0;
         }
 
+        /// <summary>
+        /// Returns the first offset in the array where the other array's range sequence of bytes can be found or the length of the array if no match exists.
+        /// </summary>
+        /// <param name="array">The array to search for the sequence of bytes.</param>
+        /// <param name="offset">The offset of the first byte in the array that should be compared to the sequence to find.</param>
+        /// <param name="count">The number of bytes in the array that the sequence can be searched in.</param>
+        /// <param name="other">The array that contains the sequence of bytes to search.</param>
+        /// <param name="otherOffset">The offset in the array containing the sequence of the first byte of the sequence.</param>
+        /// <param name="otherCount">The number of bytes of the sequence.</param>
+        /// <returns>The first offset in the array where the other array's range sequence of bytes can be found or the length of the array if no match exists.</returns>
         public static int Find(this byte[] array, int offset, int count, byte[] other, int otherOffset, int otherCount)
         {
             if (array == null)
@@ -50,7 +80,7 @@ namespace PcapDotNet.Packets
             int maxOffset = offset + count - otherCount;
             while (offset < maxOffset)
             {
-                if (Compare(array, offset, other, otherOffset, otherCount) == 0)
+                if (array.SequenceEqual(offset, other, otherOffset, otherCount))
                     return offset;
                 ++offset;
             }
@@ -58,10 +88,16 @@ namespace PcapDotNet.Packets
             return array.Length;
         }
 
+        /// <summary>
+        /// Returns the first offset in the array where the other array sequence of bytes can be found or the length of the array if no match exists.
+        /// </summary>
+        /// <param name="array">The array to search for the sequence of bytes.</param>
+        /// <param name="offset">The offset of the first byte in the array that should be compared to the sequence to find.</param>
+        /// <param name="count">The number of bytes in the array that the sequence can be searched in.</param>
+        /// <param name="other">The array that contains the sequence of bytes to search.</param>
+        /// <returns>The first offset in the array where the other array sequence of bytes can be found or the length of the array if no match exists.</returns>
         public static int Find(this byte[] array, int offset, int count, byte[] other)
         {
-            if (array == null)
-                throw new ArgumentNullException("array");
             if (other == null)
                 throw new ArgumentNullException("other");
 
@@ -570,6 +606,14 @@ namespace PcapDotNet.Packets
             offset += UInt48.SizeOf;
         }
 
+        /// <summary>
+        /// Writes a string to a byte array in a specific offset using the given encoding.
+        /// Increments the offset by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the string in.</param>
+        /// <param name="offset">The offset in the buffer to start writing the string in. Incremented by the number of bytes written.</param>
+        /// <param name="value">The string to write in the buffer.</param>
+        /// <param name="encoding">The encoding to use to translate the string into a sequence of bytes.</param>
         public static void Write(this byte[] buffer, ref int offset, string value, Encoding encoding)
         {
             if (encoding == null)
@@ -679,18 +723,31 @@ namespace PcapDotNet.Packets
             buffer.Write(ref offset, value.MillisecondsSinceMidnightUniversalTime, endianity);
         }
 
-//        public static void WriteCarriageReturnLineFeed(this byte[] buffer, int offset)
+//        public static void WriteCarriageReturnLinefeed(this byte[] buffer, int offset)
 //        {
 //            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
 //            buffer.Write(offset, AsciiBytes.LineFeed);
 //        }
 //
+        /// <summary>
+        /// Writes the endline bytes (CRLF) in the buffer in the given offset.
+        /// Increments the offset by the number of bytes written (2).
+        /// </summary>
+        /// <param name="buffer">The buffer to write the CRLF in.</param>
+        /// <param name="offset">The offset to start writing the CRLF in. Incremented by the number of bytes written (2).</param>
         public static void WriteCarriageReturnLinefeed(this byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, AsciiBytes.CarriageReturn);
             buffer.Write(ref offset, AsciiBytes.Linefeed);
         }
 
+        /// <summary>
+        /// Writes an integer as a decimal string in ASCII encoding to a buffer of bytes in a specific offset.
+        /// The offset is incremented by the number of bytes (digits) written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the integer in.</param>
+        /// <param name="offset">The offset in the buffer to start writing the integer. Incremented by the number of bytes (digits) written.</param>
+        /// <param name="value">The integer value to write in the buffer.</param>
         public static void WriteDecimal(this byte[] buffer, ref int offset, uint value)
         {
             buffer.Write(ref offset, value.ToString(CultureInfo.InvariantCulture), Encoding.ASCII);
