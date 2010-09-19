@@ -69,20 +69,20 @@ namespace PcapDotNet.Packets.Http
     /// net_path         = "//" authority [ abs_path ]
     /// abs_path         = "/"  path_segments
     /// query            = *uric
-    /// uric_no_slash    = unreserved | escaped | ";" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// uric_no_slash    = unreserved | escaped | ";" | "?" | ":" | "@" | "&amp;" | "=" | "+" | "$" | ","
     /// uric             = reserved | unreserved | escaped
     /// authority        = server | reg_name
     /// path_segments    = segment *( "/" segment )
     /// unreserved       = alphanum | mark
     /// escaped          = "%" hex hex
-    /// reserved         = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// reserved         = ";" | "/" | "?" | ":" | "@" | "&amp;" | "=" | "+" | "$" | ","
     /// server           = [ [ userinfo "@" ] hostport ]
-    /// reg_name         = 1*( unreserved | escaped | "$" | "," | ";" | ":" | "@" | "&" | "=" | "+" )
+    /// reg_name         = 1*( unreserved | escaped | "$" | "," | ";" | ":" | "@" | "&amp;" | "=" | "+" )
     /// segment          = *pchar *( ";" param )
     /// mark             = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
-    /// userinfo         = *( unreserved | escaped | ";" | ":" | "&" | "=" | "+" | "$" | "," )
+    /// userinfo         = *( unreserved | escaped | ";" | ":" | "&amp;" | "=" | "+" | "$" | "," )
     /// hostport         = host [ ":" port ]
-    /// pchar            = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ","
+    /// pchar            = unreserved | escaped | ":" | "@" | "&amp;" | "=" | "+" | "$" | ","
     /// param            = *pchar
     /// host             = hostname | IPv4address
     /// port             = *digit
