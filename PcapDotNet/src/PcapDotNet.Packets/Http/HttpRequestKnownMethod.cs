@@ -66,6 +66,7 @@
         /// </para>
         /// <para>
         /// The response to a GET request is cacheable if and only if it meets the requirements for HTTP caching.
+        /// </para>
         /// </summary>
         Get,
 
