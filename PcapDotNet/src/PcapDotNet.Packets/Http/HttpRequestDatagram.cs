@@ -14,14 +14,27 @@ namespace PcapDotNet.Packets.Http
             public string Uri { get; set; }
         }
 
+        /// <summary>
+        /// True since the message is a request.
+        /// </summary>
         public override bool IsRequest
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// The HTTP Request Method.
+        /// </summary>
         public HttpRequestMethod Method { get; private set; }
+
+        /// <summary>
+        /// The HTTP Request URI.
+        /// </summary>
         public string Uri { get; private set; }
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new HttpRequestLayer

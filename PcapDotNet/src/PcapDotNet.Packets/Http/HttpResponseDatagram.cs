@@ -15,15 +15,29 @@ namespace PcapDotNet.Packets.Http
             public uint? StatusCode{ get; set;}
         }
 
+        /// <summary>
+        /// False since this is message is a response.
+        /// </summary>
         public override bool IsRequest
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// The status code of the response.
+        /// null if no status code exists.
+        /// </summary>
         public uint? StatusCode{get; private set;}
 
+        /// <summary>
+        /// The data of the reason phrase.
+        /// Example: OK
+        /// </summary>
         public Datagram ReasonPhrase { get; private set;}
 
+        /// <summary>
+        /// Creates a Layer that represents the datagram to be used with PacketBuilder.
+        /// </summary>
         public override ILayer ExtractLayer()
         {
             return new HttpResponseLayer

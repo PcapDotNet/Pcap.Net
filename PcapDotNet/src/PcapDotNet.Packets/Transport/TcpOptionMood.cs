@@ -69,6 +69,10 @@ namespace PcapDotNet.Packets.Transport
         /// The minimum number of bytes this option take.
         /// </summary>
         public const int OptionMinimumLength = OptionHeaderLength + OptionValueMinimumLength;
+
+        /// <summary>
+        /// The maximum number of bytes this option take.
+        /// </summary>
         public const int OptionMaximumLength = OptionHeaderLength + OptionValueMaximumLength;
 
         /// <summary>
@@ -103,6 +107,9 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public TcpOptionMoodEmotion Emotion { get; private set; }
 
+        /// <summary>
+        /// The ASCII string of the emotion.
+        /// </summary>
         public string EmotionString
         {
             get
@@ -121,11 +128,6 @@ namespace PcapDotNet.Packets.Transport
         public override int Length
         {
             get { return OptionHeaderLength + ValueLength; }
-        }
-
-        public int ValueLength
-        {
-            get { return EmotionString.Length; }
         }
 
         /// <summary>
@@ -187,6 +189,11 @@ namespace PcapDotNet.Packets.Transport
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Encoding.ASCII.GetBytes(EmotionString));
+        }
+
+        private int ValueLength
+        {
+            get { return EmotionString.Length; }
         }
 
         private static TcpOptionMoodEmotion StringToEmotion(string emotionString)

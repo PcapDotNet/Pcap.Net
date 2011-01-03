@@ -9,17 +9,34 @@ namespace PcapDotNet.Packets.Http
     /// </summary>
     public class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
     {
+        /// <summary>
+        /// false since this is a response.
+        /// </summary>
         public override bool IsRequest { get { return false; } }
 
+        /// <summary>
+        /// The status code of the response.
+        /// null if no status code exists.
+        /// </summary>
         public uint? StatusCode { get; set; }
 
+        /// <summary>
+        /// The data of the reason phrase.
+        /// Example: OK
+        /// </summary>
         public Datagram ReasonPhrase { get; set; }
-        
+
+        /// <summary>
+        /// Two HTTP response layers are equal iff they have the same version, header, body, status code and reason phrase.
+        /// </summary>
         public override bool Equals(HttpLayer other)
         {
             return Equals(other as HttpResponseLayer);
         }
 
+        /// <summary>
+        /// Two HTTP response layers are equal iff they have the same version, header, body, status code and reason phrase.
+        /// </summary>
         public bool Equals(HttpResponseLayer other)
         {
             return base.Equals(other) &&
@@ -27,7 +44,7 @@ namespace PcapDotNet.Packets.Http
                    (ReferenceEquals(ReasonPhrase, other.ReasonPhrase) || ReasonPhrase.Equals(other.ReasonPhrase));
         }
 
-        protected override int FirstLineLength
+        internal override int FirstLineLength
         {
             get
             {
@@ -48,7 +65,7 @@ namespace PcapDotNet.Packets.Http
             }
         }
 
-        protected override void WriteFirstLine(byte[] buffer, ref int offset)
+        internal override void WriteFirstLine(byte[] buffer, ref int offset)
         {
             if (Version == null)
                 return;

@@ -75,6 +75,9 @@ namespace PcapDotNet.Packets.Igmp
         /// </summary>
         LeaveGroupVersion2 = 0x17,
 
+        /// <summary>
+        /// Multicast Traceroute Response.
+        /// </summary>
         MulticastTraceRouteResponse = 0x1E,
     }
 }

@@ -1122,7 +1122,7 @@ namespace PcapDotNet.Packets.TestUtils
                     {
                         fieldName = random.NextHttpToken();
                     } while (fieldNames.Contains(fieldName));
-                    return new HttpField(fieldName, random.NextHttpFieldValue());
+                    return HttpField.CreateField(fieldName, random.NextHttpFieldValue());
 
                 case HttpTransferEncodingField.FieldNameUpper:
                     int numTransferCodings = random.Next(1, 10);

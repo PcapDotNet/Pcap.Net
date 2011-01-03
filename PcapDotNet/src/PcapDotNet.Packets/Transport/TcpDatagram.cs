@@ -256,6 +256,9 @@ namespace PcapDotNet.Packets.Transport
                        };
         }
 
+        /// <summary>
+        /// The first HTTP message in this TCP datagram.
+        /// </summary>
         public HttpDatagram Http
         {
             get
@@ -264,6 +267,9 @@ namespace PcapDotNet.Packets.Transport
             }
         }
 
+        /// <summary>
+        /// All of the available HTTP messages in this TCP datagram.
+        /// </summary>
         public ReadOnlyCollection<HttpDatagram> HttpCollection
         {
             get
