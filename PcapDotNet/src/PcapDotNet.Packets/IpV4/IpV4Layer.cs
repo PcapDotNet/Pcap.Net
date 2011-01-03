@@ -80,6 +80,9 @@ namespace PcapDotNet.Packets.IpV4
             get { return EthernetType.IpV4; }
         }
 
+        /// <summary>
+        /// The protocol that should be written in the previous (IPv4) layer (in this case: IP).
+        /// </summary>
         public IpV4Protocol PreviousLayerProtocol
         {
             get { return IpV4Protocol.Ip; }

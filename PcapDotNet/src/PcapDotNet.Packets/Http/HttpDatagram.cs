@@ -207,13 +207,29 @@ namespace PcapDotNet.Packets.Http
             public Datagram Body { get; set; }
         }
 
+        /// <summary>
+        /// True iff the message is a request and iff the message is not a response.
+        /// </summary>
         public abstract bool IsRequest { get; }
+
+        /// <summary>
+        /// True iff the message is a response and iff the message is not a request.
+        /// </summary>
         public bool IsResponse { get { return !IsRequest; } }
 
+        /// <summary>
+        /// The version of this HTTP message.
+        /// </summary>
         public HttpVersion Version  { get; private set;}
         
+        /// <summary>
+        /// The header of the HTTP message.
+        /// </summary>
         public HttpHeader Header { get; private set;}
 
+        /// <summary>
+        /// Message Body.
+        /// </summary>
         public Datagram Body { get; private set; }
 
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)

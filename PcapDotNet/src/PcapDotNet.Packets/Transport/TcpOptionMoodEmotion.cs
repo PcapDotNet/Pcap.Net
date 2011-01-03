@@ -65,6 +65,9 @@
         /// </summary>
         Evil,
 
+        /// <summary>
+        /// An unknown emotion.
+        /// </summary>
         None,
     }
 }

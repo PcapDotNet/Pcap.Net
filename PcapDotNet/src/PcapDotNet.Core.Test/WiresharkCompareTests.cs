@@ -68,11 +68,13 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void ComparePacketsToWiresharkTest()
         {
+#pragma warning disable 162 // This code is unreachable on purpose
             if (IsRetry)
             {
                 ComparePacketsToWireshark(null);
                 return;
             }
+#pragma warning restore 162
 
             Random random = new Random();
             for (int i = 0; i != 10; ++i)
@@ -147,7 +149,7 @@ namespace PcapDotNet.Core.Test
             DateTime packetTimestamp =
                 random.NextDateTime(new DateTime(2010,1,1), new DateTime(2010,12,31)).ToUniversalTime().ToLocalTime();
                 //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
-
+            
             EthernetLayer ethernetLayer = random.NextEthernetLayer();
             IpV4Layer ipV4Layer = random.NextIpV4Layer();
             PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
@@ -437,15 +439,21 @@ namespace PcapDotNet.Core.Test
             {
                 switch (field.Name())
                 {
-                    case "frame.time":
-                        string fieldShow = field.Show();
-                        if (fieldShow == "Not representable")
-                            break;
-                        fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
-                        DateTime fieldTimestamp = fieldShow[4] == ' '
-                                                      ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
-                                                      : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp, "Timestamp");
+//                    case "frame.time":
+//                        string fieldShow = field.Show();
+//                        if (fieldShow == "Not representable")
+//                            break;
+//                        fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
+//                        DateTime fieldTimestamp = fieldShow[4] == ' '
+//                                                      ? DateTime.ParseExact(fieldShow, "MMM  d, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
+//                                                      : DateTime.ParseExact(fieldShow, "MMM dd, yyyy HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+//                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp, "Timestamp");
+//                        break;
+
+                    case "frame.time_epoch":
+                        double timeEpoch = double.Parse(field.Show());
+                        DateTime fieldTimestamp = new DateTime(1970, 1, 1).AddSeconds(timeEpoch);
+                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp.ToUniversalTime(), "Timestamp");
                         break;
 
                     case "frame.len":
@@ -1203,7 +1211,7 @@ namespace PcapDotNet.Core.Test
                         {
                             // todo seems like a bug in tshark https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=5235
                             break;
-                            field.AssertShowDecimal(tcpDatagram.Length);
+//                            field.AssertShowDecimal(tcpDatagram.Length);
                         }
                         else
                             field.AssertShowDecimal(tcpDatagram.Payload.Length);

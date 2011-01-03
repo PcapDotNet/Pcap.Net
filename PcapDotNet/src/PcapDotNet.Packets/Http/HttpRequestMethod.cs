@@ -5,13 +5,23 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
+    /// <summary>
+    /// HTTP request method.
+    /// Example: GET
+    /// </summary>
     public class HttpRequestMethod : IEquatable<HttpRequestMethod>
     {
+        /// <summary>
+        /// Creates a method from a method string.
+        /// </summary>
         public HttpRequestMethod(string method)
         {
             Method = method;
         }
         
+        /// <summary>
+        /// Creates a method from a known method.
+        /// </summary>
         public HttpRequestMethod(HttpRequestKnownMethod method)
         {
             Method = method.ToString().ToUpperInvariant();
@@ -19,8 +29,15 @@ namespace PcapDotNet.Packets.Http
                 throw new ArgumentException("Invalid known request method given: " + method, "method");
         }
 
+        /// <summary>
+        /// The method string.
+        /// </summary>
         public string Method { get; private set; }
 
+        /// <summary>
+        /// Returns the known method that matches the method string.
+        /// Returns HttpRequestKnownMethod.Unknown if no matching known method could be found.
+        /// </summary>
         public HttpRequestKnownMethod KnownMethod
         {
             get
@@ -33,6 +50,9 @@ namespace PcapDotNet.Packets.Http
             }
         }
 
+        /// <summary>
+        /// The number of bytes this method takes.
+        /// </summary>
         public int Length
         {
             get { return Method.Length; }
@@ -54,16 +74,25 @@ namespace PcapDotNet.Packets.Http
             return result;
         }
 
+        /// <summary>
+        /// Two methods are equal iff they have the same method string.
+        /// </summary>
         public bool Equals(HttpRequestMethod other)
         {
             return other != null && Method.Equals(other.Method);
         }
 
+        /// <summary>
+        /// Two methods are equal iff they have the same method string.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as HttpRequestMethod);
         }
 
+        /// <summary>
+        /// The hash code of the method string.
+        /// </summary>
         public override int GetHashCode()
         {
             return Method.GetHashCode();

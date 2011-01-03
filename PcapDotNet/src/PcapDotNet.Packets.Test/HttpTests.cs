@@ -141,7 +141,7 @@ namespace PcapDotNet.Packets.Test
                             "Cache-Control: no-cache\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("Cache-Control", "no-cache")));
+                                HttpField.CreateField("Cache-Control", "no-cache")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
@@ -153,11 +153,11 @@ namespace PcapDotNet.Packets.Test
                             "E: I,J\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("A", "B"),
-                                new HttpField("B", "C"),
-                                new HttpField("C", "D"),
-                                new HttpField("D", "E,F"),
-                                new HttpField("E", "G,H,I,J")));
+                                HttpField.CreateField("A", "B"),
+                                HttpField.CreateField("B", "C"),
+                                HttpField.CreateField("C", "D"),
+                                HttpField.CreateField("D", "E,F"),
+                                HttpField.CreateField("E", "G,H,I,J")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "\r\n" +
@@ -171,7 +171,7 @@ namespace PcapDotNet.Packets.Test
                             "B: C\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("A", "B")), string.Empty);
+                                HttpField.CreateField("A", "B")), string.Empty);
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A: B\r\n" +
@@ -179,7 +179,7 @@ namespace PcapDotNet.Packets.Test
                             "B: C\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("A", "B")));
+                                HttpField.CreateField("A", "B")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A: B\r\n" +
@@ -187,50 +187,50 @@ namespace PcapDotNet.Packets.Test
                             "B: C\r\n",
                             "GET", "/url", HttpVersion.Version11,
                             new HttpHeader(
-                                new HttpField("A", "B"),
-                                new HttpField("abc", ""),
-                                new HttpField("B", "C")));
+                                HttpField.CreateField("A", "B"),
+                                HttpField.CreateField("abc", ""),
+                                HttpField.CreateField("B", "C")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B")));
+                            new HttpHeader(HttpField.CreateField("A", "B")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B")));
+                            new HttpHeader(HttpField.CreateField("A", "B")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B\r\n" +
                             "C:D\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B")));
+                            new HttpHeader(HttpField.CreateField("A", "B")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B:",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B")));
+                            new HttpHeader(HttpField.CreateField("A", "B")));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B:\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B"),
-                                           new HttpField("B", string.Empty)));
+                            new HttpHeader(HttpField.CreateField("A", "B"),
+                                           HttpField.CreateField("B", string.Empty)));
 
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
                             "A:B\r\n" +
                             "B:\r\n" +
                             "C:D\r\n",
                             "GET", "/url", HttpVersion.Version11,
-                            new HttpHeader(new HttpField("A", "B"),
-                                           new HttpField("B", string.Empty),
-                                           new HttpField("C", "D")));
+                            new HttpHeader(HttpField.CreateField("A", "B"),
+                                           HttpField.CreateField("B", string.Empty),
+                                           HttpField.CreateField("C", "D")));
 
             // Request Body
             TestHttpRequest("GET /url HTTP/1.1\r\n" +
@@ -268,7 +268,7 @@ namespace PcapDotNet.Packets.Test
                              "Cache-Control: no-cache\r\n",
                              HttpVersion.Version11, 200, "OK",
                              new HttpHeader(
-                                 new HttpField("Cache-Control", "no-cache")));
+                                 HttpField.CreateField("Cache-Control", "no-cache")));
 
             TestHttpResponse("HTTP/1.1 200 OK\r\n" +
                              "Transfer-Encoding: chunked,a,   b   , c\r\n\t,d   , e;f=g;h=\"ijk lmn\"\r\n",
@@ -341,8 +341,8 @@ namespace PcapDotNet.Packets.Test
                              "--THIS_STRING_SEPARATES--",
                              HttpVersion.Version11, 206, "Partial content",
                              new HttpHeader(
-                                 new HttpField("Date", "Wed, 15 Nov 1995 06:25:24 GMT"),
-                                 new HttpField("Last-modified", "Wed, 15 Nov 1995 04:58:08 GMT"),
+                                 HttpField.CreateField("Date", "Wed, 15 Nov 1995 06:25:24 GMT"),
+                                 HttpField.CreateField("Last-modified", "Wed, 15 Nov 1995 04:58:08 GMT"),
                                  new HttpContentTypeField("multipart", "byteranges",
                                                           new HttpFieldParameters(new KeyValuePair<string, string>("boundary", "THIS_STRING_SEPARATES")))),
                              "--THIS_STRING_SEPARATES\r\n" +
@@ -383,12 +383,12 @@ namespace PcapDotNet.Packets.Test
             HttpRequestDatagram request = (HttpRequestDatagram)https[0];
             Assert.AreEqual(new HttpRequestMethod(HttpRequestKnownMethod.Get), request.Method);
             Assert.AreEqual("/url1", request.Uri);
-            Assert.AreEqual(new HttpHeader(new HttpField("A", "B"), new HttpField("B", "C")), request.Header);
+            Assert.AreEqual(new HttpHeader(HttpField.CreateField("A", "B"), HttpField.CreateField("B", "C")), request.Header);
 
             request = (HttpRequestDatagram)https[1];
             Assert.AreEqual(new HttpRequestMethod(HttpRequestKnownMethod.Get), request.Method);
             Assert.AreEqual("/url2", request.Uri);
-            Assert.AreEqual(new HttpHeader(new HttpField("C", "D"), new HttpField("D", "E")), request.Header);
+            Assert.AreEqual(new HttpHeader(HttpField.CreateField("C", "D"), HttpField.CreateField("D", "E")), request.Header);
         }
 
         [TestMethod]
