@@ -850,6 +850,7 @@ namespace PcapDotNet.Core.Test
             MoreAssert.IsMatch(@"Network adapter '.*' on local host", device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreNotEqual(MacAddress.Zero, device.GetMacAddress());
+            Assert.AreNotEqual(string.Empty, device.GetPnpDeviceId());
             MoreAssert.IsInRange(1, 2, device.Addresses.Count);
             foreach (DeviceAddress address in device.Addresses)
             {

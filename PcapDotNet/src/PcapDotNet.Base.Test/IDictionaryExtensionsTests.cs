@@ -75,5 +75,13 @@ namespace PcapDotNet.Base.Test
             Assert.IsFalse(dic1.DictionaryEquals(dic2));
             Assert.IsFalse(dic2.DictionaryEquals(dic1));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DictionaryEqualsNullTest()
+        {
+            Assert.IsFalse(new Dictionary<int, int>().DictionaryEquals(new Dictionary<int, int>(), null));
+            Assert.Fail();
+        }
     }
 }
