@@ -11,6 +11,7 @@ using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -67,6 +68,8 @@ namespace PcapDotNet.Packets.Test
 
                 HttpDatagram httpDatagram = packet.Ethernet.IpV4.Tcp.Http;
                 Assert.AreEqual(httpLayer.Version, httpDatagram.Version);
+                if (httpLayer.Version != null)
+                    Assert.AreEqual(httpLayer.Version.GetHashCode(), httpDatagram.Version.GetHashCode());
                 if (httpLayer is HttpRequestLayer)
                 {
                     Assert.IsTrue(httpDatagram.IsRequest);
@@ -78,7 +81,10 @@ namespace PcapDotNet.Packets.Test
                     HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
                     Assert.AreEqual(httpRequestLayer.Method, httpRequestDatagram.Method);
                     if (httpRequestLayer.Method != null)
+                    {
+                        Assert.AreEqual(httpRequestLayer.Method.GetHashCode(), httpRequestDatagram.Method.GetHashCode());
                         Assert.AreEqual(httpRequestLayer.Method.KnownMethod, httpRequestDatagram.Method.KnownMethod);
+                    }
                     Assert.AreEqual(httpRequestLayer.Uri, httpRequestDatagram.Uri);
                 }
                 else
@@ -96,14 +102,20 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(httpLayer.Header, httpDatagram.Header);
                 if (httpLayer.Header != null)
                 {
+                    Assert.AreEqual(httpLayer.Header.GetHashCode(), httpDatagram.Header.GetHashCode());
+
                     foreach (var field in httpLayer.Header)
                         Assert.IsFalse(field.Equals("abc"));
+
+                    MoreAssert.AreSequenceEqual(httpLayer.Header.Select(field => field.GetHashCode()), httpDatagram.Header.Select(field => field.GetHashCode()));
 
                     if (httpLayer.Header.ContentType != null)
                     {
                         var parameters = httpLayer.Header.ContentType.Parameters;
                         Assert.IsNotNull(((IEnumerable)parameters).GetEnumerator());
                         Assert.AreEqual<object>(parameters, httpDatagram.Header.ContentType.Parameters);
+                        Assert.AreEqual(parameters.GetHashCode(), httpDatagram.Header.ContentType.Parameters.GetHashCode());
+                        Assert.AreEqual(parameters.Count, httpDatagram.Header.ContentType.Parameters.Count);
                         int maxParameterNameLength = parameters.Any() ? parameters.Max(pair => pair.Key.Length) : 0;
                         Assert.IsNull(parameters[new string('a', maxParameterNameLength + 1)]);
                     }
@@ -111,8 +123,6 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(httpLayer.Body, httpDatagram.Body);
                 Assert.AreEqual(httpLayer, httpDatagram.ExtractLayer(), "HTTP Layer");
                 Assert.AreEqual(httpLayer.Length, httpDatagram.Length);
-
-                // Ethernet
             }
         }
 
@@ -519,6 +529,24 @@ namespace PcapDotNet.Packets.Test
                                         "Transfer-Encoding: ///\r\n" +
                                         "\r\n");
             Assert.IsNull(packet.Ethernet.IpV4.Tcp.Http.Header.TransferEncoding.TransferCodings);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void HttpCreateFieldNullEncoding()
+        {
+            HttpField field = HttpField.CreateField("abc", "cde", null);
+            Assert.IsNull(field);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void HttpCreateFieldNullName()
+        {
+            HttpField field = HttpField.CreateField(null, "cde");
+            Assert.IsNull(field);
+            Assert.Fail();
         }
 
         private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null, string expectedBodyString = null)

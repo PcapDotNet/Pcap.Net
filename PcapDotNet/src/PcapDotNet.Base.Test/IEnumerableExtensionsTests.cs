@@ -79,5 +79,19 @@ namespace PcapDotNet.Base.Test
             Assert.IsNotNull(IEnumerableExtensions.SequenceToString<int>(null));
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void XorTest()
+        {
+            int[] intValues = new[] {0x0001, 0x0020, 0x0300, 0x4000};
+            Assert.AreEqual(0x4321, intValues.Xor());
+
+            long[] longValues = new[]
+                                {
+                                    0x00000001L, 0x00000020L, 0x00000300L, 0x00004000L,
+                                    0x00050000L, 0x00600000L, 0x07000000L, 0x80000000L
+                                };
+            Assert.AreEqual(0x87654321L, longValues.Xor());
+        }
     }
 }
