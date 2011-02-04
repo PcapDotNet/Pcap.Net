@@ -224,7 +224,12 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public Datagram Payload
         {
-            get { return Tcp; }
+            get
+            {
+                if (_payload == null && Length >= HeaderLength)
+                    _payload = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                return _payload;
+            }
         }
 
          /// <summary>
@@ -449,6 +454,7 @@ namespace PcapDotNet.Packets.IpV4
         private bool? _isHeaderChecksumCorrect;
         private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
+        private Datagram _payload;
         private IpV4Datagram _ipV4;
         private IcmpDatagram _icmp;
         private IgmpDatagram _igmp;

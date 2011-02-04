@@ -559,6 +559,28 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(layer.GetHashCode());
         }
 
+        [TestMethod]
+        public void IpV4PayloadNotTcp()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new IpV4Layer()
+                                                {
+                                                    Protocol = IpV4Protocol.InternetControlMessageProtocol
+                                                },
+                                                new PayloadLayer()
+                                                {
+                                                    Data = new Datagram(new byte[5])
+                                                });
+
+            packet = PacketBuilder.Build(DateTime.Now,
+                                         packet.Ethernet.ExtractLayer(),
+                                         packet.Ethernet.IpV4.ExtractLayer(),
+                                         packet.Ethernet.IpV4.Payload.ExtractLayer());
+
+            Assert.IsNotNull(packet);
+        }
+
         private static Packet HexToPacket(string hexString, DataLinkKind dataLinkKind)
         {
             return Packet.FromHexadecimalString(hexString, DateTime.MinValue, dataLinkKind);
