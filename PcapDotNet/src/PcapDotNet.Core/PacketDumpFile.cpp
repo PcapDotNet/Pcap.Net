@@ -83,8 +83,10 @@ PacketDumpFile::~PacketDumpFile()
 PacketDumpFile::PacketDumpFile(pcap_t* pcapDescriptor, System::String^ filename)
 {
     _filename = filename;
-    std::string unmanagedString = MarshalingServices::ManagedToUnmanagedString(_filename);
-    _pcapDumper = pcap_dump_open(pcapDescriptor, unmanagedString.c_str());
+
+    std::string unamangedFilename = MarshalingServices::ManagedToUnmanagedString(filename);
+    // TODO: Use pcap_dump_fopen() to support Unicode filenames once it's available. See http://www.winpcap.org/pipermail/winpcap-users/2011-February/004273.html
+    _pcapDumper = pcap_dump_open(pcapDescriptor, unamangedFilename.c_str());
     if (_pcapDumper == NULL)
         throw gcnew InvalidOperationException("Error opening output file " + filename + " Error: " + PcapError::GetErrorMessage(pcapDescriptor));
 }

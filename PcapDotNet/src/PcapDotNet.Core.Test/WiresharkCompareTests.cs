@@ -1490,7 +1490,7 @@ namespace PcapDotNet.Core.Test
                         }
                         else
                         {
-                            fieldShow = Encoding.GetEncoding(28591).GetString(HexEncoding.Instance.GetBytes(field.Value()));
+                            fieldShow = EncodingExtensions.Iso88591.GetString(HexEncoding.Instance.GetBytes(field.Value()));
                             fieldShow = fieldShow.Substring(0, fieldShow.Length - 2);
                             int colonIndex = fieldShow.IndexOf(':');
                             MoreAssert.IsBiggerOrEqual(0, colonIndex, "Can't find colon in field with empty name");

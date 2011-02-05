@@ -128,6 +128,6 @@ namespace PcapDotNet.Packets.Http
         private static readonly Regex _parameterRegex = Concat(Capture(_tokenRegex, ParameterNameGroupName), Build("="), Capture(_valueRegex, ParameterValueGroupName));
         private static readonly Regex _optionalParametersRegex = Any(Concat(Build(";"), Optional(_linearWhiteSpaceRegex), _parameterRegex));
 
-        private static readonly Encoding _encoding = Encoding.GetEncoding(28591);
+        private static readonly Encoding _encoding = EncodingExtensions.Iso88591;
     }
 }

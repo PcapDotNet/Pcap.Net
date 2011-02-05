@@ -999,7 +999,7 @@ namespace PcapDotNet.Packets.TestUtils
                 else
                     reasonPhrase.Append('\t');
             }
-            return new Datagram(Encoding.GetEncoding(28591).GetBytes(reasonPhrase.ToString()));
+            return new Datagram(EncodingExtensions.Iso88591.GetBytes(reasonPhrase.ToString()));
         }
 
         public static HttpRequestMethod NextHttpRequestMethod(this Random random)
@@ -1222,7 +1222,7 @@ namespace PcapDotNet.Packets.TestUtils
                         chunkedBody.Add((byte)';');
                         chunkedBody.AddRange(Encoding.ASCII.GetBytes(parameter.Key));
                         chunkedBody.Add((byte)'=');
-                        chunkedBody.AddRange(Encoding.GetEncoding(28591).GetBytes(parameter.Key));
+                        chunkedBody.AddRange(EncodingExtensions.Iso88591.GetBytes(parameter.Key));
                     }
                     chunkedBody.AddRange(Encoding.ASCII.GetBytes("\r\n"));
                     chunkedBody.AddRange(random.NextDatagram(chunkSize));
@@ -1237,7 +1237,7 @@ namespace PcapDotNet.Packets.TestUtils
                     chunkedBody.Add((byte)';');
                     chunkedBody.AddRange(Encoding.ASCII.GetBytes(parameter.Key));
                     chunkedBody.Add((byte)'=');
-                    chunkedBody.AddRange(Encoding.GetEncoding(28591).GetBytes(parameter.Key));
+                    chunkedBody.AddRange(EncodingExtensions.Iso88591.GetBytes(parameter.Key));
                 }
                 chunkedBody.AddRange(Encoding.ASCII.GetBytes("\r\n"));
                 var trailer = random.NextHttpHeader();
@@ -1260,7 +1260,7 @@ namespace PcapDotNet.Packets.TestUtils
 
             {
                 List<byte> boundedBody = new List<byte>(random.NextDatagram(random.Next(1000)));
-                boundedBody.AddRange(Encoding.GetEncoding(28591).GetBytes("--" + httpHeader.ContentType.Parameters["boundary"] + "--"));
+                boundedBody.AddRange(EncodingExtensions.Iso88591.GetBytes("--" + httpHeader.ContentType.Parameters["boundary"] + "--"));
                 return new Datagram(boundedBody.ToArray());
             }
 
