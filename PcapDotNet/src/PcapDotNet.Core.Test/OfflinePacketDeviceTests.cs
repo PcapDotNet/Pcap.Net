@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.TestUtils;
 
@@ -244,6 +245,65 @@ namespace PcapDotNet.Core.Test
             OpenOfflineDevice(10, _random.NextEthernetPacket(100), TimeSpan.Zero, string.Empty);
         }
 
+        [TestMethod]
+        public void ReadWriteIso88591FilenameTest()
+        {
+            const string DumpFilename = "abc_\u00F9\u00E8.pcap";
+            const int NumPackets = 10;
+            Packet expectedPacket = PacketBuilder.Build(DateTime.Now, new EthernetLayer { EtherType = EthernetType.IpV4 });
+            using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket, TimeSpan.FromSeconds(0.1), DumpFilename))
+            {
+                for (int i = 0; i != NumPackets; ++i)
+                {
+                    Packet actualPacket;
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, communicator.ReceivePacket(out actualPacket));
+                    Assert.AreEqual(expectedPacket, actualPacket);
+                }
+            }
+
+            Assert.IsTrue(File.Exists(DumpFilename), "File " + DumpFilename, " doesn't exist");
+        }
+
+        // TODO: Add this test once Dumping to files with Unicode filenames is supported. See http://www.winpcap.org/pipermail/winpcap-users/2011-February/004273.html
+//        [TestMethod]
+//        public void ReadWriteUnicodeFilenameTest()
+//        {
+//            const string DumpFilename = "abc_\u00F9_\u05D0\u05D1\u05D2.pcap";
+//            const int NumPackets = 10;
+//            Packet expectedPacket = PacketBuilder.Build(DateTime.Now, new EthernetLayer {EtherType = EthernetType.IpV4});
+//            using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket, TimeSpan.FromSeconds(0.1), DumpFilename))
+//            {
+//                for (int i = 0; i != NumPackets; ++i)
+//                {
+//                    Packet actualPacket;
+//                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, communicator.ReceivePacket(out actualPacket));
+//                    Assert.AreEqual(expectedPacket, actualPacket);
+//                }
+//            }
+//
+//            Assert.IsTrue(File.Exists(DumpFilename), "File " + DumpFilename, " doesn't exist");
+//        }
+
+        [TestMethod]
+        public void ReadUnicodeFilenameTest()
+        {
+            const string ReadUnicodeFilename = "abc_\u00F9_\u05D0\u05D1\u05D2.pcap";
+            const string DumpAsciiFilename = "abc.pcap";
+            const int NumPackets = 10;
+            Packet expectedPacket = PacketBuilder.Build(DateTime.Now, new EthernetLayer { EtherType = EthernetType.IpV4 });
+            using (PacketCommunicator communicator = OpenOfflineDevice(NumPackets, expectedPacket, TimeSpan.FromSeconds(0.1), DumpAsciiFilename, ReadUnicodeFilename))
+            {
+                for (int i = 0; i != NumPackets; ++i)
+                {
+                    Packet actualPacket;
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, communicator.ReceivePacket(out actualPacket));
+                    Assert.AreEqual(expectedPacket, actualPacket);
+                }
+            }
+
+            Assert.IsTrue(File.Exists(ReadUnicodeFilename), "File " + ReadUnicodeFilename, " doesn't exist");
+        }
+
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,
                                                PacketCommunicatorReceiveResult expectedResult, int expectedNumPackets,
                                                double expectedMinSeconds, double expectedMaxSeconds)
@@ -325,8 +385,10 @@ namespace PcapDotNet.Core.Test
             return OpenOfflineDevice(numPackets, packet, intervalBetweenPackets, Path.GetTempPath() + @"dump.pcap");
         }
 
-        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename)
+        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename, string readFilename = null)
         {
+            if (readFilename == null)
+                readFilename = dumpFilename;
             PacketCommunicator communicator;
             using (communicator = LivePacketDeviceTests.OpenLiveDevice())
             {
@@ -349,11 +411,14 @@ namespace PcapDotNet.Core.Test
                 }
             }
 
-            IPacketDevice device = new OfflinePacketDevice(dumpFilename);
+            if (readFilename != dumpFilename)
+                File.Move(dumpFilename, readFilename);
+
+            IPacketDevice device = new OfflinePacketDevice(readFilename);
             Assert.AreEqual(0, device.Addresses.Count);
             Assert.AreEqual(string.Empty, device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
-            Assert.AreEqual(dumpFilename, device.Name);
+            Assert.AreEqual(readFilename, device.Name);
             communicator = device.Open();
             try
             {

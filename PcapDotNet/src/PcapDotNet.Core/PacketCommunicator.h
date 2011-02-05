@@ -367,6 +367,7 @@ namespace PcapDotNet { namespace Core
         /// <exception cref="System::InvalidOperationException">Thrown on failure.</exception>
         /// <remarks>
         /// The created dump file should be disposed by the user.
+        /// Only ISO-8859-1 characters filenames are supported.
         /// </remarks>
         PacketDumpFile^ OpenDump(System::String^ fileName);
 
@@ -376,10 +377,9 @@ namespace PcapDotNet { namespace Core
         ~PacketCommunicator();
 
     internal:
-        PacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth, 
-                           SocketAddress^ netmask);
+        PacketCommunicator(pcap_t* pcapDescriptor, SocketAddress^ netmask);
 
-    protected:
+	protected:
         property pcap_t* PcapDescriptor
         {
             pcap_t* get();

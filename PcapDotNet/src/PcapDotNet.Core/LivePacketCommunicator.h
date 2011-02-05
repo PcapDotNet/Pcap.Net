@@ -41,5 +41,7 @@ namespace PcapDotNet { namespace Core
         LivePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth, 
                                SocketAddress^ netmask);
 
+    private:
+        static pcap_t* PcapOpen(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth *auth);
     };
 }}

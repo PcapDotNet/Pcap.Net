@@ -2,6 +2,7 @@
 
 #include "PacketCommunicator.h"
 #include "PcapDeclarations.h"
+#include <cstdio>
 
 namespace PcapDotNet { namespace Core 
 {
@@ -23,7 +24,16 @@ namespace PcapDotNet { namespace Core
         /// <exception cref="System::InvalidOperationException">Thrown always.</exception>
         virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) override;
 
+        ~OfflinePacketCommunicator();
+
     internal:
-        OfflinePacketCommunicator(const char* source, int snapshotLength, PacketDeviceOpenAttributes attributes, int readTimeout, pcap_rmtauth* auth);
+        OfflinePacketCommunicator(System::String^ fileName);
+
+    private:
+        pcap_t* OpenFile(System::String^ filename);
+
+        static void CloseFile(FILE* file);
+
+        FILE* _file;
     };
 }}

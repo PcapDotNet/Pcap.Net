@@ -200,6 +200,6 @@ namespace PcapDotNet.Packets.Http
             return stringBuilder.ToString();
         }
 
-        private static readonly Encoding _defaultEncoding = Encoding.GetEncoding(28591);
+        private static readonly Encoding _defaultEncoding = EncodingExtensions.Iso88591;
     }
 }
