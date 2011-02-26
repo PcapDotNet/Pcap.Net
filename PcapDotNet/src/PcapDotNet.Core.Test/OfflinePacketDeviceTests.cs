@@ -106,6 +106,7 @@ namespace PcapDotNet.Core.Test
             TestReceivePackets(NumPacketsToSend, 0, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
             TestReceivePackets(NumPacketsToSend, -1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, NumPacketsToSend, 0.05, 0.05);
+            TestReceivePackets(0, -1, int.MaxValue, PacketCommunicatorReceiveResult.Eof, 0, 0.05, 0.05);
 
             // Break loop
             TestReceivePackets(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, PacketCommunicatorReceiveResult.BreakLoop, NumPacketsToSend / 2, 0.05, 0.05);
@@ -369,23 +370,17 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        public static PacketCommunicator OpenOfflineDevice()
+        public static OfflinePacketDevice GetOfflineDevice(int numPackets, Packet packet)
         {
-            return OpenOfflineDevice(10, _random.NextEthernetPacket(100));
+            return GetOfflineDevice(numPackets, packet, TimeSpan.Zero);
         }
 
-
-        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet)
+        public static OfflinePacketDevice GetOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets)
         {
-            return OpenOfflineDevice(numPackets, packet, TimeSpan.Zero);
+            return GetOfflineDevice(numPackets, packet, intervalBetweenPackets, Path.GetTempPath() + @"dump.pcap");
         }
 
-        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets)
-        {
-            return OpenOfflineDevice(numPackets, packet, intervalBetweenPackets, Path.GetTempPath() + @"dump.pcap");
-        }
-
-        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename, string readFilename = null)
+        public static OfflinePacketDevice GetOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename, string readFilename = null)
         {
             if (readFilename == null)
                 readFilename = dumpFilename;
@@ -414,12 +409,34 @@ namespace PcapDotNet.Core.Test
             if (readFilename != dumpFilename)
                 File.Move(dumpFilename, readFilename);
 
-            IPacketDevice device = new OfflinePacketDevice(readFilename);
+            OfflinePacketDevice device = new OfflinePacketDevice(readFilename);
             Assert.AreEqual(0, device.Addresses.Count);
             Assert.AreEqual(string.Empty, device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreEqual(readFilename, device.Name);
-            communicator = device.Open();
+
+            return device;
+        }
+
+        public static PacketCommunicator OpenOfflineDevice()
+        {
+            return OpenOfflineDevice(10, _random.NextEthernetPacket(100));
+        }
+
+        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet)
+        {
+            return OpenOfflineDevice(numPackets, packet, TimeSpan.Zero);
+        }
+
+        public static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets)
+        {
+            return OpenOfflineDevice(numPackets, packet, intervalBetweenPackets, Path.GetTempPath() + @"dump.pcap");
+        }
+
+        private static PacketCommunicator OpenOfflineDevice(int numPackets, Packet packet, TimeSpan intervalBetweenPackets, string dumpFilename, string readFilename = null)
+        {
+            IPacketDevice device = GetOfflineDevice(numPackets, packet, intervalBetweenPackets, dumpFilename, readFilename);
+            PacketCommunicator communicator = device.Open();
             try
             {
                 MoreAssert.AreSequenceEqual(new[] {DataLinkKind.Ethernet}.Select(kind => new PcapDataLink(kind)), communicator.SupportedDataLinks);
