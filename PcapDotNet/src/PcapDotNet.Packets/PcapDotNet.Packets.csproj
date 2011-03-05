@@ -92,6 +92,12 @@
     <Compile Include="Datagram.cs" />
     <Compile Include="DataLink.cs" />
     <Compile Include="DataLinkKind.cs" />
+    <Compile Include="DataSegment.cs" />
+    <Compile Include="Dns\DnsClass.cs" />
+    <Compile Include="Dns\DnsDomain.cs" />
+    <Compile Include="Dns\DnsDatagram.cs" />
+    <Compile Include="Dns\DnsResourceRecord.cs" />
+    <Compile Include="Dns\DnsType.cs" />
     <Compile Include="Endianity.cs" />
     <Compile Include="Ethernet\EthernetLayer.cs" />
     <Compile Include="Ethernet\EthernetDatagram.cs" />
