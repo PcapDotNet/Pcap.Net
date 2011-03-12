@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
+using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Http;
@@ -954,6 +955,13 @@ namespace PcapDotNet.Packets.TestUtils
         {
             for (int i = 0; i != numEntries; ++i)
                 yield return new IcmpRouterAdvertisementEntry(random.NextIpV4Address(), random.Next());
+        }
+
+        // DNS
+        public static DnsLayer NextDnsLayer(this Random random)
+        {
+            DnsLayer dnsLayer = new DnsLayer();
+            return dnsLayer;
         }
 
         // HTTP

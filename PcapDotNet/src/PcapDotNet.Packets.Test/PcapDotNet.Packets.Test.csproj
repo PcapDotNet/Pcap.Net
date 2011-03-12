@@ -71,6 +71,7 @@
     <Compile Include="ByteArrayExtensionsTests.cs" />
     <Compile Include="DatagramTests.cs" />
     <Compile Include="DataLinkTests.cs" />
+    <Compile Include="DnsTests.cs" />
     <Compile Include="EndianitiyTests.cs" />
     <Compile Include="EthernetTests.cs" />
     <Compile Include="GreTests.cs" />

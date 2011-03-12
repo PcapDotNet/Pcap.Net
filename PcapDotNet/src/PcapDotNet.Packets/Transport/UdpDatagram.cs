@@ -1,3 +1,5 @@
+using PcapDotNet.Packets.Dns;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -93,6 +95,20 @@ namespace PcapDotNet.Packets.Transport
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
         }
 
+        /// <summary>
+        /// The payload of the datagram as a DNS datagram.
+        /// </summary>
+        public DnsDatagram Dns
+        {
+            get
+            {
+                if (_dns == null && Length >= HeaderLength)
+                    _dns = new DnsDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+
+                return _dns;
+            }
+        }
+
         internal override int ChecksumOffset
         {
             get { return Offset.Checksum; }
@@ -116,5 +132,7 @@ namespace PcapDotNet.Packets.Transport
         {
             return Length >= HeaderLength;
         }
+
+        private DnsDatagram _dns;
     }
 }

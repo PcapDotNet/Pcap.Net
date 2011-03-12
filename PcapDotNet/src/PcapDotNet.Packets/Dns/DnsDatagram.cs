@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -84,99 +87,167 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public const int HeaderLength = 10;
 
+        /// <summary>
+        /// A 16 bit identifier assigned by the program that generates any kind of query.  
+        /// This identifier is copied the corresponding reply and can be used by the requester to match up replies to outstanding queries.
+        /// </summary>
         public ushort Id
         {
             get { return ReadUShort(Offset.Id, Endianity.Big); }
         }
 
+        /// <summary>
+        /// A one bit field that specifies whether this message is a query (0), or a response (1).
+        /// </summary>
         public bool IsResponse
         {
             get { return ReadBool(Offset.IsResponse, Mask.IsResponse); }
         }
 
+        /// <summary>
+        /// Specifies whether this message is a query or a response.
+        /// </summary>
         public bool IsQuery
         {
             get { return !IsResponse; }
         }
 
-        public byte Opcode
+        /// <summary>
+        /// Specifies kind of query in this message.  
+        /// This value is set by the originator of a query and copied into the response.
+        /// </summary>
+        public DnsOpcode Opcode
         {
-            get { return (byte)((this[Offset.Opcode] & Mask.Opcode) >> Shift.Opcode); }
+            get { return (DnsOpcode)((this[Offset.Opcode] & Mask.Opcode) >> Shift.Opcode); }
         }
 
+        /// <summary>
+        /// This bit is valid in responses, and specifies that the responding name server is an authority for the domain name in question section.
+        /// Note that the contents of the answer section may have multiple owner names because of aliases.  
+        /// The AA bit corresponds to the name which matches the query name, or the first owner name in the answer section.
+        /// </summary>
         public bool IsAuthoritiveAnswer
         {
             get { return ReadBool(Offset.IsAuthoritiveAnswer, Mask.IsAuthoritiveAnswer); }
         }
 
+        /// <summary>
+        /// Specifies that this message was truncated due to length greater than that permitted on the transmission channel.
+        /// </summary>
         public bool IsTruncated
         {
             get { return ReadBool(Offset.IsTruncated, Mask.IsTruncated); }
         }
 
+        /// <summary>
+        /// This bit may be set in a query and is copied into the response.  
+        /// If RD is set, it directs the name server to pursue the query recursively. 
+        /// Recursive query support is optional.
+        /// </summary>
         public bool IsRecusionDesired
         {
             get { return ReadBool(Offset.IsRecusionDesired, Mask.IsRecusionDesired); }
         }
 
+        /// <summary>
+        /// This be is set or cleared in a response, and denotes whether recursive query support is available in the name server.
+        /// </summary>
         public bool IsRecusionAvailable
         {
             get { return ReadBool(Offset.IsRecusionAvailable, Mask.IsRecusionAvailable); }
         }
         
+        /// <summary>
+        /// Reserved for future use.  
+        /// Must be zero in all queries and responses.
+        /// </summary>
         public byte FutureUse
         {
             get { return (byte)((this[Offset.FutureUse] & Mask.FutureUse) >> Shift.FutureUse); }
         }
 
-        public byte ResponseCode
+        public DnsResponseCode ResponseCode
         {
-            get { return (byte)(this[Offset.ResponseCode] & Mask.ResponseCode); }
+            get { return (DnsResponseCode)(this[Offset.ResponseCode] & Mask.ResponseCode); }
         }
 
+        /// <summary>
+        /// An unsigned 16 bit integer specifying the number of entries in the question section.
+        /// </summary>
         public ushort QueryCount
         {
             get { return ReadUShort(Offset.QueryCount, Endianity.Big); }
         }
 
+        /// <summary>
+        /// An unsigned 16 bit integer specifying the number of resource records in the answer section.
+        /// </summary>
         public ushort AnswerCount
         {
             get { return ReadUShort(Offset.AnswerCount, Endianity.Big); }
         }
 
+        /// <summary>
+        /// An unsigned 16 bit integer specifying the number of name server resource records in the authority records section.
+        /// </summary>
         public ushort AuthorityCount
         {
             get { return ReadUShort(Offset.AuthorityCount, Endianity.Big); }
         }
 
+        /// <summary>
+        /// An unsigned 16 bit integer specifying the number of resource records in the additional records section.
+        /// </summary>
         public ushort AdditionalCount
         {
             get { return ReadUShort(Offset.AdditionalCount, Endianity.Big); }
         }
-        /*
-        public ReadOnlyCollection<DnsResourceRecord> Query
+        
+        public ReadOnlyCollection<DnsQueryResouceRecord> Queries
         {
-            
+            get
+            {
+                ParseQueries();
+                return _queries;
+            }
         }
-         */
+
+        public ReadOnlyCollection<DnsDataResourceRecord> Answers
+        {
+            get
+            {
+                ParseAnswers();
+                return _answers;
+            }
+        }
+
+        public ReadOnlyCollection<DnsDataResourceRecord> Authorities
+        {
+            get
+            {
+                ParseAuthorities();
+                return _authorities;
+            }
+        }
+
+        public ReadOnlyCollection<DnsDataResourceRecord> Additionals
+        {
+            get
+            {
+                ParseAdditionals();
+                return _additionals;
+            }
+        }
 
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
-        /*
         public override ILayer ExtractLayer()
         {
-            return new ArpLayer
+            return new DnsLayer
             {
-                SenderHardwareAddress = SenderHardwareAddress,
-                SenderProtocolAddress = SenderProtocolAddress,
-                TargetHardwareAddress = TargetHardwareAddress,
-                TargetProtocolAddress = TargetProtocolAddress,
-                ProtocolType = ProtocolType,
-                Operation = Operation,
             };
         }
-        */
         /*
         protected override bool CalculateIsValid()
         {
@@ -187,5 +258,103 @@ namespace PcapDotNet.Packets.Dns
             : base(buffer, offset, length)
         {
         }
+
+        internal static int GetLength(IEnumerable<DnsResourceRecord> resourceRecords, DnsDomainNameCompressionMode domainNameCompressionMode)
+        {
+            int length = HeaderLength;
+            DnsDomainNameCompressionData compressionData = new DnsDomainNameCompressionData(domainNameCompressionMode);
+            foreach (DnsResourceRecord record in resourceRecords)
+                length += record.GetLength(compressionData, length);
+
+            return length;
+        }
+
+        private int QueriesOffset
+        {
+            get { return HeaderLength; }
+        }
+
+        private int AnswersOffset
+        {
+            get
+            {
+                ParseQueries();
+                return _answersOffset;
+            }
+        }
+
+        private int AuthoritiesOffset
+        {
+            get
+            {
+                ParseAnswers();
+                return _authoritiesOffset;
+            }
+        }
+
+        private int AdditionalsOffset
+        {
+            get
+            {
+                ParseAuthorities();
+                return _additionalsOffset;
+            }
+        }
+
+        private void ParseQueries()
+        {
+            ParseRecords(QueriesOffset, () => QueryCount, DnsQueryResouceRecord.Parse, ref _queries, ref _answersOffset);
+        }
+
+        private void ParseAnswers()
+        {
+            ParseRecords(AnswersOffset, () => AnswerCount, DnsDataResourceRecord.Parse, ref _answers, ref _authoritiesOffset);
+        }
+
+        private void ParseAuthorities()
+        {
+            ParseRecords(AuthoritiesOffset, () => AuthorityCount, DnsDataResourceRecord.Parse, ref _authorities, ref _additionalsOffset);
+        }
+
+        private void ParseAdditionals()
+        {
+            int nextOffset = 0;
+            ParseRecords(AdditionalsOffset, () => AdditionalCount, DnsDataResourceRecord.Parse, ref _additionals, ref nextOffset);
+        }
+
+        private delegate TRecord ParseRecord<out TRecord>(DnsDatagram dns, int offset, out int numBytesRead);
+
+        private void ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord, 
+                                           ref ReadOnlyCollection<TRecord> parsedRecords, ref int nextOffset)
+        {
+            if (parsedRecords == null && Length >= offset)
+            {
+                ushort count = countDelegate();
+                List<TRecord> records = new List<TRecord>(count);
+                for (int i = 0; i != count; ++i)
+                {
+                    int numBytesRead;
+                    TRecord record = parseRecord(this, offset, out numBytesRead);
+                    if (record == null)
+                    {
+                        offset = 0;
+                        break;
+                    }
+                    records.Add(record);
+                    offset += numBytesRead;
+                }
+                parsedRecords = new ReadOnlyCollection<TRecord>(records.ToArray());
+                nextOffset = offset;
+            }
+        }
+
+        private ReadOnlyCollection<DnsQueryResouceRecord> _queries;
+        private ReadOnlyCollection<DnsDataResourceRecord> _answers;
+        private ReadOnlyCollection<DnsDataResourceRecord> _authorities;
+        private ReadOnlyCollection<DnsDataResourceRecord> _additionals;
+
+        private int _answersOffset;
+        private int _authoritiesOffset;
+        private int _additionalsOffset;
     }
 }

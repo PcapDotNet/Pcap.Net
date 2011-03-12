@@ -157,6 +157,11 @@ namespace PcapDotNet.Packets
             return Buffer.ReadBytes(StartOffset + offset, length);
         }
 
+        internal DataSegment SubSegment(int offset, int length)
+        {
+            return new DataSegment(Buffer, StartOffset + offset, length);
+        }
+
         internal bool ReadBool(int offset, byte mask)
         {
             return (this[offset] & mask) == mask;
@@ -181,7 +186,7 @@ namespace PcapDotNet.Packets
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
         /// <returns>The value converted from the read bytes according to the endianity.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
-        protected int ReadInt(int offset, Endianity endianity)
+        internal int ReadInt(int offset, Endianity endianity)
         {
             return Buffer.ReadInt(StartOffset + offset, endianity);
         }
