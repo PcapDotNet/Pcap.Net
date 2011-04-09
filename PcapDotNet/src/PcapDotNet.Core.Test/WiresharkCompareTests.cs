@@ -504,7 +504,7 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "arp.hw.type":
-                        field.AssertShowDecimal((ushort)arpDatagram.HardwareType);
+                        field.AssertShowHex((ushort)arpDatagram.HardwareType);
                         break;
 
                     case "arp.proto.type":
@@ -520,7 +520,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "arp.opcode":
-                        field.AssertShowDecimal((ushort)arpDatagram.Operation);
+                        field.AssertShowHex((ushort)arpDatagram.Operation);
                         break;
 
                     case "arp.src.hw":
@@ -1248,7 +1248,9 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.flags":
-                        field.AssertShowHex((byte)tcpDatagram.ControlBits);
+                        field.AssertShow("0x" + 
+                            ((tcpDatagram.ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum ? "1" : "") + 
+                            ((byte)tcpDatagram.ControlBits).ToString("x" + 2 * sizeof(byte)));
                         foreach (var flagField in field.Fields())
                         {
                             switch (flagField.Name())
@@ -1561,7 +1563,8 @@ namespace PcapDotNet.Core.Test
 
                     case "http.transfer_encoding":
                         data.Append(field.Value());
-                        Assert.AreEqual(httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral(), fieldShow.ToWiresharkLowerLiteral());
+                        Assert.AreEqual(fieldShow.ToWiresharkLowerLiteral(),
+                                        httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral());
                         break;
 
                     default:

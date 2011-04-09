@@ -49,6 +49,18 @@ namespace PcapDotNet.Packets.Transport
             public const int Options = 20;
         }
 
+        private static class Mask
+        {
+            public const byte Reserved = 0x0E;
+            public const ushort ControlBits = 0x01FF;
+        }
+
+        private static class Shift
+        {
+            public const int HeaderLength = 4;
+            public const int Reserved = 1;
+        }
+
         /// <summary>
         /// The sequence number of the first data octet in this segment (except when SYN is present). 
         /// If SYN is present the sequence number is the initial sequence number (ISN) and the first data octet is ISN+1.
@@ -83,7 +95,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public int HeaderLength
         {
-            get { return 4 * (this[Offset.HeaderLengthAndFlags] >> 4); }
+            get { return 4 * (this[Offset.HeaderLengthAndFlags] >> Shift.HeaderLength); }
         }
 
         /// <summary>
@@ -94,12 +106,17 @@ namespace PcapDotNet.Packets.Transport
             get { return Math.Min(HeaderLength, Length); }
         }
 
+        public byte Reserved
+        {
+            get { return (byte)((this[Offset.HeaderLengthAndFlags] & Mask.Reserved) >> Shift.Reserved); }
+        }
+
         /// <summary>
         /// A collection of bits for the TCP control.
         /// </summary>
         public TcpControlBits ControlBits
         {
-            get { return (TcpControlBits)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & 0x01FF); }
+            get { return (TcpControlBits)(ReadUShort(Offset.HeaderLengthAndFlags, Endianity.Big) & Mask.ControlBits); }
         }
 
         /// <summary>

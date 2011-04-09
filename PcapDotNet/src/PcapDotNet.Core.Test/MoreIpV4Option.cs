@@ -132,8 +132,9 @@ namespace PcapDotNet.Core.Test
                             IpV4OptionTimestampAndAddress timestampPrespecifiedOption = (IpV4OptionTimestampAndAddress)option;
                             foreach (IpV4OptionTimedAddress timedAddress in timestampPrespecifiedOption.TimedRoute)
                             {
-                                yield return "Time stamp = " + timedAddress.Address.ToValue();
-                                yield return "Time stamp = " + timedAddress.TimeOfDay.MillisecondsSinceMidnightUniversalTime;
+                                yield return string.Format("Address = {0}, time stamp = {1}",
+                                                           timedAddress.Address,
+                                                           timedAddress.TimeOfDay.MillisecondsSinceMidnightUniversalTime);
                             }
                             break;
 
