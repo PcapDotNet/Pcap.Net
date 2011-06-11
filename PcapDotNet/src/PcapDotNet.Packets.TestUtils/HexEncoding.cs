@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Core.Test
+namespace PcapDotNet.Packets.TestUtils
 {
     public class HexEncoding : Encoding 
     {
