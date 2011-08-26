@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Dns
     /// The top level format of message is divided into 5 sections (some of which are empty in certain cases) shown below:
     /// <pre>
     /// +-----+----+--------+----+----+----+----+------+--------+
-    /// | bit | 0  | 1-4    | 5  | 6  | 7  | 8  | 9-11 | 12-15  |
+    /// | bit | 0  | 1-4    | 5  | 6  | 7  | 8  | 9-10 | 11-15  |
     /// +-----+----+--------+----+----+----+----+------+--------+
     /// | 0   | ID                                              |
     /// +-----+----+--------+----+----+----+----+------+--------+
@@ -72,14 +72,14 @@ namespace PcapDotNet.Packets.Dns
             public const byte IsTruncated = 0x02;
             public const byte IsRecusionDesired = 0x01;
             public const byte IsRecusionAvailable = 0x80;
-            public const byte FutureUse = 0x70;
-            public const byte ResponseCode = 0x0F;
+            public const byte FutureUse = 0x60;
+            public const byte ResponseCode = 0x1F;
         }
 
         private static class Shift
         {
             public const int Opcode = 3;
-            public const int FutureUse = 4;
+            public const int FutureUse = 5;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public const int HeaderLength = 12;
 
-        public const byte MaxFutureUse = 7;
+        public const byte MaxFutureUse = 3;
 
         /// <summary>
         /// A 16 bit identifier assigned by the program that generates any kind of query.  
