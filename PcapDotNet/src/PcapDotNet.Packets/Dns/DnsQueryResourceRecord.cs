@@ -2,7 +2,7 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsQueryResourceRecord : DnsResourceRecord
+    public class DnsQueryResourceRecord : DnsResourceRecord, IEquatable<DnsQueryResourceRecord>
     {
         public DnsQueryResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass) 
             : base(domainName, type, dnsClass)
@@ -19,6 +19,16 @@ namespace PcapDotNet.Packets.Dns
         {
             get { throw new InvalidOperationException("No Resource Data in queries"); }
             protected set { throw new InvalidOperationException("No Resource Data in queries"); }
+        }
+
+        public bool Equals(DnsQueryResourceRecord other)
+        {
+            return EqualsBase(other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as DnsQueryResourceRecord);
         }
 
         internal static DnsQueryResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)

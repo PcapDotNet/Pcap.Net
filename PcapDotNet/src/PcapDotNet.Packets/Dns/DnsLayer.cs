@@ -108,10 +108,10 @@ namespace PcapDotNet.Packets.Dns
                    IsRecusionAvailable == other.IsRecusionAvailable &&
                    FutureUse == other.FutureUse &&
                    ResponseCode == other.ResponseCode &&
-                   (Queries.IsNullOrEmpty() == other.Queries.IsNullOrEmpty() || Queries.SequenceEqual(other.Queries)) &&
-                   (Answers.IsNullOrEmpty() == other.Answers.IsNullOrEmpty() || Answers.SequenceEqual(other.Answers)) &&
-                   (Authorities.IsNullOrEmpty() == other.Authorities.IsNullOrEmpty() || Authorities.SequenceEqual(other.Authorities)) &&
-                   (Additionals.IsNullOrEmpty() == other.Additionals.IsNullOrEmpty() || Additionals.SequenceEqual(other.Additionals));
+                   (Queries.IsNullOrEmpty() && other.Queries.IsNullOrEmpty() || Queries.SequenceEqual(other.Queries)) &&
+                   (Answers.IsNullOrEmpty() && other.Answers.IsNullOrEmpty() || Answers.SequenceEqual(other.Answers)) &&
+                   (Authorities.IsNullOrEmpty() && other.Authorities.IsNullOrEmpty() || Authorities.SequenceEqual(other.Authorities)) &&
+                   (Additionals.IsNullOrEmpty() && other.Additionals.IsNullOrEmpty() || Additionals.SequenceEqual(other.Additionals));
         }
 
         /// <summary>

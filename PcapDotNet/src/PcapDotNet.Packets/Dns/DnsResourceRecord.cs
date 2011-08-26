@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.Dns
@@ -74,6 +75,14 @@ namespace PcapDotNet.Packets.Dns
         public override string ToString()
         {
             return DomainName + " " + Type + " " + DnsClass;
+        }
+
+        internal bool EqualsBase(DnsResourceRecord other)
+        {
+            return other != null &&
+                   DomainName.Equals(other.DomainName) &&
+                   Type.Equals(other.Type) &&
+                   DnsClass.Equals(other.DnsClass);
         }
 
         internal static bool TryParseBase(DnsDatagram dns, int offsetInDns, 

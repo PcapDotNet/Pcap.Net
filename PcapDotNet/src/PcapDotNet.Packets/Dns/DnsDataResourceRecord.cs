@@ -1,6 +1,8 @@
-﻿namespace PcapDotNet.Packets.Dns
+﻿using System;
+
+namespace PcapDotNet.Packets.Dns
 {
-    public class DnsDataResourceRecord : DnsResourceRecord
+    public class DnsDataResourceRecord : DnsResourceRecord, IEquatable<DnsDataResourceRecord>
     {
         private static class OffsetAfterBase
         {
@@ -36,6 +38,18 @@
         public override string ToString()
         {
             return base.ToString() + " " + Ttl + " " + Data;
+        }
+
+        public bool Equals(DnsDataResourceRecord other)
+        {
+            return EqualsBase(other) &&
+                   Ttl.Equals(other.Ttl) &&
+                   Data.Equals(other.Data);
+        }
+
+        public override bool  Equals(object obj)
+        {
+ 	        return Equals(obj as DnsDataResourceRecord);
         }
 
         internal static DnsDataResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
