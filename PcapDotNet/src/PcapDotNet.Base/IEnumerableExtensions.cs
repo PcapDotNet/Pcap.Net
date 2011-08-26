@@ -13,6 +13,11 @@ namespace PcapDotNet.Base
     public static class IEnumerableExtensions
 // ReSharper restore InconsistentNaming
     {
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> sequence)
+        {
+            return sequence == null || !sequence.Any();
+        }
+
         /// <summary>
         /// Concatenates a sequence with more values.
         /// </summary>

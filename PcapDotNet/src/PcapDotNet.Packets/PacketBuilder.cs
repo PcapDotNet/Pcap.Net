@@ -105,25 +105,27 @@ namespace PcapDotNet.Packets
         /// <returns>A packet built from the builder's layers with the given timestamp.</returns>
         public Packet Build(DateTime timestamp)
         {
-            int length = _layers.Select(layer => layer.Length).Sum();
+            int[] layersLength = _layers.Select(layer => layer.Length).ToArray();
+            int length = layersLength.Sum();
             byte[] buffer = new byte[length];
 
-            WriteLayers(buffer, length);
+            WriteLayers(layersLength, buffer, length);
             FinalizeLayers(buffer, length);
 
             return new Packet(buffer, timestamp, _dataLink);
         }
 
-        private void WriteLayers(byte[] buffer, int length)
+        private void WriteLayers(int[] layersLength, byte[] buffer, int length)
         {
             int offset = 0;
             for (int i = 0; i != _layers.Length; ++i)
             {
                 ILayer layer = _layers[i];
+                int layerLength = layersLength[i];
                 ILayer previousLayer = i == 0 ? null : _layers[i - 1];
                 ILayer nextLayer = i == _layers.Length - 1 ? null : _layers[i + 1];
-                layer.Write(buffer, offset, length - offset - layer.Length, previousLayer, nextLayer);
-                offset += layer.Length;
+                layer.Write(buffer, offset, length - offset - layerLength, previousLayer, nextLayer);
+                offset += layerLength;
             }
         }
 

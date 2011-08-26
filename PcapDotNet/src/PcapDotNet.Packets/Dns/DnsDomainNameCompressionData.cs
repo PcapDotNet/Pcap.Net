@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -115,32 +116,47 @@ namespace PcapDotNet.Packets.Dns
 
     internal class DnsDomainNameCompressionData
     {
-        private class LabelNode
-        {
-            public int? DnsOffset { get; private set; }
-
-            public bool IsAvailable(ListSegment<DataSegment> labels)
-            {
-                if (labels.Count == 0)
-                    return DnsOffset != null;
-                LabelNode nextNode;
-                if (!_nextLabels.TryGetValue(labels[0], out nextNode))
-                    return false;
-                return nextNode.IsAvailable(labels.SubSegment(1));
-            }
-
-            public void AddLabels(ListSegment<DataSegment> labels, int dnsOffset)
-            {
-                if (labels.Count == 0)
-                {
-                    DnsOffset = dnsOffset;
-                    return;
-                }
-                _nextLabels[labels[0]].AddLabels(labels.SubSegment(1), dnsOffset);
-            }
-
-            private readonly Dictionary<DataSegment, LabelNode> _nextLabels = new Dictionary<DataSegment, LabelNode>();
-        }
+//        private class LabelNode
+//        {
+//            public int? DnsOffset { get; private set; }
+//
+//            public bool TryGetOffset(ListSegment<DataSegment> labels, out int offsetInDns)
+//            {
+//                if (labels.Count == 0)
+//                {
+//                    offsetInDns = DnsOffset.GetValueOrDefault();
+//                    return DnsOffset.HasValue;
+//                }
+//                LabelNode nextNode;
+//                if (!_nextLabels.TryGetValue(labels[0], out nextNode))
+//                {
+//                    offsetInDns = 0;
+//                    return false;
+//                }
+//                offsetInDns = nextNode.DnsOffset.Value;
+//                int nextNodeOffset;
+//                return nextNode.TryGetOffset(labels.SubSegment(1), out nextNodeOffset);
+//            }
+//
+//            public void AddLabels(ListSegment<DataSegment> labels, int dnsOffset)
+//            {
+//                if (labels.Count == 0)
+//                {
+//                    DnsOffset = dnsOffset;
+//                    return;
+//                }
+//                DataSegment firstLabel = labels[0];
+//                LabelNode node;
+//                if (!_nextLabels.TryGetValue(firstLabel, out node))
+//                {
+//                    node = new LabelNode();
+//                    _nextLabels.Add(firstLabel, node);
+//                }
+//                node.AddLabels(labels.SubSegment(1), dnsOffset);
+//            }
+//
+//            private readonly Dictionary<DataSegment, LabelNode> _nextLabels = new Dictionary<DataSegment, LabelNode>();
+//        }
 
         public DnsDomainNameCompressionData(DnsDomainNameCompressionMode domainNameCompressionMode)
         {
@@ -151,11 +167,18 @@ namespace PcapDotNet.Packets.Dns
 
         public bool IsAvailable(ListSegment<DataSegment> labels)
         {
+            int offsetInDns;
+            return TryGetOffset(labels, out offsetInDns);
+        }
+
+        public bool TryGetOffset(ListSegment<DataSegment> labels, out int offsetInDns)
+        {
             switch (DomainNameCompressionMode)
             {
                 case DnsDomainNameCompressionMode.All:
-                    return _root.IsAvailable(labels);
+                    return _data.TryGetValue(labels, out offsetInDns);
                 case DnsDomainNameCompressionMode.Nothing:
+                    offsetInDns = 0;
                     return false;
                 default:
                     throw new InvalidOperationException(string.Format("Invalid DomainNameCompressionMode {0}", DomainNameCompressionMode));
@@ -167,7 +190,8 @@ namespace PcapDotNet.Packets.Dns
             switch (DomainNameCompressionMode)
             {
                 case DnsDomainNameCompressionMode.All:
-                    _root.AddLabels(labels, dnsOffset);
+                    if (!_data.ContainsKey(labels))
+                        _data.Add(labels, dnsOffset);
                     return;
                 case DnsDomainNameCompressionMode.Nothing:
                     return;
@@ -176,6 +200,9 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
-        private readonly LabelNode _root = new LabelNode();
+        private static readonly InlineEqualityComparer<ListSegment<DataSegment>> _labelsComparer =
+            new InlineEqualityComparer<ListSegment<DataSegment>>((x, y) => x.SequenceEqual(y), obj => obj.SequenceGetHashCode());
+
+        private readonly Dictionary<ListSegment<DataSegment>, int> _data = new Dictionary<ListSegment<DataSegment>, int>(_labelsComparer);
     }
 }

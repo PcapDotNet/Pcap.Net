@@ -91,6 +91,7 @@
     <Compile Include="IDictionaryExtensions.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="IListExtensions.cs" />
+    <Compile Include="InlineEqualityComparer.cs" />
     <Compile Include="MatchExtensions.cs" />
     <Compile Include="PropertyInfoExtensions.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
