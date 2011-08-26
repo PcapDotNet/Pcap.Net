@@ -78,6 +78,46 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void DnsDomainNameCompressionTest()
+        {
+            DnsLayer dnsLayer = new DnsLayer();
+            TestDomainNameCompression(0, dnsLayer);
+            
+            dnsLayer.Queries = new List<DnsQueryResourceRecord>();
+            dnsLayer.Answers = new List<DnsDataResourceRecord>();
+            dnsLayer.Authorities = new List<DnsDataResourceRecord>();
+            dnsLayer.Additionals = new List<DnsDataResourceRecord>();
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Queries.Add(new DnsQueryResourceRecord(new DnsDomainName(""), DnsType.All, DnsClass.In));
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName(""), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(3, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("def.abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(6, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(6, dnsLayer);
+
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(13, dnsLayer);
+
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(16, dnsLayer);
+
+            dnsLayer.Additionals.Add(new DnsDataResourceRecord(new DnsDomainName("hello.abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            TestDomainNameCompression(23, dnsLayer);
+        }
+
+        [TestMethod]
         public void SimpleDnsTest()
         {
             DnsLayer dnsLayer = new DnsLayer
@@ -124,6 +164,29 @@ namespace PcapDotNet.Packets.Test
 
                 // DNS
                 Assert.AreEqual(dnsLayer, packet.Ethernet.IpV4.Udp.Dns.ExtractLayer(), "DNS Layer");
+        }
+
+        private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
+        {
+            dnsLayer.DomainNameCompressionMode = DnsDomainNameCompressionMode.Nothing;
+            Packet uncompressedPacket = PacketBuilder.Build(DateTime.Now,
+                                                            new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
+                                                            dnsLayer);
+            Assert.IsTrue(uncompressedPacket.IsValid, "IsValid");
+            ILayer uncompressedPacketLayer = uncompressedPacket.Ethernet.IpV4.Udp.Dns.ExtractLayer();
+
+            dnsLayer.DomainNameCompressionMode = DnsDomainNameCompressionMode.All;
+            Packet compressedPacket = PacketBuilder.Build(DateTime.Now,
+                                                            new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
+                                                            dnsLayer);
+            Assert.IsTrue(compressedPacket.IsValid, "IsValid");
+            ILayer compressedPacketLayer = compressedPacket.Ethernet.IpV4.Udp.Dns.ExtractLayer();
+
+            Assert.AreEqual(dnsLayer, uncompressedPacketLayer);
+            Assert.AreEqual(dnsLayer, compressedPacketLayer);
+            Assert.AreEqual(compressedPacketLayer, uncompressedPacketLayer);
+
+            Assert.AreEqual(uncompressedPacket.Length, compressedPacket.Length + expectedCompressionBenefit, expectedCompressionBenefit.ToString());
         }
     }
 }
