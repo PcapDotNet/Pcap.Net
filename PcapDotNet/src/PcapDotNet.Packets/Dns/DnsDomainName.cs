@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// A domain name represented as a series of labels, and terminated by a label with zero length.
     /// </summary>
-    public class DnsDomainName
+    public class DnsDomainName : IEquatable<DnsDomainName>
     {
         private const byte MaxLabelLength = 63;
         private const ushort CompressionMarker = 0xC000;
@@ -35,6 +35,16 @@ namespace PcapDotNet.Packets.Dns
             if (_ascii == null)
                 _ascii = _labels.Select(label => label.ToString(Encoding.UTF8)).SequenceToString('.') + ".";
             return _ascii;
+        }
+
+        public bool Equals(DnsDomainName other)
+        {
+            return _labels.SequenceEqual(other._labels);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as DnsDomainName);
         }
 
         internal int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
