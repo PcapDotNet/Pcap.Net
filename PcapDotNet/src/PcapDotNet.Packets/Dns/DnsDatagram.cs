@@ -85,7 +85,9 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// The number of bytes the DNS header takes.
         /// </summary>
-        public const int HeaderLength = 10;
+        public const int HeaderLength = 12;
+
+        public const byte MaxFutureUse = 7;
 
         /// <summary>
         /// A 16 bit identifier assigned by the program that generates any kind of query.  
@@ -156,7 +158,7 @@ namespace PcapDotNet.Packets.Dns
         {
             get { return ReadBool(Offset.IsRecusionAvailable, Mask.IsRecusionAvailable); }
         }
-        
+
         /// <summary>
         /// Reserved for future use.  
         /// Must be zero in all queries and responses.
@@ -202,8 +204,8 @@ namespace PcapDotNet.Packets.Dns
         {
             get { return ReadUShort(Offset.AdditionalCount, Endianity.Big); }
         }
-        
-        public ReadOnlyCollection<DnsQueryResouceRecord> Queries
+
+        public ReadOnlyCollection<DnsQueryResourceRecord> Queries
         {
             get
             {
@@ -246,8 +248,22 @@ namespace PcapDotNet.Packets.Dns
         {
             return new DnsLayer
             {
+                Id = Id,
+                IsQuery = IsQuery,
+                Opcode = Opcode,
+                IsAuthoritiveAnswer = IsAuthoritiveAnswer,
+                IsTruncated = IsTruncated,
+                IsRecusionDesired = IsRecusionDesired,
+                IsRecusionAvailable = IsRecusionAvailable,
+                FutureUse = FutureUse,
+                ResponseCode = ResponseCode,
+                Queries = Queries.ToList(),
+                Answers = Answers.ToList(),
+                Authorities = Authorities.ToList(),
+                Additionals = Additionals.ToList(),
             };
         }
+
         /*
         protected override bool CalculateIsValid()
         {
@@ -263,10 +279,66 @@ namespace PcapDotNet.Packets.Dns
         {
             int length = HeaderLength;
             DnsDomainNameCompressionData compressionData = new DnsDomainNameCompressionData(domainNameCompressionMode);
-            foreach (DnsResourceRecord record in resourceRecords)
-                length += record.GetLength(compressionData, length);
+            if (resourceRecords != null)
+            {
+                foreach (DnsResourceRecord record in resourceRecords)
+                    length += record.GetLength(compressionData, length);
+            }
 
             return length;
+        }
+
+        internal static void Write(byte[] buffer, int offset,
+                                   ushort id, bool isResponse, DnsOpcode opcode, bool isAuthoritiveAnswer, bool isTruncated,
+                                   bool isRecursionDesired, bool isRecursionAvailable, byte futureUse, DnsResponseCode responseCode,
+                                   List<DnsQueryResourceRecord> queries, List<DnsDataResourceRecord> answers, 
+                                   List<DnsDataResourceRecord> authorities, List<DnsDataResourceRecord> additionals,
+                                   DnsDomainNameCompressionMode domainNameCompressionMode)
+        {
+            buffer.Write(offset + Offset.Id, id, Endianity.Big);
+            byte flags0 = 0;
+            if (isResponse)
+                flags0 |= Mask.IsResponse;
+            flags0 |= (byte)((((byte)opcode) << Shift.Opcode) & Mask.Opcode);
+            if (isAuthoritiveAnswer)
+                flags0 |= Mask.IsAuthoritiveAnswer;
+            if (isTruncated)
+                flags0 |= Mask.IsTruncated;
+            if (isRecursionDesired)
+                flags0 |= Mask.IsRecusionDesired;
+            buffer.Write(offset + Offset.IsResponse, flags0);
+            byte flags1 = 0;
+            if (isRecursionAvailable)
+                flags1 |= Mask.IsRecusionAvailable;
+            flags1 |= (byte)((futureUse << Shift.FutureUse) & Mask.FutureUse);
+            flags1 |= (byte)((byte)responseCode & Mask.ResponseCode);
+            buffer.Write(offset + Offset.IsRecusionAvailable, flags1);
+            DnsDomainNameCompressionData compressionData = new DnsDomainNameCompressionData(domainNameCompressionMode);
+            int recordOffset = HeaderLength;
+            if (queries != null)
+            {
+                buffer.Write(offset + Offset.QueryCount, (ushort)queries.Count, Endianity.Big);
+                foreach (DnsQueryResourceRecord record in queries)
+                    recordOffset += record.Write(buffer, offset, compressionData, recordOffset);
+            }
+            if (answers != null)
+            {
+                buffer.Write(offset + Offset.AnswerCount, (ushort)answers.Count, Endianity.Big);
+                foreach (DnsDataResourceRecord record in answers)
+                    recordOffset += record.Write(buffer, offset, compressionData, recordOffset);
+            }
+            if (authorities != null)
+            {
+                buffer.Write(offset + Offset.AuthorityCount, (ushort)authorities.Count, Endianity.Big);
+                foreach (DnsDataResourceRecord record in authorities)
+                    recordOffset += record.Write(buffer, offset, compressionData, recordOffset);
+            }
+            if (additionals != null)
+            {
+                buffer.Write(offset + Offset.AdditionalCount, (ushort)additionals.Count, Endianity.Big);
+                foreach (DnsDataResourceRecord record in additionals)
+                    recordOffset += record.Write(buffer, offset, compressionData, recordOffset);
+            }
         }
 
         private int QueriesOffset
@@ -303,7 +375,7 @@ namespace PcapDotNet.Packets.Dns
 
         private void ParseQueries()
         {
-            ParseRecords(QueriesOffset, () => QueryCount, DnsQueryResouceRecord.Parse, ref _queries, ref _answersOffset);
+            ParseRecords(QueriesOffset, () => QueryCount, DnsQueryResourceRecord.Parse, ref _queries, ref _answersOffset);
         }
 
         private void ParseAnswers()
@@ -324,7 +396,7 @@ namespace PcapDotNet.Packets.Dns
 
         private delegate TRecord ParseRecord<out TRecord>(DnsDatagram dns, int offset, out int numBytesRead);
 
-        private void ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord, 
+        private void ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord,
                                            ref ReadOnlyCollection<TRecord> parsedRecords, ref int nextOffset)
         {
             if (parsedRecords == null && Length >= offset)
@@ -348,7 +420,7 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
-        private ReadOnlyCollection<DnsQueryResouceRecord> _queries;
+        private ReadOnlyCollection<DnsQueryResourceRecord> _queries;
         private ReadOnlyCollection<DnsDataResourceRecord> _answers;
         private ReadOnlyCollection<DnsDataResourceRecord> _authorities;
         private ReadOnlyCollection<DnsDataResourceRecord> _additionals;

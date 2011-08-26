@@ -12,7 +12,15 @@ namespace PcapDotNet.Packets.Dns
     public class DnsDomainName
     {
         private const byte MaxLabelLength = 63;
-        private const ushort OffsetMask = 0xC000;
+        private const ushort CompressionMarker = 0xC000;
+        private const ushort OffsetMask = 0x3FFF;
+        private static readonly char[] Colon = new[] {'.'};
+
+        public DnsDomainName(string domainName)
+        {
+            string[] labels = domainName.ToLowerInvariant().Split(Colon, StringSplitOptions.RemoveEmptyEntries);
+            _labels = labels.Select(label => new DataSegment(Encoding.UTF8.GetBytes(label))).ToList();
+        }
 
         public int NumLabels
         {
@@ -25,7 +33,7 @@ namespace PcapDotNet.Packets.Dns
         public override string ToString()
         {
             if (_ascii == null)
-                _ascii = _labels.Select(label => label.ToString(Encoding.ASCII)).Concat(string.Empty).SequenceToString('.');
+                _ascii = _labels.Select(label => label.ToString(Encoding.UTF8)).SequenceToString('.') + ".";
             return _ascii;
         }
 
@@ -37,8 +45,8 @@ namespace PcapDotNet.Packets.Dns
                 ListSegment<DataSegment> labels = new ListSegment<DataSegment>(_labels, i);
                 if (compressionData.IsAvailable(labels))
                     return length + sizeof(ushort);
-                length += sizeof(byte) + _labels[i].Length;
                 compressionData.AddCompressionData(labels, offsetInDns + length);
+                length += sizeof(byte) + labels[0].Length;
             }
             return length + sizeof(byte);
         }
@@ -48,6 +56,28 @@ namespace PcapDotNet.Packets.Dns
             List<DataSegment> labels = new List<DataSegment>();
             ReadLabels(dns, offsetInDns, out numBytesRead, labels);
             return new DnsDomainName(labels);
+        }
+
+        internal int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            int length = 0;
+            for (int i = 0; i != NumLabels; ++i)
+            {
+                ListSegment<DataSegment> labels = new ListSegment<DataSegment>(_labels, i);
+                int pointerOffset;
+                if (compressionData.TryGetOffset(labels, out pointerOffset))
+                {
+                    buffer.Write(dnsOffset + offsetInDns + length, (ushort)(CompressionMarker | (ushort)pointerOffset), Endianity.Big);
+                    return length + sizeof(ushort);
+                }
+                DataSegment currentLabel = labels[0];
+                compressionData.AddCompressionData(labels, offsetInDns + length);
+                buffer.Write(dnsOffset + offsetInDns + length, (byte)currentLabel.Length);
+                length += sizeof(byte);
+                currentLabel.Write(buffer, dnsOffset + offsetInDns + length);
+                length += currentLabel.Length;
+            }
+            return length + sizeof(byte);
         }
 
         private DnsDomainName(List<DataSegment> labels)
@@ -84,6 +114,7 @@ namespace PcapDotNet.Packets.Dns
                         return;
                     labels.Add(dns.SubSegment(offsetInDns, labelLength));
                     numBytesRead += labelLength;
+                    offsetInDns += labelLength;
                 }
             } while (labelLength != 0);
         }

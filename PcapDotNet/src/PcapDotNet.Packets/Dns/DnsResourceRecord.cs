@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.Dns
 {
+//    public enum DnsSection
+//    {
+//        Query,
+//        Answer,
+//        Authority,
+//        Additional,
+//    }
+
     /// <summary>
     /// RFC 1035.
     /// All RRs have the same top level format shown below:
@@ -43,6 +51,8 @@ namespace PcapDotNet.Packets.Dns
             DnsClass = dnsClass;
         }
 
+//        public abstract DnsSection Section { get; }
+
         /// <summary>
         /// An owner name, i.e., the name of the node to which this resource record pertains.
         /// </summary>
@@ -72,6 +82,11 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public abstract DnsResourceData Data { get; protected set; }
 
+        public override string ToString()
+        {
+            return DomainName + " " + Type + " " + DnsClass;
+        }
+
         internal static bool TryParseBase(DnsDatagram dns, int offsetInDns, 
             out DnsDomainName domainName, out DnsType type, out DnsClass dnsClass, out int numBytesRead)
         {
@@ -81,11 +96,11 @@ namespace PcapDotNet.Packets.Dns
             if (domainName == null)
                 return false;
 
-            if (offsetInDns + numBytesRead + MinimumLengthAfterDomainName >= dns.Length)
+            if (offsetInDns + numBytesRead + MinimumLengthAfterDomainName > dns.Length)
                 return false;
 
-            type = (DnsType)dns.ReadUShort(OffsetAfterDomainName.Type, Endianity.Big);
-            dnsClass = (DnsClass)dns.ReadUShort(OffsetAfterDomainName.DnsClass, Endianity.Big);
+            type = (DnsType)dns.ReadUShort(offsetInDns + numBytesRead + OffsetAfterDomainName.Type, Endianity.Big);
+            dnsClass = (DnsClass)dns.ReadUShort(offsetInDns + numBytesRead + OffsetAfterDomainName.DnsClass, Endianity.Big);
             numBytesRead += MinimumLengthAfterDomainName;
             return true;
         }
@@ -96,11 +111,22 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal abstract int GetLengthAfterBase(DnsDomainNameCompressionData compressionData, int offsetInDns);
+
+        internal virtual int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            int length = 0;
+            length += DomainName.Write(buffer, dnsOffset, compressionData, offsetInDns + length);
+            buffer.Write(dnsOffset + offsetInDns + length, (ushort)Type, Endianity.Big);
+            length += sizeof(ushort);
+            buffer.Write(dnsOffset + offsetInDns + length, (ushort)DnsClass, Endianity.Big);
+            length += sizeof(ushort);
+            return length;
+        }
     }
 
-    public class DnsQueryResouceRecord : DnsResourceRecord
+    public class DnsQueryResourceRecord : DnsResourceRecord
     {
-        public DnsQueryResouceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass) 
+        public DnsQueryResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass) 
             : base(domainName, type, dnsClass)
         {
         }
@@ -117,7 +143,7 @@ namespace PcapDotNet.Packets.Dns
             protected set { throw new InvalidOperationException("No Resource Data in queries"); }
         }
 
-        internal static DnsQueryResouceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
+        internal static DnsQueryResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
         {
             DnsDomainName domainName;
             DnsType type;
@@ -125,7 +151,7 @@ namespace PcapDotNet.Packets.Dns
             if (!TryParseBase(dns, offsetInDns, out domainName, out type, out dnsClass, out numBytesRead))
                 return null;
 
-            return new DnsQueryResouceRecord(domainName, type, dnsClass);
+            return new DnsQueryResourceRecord(domainName, type, dnsClass);
         }
 
         internal override int GetLengthAfterBase(DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -167,6 +193,11 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public override DnsResourceData Data { get; protected set; }
 
+        public override string ToString()
+        {
+            return base.ToString() + " " + Ttl + " " + Data;
+        }
+
         internal static DnsDataResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
         {
             DnsDomainName domainName;
@@ -175,14 +206,14 @@ namespace PcapDotNet.Packets.Dns
             if (!TryParseBase(dns, offsetInDns, out domainName, out type, out dnsClass, out numBytesRead))
                 return null;
 
-            offsetInDns += numBytesRead;
-
-            if (offsetInDns + numBytesRead + MinimumLengthAfterBase >= dns.Length)
+            if (offsetInDns + numBytesRead + MinimumLengthAfterBase > dns.Length)
                 return null;
 
             int ttl = dns.ReadInt(offsetInDns + numBytesRead + OffsetAfterBase.Ttl, Endianity.Big);
             ushort dataLength = dns.ReadUShort(offsetInDns + numBytesRead + OffsetAfterBase.DataLength, Endianity.Big);
             numBytesRead += MinimumLengthAfterBase;
+            if (offsetInDns + numBytesRead + dataLength > dns.Length)
+                return null;
             DnsResourceData data = DnsResourceData.Read(dns, offsetInDns + numBytesRead, dataLength);
             if (data == null)
                 return null;
@@ -195,6 +226,15 @@ namespace PcapDotNet.Packets.Dns
         {
             return MinimumLengthAfterBase + Data.GetLength(compressionData, offsetInDns);
         }
+
+        internal override int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            int length = base.Write(buffer, dnsOffset, compressionData, offsetInDns);
+            buffer.Write(dnsOffset + offsetInDns + length, Ttl, Endianity.Big);
+            length += sizeof(uint);
+            length += Data.Write(buffer, dnsOffset, offsetInDns + length, compressionData);
+            return length;
+        }
     }
 
     public abstract class DnsResourceData
@@ -205,6 +245,16 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal abstract int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns);
+
+        internal int Write(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        {
+            int length = WriteData(buffer, dnsOffset, offsetInDns + sizeof(ushort), compressionData);
+            buffer.Write(dnsOffset + offsetInDns, (ushort)length, Endianity.Big);
+            length += sizeof(ushort);
+            return length;
+        }
+
+        internal abstract int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData);
     }
 
     public class DnsResourceDataUnknown : DnsResourceData
@@ -218,6 +268,12 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
+            return Data.Length;
+        }
+
+        internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        {
+            Data.Write(buffer, dnsOffset + offsetInDns);
             return Data.Length;
         }
     }

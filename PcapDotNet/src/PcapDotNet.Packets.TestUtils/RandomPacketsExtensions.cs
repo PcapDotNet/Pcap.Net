@@ -961,7 +961,70 @@ namespace PcapDotNet.Packets.TestUtils
         public static DnsLayer NextDnsLayer(this Random random)
         {
             DnsLayer dnsLayer = new DnsLayer();
+            dnsLayer.Id = random.NextUShort();
+            dnsLayer.IsQuery = random.NextBool();
+            dnsLayer.Opcode = random.NextEnum<DnsOpcode>();
+            dnsLayer.IsAuthoritiveAnswer = random.NextBool();
+            dnsLayer.IsTruncated = random.NextBool();
+            dnsLayer.IsRecusionDesired = random.NextBool();
+            dnsLayer.IsRecusionAvailable = random.NextBool();
+            dnsLayer.FutureUse = random.NextByte(DnsDatagram.MaxFutureUse + 1);
+            dnsLayer.ResponseCode = random.NextEnum<DnsResponseCode>();
+            dnsLayer.DomainNameCompressionMode = random.NextEnum<DnsDomainNameCompressionMode>();
+            int numQueries = random.Next(10);
+            List<DnsQueryResourceRecord> queries = new List<DnsQueryResourceRecord>();
+            for (int i = 0; i != numQueries; ++i)
+                queries.Add(random.NextDnsQueryResourceRecord());
+            dnsLayer.Queries = queries;
+            int numAnswers = random.Next(10);
+            List<DnsDataResourceRecord> answers = new List<DnsDataResourceRecord>();
+            for (int i = 0; i != numAnswers; ++i)
+                answers.Add(random.NextDnsDataResourceRecord());
+            dnsLayer.Answers = answers;
+            int numAuthorities = random.Next(10);
+            List<DnsDataResourceRecord> authorities = new List<DnsDataResourceRecord>();
+            for (int i = 0; i != numAuthorities; ++i)
+                authorities.Add(random.NextDnsDataResourceRecord());
+            dnsLayer.Authorities = authorities;
+            int numAdditionals = random.Next(10);
+            List<DnsDataResourceRecord> additionals = new List<DnsDataResourceRecord>();
+            for (int i = 0; i != numAdditionals; ++i)
+                additionals.Add(random.NextDnsDataResourceRecord());
+            dnsLayer.Additionals = additionals;
             return dnsLayer;
+        }
+
+        public static DnsQueryResourceRecord NextDnsQueryResourceRecord(this Random random)
+        {
+            DnsQueryResourceRecord record = new DnsQueryResourceRecord(random.NextDnsDomainName(), random.NextEnum<DnsType>(), random.NextEnum<DnsClass>());
+            return record;
+        }
+
+        public static DnsDataResourceRecord NextDnsDataResourceRecord(this Random random)
+        {
+            DnsDataResourceRecord record = new DnsDataResourceRecord(random.NextDnsDomainName(), random.NextEnum<DnsType>(), random.NextEnum<DnsClass>(), random.Next(), random.NextDnsResourceData());
+            return record;
+        }
+
+        public static DnsDomainName NextDnsDomainName(this Random random)
+        {
+            List<string> labels = new List<string>();
+            int numLabels = random.Next(10);
+            for (int i = 0; i != numLabels; ++i)
+            {
+                int labelLength = random.Next(10);
+                StringBuilder label = new StringBuilder();
+                for (int j = 0; j != labelLength; ++j)
+                    label.Append(random.NextChar('a', 'z'));
+               labels.Add(label.ToString());
+            }
+            return new DnsDomainName(string.Join(".", labels));
+        }
+
+        public static DnsResourceData NextDnsResourceData(this Random random)
+        {
+            DnsResourceData resourceData = new DnsResourceDataUnknown(new DataSegment(random.NextBytes(random.Next(100))));
+            return resourceData;
         }
 
         // HTTP

@@ -10,9 +10,8 @@ namespace PcapDotNet.Packets.Dns
     /// Represents a DNS layer.
     /// <seealso cref="DnsDatagram"/>
     /// </summary>
-    public class DnsLayer : Layer, IEquatable<DnsLayer>
+    public class DnsLayer : SimpleLayer, IEquatable<DnsLayer>
     {
-
         public ushort Id { get; set; }
         public bool IsResponse { get; set; }
         public bool IsQuery
@@ -35,7 +34,7 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsResponseCode ResponseCode { get; set; }
 
-        public List<DnsQueryResouceRecord> Queries { get; set; }
+        public List<DnsQueryResourceRecord> Queries { get; set; }
 
         public List<DnsDataResourceRecord> Answers { get; set; }
 
@@ -45,7 +44,16 @@ namespace PcapDotNet.Packets.Dns
 
         public IEnumerable<DnsResourceRecord> Records
         {
-            get { return Queries.Concat<DnsResourceRecord>(Answers).Concat(Authorities).Concat(Additionals); }
+            get
+            {
+                IEnumerable<DnsResourceRecord> allRecords = null;
+                foreach (IEnumerable<DnsResourceRecord> records in new IEnumerable<DnsResourceRecord>[] {Queries,Answers,Authorities,Additionals})
+                {
+                    if (records != null)
+                        allRecords = allRecords == null ? records : allRecords.Concat(records);
+                }
+                return allRecords;
+            }
         }
 
         public DnsDomainNameCompressionMode DomainNameCompressionMode { get; set; }
@@ -66,11 +74,11 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         /// <param name="buffer">The buffer to write the layer to.</param>
         /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
-        /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
-        /// <param name="previousLayer">The layer that comes before this layer. null if this is the first layer.</param>
-        /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
-        public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
+        protected override void Write(byte[] buffer, int offset)
         {
+            DnsDatagram.Write(buffer, offset,
+                              Id, IsResponse, Opcode, IsAuthoritiveAnswer, IsTruncated, IsRecusionDesired, IsRecusionAvailable, FutureUse, ResponseCode,
+                              Queries, Answers, Authorities, Additionals, DomainNameCompressionMode);
         }
 
         /// <summary>
@@ -90,7 +98,20 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public bool Equals(DnsLayer other)
         {
-            return other != null;
+            return other != null &&
+                   Id == other.Id &&
+                   IsQuery == other.IsQuery &&
+                   Opcode == other.Opcode &&
+                   IsAuthoritiveAnswer == other.IsAuthoritiveAnswer &&
+                   IsTruncated == other.IsTruncated &&
+                   IsRecusionDesired == other.IsRecusionDesired &&
+                   IsRecusionAvailable == other.IsRecusionAvailable &&
+                   FutureUse == other.FutureUse &&
+                   ResponseCode == other.ResponseCode &&
+                   (Queries.IsNullOrEmpty() == other.Queries.IsNullOrEmpty() || Queries.SequenceEqual(other.Queries)) &&
+                   (Answers.IsNullOrEmpty() == other.Answers.IsNullOrEmpty() || Answers.SequenceEqual(other.Answers)) &&
+                   (Authorities.IsNullOrEmpty() == other.Authorities.IsNullOrEmpty() || Authorities.SequenceEqual(other.Authorities)) &&
+                   (Additionals.IsNullOrEmpty() == other.Additionals.IsNullOrEmpty() || Additionals.SequenceEqual(other.Additionals));
         }
 
         /// <summary>
