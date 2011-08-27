@@ -2,7 +2,7 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsResourceDataUnknown : DnsResourceData, IEquatable<DnsResourceDataUnknown>
+    public class DnsResourceDataUnknown : DnsResourceDataSimple, IEquatable<DnsResourceDataUnknown>
     {
         public DnsResourceDataUnknown(DataSegment data)
         {
@@ -16,20 +16,24 @@ namespace PcapDotNet.Packets.Dns
             return other != null && Data.Equals(other.Data);
         }
 
-        public override bool Equals(object obj)
+        public sealed override bool Equals(DnsResourceData other)
         {
-            return Equals(obj as DnsResourceDataUnknown);
+            return Equals(other as DnsResourceDataUnknown);
         }
 
-        internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
+        internal override int GetLength()
         {
             return Data.Length;
         }
 
-        internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        internal override void WriteDataSimple(byte[] buffer, int offset)
         {
-            Data.Write(buffer, dnsOffset + offsetInDns);
-            return Data.Length;
+            Data.Write(buffer, offset);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            return new DnsResourceDataUnknown(data);
         }
     }
 }

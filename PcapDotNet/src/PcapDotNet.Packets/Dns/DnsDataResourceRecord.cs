@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.Dns
             numBytesRead += MinimumLengthAfterBase;
             if (offsetInDns + numBytesRead + dataLength > dns.Length)
                 return null;
-            DnsResourceData data = DnsResourceData.Read(dns, offsetInDns + numBytesRead, dataLength);
+            DnsResourceData data = DnsResourceData.Read(type, dnsClass, dns.SubSegment(offsetInDns + numBytesRead, dataLength));
             if (data == null)
                 return null;
             numBytesRead += dataLength;

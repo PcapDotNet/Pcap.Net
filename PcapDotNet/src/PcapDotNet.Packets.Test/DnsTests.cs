@@ -130,7 +130,7 @@ namespace PcapDotNet.Packets.Test
                                       //                                new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("abcd")))),
                                         //    new DnsDataResourceRecord(new DnsDomainName("abc.def."), DnsType.A, DnsClass.In, 100,
                                           //                            new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("abce")))),
-                                          new DnsDataResourceRecord(new DnsDomainName(""), DnsType.A, DnsClass.Any, 1, new DnsResourceDataUnknown(new DataSegment(new byte[0])))
+                                          new DnsDataResourceRecord(new DnsDomainName(""), DnsType.A, DnsClass.Any, 1, new DnsResourceDataIpV4(new IpV4Address("1.2.3.4")))
                                         }.ToList(),
 //                                    Authorities =
 //                                        new[]
