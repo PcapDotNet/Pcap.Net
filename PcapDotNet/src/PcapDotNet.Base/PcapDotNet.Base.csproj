@@ -93,6 +93,7 @@
     <Compile Include="IListExtensions.cs" />
     <Compile Include="InlineEqualityComparer.cs" />
     <Compile Include="MatchExtensions.cs" />
+    <Compile Include="MemberInfoExtensions.cs" />
     <Compile Include="PropertyInfoExtensions.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TypeExtensions.cs" />
