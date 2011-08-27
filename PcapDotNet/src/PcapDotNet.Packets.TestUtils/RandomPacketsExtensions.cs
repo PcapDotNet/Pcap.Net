@@ -1002,7 +1002,8 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static DnsDataResourceRecord NextDnsDataResourceRecord(this Random random)
         {
-            DnsDataResourceRecord record = new DnsDataResourceRecord(random.NextDnsDomainName(), random.NextEnum<DnsType>(), random.NextEnum<DnsClass>(), random.Next(), random.NextDnsResourceData());
+            DnsType type = random.NextEnum<DnsType>();
+            DnsDataResourceRecord record = new DnsDataResourceRecord(random.NextDnsDomainName(), type, random.NextEnum<DnsClass>(), random.Next(), random.NextDnsResourceData(type));
             return record;
         }
 
@@ -1021,10 +1022,15 @@ namespace PcapDotNet.Packets.TestUtils
             return new DnsDomainName(string.Join(".", labels));
         }
 
-        public static DnsResourceData NextDnsResourceData(this Random random)
+        public static DnsResourceData NextDnsResourceData(this Random random, DnsType type)
         {
-            DnsResourceData resourceData = new DnsResourceDataUnknown(new DataSegment(random.NextBytes(random.Next(100))));
-            return resourceData;
+            switch (type)
+            {
+                case DnsType.A:
+                    return new DnsResourceDataIpV4(random.NextIpV4Address());
+                default:
+                    return new DnsResourceDataUnknown(new DataSegment(random.NextBytes(random.Next(100))));
+            }
         }
 
         // HTTP

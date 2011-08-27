@@ -220,7 +220,7 @@ namespace PcapDotNet.Packets
         /// <param name="offset">The offset in the segment to start reading.</param>
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
         /// <returns>The value converted from the read bytes according to the endianity.</returns>
-        protected IpV4Address ReadIpV4Address(int offset, Endianity endianity)
+        internal IpV4Address ReadIpV4Address(int offset, Endianity endianity)
         {
             return Buffer.ReadIpV4Address(StartOffset + offset, endianity);
         }
