@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.EchoReply)]
-    public class IcmpEchoReplyDatagram : IcmpIdentifiedDatagram
+    public sealed class IcmpEchoReplyDatagram : IcmpIdentifiedDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

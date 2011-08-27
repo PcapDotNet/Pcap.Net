@@ -2,7 +2,7 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsDataResourceRecord : DnsResourceRecord, IEquatable<DnsDataResourceRecord>
+    public sealed class DnsDataResourceRecord : DnsResourceRecord, IEquatable<DnsDataResourceRecord>
     {
         private static class OffsetAfterBase
         {

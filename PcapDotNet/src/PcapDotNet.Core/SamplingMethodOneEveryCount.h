@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// Defines that only 1 out of count packets must be returned to the user.
     /// In other words, if the count is set to 10, the first packet is returned to the caller, while the following 9 are discarded.
     /// </summary>
-    public ref class SamplingMethodOneEveryCount : SamplingMethod
+    public ref class SamplingMethodOneEveryCount sealed : SamplingMethod
     {
     public:
         /// <summary>

@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.WindowScale)]
-    public class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionWindowScale>
+    public sealed class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionWindowScale>
     {
         /// <summary>
         /// The number of bytes this option take.

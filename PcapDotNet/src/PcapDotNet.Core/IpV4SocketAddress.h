@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// An internet protocol version 4 address for a device.
     /// </summary>
-    public ref class IpV4SocketAddress : SocketAddress
+    public ref class IpV4SocketAddress sealed : SocketAddress
     {
 	public:
         /// <summary>

@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// A simple TCP option - holds only the type.
     /// </summary>
-    public class TcpOptionSimple : TcpOption
+    public sealed class TcpOptionSimple : TcpOption
     {
         /// <summary>
         /// The number of bytes this option will take.

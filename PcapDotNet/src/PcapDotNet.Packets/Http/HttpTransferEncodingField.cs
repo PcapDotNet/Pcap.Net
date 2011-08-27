@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.Http
     /// If multiple encodings have been applied to an entity, the transfer-codings MUST be listed in the order in which they were applied.
     /// Additional information about the encoding parameters MAY be provided by other entity-header fields not defined by this specification.
     /// </summary>
-    public class HttpTransferEncodingField : HttpField, IEquatable<HttpTransferEncodingField>
+    public sealed class HttpTransferEncodingField : HttpField, IEquatable<HttpTransferEncodingField>
     {
         /// <summary>
         /// The field name.

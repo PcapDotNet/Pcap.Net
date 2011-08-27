@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.TimestampReply)]
-    public class IcmpTimestampReplyDatagram : IcmpTimestampDatagram
+    public sealed class IcmpTimestampReplyDatagram : IcmpTimestampDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

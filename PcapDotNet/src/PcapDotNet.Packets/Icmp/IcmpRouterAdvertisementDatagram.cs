@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.RouterAdvertisement)]
-    public class IcmpRouterAdvertisementDatagram : IcmpDatagram
+    public sealed class IcmpRouterAdvertisementDatagram : IcmpDatagram
     {
         /// <summary>
         /// The default number of 32-bit words of information per each router address.

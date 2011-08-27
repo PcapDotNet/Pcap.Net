@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets
     /// Includes all packet layers as taken from an adapter including the type of the datalink.
     /// Immutable.
     /// </summary>
-    public class Packet : IList<byte>, IEquatable<Packet>
+    public sealed class Packet : IList<byte>, IEquatable<Packet>
     {
         /// <summary>
         /// Creates a packet from a string that represents bytes in a hexadecimal format.

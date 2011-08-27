@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Http
     /// The header is a container for HTTP fields.
     /// Insensitive to the case of HTTP field names.
     /// </summary>
-    public class HttpHeader : IEnumerable<HttpField>, IEquatable<HttpHeader>
+    public sealed class HttpHeader : IEnumerable<HttpField>, IEquatable<HttpHeader>
     {
         /// <summary>
         /// An empty HTTP header.

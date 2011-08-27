@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// Representation of an interface address.
     /// </summary>
-    public ref class DeviceAddress
+    public ref class DeviceAddress sealed
     {
     public:
         /// <summary>

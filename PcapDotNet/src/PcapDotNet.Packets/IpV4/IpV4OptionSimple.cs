@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.IpV4
     /// <summary>
     /// A simple IPv4 option - holds only the type.
     /// </summary>
-    public class IpV4OptionSimple : IpV4Option
+    public sealed class IpV4OptionSimple : IpV4Option
     {
         /// <summary>
         /// The number of bytes this option will take.

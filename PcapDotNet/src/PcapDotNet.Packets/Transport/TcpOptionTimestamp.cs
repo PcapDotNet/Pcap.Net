@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Timestamp)]
-    public class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>
+    public sealed class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>
     {
         /// <summary>
         /// The number of bytes this option take.

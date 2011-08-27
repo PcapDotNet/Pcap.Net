@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Transport
     /// </pre>
     /// </para>
     /// </summary>
-    public class UdpDatagram : TransportDatagram
+    public sealed class UdpDatagram : TransportDatagram
     {
         /// <summary>
         /// The number of bytes the datagram header takes.

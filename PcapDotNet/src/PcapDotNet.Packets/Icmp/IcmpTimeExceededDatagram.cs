@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.TimeExceeded)]
-    public class IcmpTimeExceededDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
+    public sealed class IcmpTimeExceededDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

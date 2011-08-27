@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Igmp
     /// +-----+----------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IgmpGroupRecordDatagram : Datagram
+    public sealed class IgmpGroupRecordDatagram : Datagram
     {
         private static class Offset
         {

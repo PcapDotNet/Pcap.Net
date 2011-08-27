@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Gre
     /// RFC 1702.
     /// Represents a source route entry consisting of a list of Autonomous System numbers and indicates an AS source route.
     /// </summary>
-    public class GreSourceRouteEntryAs : GreSourceRouteEntry
+    public sealed class GreSourceRouteEntryAs : GreSourceRouteEntry
     {
         /// <summary>
         /// Initializes using the given AS numbers and the next as number index.

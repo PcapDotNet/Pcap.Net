@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Arp
     /// <summary>
     /// Represents an ARP protocol layer.
     /// </summary>
-    public class ArpLayer : Layer, IEthernetNextLayer
+    public sealed class ArpLayer : Layer, IEthernetNextLayer
     {
         /// <summary>
         /// Each protocol is assigned a number used in this field.
@@ -123,7 +123,7 @@ namespace PcapDotNet.Packets.Arp
         /// </summary>
         /// <param name="other">The ARP layer to compare the layer to.</param>
         /// <returns>True iff the two layers are equal.</returns>
-        public override sealed bool Equals(Layer other)
+        public override bool Equals(Layer other)
         {
             return Equals(other as ArpLayer);
         }

@@ -7,7 +7,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// An offline interface - a pcap file to read packets from.
     /// </summary>
-    public ref class OfflinePacketDevice : PacketDevice
+    public ref class OfflinePacketDevice sealed : PacketDevice
     {
     public:
         /// <summary>

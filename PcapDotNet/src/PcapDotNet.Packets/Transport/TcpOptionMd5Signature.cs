@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Md5Signature)]
-    public class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMd5Signature>
+    public sealed class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMd5Signature>
     {
         /// <summary>
         /// The number of bytes this option take.

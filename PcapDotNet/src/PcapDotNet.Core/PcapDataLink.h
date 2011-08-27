@@ -5,7 +5,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// A packet communicator datalink.
     /// </summary>
-    public value class PcapDataLink : Packets::IDataLink, System::IEquatable<PcapDataLink>
+    public value class PcapDataLink sealed : Packets::IDataLink, System::IEquatable<PcapDataLink>
     {
     public:
         /// <summary>

@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents an IGMP group record with all the relevant fields.
     /// Used to build an IGMP report of version 3.
     /// </summary>
-    public class IgmpGroupRecord : IEquatable<IgmpGroupRecord>
+    public sealed class IgmpGroupRecord : IEquatable<IgmpGroupRecord>
     {
         /// <summary>
         /// Create the record according to all the fields.

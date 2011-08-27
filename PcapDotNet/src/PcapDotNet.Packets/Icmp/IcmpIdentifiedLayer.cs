@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// A value that should be interpreted according to the specific message.
         /// </summary>
-        protected override sealed uint Variable
+        protected sealed override uint Variable
         {
             get { return (uint)((Identifier << 16) | SequenceNumber); }
         }

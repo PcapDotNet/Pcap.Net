@@ -7,7 +7,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// Represents a statistics value when running in statistics mode.
     /// </summary>
-    public ref class PacketSampleStatistics
+    public ref class PacketSampleStatistics sealed
     {
     public:
         /// <summary>

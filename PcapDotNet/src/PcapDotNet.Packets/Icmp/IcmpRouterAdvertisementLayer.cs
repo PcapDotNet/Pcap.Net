@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Icmp
     /// An ICMP Router Advertisement layer.
     /// <seealso cref="IcmpRouterAdvertisementDatagram"/>
     /// </summary>
-    public class IcmpRouterAdvertisementLayer : IcmpLayer
+    public sealed class IcmpRouterAdvertisementLayer : IcmpLayer
     {
         /// <summary>
         /// The maximum time that the router addresses may be considered valid.

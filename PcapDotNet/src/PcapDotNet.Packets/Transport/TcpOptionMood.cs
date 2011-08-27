@@ -63,7 +63,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Mood)]
-    public class TcpOptionMood : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMood>
+    public sealed class TcpOptionMood : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMood>
     {
         /// <summary>
         /// The minimum number of bytes this option take.

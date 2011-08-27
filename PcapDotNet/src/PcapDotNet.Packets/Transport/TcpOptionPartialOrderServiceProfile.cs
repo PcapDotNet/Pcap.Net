@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.PartialOrderServiceProfile)]
-    public class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderServiceProfile>
+    public sealed class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderServiceProfile>
     {
         private const byte NoFlags = 0x00;
         private const byte StartFlag = 0x80;

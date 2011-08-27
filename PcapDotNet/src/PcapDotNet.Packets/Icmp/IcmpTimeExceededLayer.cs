@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// </summary>
-    public class IcmpTimeExceededLayer : IcmpLayer
+    public sealed class IcmpTimeExceededLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

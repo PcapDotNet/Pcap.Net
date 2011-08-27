@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.DestinationUnreachable)]
-    public class IcmpDestinationUnreachableDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
+    public sealed class IcmpDestinationUnreachableDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
     {
         /// <summary>
         /// The minimum value of the maximum transmission unit for FragmentationNeededAndDoNotFragmentSet code.

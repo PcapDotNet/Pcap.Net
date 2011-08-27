@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents an ICMP Trace Route message layer.
     /// <seealso cref="IcmpTraceRouteDatagram"/>
     /// </summary>
-    public class IcmpTraceRouteLayer : IcmpLayer
+    public sealed class IcmpTraceRouteLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

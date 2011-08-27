@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Icmp
     /// RFC 1256.
     /// Represents an entry in Router Advertisement ICMP message.
     /// </summary>
-    public class IcmpRouterAdvertisementEntry : IEquatable<IcmpRouterAdvertisementEntry>
+    public sealed class IcmpRouterAdvertisementEntry : IEquatable<IcmpRouterAdvertisementEntry>
     {
         /// <summary>
         /// Creates an instance using the given router address and preference.

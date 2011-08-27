@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// The number of bytes this layer will take.
         /// </summary>
-        public override sealed int Length
+        public sealed override int Length
         {
             get { return IcmpDatagram.HeaderLength + PayloadLength; } 
         }
@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <param name="buffer">The buffer to write the layer to.</param>
         /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "offset+8")]
-        protected override sealed void Write(byte[] buffer, int offset)
+        protected sealed override void Write(byte[] buffer, int offset)
         {
             IcmpDatagram.WriteHeader(buffer, offset, MessageType, CodeValue, Variable);
             WritePayload(buffer, offset + IcmpDatagram.HeaderLength);
@@ -93,7 +93,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <param name="offset">The offset in the buffer the layer starts.</param>
         /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
         /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
-        public override sealed void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
+        public sealed override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
             IcmpDatagram.WriteChecksum(buffer, offset, Length + payloadLength, Checksum);
         }
@@ -130,7 +130,7 @@ namespace PcapDotNet.Packets.Icmp
         /// Returns a hash code for the layer.
         /// The hash code is a XOR of the layer length, data link, message type and code, checksum and variable.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
                    MessageTypeAndCode.GetHashCode() ^ Checksum.GetHashCode() ^ Variable.GetHashCode();
@@ -139,7 +139,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// Returns a string containing the message type, code and variable.
         /// </summary>
-        public override string ToString()
+        public sealed override string ToString()
         {
             return MessageType + "." + CodeValue + "(" + Variable + ")";
         }

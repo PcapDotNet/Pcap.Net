@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Http
     /// RFC 2616.
     /// Represents an HTTP response.
     /// </summary>
-    public class HttpResponseDatagram : HttpDatagram
+    public sealed class HttpResponseDatagram : HttpDatagram
     {
         private class ParseInfo : ParseInfoBase
         {

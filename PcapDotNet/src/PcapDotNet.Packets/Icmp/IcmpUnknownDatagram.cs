@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// Used to represent an ICMP datagram with an unknown message type.
     /// </summary>
-    public class IcmpUnknownDatagram : IcmpDatagram
+    public sealed class IcmpUnknownDatagram : IcmpDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

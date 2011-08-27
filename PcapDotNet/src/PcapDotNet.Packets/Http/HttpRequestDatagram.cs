@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets.Http
     /// RFC 2616.
     /// Represents an HTTP request.
     /// </summary>
-    public class HttpRequestDatagram : HttpDatagram
+    public sealed class HttpRequestDatagram : HttpDatagram
     {
         private class ParseInfo : ParseInfoBase
         {

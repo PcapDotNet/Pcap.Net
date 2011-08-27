@@ -160,7 +160,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The number of bytes this option will take.
         /// </summary>
-        public override int Length
+        public sealed override int Length
         {
             get
             {
@@ -172,7 +172,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// True iff this option may appear at most once in a datagram.
         /// </summary>
-        public override bool IsAppearsAtMostOnce
+        public sealed override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
@@ -194,7 +194,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Two options are equal if they have the same value (timestamp, overflow, pointed equals and addresses).
         /// </summary>
-        public override bool Equals(IpV4Option other)
+        public sealed override bool Equals(IpV4Option other)
         {
             return Equals(other as IpV4OptionTimestamp);
         }
@@ -209,7 +209,7 @@ namespace PcapDotNet.Packets.IpV4
                    PointedIndex.GetHashCode();
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedIndex * 4);

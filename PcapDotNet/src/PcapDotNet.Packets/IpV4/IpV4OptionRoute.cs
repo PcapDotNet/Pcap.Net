@@ -45,7 +45,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The number of bytes this option will take.
         /// </summary>
-        public override int Length
+        public sealed override int Length
         {
             get { return OptionMinimumLength + IpV4Address.SizeOf * Route.Count; }
         }
@@ -53,7 +53,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// True iff this option may appear at most once in a datagram.
         /// </summary>
-        public override bool IsAppearsAtMostOnce
+        public sealed override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Two routes options are equal iff they have the same type, same pointed address index and same route.
         /// </summary>
-        public override bool Equals(IpV4Option other)
+        public sealed override bool Equals(IpV4Option other)
         {
             return Equals(other as IpV4OptionRoute);
         }
@@ -82,14 +82,14 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The hash code of the route option is the xor of the following hash codes: base class, pointed address index and all the addresses in the route.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
                    PointedAddressIndex.GetHashCode() ^
                    Route.SequenceGetHashCode();
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)(OptionMinimumLength + 1 + PointedAddressIndex * 4);

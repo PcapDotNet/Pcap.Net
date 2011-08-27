@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// </summary>
-    public class IcmpTimestampReplyLayer : IcmpTimestampLayer
+    public sealed class IcmpTimestampReplyLayer : IcmpTimestampLayer
     {
         /// <summary>
         /// The value of this field determines the format of the remaining data.

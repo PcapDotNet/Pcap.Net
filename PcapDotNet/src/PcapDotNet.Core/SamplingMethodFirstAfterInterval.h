@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// This sampling method defines that we have to return 1 packet every given time-interval.
     /// In other words, if the interval is set to 10 milliseconds, the first packet is returned to the caller; the next returned one will be the first packet that arrives when 10ms have elapsed.
     /// </summary>
-    public ref class SamplingMethodFirstAfterInterval : SamplingMethod
+    public ref class SamplingMethodFirstAfterInterval sealed : SamplingMethod
     {
     public:
         /// <summary>

@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Http
         /// <summary>
         /// The number of bytes this layer will take.
         /// </summary>
-        public override int Length
+        public sealed override int Length
         {
             get
             {
@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.Http
         /// Two HTTP layers are equal iff they have the same version, header and body.
         /// Extended by specific HTTP layers types for more checks.
         /// </summary>
-        public override bool Equals(Layer other)
+        public sealed override bool Equals(Layer other)
         {
             return Equals(other as HttpLayer);
         }
@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.Http
         /// </summary>
         /// <param name="buffer">The buffer to write the layer to.</param>
         /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
-        protected override void Write(byte[] buffer, int offset)
+        protected sealed override void Write(byte[] buffer, int offset)
         {
             WriteFirstLine(buffer, ref offset);
             if (Header != null)

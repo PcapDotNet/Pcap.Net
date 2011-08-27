@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Gre
     /// +-----+---------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class GreDatagram : Datagram
+    public sealed class GreDatagram : Datagram
     {
         private static class Offset
         {

@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Http
     /// HTTP request method.
     /// Example: GET
     /// </summary>
-    public class HttpRequestMethod : IEquatable<HttpRequestMethod>
+    public sealed class HttpRequestMethod : IEquatable<HttpRequestMethod>
     {
         /// <summary>
         /// Creates a method from a method string.

@@ -4,7 +4,7 @@ namespace PcapDotNet.Packets.Icmp
     /// RFC 792 and RFC 1191.
     /// <seealso cref="IcmpDestinationUnreachableDatagram"/>
     /// </summary>
-    public class IcmpDestinationUnreachableLayer : IcmpLayer
+    public sealed class IcmpDestinationUnreachableLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

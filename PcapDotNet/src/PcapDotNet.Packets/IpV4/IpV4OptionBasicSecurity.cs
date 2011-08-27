@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.IpV4
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.BasicSecurity)]
-    public class IpV4OptionBasicSecurity : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
+    public sealed class IpV4OptionBasicSecurity : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
     {
         /// <summary>
         /// The minimum number of bytes this option take.

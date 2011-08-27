@@ -6,7 +6,7 @@
 
 namespace PcapDotNet { namespace Core 
 {
-    public ref class OfflinePacketCommunicator : PacketCommunicator
+    public ref class OfflinePacketCommunicator sealed : PacketCommunicator
     {
     public:
         /// <summary>

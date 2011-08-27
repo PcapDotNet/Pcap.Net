@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// No sampling has to be done on the current capture.
     /// In this case, no sampling algorithms are applied to the current capture. 
     /// </summary>
-    public ref class SamplingMethodNone : SamplingMethod
+    public ref class SamplingMethodNone sealed : SamplingMethod
     {
     internal:
         virtual property int Method

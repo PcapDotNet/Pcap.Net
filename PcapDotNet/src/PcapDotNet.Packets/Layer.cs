@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// True iff the two objects are equal Layers.
         /// </summary>
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as Layer);
         }

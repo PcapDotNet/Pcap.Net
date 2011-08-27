@@ -2,7 +2,7 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsResourceDataUnknown : DnsResourceDataSimple, IEquatable<DnsResourceDataUnknown>
+    public sealed class DnsResourceDataUnknown : DnsResourceDataSimple, IEquatable<DnsResourceDataUnknown>
     {
         public DnsResourceDataUnknown(DataSegment data)
         {

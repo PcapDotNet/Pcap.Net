@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Transport
     /// Represents the UDP layer.
     /// <seealso cref="UdpDatagram"/>
     /// </summary>
-    public class UdpLayer : TransportLayer
+    public sealed class UdpLayer : TransportLayer
     {
         /// <summary>
         /// Whether the checksum should be calculated.

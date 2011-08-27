@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.IpV4
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.RouterAlert)]
-    public class IpV4OptionRouterAlert : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionRouterAlert>
+    public sealed class IpV4OptionRouterAlert : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionRouterAlert>
     {
         /// <summary>
         /// The number of bytes this option take.

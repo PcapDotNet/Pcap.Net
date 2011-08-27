@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets.Ethernet
     /// +------+-------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class EthernetDatagram : Datagram
+    public sealed class EthernetDatagram : Datagram
     {
         private static class Offset
         {

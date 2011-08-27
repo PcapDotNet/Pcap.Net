@@ -6,7 +6,7 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.TestUtils
 {
-    public class HexEncoding : Encoding 
+    public sealed class HexEncoding : Encoding 
     {
         public static HexEncoding Instance { get { return _instance; } }
 
@@ -102,7 +102,7 @@ namespace PcapDotNet.Packets.TestUtils
             throw new ArgumentOutOfRangeException("digit", digit, "digit is not a legal hexadecimal character");
         }
 
-        private char ByteToDigit(byte b)
+        private static char ByteToDigit(byte b)
         {
             if (b <= 9)
                 return (char)('0' + b);

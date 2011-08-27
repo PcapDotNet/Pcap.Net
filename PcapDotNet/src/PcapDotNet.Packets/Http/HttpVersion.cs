@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Http
     /// <summary>
     /// Represents an HTTP version.
     /// </summary>
-    public class HttpVersion : IEquatable<HttpVersion>
+    public sealed class HttpVersion : IEquatable<HttpVersion>
     {
         /// <summary>
         /// Creates a version from the major and minor version numbers.

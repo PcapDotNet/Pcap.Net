@@ -8,7 +8,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// A live interface.
     /// </summary>
-    public ref class LivePacketDevice : PacketDevice
+    public ref class LivePacketDevice sealed : PacketDevice
     {
     public:
         /// <summary>

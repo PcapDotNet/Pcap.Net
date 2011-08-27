@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Ethernet
     /// Represents an Ethernet layer.
     /// <seealso cref="EthernetDatagram"/>
     /// </summary>
-    public class EthernetLayer : Layer, IArpPreviousLayer
+    public sealed class EthernetLayer : Layer, IArpPreviousLayer
     {
         /// <summary>
         /// Creates an instance with zero values.
@@ -102,7 +102,7 @@ namespace PcapDotNet.Packets.Ethernet
         /// <summary>
         /// Two Ethernet layers are equal if they have the same source, destination and ethernet type.
         /// </summary>
-        public override sealed bool Equals(Layer other)
+        public override bool Equals(Layer other)
         {
             return Equals(other as EthernetLayer);
         }

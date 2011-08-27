@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// An unknown TCP option.
     /// </summary>
-    public class TcpOptionUnknown : TcpOptionComplex, IOptionUnknownFactory<TcpOptionType>, IEquatable<TcpOptionUnknown>
+    public sealed class TcpOptionUnknown : TcpOptionComplex, IOptionUnknownFactory<TcpOptionType>, IEquatable<TcpOptionUnknown>
     {
         /// <summary>
         /// The minimum number of bytes this option take.

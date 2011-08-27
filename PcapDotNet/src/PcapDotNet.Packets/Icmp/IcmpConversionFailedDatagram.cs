@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.ConversionFailed)]
-    public class IcmpConversionFailedDatagram : IcmpIpV4PayloadDatagram
+    public sealed class IcmpConversionFailedDatagram : IcmpIpV4PayloadDatagram
     {
         /// <summary>
         /// The number of bytes that should be taken from the original datagram for an unsupported transport protocol ICMP code.

@@ -38,7 +38,7 @@ namespace PcapDotNet.Packets.Transport
         /// Checks whether two options have equivalent type.
         /// Useful to check if an option that must appear at most once appears in the list.
         /// </summary>
-        public override bool Equivalent(Option other)
+        public sealed override bool Equivalent(Option other)
         {
             return OptionType == ((TcpOption)other).OptionType;
         }
@@ -56,7 +56,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// Checks if the two options are exactly the same - including type and value.
         /// </summary>
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as TcpOption);
         }
@@ -73,12 +73,12 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The string that represents the option type.
         /// </summary>
-        public override string ToString()
+        public sealed override string ToString()
         {
             return OptionType.ToString();
         }
 
-        internal override Option Read(byte[] buffer, ref int offset, int length)
+        internal sealed override Option Read(byte[] buffer, ref int offset, int length)
         {
             int offsetEnd = offset + length;
             if (offset == offsetEnd)

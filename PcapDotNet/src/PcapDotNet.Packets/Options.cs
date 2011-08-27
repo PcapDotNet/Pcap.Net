@@ -66,7 +66,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// Two options are equal iff they have the exact same options.
         /// </summary>
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as Options<T>);
         }
@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// The hash code is the xor of the following hash codes: number of bytes the options take and all the options.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return BytesLength.GetHashCode() ^
                    OptionsCollection.SequenceGetHashCode();
@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// A string of all the option type names.
         /// </summary>
-        public override string ToString()
+        public sealed override string ToString()
         {
             return OptionsCollection.SequenceToString(", ", GetType().Name + " {", "}");
         }

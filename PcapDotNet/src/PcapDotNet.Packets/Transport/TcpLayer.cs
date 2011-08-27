@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Transport
     /// Represents the TCP layer.
     /// <seealso cref="TcpDatagram"/>
     /// </summary>
-    public class TcpLayer : TransportLayer
+    public sealed class TcpLayer : TransportLayer
     {
         /// <summary>
         /// Default constructor.
@@ -105,7 +105,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// True iff the SequenceNumber, AcknowledgmentNumber, ControlBits, Window, UrgentPointer and Options fields are equal.
         /// </summary>
-        protected override sealed bool EqualFields(TransportLayer other)
+        protected override bool EqualFields(TransportLayer other)
         {
             return EqualFields(other as TcpLayer);
         }

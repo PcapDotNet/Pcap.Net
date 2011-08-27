@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.IpV4
     /// +-----+-----------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV4Datagram : Datagram
+    public sealed class IpV4Datagram : Datagram
     {
         /// <summary>
         /// The minimum length of the header in bytes.

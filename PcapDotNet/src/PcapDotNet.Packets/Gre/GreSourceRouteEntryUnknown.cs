@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Gre
     /// <summary>
     /// Represents a source route entry consisting of an unknown data.
     /// </summary>
-    public class GreSourceRouteEntryUnknown : GreSourceRouteEntry
+    public sealed class GreSourceRouteEntryUnknown : GreSourceRouteEntry
     {
         /// <summary>
         /// Initializes using an address family, data, and offset to the first octet of the active entry in Source Route Entry to be examined.

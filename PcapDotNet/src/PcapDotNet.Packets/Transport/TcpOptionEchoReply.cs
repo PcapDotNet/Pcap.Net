@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.EchoReply)]
-    public class TcpOptionEchoReply : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEchoReply>
+    public sealed class TcpOptionEchoReply : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEchoReply>
     {
         /// <summary>
         /// The number of bytes this option take.

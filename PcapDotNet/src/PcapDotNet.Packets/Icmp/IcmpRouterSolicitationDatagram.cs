@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.RouterSolicitation)]
-    public class IcmpRouterSolicitationDatagram : IcmpDatagram
+    public sealed class IcmpRouterSolicitationDatagram : IcmpDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

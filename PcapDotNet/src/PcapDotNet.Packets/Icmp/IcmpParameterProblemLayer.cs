@@ -3,7 +3,7 @@ namespace PcapDotNet.Packets.Icmp
     /// <summary>
     /// RFC 792.
     /// </summary>
-    public class IcmpParameterProblemLayer : IcmpLayer
+    public sealed class IcmpParameterProblemLayer : IcmpLayer
     {
         /// <summary>
         /// The pointer identifies the octet of the original datagram's header where the error was detected (it may be in the middle of an option).  
