@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.IpV4
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.QuickStart)]
-    public class IpV4OptionQuickStart : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionQuickStart>
+    public sealed class IpV4OptionQuickStart : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionQuickStart>
     {
         /// <summary>
         /// The number of bytes this option take.

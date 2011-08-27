@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// A domain name represented as a series of labels, and terminated by a label with zero length.
     /// </summary>
-    public class DnsDomainName : IEquatable<DnsDomainName>
+    public sealed class DnsDomainName : IEquatable<DnsDomainName>
     {
         private const byte MaxLabelLength = 63;
         private const ushort CompressionMarker = 0xC000;

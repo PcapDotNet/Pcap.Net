@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents an IGMP Query version 3 layer.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
+    public sealed class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
     {
         /// <summary>
         /// Creates an instance of an IGMP Query Version 3 layer.

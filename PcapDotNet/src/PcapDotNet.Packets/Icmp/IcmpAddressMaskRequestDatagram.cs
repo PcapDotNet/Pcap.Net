@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// ICMP is valid if the datagram's length is OK, the checksum is correct and the code is in the expected range.
         /// </summary>
-        protected override bool CalculateIsValid()
+        protected sealed override bool CalculateIsValid()
         {
             return base.CalculateIsValid() && Length == DatagramLength;
         }

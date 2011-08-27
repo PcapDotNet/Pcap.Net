@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Arp
     /// +-----+-------------------------------------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class ArpDatagram : Datagram
+    public sealed class ArpDatagram : Datagram
     {
         private static class Offset
         {

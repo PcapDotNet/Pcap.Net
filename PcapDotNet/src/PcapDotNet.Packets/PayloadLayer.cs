@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets
     /// Represents a layer that adds a simple payload.
     /// Actually can be any buffer of bytes.
     /// </summary>
-    public class PayloadLayer : SimpleLayer, IEquatable<PayloadLayer>
+    public sealed class PayloadLayer : SimpleLayer, IEquatable<PayloadLayer>
     {
         /// <summary>
         /// Creates an empty payload.
@@ -41,7 +41,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// Two payload layers are equal if they have same data.
         /// </summary>
-        public override sealed bool Equals(Layer other)
+        public override bool Equals(Layer other)
         {
             return Equals(other as PayloadLayer);
         }

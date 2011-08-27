@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.AlternateChecksumRequest)]
-    public class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumRequest>
+    public sealed class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumRequest>
     {
         /// <summary>
         /// The number of bytes this option take.

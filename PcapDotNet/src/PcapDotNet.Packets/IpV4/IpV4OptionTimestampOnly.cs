@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.IpV4
     /// <summary>
     /// Represents a timestamp IPv4 option with only the timestamps.
     /// </summary>
-    public class IpV4OptionTimestampOnly : IpV4OptionTimestamp
+    public sealed class IpV4OptionTimestampOnly : IpV4OptionTimestamp
     {
         /// <summary>
         /// Create the option by giving it all the data.

@@ -2,7 +2,7 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsQueryResourceRecord : DnsResourceRecord, IEquatable<DnsQueryResourceRecord>
+    public sealed class DnsQueryResourceRecord : DnsResourceRecord, IEquatable<DnsQueryResourceRecord>
     {
         public DnsQueryResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass) 
             : base(domainName, type, dnsClass)

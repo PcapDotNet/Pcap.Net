@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets
     /// A datagram is part of the packet bytes that can be treated as a specific protocol data (usually header + payload).
     /// Never copies the given buffer.
     /// </summary>
-    public class Datagram : DataSegment, IEquatable<Datagram>
+    public class Datagram : DataSegment
     {
         /// <summary>
         /// Take all the bytes as a datagram.
@@ -60,22 +60,6 @@ namespace PcapDotNet.Packets
                        {
                            Data = this
                        };
-        }
-
-        /// <summary>
-        /// Two datagrams are equal if they have the same data.
-        /// </summary>
-        public bool Equals(Datagram other)
-        {
-            return base.Equals(other);
-        }
-
-        /// <summary>
-        /// Two datagrams are equal if they have the same data.
-        /// </summary>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Datagram);
         }
 
         /// <summary>

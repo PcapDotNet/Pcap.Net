@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Http
     /// RFC 2616.
     /// Represents an HTTP response layer.
     /// </summary>
-    public class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
+    public sealed class HttpResponseLayer : HttpLayer, IEquatable<HttpResponseLayer>
     {
         /// <summary>
         /// false since this is a response.

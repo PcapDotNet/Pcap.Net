@@ -90,7 +90,7 @@ namespace PcapDotNet.Packets.Igmp
     /// +-----+------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IgmpDatagram : Datagram
+    public sealed class IgmpDatagram : Datagram
     {
         /// <summary>
         /// The number of bytes the IGMP header takes for all messages but query version 3.

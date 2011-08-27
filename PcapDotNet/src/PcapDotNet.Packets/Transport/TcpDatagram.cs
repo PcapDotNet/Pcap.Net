@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Transport
     /// +-----+------------------------------------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class TcpDatagram : TransportDatagram
+    public sealed class TcpDatagram : TransportDatagram
     {
         /// <summary>
         /// The minimum number of bytes the header takes.

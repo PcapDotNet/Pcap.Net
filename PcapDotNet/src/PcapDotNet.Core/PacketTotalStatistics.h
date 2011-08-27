@@ -7,7 +7,7 @@ namespace PcapDotNet { namespace Core
     /// <summary>
     /// Statistics on capture from the start of the run. 
     /// </summary>
-    public ref class PacketTotalStatistics : System::IEquatable<PacketTotalStatistics^>
+    public ref class PacketTotalStatistics sealed : System::IEquatable<PacketTotalStatistics^>
     {
     public:
         /// <summary>

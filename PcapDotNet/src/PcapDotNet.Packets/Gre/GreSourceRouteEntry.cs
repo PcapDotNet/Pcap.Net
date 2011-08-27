@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.Gre
         /// <summary>
         /// Two entries are equal iff they have the same address family, length, payload offset and payload.
         /// </summary>
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as GreSourceRouteEntry);
         }
@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.Gre
         /// <summary>
         /// The hash code of an entry is a xor of the hash code of the address family, length, payload offset and payload.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return AddressFamily.GetHashCode() ^ Length.GetHashCode() ^ PayloadOffset.GetHashCode() ^ PayloadHashCode;
         }

@@ -4,7 +4,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents an ICMP layer with an unknown message type.
     /// <seealso cref="IcmpUnknownDatagram"/>
     /// </summary>
-    public class IcmpUnknownLayer : IcmpLayer
+    public sealed class IcmpUnknownLayer : IcmpLayer
     {
         /// <summary>
         /// The value of this field determines the format of the remaining data.

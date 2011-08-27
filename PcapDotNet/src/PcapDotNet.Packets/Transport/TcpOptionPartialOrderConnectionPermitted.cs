@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Transport
     /// </pre>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.PartialOrderConnectionPermitted)]
-    public class TcpOptionPartialOrderConnectionPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderConnectionPermitted>
+    public sealed class TcpOptionPartialOrderConnectionPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderConnectionPermitted>
     {
         /// <summary>
         /// The number of bytes this option take.

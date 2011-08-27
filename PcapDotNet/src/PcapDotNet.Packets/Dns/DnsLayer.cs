@@ -10,7 +10,7 @@ namespace PcapDotNet.Packets.Dns
     /// Represents a DNS layer.
     /// <seealso cref="DnsDatagram"/>
     /// </summary>
-    public class DnsLayer : SimpleLayer, IEquatable<DnsLayer>
+    public sealed class DnsLayer : SimpleLayer, IEquatable<DnsLayer>
     {
         public ushort Id { get; set; }
         public bool IsResponse { get; set; }

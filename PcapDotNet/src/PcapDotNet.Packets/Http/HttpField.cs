@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets.Http
         /// True iff the two HTTP fields are of equal value.
         /// Two fields are equal iff they have the same name (case insensitive) and the same bytes value.
         /// </summary>
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as HttpField);
         }
@@ -120,7 +120,7 @@ namespace PcapDotNet.Packets.Http
         /// <summary>
         /// Returns a hash code of this field according to the name and value.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return Name.ToUpperInvariant().GetHashCode() ^ Value.BytesSequenceGetHashCode();
         }
@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Http
         /// A string representing the field similar to how it would like in the HTTP protocol.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
+        public sealed override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}: {1}", Name, ValueString);
         }

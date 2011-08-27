@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents an ICMP Security Failures layer.
     /// <seealso cref="IcmpSecurityFailuresDatagram"/>
     /// </summary>
-    public class IcmpSecurityFailuresLayer : IcmpLayer
+    public sealed class IcmpSecurityFailuresLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

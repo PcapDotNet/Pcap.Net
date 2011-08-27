@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The actual time allowed, called the Max Resp Time.
         /// </summary>
-        public override TimeSpan MaxResponseTimeValue
+        public sealed override TimeSpan MaxResponseTimeValue
         {
             get { return TimeSpan.Zero; }
         }

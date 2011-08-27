@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Represents IPv4 layer.
     /// <seealso cref="IpV4Datagram"/>
     /// </summary>
-    public class IpV4Layer : Layer, IEthernetNextLayer, IIpV4NextLayer
+    public sealed class IpV4Layer : Layer, IEthernetNextLayer, IIpV4NextLayer
     {
         /// <summary>
         /// Creates an IPv4 layer with all zero values.
@@ -171,7 +171,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// True iff the two IPv4 layers have the same TypeOfService, Identification, Fragmentation, Ttl, Protocol, HeaderChecksum, Source, Destination and Options.
         /// </summary>
-        public override sealed bool Equals(Layer other)
+        public override bool Equals(Layer other)
         {
             return Equals(other as IpV4Layer);
         }

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Http
     /// Content-Type: text/html; charset=ISO-8859-4
     /// </pre>
     /// </summary>
-    public class HttpContentTypeField : HttpField, IEquatable<HttpContentTypeField>
+    public sealed class HttpContentTypeField : HttpField, IEquatable<HttpContentTypeField>
     {
         /// <summary>
         /// The field name.

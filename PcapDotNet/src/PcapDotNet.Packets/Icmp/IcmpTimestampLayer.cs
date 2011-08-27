@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// The number of bytes the ICMP payload takes.
         /// </summary>
-        protected override int PayloadLength
+        protected sealed override int PayloadLength
         {
             get { return IcmpTimestampDatagram.PayloadLength; }
         }
@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         /// <param name="buffer">The buffer to write the ICMP payload to.</param>
         /// <param name="offset">The offset in the buffer to start writing the payload at.</param>
-        protected override void WritePayload(byte[] buffer, int offset)
+        protected sealed override void WritePayload(byte[] buffer, int offset)
         {
             IcmpTimestampDatagram.WriteHeaderAdditional(buffer, offset,
                                                         OriginateTimestamp, ReceiveTimestamp, TransmitTimestamp);
@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.Icmp
         /// <summary>
         /// True iff the OriginateTimestamp, ReceiveTimestamp and the TransmitTimestamp fields are equal.
         /// </summary>
-        protected override bool EqualPayload(IcmpLayer other)
+        protected sealed override bool EqualPayload(IcmpLayer other)
         {
             return EqualPayload(other as IcmpTimestampLayer);
         }

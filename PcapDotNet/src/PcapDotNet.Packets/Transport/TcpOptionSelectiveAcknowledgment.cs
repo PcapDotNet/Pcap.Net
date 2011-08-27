@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.Transport
     /// the data receiver is permitted to later discard data which have been reported in a SACK option.  
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.SelectiveAcknowledgment)]
-    public class TcpOptionSelectiveAcknowledgment : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgment>
+    public sealed class TcpOptionSelectiveAcknowledgment : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgment>
     {
         /// <summary>
         /// The minimum number of bytes this option take.

@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.Http
     /// Used for some of HTTP fields.
     /// All parameters must have different names.
     /// </summary>
-    public class HttpFieldParameters : IEnumerable<KeyValuePair<string, string>>, IEquatable<HttpFieldParameters>
+    public sealed class HttpFieldParameters : IEnumerable<KeyValuePair<string, string>>, IEquatable<HttpFieldParameters>
     {
         /// <summary>
         /// Creates the parameters from an array of parameters. Keys are the parameters names and values are the parameters values.

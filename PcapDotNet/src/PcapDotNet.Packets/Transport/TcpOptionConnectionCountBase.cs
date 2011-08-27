@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The number of bytes this option will take.
         /// </summary>
-        public override int Length
+        public sealed override int Length
         {
             get { return OptionLength; }
         }
@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// True iff this option may appear at most once in a datagram.
         /// </summary>
-        public override bool IsAppearsAtMostOnce
+        public sealed override bool IsAppearsAtMostOnce
         {
             get { return true; }
         }
@@ -53,7 +53,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// Two connection count options are equal of they are of the same option type and have the same connection count.
         /// </summary>
-        public override bool Equals(TcpOption other)
+        public sealed override bool Equals(TcpOption other)
         {
             return Equals(other as TcpOptionConnectionCountBase);
         }
@@ -61,12 +61,12 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The hash code of the connection count option is the hash code of the option type xored with the hash code of the connection count.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^ ConnectionCount.GetHashCode();
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, ConnectionCount, Endianity.Big);

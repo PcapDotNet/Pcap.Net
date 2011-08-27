@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.IpV4
     /// <summary>
     /// An unknown IPv4 option.
     /// </summary>
-    public class IpV4OptionUnknown : IpV4OptionComplex, IOptionUnknownFactory<IpV4OptionType>, IEquatable<IpV4OptionUnknown>
+    public sealed class IpV4OptionUnknown : IpV4OptionComplex, IOptionUnknownFactory<IpV4OptionType>, IEquatable<IpV4OptionUnknown>
     {
         /// <summary>
         /// The minimum number of bytes this option take.

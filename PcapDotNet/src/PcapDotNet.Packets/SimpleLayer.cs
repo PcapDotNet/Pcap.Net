@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets
         /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
         /// <param name="previousLayer">The layer that comes before this layer. null if this is the first layer.</param>
         /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
-        public override sealed void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
+        public sealed override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
             Write(buffer, offset);
         }

@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.TraceRoute)]
-    public class IcmpTraceRouteDatagram : IcmpDatagram
+    public sealed class IcmpTraceRouteDatagram : IcmpDatagram
     {
         /// <summary>
         /// The number of bytes this datagram should take.

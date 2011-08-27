@@ -44,7 +44,7 @@ namespace PcapDotNet.Packets.Dns
     /// The answer section contains RRs that answer the question; the authority section contains RRs that point toward an authoritative name server; 
     /// the additional records section contains RRs which relate to the query, but are not strictly answers for the question.
     /// </summary>
-    public class DnsDatagram : Datagram
+    public sealed class DnsDatagram : Datagram
     {
         private static class Offset
         {

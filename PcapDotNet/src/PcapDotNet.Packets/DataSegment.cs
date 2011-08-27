@@ -95,7 +95,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// Two segments are equal if they have the same data.
         /// </summary>
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as DataSegment);
         }
@@ -103,7 +103,7 @@ namespace PcapDotNet.Packets
         /// <summary>
         /// The hash code of a segment is the hash code of its length xored with all its bytes (each byte is xored with the next byte in the integer).
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return Length.GetHashCode() ^ this.BytesSequenceGetHashCode();
         }
@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets
         /// Converts the segment to a hexadecimal string representing every bytes as two hexadecimal digits.
         /// </summary>
         /// <returns>A hexadecimal string representing every bytes as two hexadecimal digits.</returns>
-        public override string ToString()
+        public sealed override string ToString()
         {
             return Buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
         }

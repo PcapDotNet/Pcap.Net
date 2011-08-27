@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Transport
         /// Two Transport layers are equal if they have they have the same previous layer protocol value, checksum, source and destination ports, 
         /// and if the specific transport protocol fields are equal.
         /// </summary>
-        public override sealed bool Equals(Layer other)
+        public sealed override bool Equals(Layer other)
         {
             return Equals(other as TransportLayer);
         }
@@ -78,7 +78,7 @@ namespace PcapDotNet.Packets.Transport
         /// Returns a hash code for the layer.
         /// The hash code is a XOR of the combination of the source and destination ports and the hash codes of the layer length, data link and checksum.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
                    Checksum.GetHashCode() ^

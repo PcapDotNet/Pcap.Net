@@ -10,7 +10,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents an IGMP Report version 3 layer.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public class IgmpReportVersion3Layer : IgmpLayer
+    public sealed class IgmpReportVersion3Layer : IgmpLayer
     {
         /// <summary>
         /// Creates an instance of an IGMP Report Version 3 Layer with a default of no Group Records.

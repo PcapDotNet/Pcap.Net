@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Appears at most once in a datagram.
     /// </summary>
     [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.StreamIdentifier)]
-    public class IpV4OptionStreamIdentifier : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionStreamIdentifier>
+    public sealed class IpV4OptionStreamIdentifier : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionStreamIdentifier>
     {
         /// <summary>
         /// The number of bytes this option take.

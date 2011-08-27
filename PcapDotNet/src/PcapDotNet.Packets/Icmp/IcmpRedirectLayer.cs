@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents an ICMP Redirect message layer.
     /// <seealso cref="IcmpRedirectDatagram"/>
     /// </summary>
-    public class IcmpRedirectLayer : IcmpLayer
+    public sealed class IcmpRedirectLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

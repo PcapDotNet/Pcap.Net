@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents a Conversion Failed ICMP layer.
     /// <seealso cref="IcmpConversionFailedDatagram"/>
     /// </summary>
-    public class IcmpConversionFailedLayer : IcmpLayer
+    public sealed class IcmpConversionFailedLayer : IcmpLayer
     {
         /// <summary>
         /// A sub-type of the message. Specific method of this message type.

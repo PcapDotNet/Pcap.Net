@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Gre
     /// RFC 1702.
     /// Represents a source route entry consisting of a list of IP addresses and indicates an IP source route.
     /// </summary>
-    public class GreSourceRouteEntryIp : GreSourceRouteEntry
+    public sealed class GreSourceRouteEntryIp : GreSourceRouteEntry
     {
         /// <summary>
         /// Initializes using the given IP addresses and the next as number index.

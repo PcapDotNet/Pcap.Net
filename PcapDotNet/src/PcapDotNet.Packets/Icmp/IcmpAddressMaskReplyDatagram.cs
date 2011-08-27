@@ -15,7 +15,7 @@ namespace PcapDotNet.Packets.Icmp
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.AddressMaskReply)]
-    public class IcmpAddressMaskReplyDatagram : IcmpAddressMaskRequestDatagram
+    public sealed class IcmpAddressMaskReplyDatagram : IcmpAddressMaskRequestDatagram
     {
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.

@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.IpV4
     ///<summary>
     /// Represents a timestamp IPv4 option with each timestamp preceded with internet address of the registering entity or the internet address fields are prespecified.
     ///</summary>
-    public class IpV4OptionTimestampAndAddress : IpV4OptionTimestamp
+    public sealed class IpV4OptionTimestampAndAddress : IpV4OptionTimestamp
     {
         /// <summary>
         /// Create the option by giving it all the data.

@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The number of bytes this layer will take.
         /// </summary>
-        public override int Length
+        public sealed override int Length
         {
             get { return IgmpDatagram.HeaderLength; }
         }
@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.Igmp
         /// </summary>
         /// <param name="buffer">The buffer to write the layer to.</param>
         /// <param name="offset">The offset in the buffer to start writing the layer at.</param>
-        protected override void Write(byte[] buffer, int offset)
+        protected sealed override void Write(byte[] buffer, int offset)
         {
             IgmpDatagram.WriteHeader(buffer, offset,
                                      MessageType, MaxResponseTimeValue, GroupAddress);
@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// Xor of the hash codes of the layer length, datalink, message type, query version and group address.
         /// </summary>
-        public override sealed int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
                    GroupAddress.GetHashCode();
@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// true iff the the group address is equal.
         /// </summary>
-        protected override sealed bool EqualFields(IgmpLayer other)
+        protected sealed override bool EqualFields(IgmpLayer other)
         {
             return EqualFields(other as IgmpSimpleLayer);
         }

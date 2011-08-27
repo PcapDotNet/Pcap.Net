@@ -15,7 +15,7 @@ namespace PcapDotNet.Packets.Transport
     /// </pre>
     /// </summary>
     [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.SelectiveAcknowledgmentPermitted)]
-    public class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgmentPermitted>
+    public sealed class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgmentPermitted>
     {
         /// <summary>
         /// The number of bytes this option take.
