@@ -264,12 +264,19 @@ namespace PcapDotNet.Packets.Dns
             };
         }
 
-        /*
         protected override bool CalculateIsValid()
         {
-            return Length >= HeaderBaseLength && Length == HeaderLength;
+            if (_isValid == null)
+            {
+                _isValid = Length >= HeaderLength &&
+                           QueryCount == Queries.Count &&
+                           AnswerCount == Answers.Count &&
+                           AuthorityCount == Authorities.Count &&
+                           AdditionalCount == Additionals.Count;
+            }
+            return _isValid.Value;
         }
-        */
+
         internal DnsDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -397,7 +404,7 @@ namespace PcapDotNet.Packets.Dns
         private delegate TRecord ParseRecord<out TRecord>(DnsDatagram dns, int offset, out int numBytesRead);
 
         private void ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord,
-                                           ref ReadOnlyCollection<TRecord> parsedRecords, ref int nextOffset)
+                                           ref ReadOnlyCollection<TRecord> parsedRecords, ref int nextOffset) where TRecord : DnsResourceRecord
         {
             if (parsedRecords == null && Length >= offset)
             {
@@ -428,5 +435,7 @@ namespace PcapDotNet.Packets.Dns
         private int _answersOffset;
         private int _authoritiesOffset;
         private int _additionalsOffset;
+
+        private bool? _isValid;
     }
 }
