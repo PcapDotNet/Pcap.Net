@@ -73,8 +73,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HexEncoding.cs" />
+    <Compile Include="RandomArpExtensions.cs" />
+    <Compile Include="RandomDnsExtensions.cs" />
+    <Compile Include="RandomEthernetExtensions.cs" />
+    <Compile Include="RandomGreExtensions.cs" />
+    <Compile Include="RandomHttpExtensions.cs" />
+    <Compile Include="RandomIcmpExtensions.cs" />
+    <Compile Include="RandomIgmpExtensions.cs" />
+    <Compile Include="RandomIpV4Extensions.cs" />
+    <Compile Include="RandomIpV6Extensions.cs" />
     <Compile Include="RandomPacketsExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomTcpExtensions.cs" />
+    <Compile Include="RandomUdpExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">

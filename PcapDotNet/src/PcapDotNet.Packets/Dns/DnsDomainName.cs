@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.Dns
     {
         private const byte MaxLabelLength = 63;
         private const ushort CompressionMarker = 0xC000;
-        private const ushort OffsetMask = 0x3FFF;
+        internal const ushort OffsetMask = 0x3FFF;
         private static readonly char[] Colon = new[] {'.'};
 
         public DnsDomainName(string domainName)
@@ -21,6 +21,8 @@ namespace PcapDotNet.Packets.Dns
             string[] labels = domainName.ToLowerInvariant().Split(Colon, StringSplitOptions.RemoveEmptyEntries);
             _labels = labels.Select(label => new DataSegment(Encoding.UTF8.GetBytes(label))).ToList();
         }
+
+        public static DnsDomainName Root { get { return _root; } }
 
         public int NumLabels
         {
@@ -61,11 +63,16 @@ namespace PcapDotNet.Packets.Dns
             return length + sizeof(byte);
         }
 
-        internal static DnsDomainName Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
+        internal static bool TryParse(DnsDatagram dns, int offsetInDns, int maximumLength, out DnsDomainName domainName, out int numBytesRead)
         {
             List<DataSegment> labels = new List<DataSegment>();
-            ReadLabels(dns, offsetInDns, out numBytesRead, labels);
-            return new DnsDomainName(labels);
+            if (!TryReadLabels(dns, offsetInDns, out numBytesRead, labels) || numBytesRead > maximumLength)
+            {
+                domainName = null;
+                return false;
+            }
+            domainName = new DnsDomainName(labels);
+            return true;
         }
 
         internal int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -95,39 +102,44 @@ namespace PcapDotNet.Packets.Dns
             _labels = labels;
         }
 
-        private static void ReadLabels(DnsDatagram dns, int offsetInDns, out int numBytesRead, List<DataSegment> labels)
+        private static bool TryReadLabels(DnsDatagram dns, int offsetInDns, out int numBytesRead, List<DataSegment> labels)
         {
             numBytesRead = 0;
             byte labelLength;
             do
             {
                 if (offsetInDns >= dns.Length)
-                    return;
+                    return false;  // Can't read label's length.
                 labelLength = dns[offsetInDns];
                 ++numBytesRead;
                 if (labelLength > MaxLabelLength)
                 {
                     // Compression.
                     if (offsetInDns + 1 >= dns.Length)
-                        return;
-                    offsetInDns = dns.ReadUShort(offsetInDns, Endianity.Big) & OffsetMask;
+                        return false;  // Can't read compression pointer.
+                    int newOffsetInDns = dns.ReadUShort(offsetInDns, Endianity.Big) & OffsetMask;
+                    if (newOffsetInDns >= offsetInDns)
+                        return false;  // Can't handle pointers that are not back pointers.
                     ++numBytesRead;
                     int internalBytesRead;
-                    ReadLabels(dns, offsetInDns, out internalBytesRead, labels);
-                    return;
+                    return TryReadLabels(dns, newOffsetInDns, out internalBytesRead, labels);
                 }
                 
                 if (labelLength != 0)
                 {
                     ++offsetInDns;
                     if (offsetInDns + labelLength >= dns.Length)
-                        return;
+                        return false;  // Can't read label.
                     labels.Add(dns.SubSegment(offsetInDns, labelLength));
                     numBytesRead += labelLength;
                     offsetInDns += labelLength;
                 }
             } while (labelLength != 0);
+
+            return true;
         }
+
+        private static readonly DnsDomainName _root = new DnsDomainName("");
 
         private readonly List<DataSegment> _labels;
         private string _ascii;

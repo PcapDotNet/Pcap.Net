@@ -130,9 +130,17 @@ namespace PcapDotNet.Packets
             return encoding.GetString(Buffer, StartOffset, Length);
         }
 
-        internal void Write(byte[] buffer, int offset)
+        public static DataSegment Empty { get { return _empty; } }
+
+        internal void Write(byte[] buffer, ref int offset)
         {
             Buffer.BlockCopy(StartOffset, buffer, offset, Length);
+            offset += Length;
+        }
+
+        internal void Write(byte[] buffer, int offset)
+        {
+            Write(buffer, ref offset);
         }
 
         /// <summary>
@@ -157,9 +165,16 @@ namespace PcapDotNet.Packets
             return Buffer.ReadBytes(StartOffset + offset, length);
         }
 
+        internal DataSegment SubSegment(ref int offset, int length)
+        {
+            DataSegment subSegemnt = new DataSegment(Buffer, StartOffset + offset, length);
+            offset += length;
+            return subSegemnt;
+        }
+
         internal DataSegment SubSegment(int offset, int length)
         {
-            return new DataSegment(Buffer, StartOffset + offset, length);
+            return SubSegment(ref offset, length);
         }
 
         internal bool ReadBool(int offset, byte mask)
@@ -198,7 +213,7 @@ namespace PcapDotNet.Packets
         /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
         /// <returns>The value converted from the read bytes according to the endianity.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "uint")]
-        protected uint ReadUInt(int offset, Endianity endianity)
+        internal uint ReadUInt(int offset, Endianity endianity)
         {
             return Buffer.ReadUInt(StartOffset + offset, endianity);
         }
@@ -278,5 +293,7 @@ namespace PcapDotNet.Packets
                 sum += (ushort)(buffer[offset] << 8);
             return sum;
         }
+
+        private static readonly DataSegment _empty = new DataSegment(new byte[0]);
     }
 }

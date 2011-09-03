@@ -66,14 +66,19 @@ namespace PcapDotNet.Packets.Test
 
             for (int i = 0; i != 1000; ++i)
             {
-                DnsLayer dnsLayer = random.NextDnsLayer();
+                DnsLayer dnsLayer;
+                do
+                {
+                    dnsLayer = random.NextDnsLayer();
+                } while (dnsLayer.Length > 65000);
 
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, dnsLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // DNS
-                Assert.AreEqual(dnsLayer, packet.Ethernet.IpV4.Udp.Dns.ExtractLayer(), "DNS Layer");
+                DnsLayer actualLayer = (DnsLayer)packet.Ethernet.IpV4.Udp.Dns.ExtractLayer();
+                Assert.AreEqual(dnsLayer, actualLayer, "DNS Layer");
             }
         }
 
@@ -92,29 +97,51 @@ namespace PcapDotNet.Packets.Test
             dnsLayer.Queries.Add(new DnsQueryResourceRecord(new DnsDomainName(""), DnsType.All, DnsClass.In));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName(""), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName(""), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(3, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("def.abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("def.abc"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(6, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(6, dnsLayer);
 
-            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(13, dnsLayer);
 
-            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(16, dnsLayer);
 
-            dnsLayer.Additionals.Add(new DnsDataResourceRecord(new DnsDomainName("hello.abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataUnknown(new DataSegment(new byte[0]))));
+            dnsLayer.Additionals.Add(new DnsDataResourceRecord(new DnsDomainName("hello.abd.def"), DnsType.All, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(23, dnsLayer);
+        }
+
+        [TestMethod]
+        public void DnsDomainNameCompressionTooLongTest()
+        {
+            DnsLayer dnsLayer = new DnsLayer();
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Queries = new List<DnsQueryResourceRecord>();
+            dnsLayer.Answers = new List<DnsDataResourceRecord>();
+            dnsLayer.Authorities = new List<DnsDataResourceRecord>();
+            dnsLayer.Additionals = new List<DnsDataResourceRecord>();
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[20000]))));
+            TestDomainNameCompression(0, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
+            TestDomainNameCompression(3, dnsLayer);
+
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
+            TestDomainNameCompression(6, dnsLayer);
         }
 
         [TestMethod]
