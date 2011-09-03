@@ -103,7 +103,7 @@
     <Compile Include="Dns\DnsOpcode.cs" />
     <Compile Include="Dns\DnsQueryResourceRecord.cs" />
     <Compile Include="Dns\DnsResourceData.cs" />
-    <Compile Include="Dns\DnsResourceDataUnknown.cs" />
+    <Compile Include="Dns\DnsResourceDataAnything.cs" />
     <Compile Include="Dns\DnsResourceRecord.cs" />
     <Compile Include="Dns\DnsResponseCode.cs" />
     <Compile Include="Dns\DnsType.cs" />

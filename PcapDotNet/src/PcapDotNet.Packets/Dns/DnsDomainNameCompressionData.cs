@@ -36,6 +36,9 @@ namespace PcapDotNet.Packets.Dns
 
         public void AddCompressionData(ListSegment<DataSegment> labels, int dnsOffset)
         {
+            if (dnsOffset > DnsDomainName.OffsetMask)
+                return;
+
             switch (DomainNameCompressionMode)
             {
                 case DnsDomainNameCompressionMode.All:

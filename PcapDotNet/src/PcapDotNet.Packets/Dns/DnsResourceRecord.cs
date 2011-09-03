@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Dns
 
         private const int MinimumLengthAfterDomainName = 4;
 
-        public DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass) 
+        public DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
         {
             DomainName = domainName;
             Type = type;
@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two octets containing one of the RR TYPE codes.
         /// </summary>
-        public DnsType Type { get; private set;}
+        public DnsType Type { get; private set; }
 
         public DnsClass DnsClass { get; private set; }
 
@@ -85,13 +85,12 @@ namespace PcapDotNet.Packets.Dns
                    DnsClass.Equals(other.DnsClass);
         }
 
-        internal static bool TryParseBase(DnsDatagram dns, int offsetInDns, 
-            out DnsDomainName domainName, out DnsType type, out DnsClass dnsClass, out int numBytesRead)
+        internal static bool TryParseBase(DnsDatagram dns, int offsetInDns,
+                                          out DnsDomainName domainName, out DnsType type, out DnsClass dnsClass, out int numBytesRead)
         {
             type = DnsType.All;
             dnsClass = DnsClass.Any;
-            domainName = DnsDomainName.Parse(dns, offsetInDns, out numBytesRead);
-            if (domainName == null)
+            if (!DnsDomainName.TryParse(dns, offsetInDns, dns.Length - offsetInDns, out domainName, out numBytesRead))
                 return false;
 
             if (offsetInDns + numBytesRead + MinimumLengthAfterDomainName > dns.Length)
