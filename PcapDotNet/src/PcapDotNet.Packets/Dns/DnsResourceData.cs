@@ -45,6 +45,29 @@ namespace PcapDotNet.Packets.Dns
 
         internal abstract DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length);
 
+        internal static int GetStringLength(DataSegment str)
+        {
+            return sizeof(byte) + str.Length;
+        }
+
+        internal static DataSegment ReadString(DataSegment data, ref int offset)
+        {
+            if (data.Length <= offset)
+                return null;
+            int stringLength = data[offset++];
+            if (data.Length < offset + stringLength)
+                return null;
+            DataSegment str = data.SubSegment(ref offset, stringLength);
+
+            return str;
+        }
+
+        internal static void WriteString(byte[] buffer, ref int offset, DataSegment str)
+        {
+            buffer.Write(ref offset, (byte)str.Length);
+            str.Write(buffer, ref offset);
+        }
+        
         private static DnsResourceData TryGetPrototype(DnsType type, DnsClass dnsClass)
         {
             DnsResourceData prototype;
@@ -490,13 +513,59 @@ namespace PcapDotNet.Packets.Dns
             int offset = 0;
             while (offset != data.Length)
             {
-                int stringLength = data[offset++];
-                if (data.Length < offset + stringLength)
+                DataSegment str = ReadString(data, ref offset);
+                if (str == null)
                     return null;
-                strings.Add(data.SubSegment(ref offset, stringLength));
+                strings.Add(str);
             }
 
             return strings;
+        }
+    }
+
+    [DnsTypeRegistration(Type = DnsType.X25)]
+    public sealed class DnsResourceDataString : DnsResourceDataSimple, IEquatable<DnsResourceDataString>
+    {
+        public DnsResourceDataString()
+            : this(DataSegment.Empty)
+        {
+        }
+
+        public DnsResourceDataString(DataSegment str)
+        {
+            String = str;
+        }
+
+        public DataSegment String { get; private set; }
+
+        public bool Equals(DnsResourceDataString other)
+        {
+            return other != null &&
+                   String.Equals(other.String);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataString);
+        }
+
+        internal override int GetLength()
+        {
+            return GetStringLength(String);
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            WriteString(buffer, ref offset, String);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            int offset = 0;
+            DataSegment str = ReadString(data, ref offset);
+            if (str == null)
+                return null;
+            return new DnsResourceDataString(str);
         }
     }
 
@@ -900,6 +969,218 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             return new DnsResourceDataAfsDb(subType, hostName);
+        }
+    }
+
+    /// <summary>
+    /// +---------------+
+    /// | ISDN-address  |
+    /// +---------------+
+    /// | sa (optional) |
+    /// +---------------+
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Isdn)]
+    public sealed class DnsResourceDataIsdn : DnsResourceDataStrings
+    {
+        private const int MinNumStrings = 1;
+        private const int MaxNumStrings = 2;
+
+        public DnsResourceDataIsdn()
+            : this(DataSegment.Empty)
+        {
+        }
+        
+        public DnsResourceDataIsdn(DataSegment isdnAddress)
+            : base(isdnAddress)
+        {
+            
+        }
+            
+        public DnsResourceDataIsdn(DataSegment isdnAddress, DataSegment subAddress)
+            : base(isdnAddress, subAddress)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the ISDN number of the owner and DDI (Direct Dial In) if any, as defined by E.164 and E.163, 
+        /// the ISDN and PSTN (Public Switched Telephone Network) numbering plan.
+        /// E.163 defines the country codes, and E.164 the form of the addresses.
+        /// </summary>
+        public DataSegment IsdnAddress { get { return Strings[0]; } }
+
+        /// <summary>
+        /// Specifies the subaddress (SA).
+        /// </summary>
+        public DataSegment SubAddress { get { return Strings.Count == MaxNumStrings ? Strings[1] : null; } }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            List<DataSegment> strings = ReadStrings(data, MaxNumStrings);
+            if (strings == null)
+                return null;
+            if (strings.Count == MinNumStrings)
+                return new DnsResourceDataIsdn(strings[0]);
+            if (strings.Count == MaxNumStrings)
+                return new DnsResourceDataIsdn(strings[0], strings[1]);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// +-----+-------------------+
+    /// | bit | 0-15              |
+    /// +-----+-------------------+
+    /// | 0   | preference        |
+    /// +-----+-------------------+
+    /// | 16  | intermediate-host |
+    /// +-----+-------------------+
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Rt)]
+    public sealed class DnsResourceDataRouteThrough : DnsResourceDataUShortDomainName
+    {
+        public DnsResourceDataRouteThrough()
+            : this(0, DnsDomainName.Root)
+        {
+        }
+
+        public DnsResourceDataRouteThrough(ushort preference, DnsDomainName intermediateHost)
+            : base(preference, intermediateHost)
+        {
+        }
+
+        /// <summary>
+        /// Representing the preference of the route.
+        /// Smaller numbers indicate more preferred routes.
+        /// </summary>
+        public ushort Preference { get { return Value; } }
+
+        /// <summary>
+        /// The domain name of a host which will serve as an intermediate in reaching the host specified by the owner.
+        /// The DNS RRs associated with IntermediateHost are expected to include at least one A, X25, or ISDN record.
+        /// </summary>
+        public DnsDomainName IntermediateHost { get { return DomainName; } }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            ushort preference;
+            DnsDomainName intermediateHost;
+            if (!TryRead(out preference, out intermediateHost, dns, offsetInDns, length))
+                return null;
+
+            return new DnsResourceDataRouteThrough(preference, intermediateHost);
+        }
+    }
+
+    /// <summary>
+    /// +-----+-----+----------------------+----------+-----------+
+    /// | bit | 0-7 | 8-7+X                | 8+X-55+X | 56+X-63+X |
+    /// +-----+-----+----------------------+----------+-----------+
+    /// | 0   | AFI | Domain Specific Area | ID       | Sel       |
+    /// +-----+-----+-----+----------------+----------+-----------+
+    /// | 0   | AFI | IDI | HO-DSP         | ID       | Sel       |
+    /// +-----+-----+-----+----------------+----------+-----------+
+    /// | 0   | Area Address               | ID       | Sel       |
+    /// +-----+-----------+----------------+----------+-----------+
+    /// | 0   | IDP       | DSP                                   |
+    /// +-----+-----------+---------------------------------------+
+    /// IDP is Initial Domain Part.
+    /// DSP is Domain Specific Part.
+    /// HO-DSP may use any format as defined by the authority identified by IDP.
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Nsap)]
+    public sealed class DnsResourceDataNetworkServiceAccessPoint : DnsResourceDataSimple, IEquatable<DnsResourceDataNetworkServiceAccessPoint>
+    {
+        private static class Offset
+        {
+            public const int AreaAddress = 0;
+        }
+
+        private static class OffsetAfterArea
+        {
+            public const int SystemIdentifier = 0;
+            public const int Selector = SystemIdentifier + UInt48.SizeOf;
+        }
+
+        private const int MinAreaAddressLength = sizeof(byte);
+
+        private const int ConstantPartLength = MinAreaAddressLength + OffsetAfterArea.Selector + sizeof(byte);
+
+        public DnsResourceDataNetworkServiceAccessPoint()
+            : this(new DataSegment(new byte[MinAreaAddressLength]), 0, 0)
+        {
+        }
+
+        public DnsResourceDataNetworkServiceAccessPoint(DataSegment areaAddress, UInt48 systemIdentifier, byte selector)
+        {
+            if (areaAddress.Length < MinAreaAddressLength)
+                throw new ArgumentOutOfRangeException("areaAddress", areaAddress.Length,
+                                                      string.Format("Area Address length must be at least {0}.", MinAreaAddressLength));
+            AreaAddress = areaAddress;
+            SystemIdentifier = systemIdentifier;
+            Selector = selector;
+        }
+
+        /// <summary>
+        /// Authority and Format Identifier.
+        /// </summary>
+        public byte AuthorityAndFormatIdentifier { get { return AreaAddress[0]; } }
+
+        /// <summary>
+        /// The combination of [IDP, HO-DSP] identify both the routing domain and the area within the routing domain.
+        /// Hence the combination [IDP, HO-DSP] is called the "Area Address".
+        /// All nodes within the area must have same Area address.
+        /// </summary>
+        public DataSegment AreaAddress { get; private set; }
+
+        /// <summary>
+        /// System Identifier.
+        /// </summary>
+        public UInt48 SystemIdentifier { get; private set; }
+
+        /// <summary>
+        /// NSAP Selector
+        /// </summary>
+        public byte Selector { get; private set; }
+
+        public bool Equals(DnsResourceDataNetworkServiceAccessPoint other)
+        {
+            return other != null &&
+                   AreaAddress.Equals(other.AreaAddress) &&
+                   SystemIdentifier.Equals(other.SystemIdentifier) &&
+                   Selector.Equals(other.Selector);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNetworkServiceAccessPoint);
+        }
+
+        internal override int GetLength()
+        {
+            return ConstantPartLength + AreaAddress.Length - MinAreaAddressLength;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            AreaAddress.Write(buffer, offset + Offset.AreaAddress);
+
+            int afterAreaOffset = offset + AreaAddress.Length;
+            buffer.Write(afterAreaOffset + OffsetAfterArea.SystemIdentifier, SystemIdentifier, Endianity.Big);
+            buffer.Write(afterAreaOffset + OffsetAfterArea.Selector, Selector);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            if (data.Length < ConstantPartLength)
+                return null;
+
+            DataSegment areaAddress = data.SubSegment(Offset.AreaAddress, MinAreaAddressLength + data.Length - ConstantPartLength);
+
+            int afterAreaOffset = areaAddress.Length;
+            UInt48 systemIdentifier = data.ReadUInt48(afterAreaOffset + OffsetAfterArea.SystemIdentifier, Endianity.Big);
+            byte selector = data[afterAreaOffset + OffsetAfterArea.Selector];
+
+            return new DnsResourceDataNetworkServiceAccessPoint(areaAddress, systemIdentifier, selector);
         }
     }
 }

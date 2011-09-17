@@ -117,6 +117,20 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.AfsDb:
                     return new DnsResourceDataAfsDb(random.NextUShort(), random.NextDnsDomainName());
 
+                case DnsType.X25:
+                    return new DnsResourceDataString(random.NextDataSegment(random.Next(10)));
+
+                case DnsType.Isdn:
+                    return random.NextBool()
+                               ? new DnsResourceDataIsdn(random.NextDataSegment(random.Next(10)))
+                               : new DnsResourceDataIsdn(random.NextDataSegment(random.Next(10)), random.NextDataSegment(random.Next(10)));
+
+                case DnsType.Rt:
+                    return new DnsResourceDataRouteThrough(random.NextUShort(), random.NextDnsDomainName());
+
+                case DnsType.Nsap:
+                    return new DnsResourceDataNetworkServiceAccessPoint(random.NextDataSegment(1 + random.Next(10)), random.NextUInt48(), random.NextByte());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
