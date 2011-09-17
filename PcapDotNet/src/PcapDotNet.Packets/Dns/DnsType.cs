@@ -136,6 +136,7 @@
 
         /// <summary>
         /// RFC 1706.
+        /// Network Service Access Point.
         /// For NSAP address, NSAP style A record.
         /// </summary>
         Nsap = 22,

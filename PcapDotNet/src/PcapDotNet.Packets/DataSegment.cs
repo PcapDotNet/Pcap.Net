@@ -219,6 +219,17 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// Reads 6 bytes from a specific offset in the segment as a UInt48 with a given endianity.
+        /// </summary>
+        /// <param name="offset">The offset in the segment to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        internal UInt48 ReadUInt48(int offset, Endianity endianity)
+        {
+            return Buffer.ReadUInt48(StartOffset + offset, endianity);
+        }
+
+        /// <summary>
         /// Reads 6 bytes from a specific offset in the segment as a MacAddress with a given endianity.
         /// </summary>
         /// <param name="offset">The offset in the segment to start reading.</param>
