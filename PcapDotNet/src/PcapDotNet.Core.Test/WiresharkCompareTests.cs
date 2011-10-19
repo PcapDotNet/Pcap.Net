@@ -453,7 +453,7 @@ namespace PcapDotNet.Core.Test
                     case "frame.time_epoch":
                         double timeEpoch = double.Parse(field.Show());
                         DateTime fieldTimestamp = new DateTime(1970, 1, 1).AddSeconds(timeEpoch);
-                        MoreAssert.IsInRange(fieldTimestamp.AddSeconds(-2), fieldTimestamp.AddSeconds(2), packet.Timestamp.ToUniversalTime(), "Timestamp");
+                        MoreAssert.IsInRange(fieldTimestamp.AddMilliseconds(-1), fieldTimestamp.AddMilliseconds(1), packet.Timestamp.ToUniversalTime(), "Timestamp");
                         break;
 
                     case "frame.len":

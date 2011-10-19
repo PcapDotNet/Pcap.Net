@@ -2,6 +2,7 @@
 #include "Pcap.h"
 
 using namespace System;
+using namespace PcapDotNet::Base;
 using namespace PcapDotNet::Core;
 
 // static 
@@ -20,7 +21,9 @@ DateTime PacketTimestamp::MaximumPacketTimestamp::get()
 void PacketTimestamp::PcapTimestampToDateTime(const timeval& pcapTimestamp, [Runtime::InteropServices::Out] DateTime% dateTime)
 {
     dateTime = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind::Utc);
-    dateTime = dateTime.Add(TimeSpan::FromSeconds(pcapTimestamp.tv_sec) + TimeSpan::FromMilliseconds(((double)pcapTimestamp.tv_usec) / 1000));
+    TimeSpan seconds = TimeSpan::FromSeconds(pcapTimestamp.tv_sec);
+    TimeSpan microseconds = TimeSpan::FromTicks(pcapTimestamp.tv_usec * TimeSpanExtensions::TicksPerMicrosecond);
+    dateTime = dateTime.Add(seconds + microseconds);
     dateTime = dateTime.ToLocalTime();
 }
 
@@ -30,7 +33,7 @@ void PacketTimestamp::DateTimeToPcapTimestamp(DateTime dateTime, timeval& pcapTi
     dateTime = dateTime.ToUniversalTime();
     TimeSpan timespan = dateTime - DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind::Utc);
     pcapTimestamp.tv_sec = (long)timespan.TotalSeconds;
-    pcapTimestamp.tv_usec = (long)(timespan.Milliseconds * 1000);
+    pcapTimestamp.tv_usec = (long)((timespan.TotalMilliseconds - 1000 * (double)pcapTimestamp.tv_sec) * 1000);
 }
 
 // static

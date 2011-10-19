@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharExtensions.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EncodingExtensions.cs" />
     <Compile Include="FuncExtensions.cs" />
     <Compile Include="IDictionaryExtensions.cs" />
