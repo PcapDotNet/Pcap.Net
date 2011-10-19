@@ -8,6 +8,11 @@ namespace PcapDotNet.Base
     public static class TimeSpanExtensions
     {
         /// <summary>
+        /// Represents the number of ticks in 1 microsecond. This field is constant.
+        /// </summary>
+        public const long TicksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
+
+        /// <summary>
         /// Divides the TimeSpan by a given value.
         /// </summary>
         /// <param name="timeSpan">The TimeSpan to divide.</param>
