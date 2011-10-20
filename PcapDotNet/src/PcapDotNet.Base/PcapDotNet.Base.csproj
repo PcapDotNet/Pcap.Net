@@ -96,6 +96,7 @@
     <Compile Include="MatchExtensions.cs" />
     <Compile Include="MemberInfoExtensions.cs" />
     <Compile Include="PropertyInfoExtensions.cs" />
+    <Compile Include="SerialNumber32.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="UInt128.cs" />

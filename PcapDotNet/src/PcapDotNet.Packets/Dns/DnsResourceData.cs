@@ -180,6 +180,7 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Mg)]
     [DnsTypeRegistration(Type = DnsType.Mr)]
     [DnsTypeRegistration(Type = DnsType.Ptr)]
+    [DnsTypeRegistration(Type = DnsType.NsapPtr)]
     public sealed class DnsResourceDataDomainName : DnsResourceData, IEquatable<DnsResourceDataDomainName>
     {
         public DnsResourceDataDomainName()
@@ -230,6 +231,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-------+---------+
     /// | bit   | 0-31    |
     /// +-------+---------+
@@ -247,6 +249,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-------+---------+
     /// | Y+128 | MINIMUM |
     /// +-------+---------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Soa)]
     public sealed class DnsResourceDataStartOfAuthority : DnsResourceData, IEquatable<DnsResourceDataStartOfAuthority>
@@ -268,7 +271,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         public DnsResourceDataStartOfAuthority(DnsDomainName mainNameServer, DnsDomainName responsibleMailBox,
-                                               uint serial, uint refresh, uint retry, uint expire, uint minimumTtl)
+                                               SerialNumber32 serial, uint refresh, uint retry, uint expire, uint minimumTtl)
         {
             MainNameServer = mainNameServer;
             ResponsibleMailBox = responsibleMailBox;
@@ -294,7 +297,7 @@ namespace PcapDotNet.Packets.Dns
         /// Zone transfers preserve this value.
         /// This value wraps and should be compared using sequence space arithmetic.
         /// </summary>
-        public uint Serial { get; private set; }
+        public SerialNumber32 Serial { get; private set; }
 
         /// <summary>
         /// A 32 bit time interval before the zone should be refreshed.
@@ -344,7 +347,7 @@ namespace PcapDotNet.Packets.Dns
         {
             int numBytesWritten = MainNameServer.Write(buffer, dnsOffset, compressionData, offsetInDns);
             numBytesWritten += ResponsibleMailBox.Write(buffer, dnsOffset, compressionData, offsetInDns + numBytesWritten);
-            buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Serial, Serial, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Serial, Serial.Value, Endianity.Big);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Refresh, Refresh, Endianity.Big);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Retry, Retry, Endianity.Big);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Expire, Expire, Endianity.Big);
@@ -382,6 +385,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+----------+---------+
     /// | bit | 0-7      | 8-31    |
     /// +-----+----------+---------+
@@ -389,6 +393,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------+---------+
     /// | 32  | Protocol | Bit Map | (Bit Map is variable multiple of 8 bits length)
     /// +-----+----------+---------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Wks)]
     public sealed class DnsResourceDataWellKnownService : DnsResourceDataSimple, IEquatable<DnsResourceDataWellKnownService>
@@ -570,11 +575,13 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+
     /// | CPU |
     /// +-----+ 
     /// | OS  |
     /// +-----+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.HInfo)]
     public sealed class DnsResourceDataHostInformation : DnsResourceDataStrings
@@ -701,11 +708,13 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +---------+
     /// | RMAILBX |
     /// +---------+
     /// | EMAILBX |
     /// +---------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.MInfo)]
     public sealed class DnsResourceDataMailingListInfo : DnsResourceData2DomainNames
@@ -747,6 +756,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+--------+
     /// | bit | 0-15   |
     /// +-----+--------+
@@ -754,6 +764,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+--------+
     /// | 16  | Domain |
     /// +-----+--------+
+    /// </pre>
     /// </summary>
     public abstract class DnsResourceDataUShortDomainName : DnsResourceData, IEquatable<DnsResourceDataUShortDomainName>
     {
@@ -827,6 +838,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+------------+
     /// | bit | 0-15       |
     /// +-----+------------+
@@ -834,6 +846,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+------------+
     /// | 16  | EXCHANGE   |
     /// +-----+------------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Mx)]
     public sealed class DnsResourceDataMailExchange : DnsResourceDataUShortDomainName
@@ -864,9 +877,11 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +---------+
     /// | Strings |
     /// +---------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Txt)]
     public sealed class DnsResourceDataText : DnsResourceDataStrings
@@ -890,11 +905,13 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +------------+
     /// | mbox-dname |
     /// +------------+
     /// | txt-dname  |
     /// +------------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Rp)]
     public sealed class DnsResourceDataResponsiblePerson : DnsResourceData2DomainNames
@@ -936,6 +953,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+----------+
     /// | bit | 0-15     |
     /// +-----+----------+
@@ -943,6 +961,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------+
     /// | 16  | hostname |
     /// +-----+----------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.AfsDb)]
     public sealed class DnsResourceDataAfsDb : DnsResourceDataUShortDomainName
@@ -973,11 +992,13 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +---------------+
     /// | ISDN-address  |
     /// +---------------+
     /// | sa (optional) |
     /// +---------------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Isdn)]
     public sealed class DnsResourceDataIsdn : DnsResourceDataStrings
@@ -1027,6 +1048,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+-------------------+
     /// | bit | 0-15              |
     /// +-----+-------------------+
@@ -1034,6 +1056,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+-------------------+
     /// | 16  | intermediate-host |
     /// +-----+-------------------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Rt)]
     public sealed class DnsResourceDataRouteThrough : DnsResourceDataUShortDomainName
@@ -1072,6 +1095,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// <pre>
     /// +-----+-----+----------------------+----------+-----------+
     /// | bit | 0-7 | 8-7+X                | 8+X-55+X | 56+X-63+X |
     /// +-----+-----+----------------------+----------+-----------+
@@ -1083,6 +1107,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+-----------+----------------+----------+-----------+
     /// | 0   | IDP       | DSP                                   |
     /// +-----+-----------+---------------------------------------+
+    /// </pre>
     /// IDP is Initial Domain Part.
     /// DSP is Domain Specific Part.
     /// HO-DSP may use any format as defined by the authority identified by IDP.
@@ -1181,6 +1206,307 @@ namespace PcapDotNet.Packets.Dns
             byte selector = data[afterAreaOffset + OffsetAfterArea.Selector];
 
             return new DnsResourceDataNetworkServiceAccessPoint(areaAddress, systemIdentifier, selector);
+        }
+    }
+
+    /// <summary>
+    /// RFC 2535.
+    /// The key algorithm.
+    /// </summary>
+    public enum DnsAlgorithm
+    {
+        /// <summary>
+        /// RFC 4034.
+        /// Field is not used.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// RFCs 2537, 4034.
+        /// RSA/MD5.
+        /// Deprecated.
+        /// </summary>
+        RsaMd5 = 1,
+
+        /// <summary>
+        /// RFC 2539.
+        /// Diffie-Hellman.
+        /// Implementation is optional, key only.
+        /// </summary>
+        DiffieHellman = 2,
+
+        /// <summary>
+        /// RFCs 2536, 3755.
+        /// DSA.
+        /// Implementation is mandatory.
+        /// </summary>
+        Dsa = 3,
+
+        /// <summary>
+        /// Reserved for elliptic curve crypto.
+        /// </summary>
+        Ecc = 4,
+
+        /// <summary>
+        /// RFCs 3110, 3755.
+        /// RSA/SHA-1.
+        /// </summary>
+        RsaSha1 = 5,
+
+        /// <summary>
+        /// RFC 5155.
+        /// DSA-NSEC3-SHA1.
+        /// </summary>
+        DsaNsec3Sha1 = 6,
+
+        /// <summary>
+        /// RFC 5155.
+        /// RSASHA1-NSEC3-SHA1.
+        /// </summary>
+        RsaSha1Nsec3Sha1 = 7,
+
+        /// <summary>
+        /// RFC 5702.
+        /// RSA/SHA-256.
+        /// </summary>
+        RsaSha256 = 8,
+
+        /// <summary>
+        /// RFC 5702.
+        /// RSA/SHA-512.
+        /// </summary>
+        RsaSha512 = 10,
+
+        /// <summary>
+        /// RFC 5933.
+        /// GOST R 34.10-2001.
+        /// </summary>
+        EccGost = 12,
+
+        /// <summary>
+        /// RFC 4034.
+        /// Reserved for Indirect Keys.
+        /// </summary>
+        Indirect = 252,
+
+        /// <summary>
+        /// RFCs 2535, 3755.
+        /// Private algorithms - domain name.
+        /// </summary>
+        PrivateDns = 253,
+
+        /// <summary>
+        /// RFCs 2535, 3755.
+        /// Private algorithms - OID.
+        /// </summary>
+        PrivateOid = 254,
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----+--------------+-----------+--------+
+    /// | bit | 0-15         | 16-23     | 24-31  |
+    /// +-----+--------------+-----------+--------+
+    /// | 0   | type covered | algorithm | labels |
+    /// +-----+--------------+-----------+--------+
+    /// | 32  | original TTL                      |
+    /// +-----+-----------------------------------+
+    /// | 64  | signature expiration              |
+    /// +-----+-----------------------------------+
+    /// | 96  | signature inception               |
+    /// +-----+--------------+--------------------+
+    /// | 128 | key tag      |                    |
+    /// +-----+--------------+ signer's name      |
+    /// |     |                                   |
+    /// +-----+-----------------------------------+
+    /// |     | signature                         |
+    /// +-----+-----------------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Sig)]
+    public sealed class DnsResourceDataSig : DnsResourceData
+    {
+        private static class Offset
+        {
+            public const int TypeCovered = 0;
+            public const int Algorithm = TypeCovered + sizeof(ushort);
+            public const int Labels = Algorithm + sizeof(byte);
+            public const int OriginalTtl = Labels + sizeof(byte);
+            public const int SignatureExpiration = OriginalTtl + sizeof(uint);
+            public const int SignatureInception= SignatureExpiration + sizeof(uint);
+            public const int KeyTag = SignatureInception + sizeof(uint);
+            public const int SignersName = KeyTag + sizeof(ushort);
+        }
+
+        private const int ConstantPartLength = Offset.SignersName;
+
+        public DnsResourceDataSig()
+            : this(DnsType.A, DnsAlgorithm.None, 0, 0, 0, 0, 0, DnsDomainName.Root, DataSegment.Empty)
+        {
+        }
+
+        public DnsResourceDataSig(DnsType typeCovered, DnsAlgorithm algorithm, byte labels, uint originalTtl, SerialNumber32 signatureExpiration,
+                                  SerialNumber32 signatureInception, ushort keyTag, DnsDomainName signersName, DataSegment signature)
+        {
+            TypeCovered = typeCovered;
+            Algorithm = algorithm;
+            Labels = labels;
+            OriginalTtl = originalTtl;
+            SignatureExpiration = signatureExpiration;
+            SignatureInception = signatureInception;
+            KeyTag = keyTag;
+            SignersName = signersName;
+            Signature = signature;
+        }
+
+        /// <summary>
+        /// The type of the other RRs covered by this SIG.
+        /// </summary>
+        public DnsType TypeCovered { get; private set; }
+
+        /// <summary>
+        /// The key algorithm.
+        /// </summary>
+        public DnsAlgorithm Algorithm { get; private set; }
+
+        /// <summary>
+        /// An unsigned count of how many labels there are in the original SIG RR owner name not counting the null label for root and not counting any initial "*" for a wildcard.  
+        /// If a secured retrieval is the result of wild card substitution, it is necessary for the resolver to use the original form of the name in verifying the digital signature.
+        /// This field makes it easy to determine the original form.
+        /// 
+        /// If, on retrieval, the RR appears to have a longer name than indicated by "labels", the resolver can tell it is the result of wildcard substitution.
+        /// If the RR owner name appears to be shorter than the labels count, the SIG RR must be considered corrupt and ignored.
+        /// The maximum number of labels allowed in the current DNS is 127 but the entire octet is reserved and would be required should DNS names ever be expanded to 255 labels.
+        /// </summary>
+        public byte Labels { get; private set; }
+
+        /// <summary>
+        /// The "original TTL" field is included in the RDATA portion to avoid
+        /// (1) authentication problems that caching servers would otherwise cause by decrementing the real TTL field and
+        /// (2) security problems that unscrupulous servers could otherwise cause by manipulating the real TTL field.
+        /// This original TTL is protected by the signature while the current TTL field is not.
+        /// 
+        /// NOTE:  The "original TTL" must be restored into the covered RRs when the signature is verified.
+        /// This generaly implies that all RRs for a particular type, name, and class, that is, all the RRs in any particular RRset, must have the same TTL to start with.
+        ///  </summary>
+        public uint OriginalTtl { get; private set; }
+
+        /// <summary>
+        /// The last time the signature is valid.
+        /// Numbers of seconds since the start of 1 January 1970, GMT, ignoring leap seconds.
+        /// Ring arithmetic is used.
+        /// This time can never be more than about 68 years after the inception.
+        /// </summary>
+        public SerialNumber32 SignatureExpiration { get; private set; }
+
+        /// <summary>
+        /// The first time the signature is valid.
+        /// Numbers of seconds since the start of 1 January 1970, GMT, ignoring leap seconds.
+        /// Ring arithmetic is used.
+        /// This time can never be more than about 68 years before the expiration.
+        /// </summary>
+        public SerialNumber32 SignatureInception { get; private set; }
+
+        /// <summary>
+        /// Used to efficiently select between multiple keys which may be applicable and thus check that a public key about to be used for the computationally expensive effort to check the signature is possibly valid.  
+        /// For algorithm 1 (MD5/RSA) as defined in RFC 2537, it is the next to the bottom two octets of the public key modulus needed to decode the signature field.
+        /// That is to say, the most significant 16 of the least significant 24 bits of the modulus in network (big endian) order. 
+        /// For all other algorithms, including private algorithms, it is calculated as a simple checksum of the KEY RR.
+        /// </summary>
+        public ushort KeyTag { get; private set; }
+
+        /// <summary>
+        /// The domain name of the signer generating the SIG RR.
+        /// This is the owner name of the public KEY RR that can be used to verify the signature.  
+        /// It is frequently the zone which contained the RRset being authenticated.
+        /// Which signers should be authorized to sign what is a significant resolver policy question.
+        /// The signer's name may be compressed with standard DNS name compression when being transmitted over the network.
+        /// </summary>
+        public DnsDomainName SignersName { get; private set; }
+
+        /// <summary>
+        /// The actual signature portion of the SIG RR binds the other RDATA fields to the RRset of the "type covered" RRs with that owner name and class.
+        /// This covered RRset is thereby authenticated. 
+        /// To accomplish this, a data sequence is constructed as follows: 
+        /// 
+        /// data = RDATA | RR(s)...
+        /// 
+        /// where "|" is concatenation,
+        /// 
+        /// RDATA is the wire format of all the RDATA fields in the SIG RR itself (including the canonical form of the signer's name) before but not including the signature,
+        /// and RR(s) is the RRset of the RR(s) of the type covered with the same owner name and class as the SIG RR in canonical form and order.
+        /// 
+        /// How this data sequence is processed into the signature is algorithm dependent.
+        /// </summary>
+        public DataSegment Signature { get; private set; }
+
+        public bool Equals(DnsResourceDataSig other)
+        {
+            return other != null &&
+                   TypeCovered.Equals(other.TypeCovered) &&
+                   Algorithm.Equals(other.Algorithm) &&
+                   Labels.Equals(other.Labels) &&
+                   OriginalTtl.Equals(other.OriginalTtl) &&
+                   SignatureExpiration.Equals(other.SignatureExpiration) &&
+                   SignatureInception.Equals(other.SignatureInception) &&
+                   KeyTag.Equals(other.KeyTag) &&
+                   SignersName.Equals(other.SignersName) &&
+                   Signature.Equals(other.Signature);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataSig);
+        }
+
+        internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            return ConstantPartLength + SignersName.GetLength(compressionData, offsetInDns) + Signature.Length;
+        }
+
+        internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        {
+            buffer.Write(dnsOffset + offsetInDns + Offset.TypeCovered, (ushort)TypeCovered, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + Offset.Algorithm, (byte)Algorithm);
+            buffer.Write(dnsOffset + offsetInDns + Offset.Labels, Labels);
+            buffer.Write(dnsOffset + offsetInDns + Offset.OriginalTtl, OriginalTtl, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + Offset.SignatureExpiration, SignatureExpiration.Value, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + Offset.SignatureInception, SignatureInception.Value, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + Offset.KeyTag, KeyTag, Endianity.Big);
+
+            int numBytesWritten = ConstantPartLength;
+            numBytesWritten += SignersName.Write(buffer, dnsOffset, compressionData, offsetInDns + numBytesWritten);
+
+            Signature.Write(buffer, dnsOffset + offsetInDns + numBytesWritten);
+            return numBytesWritten + Signature.Length;
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            if (length < ConstantPartLength)
+                return null;
+
+            DnsType typeCovered = (DnsType)dns.ReadUShort(offsetInDns + Offset.TypeCovered, Endianity.Big);
+            DnsAlgorithm algorithm = (DnsAlgorithm)dns[offsetInDns + Offset.Algorithm];
+            byte labels = dns[offsetInDns + Offset.Labels];
+            uint originalTtl = dns.ReadUInt(offsetInDns + Offset.OriginalTtl, Endianity.Big);
+            uint signatureExpiration = dns.ReadUInt(offsetInDns + Offset.SignatureExpiration, Endianity.Big);
+            uint signatureInception = dns.ReadUInt(offsetInDns + Offset.SignatureInception, Endianity.Big);
+            ushort keyTag = dns.ReadUShort(offsetInDns + Offset.KeyTag, Endianity.Big);
+
+            offsetInDns += ConstantPartLength;
+            length -= ConstantPartLength;
+
+            DnsDomainName signersName;
+            int signersNameLength;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out signersName, out signersNameLength))
+                return null;
+            offsetInDns += signersNameLength;
+            length -= signersNameLength;
+
+            DataSegment signature = dns.SubSegment(offsetInDns, length);
+
+            return new DnsResourceDataSig(typeCovered, algorithm, labels, originalTtl, signatureExpiration, signatureInception, keyTag, signersName, signature);
         }
     }
 }
