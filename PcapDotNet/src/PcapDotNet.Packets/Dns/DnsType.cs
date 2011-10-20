@@ -180,6 +180,7 @@
         /// <summary>
         /// RFCs 2535, 3755, 4034.
         /// For security key.
+        /// Payload type: DnsResourceDataKey.
         /// </summary>
         Key = 25,
 
