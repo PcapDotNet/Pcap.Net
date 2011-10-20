@@ -11,126 +11,147 @@
         /// <summary>
         /// RFC 1035.
         /// A host address.
+        /// Payload type: DnsResourceDataIpV4.
         /// </summary>
         A = 1,
 
         /// <summary>
         /// RFC 1035.
         /// An authoritative name server.
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Ns = 2,
 
         /// <summary>
         /// RFC 1035.
         /// A mail destination (Obsolete - use MX).
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Md = 3,
 
         /// <summary>
         /// RFC 1035.
         /// A mail forwarder (Obsolete - use MX).
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Mf = 4,
 
         /// <summary>
         /// RFC 1035.
         /// The canonical name for an alias.
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         CName = 5,
         
         /// <summary>
         /// RFC 1035.
         /// Marks the start of a zone of authority.
+        /// Payload type: DnsResourceDataStartOfAuthority.
         /// </summary>
         Soa = 6,
 
         /// <summary>
         /// RFC 1035.
         /// A mailbox domain name (EXPERIMENTAL).
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Mb = 7,
 
         /// <summary>
         /// RFC 1035.
         /// A mail group member (EXPERIMENTAL).
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Mg = 8,
 
         /// <summary>
         /// RFC 1035.
         /// A mail rename domain name (EXPERIMENTAL).
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Mr = 9,
 
         /// <summary>
         /// RFC 1035.
         /// A null RR (EXPERIMENTAL).
+        /// Payload type: DnsResourceDataAnything.
         /// </summary>
         Null = 10,
 
         /// <summary>
         /// RFC 1035.
         /// A well known service description..
+        /// Payload type: DnsResourceDataWellKnownService.
         /// </summary>
         Wks = 11,
 
         /// <summary>
         /// RFC 1035.
         /// A domain name pointer.
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         Ptr = 12,
 
         /// <summary>
         /// RFC 1035.
         /// Host information.
+        /// Payload type: DnsResourceDataHostInformation.
         /// </summary>
         HInfo = 13,
 
         /// <summary>
         /// RFC 1035.
         /// mailbox or mail list information.
+        /// Payload type: DnsResourceDataMailingListInfo.
         /// </summary>
         MInfo = 14,
 
         /// <summary>
         /// RFC 1035.
         /// Mail exchange.
+        /// Payload type: DnsResourceDataMailExchange.
         /// </summary>
         Mx = 15,
 
         /// <summary>
         /// RFC 1035.
         /// Text strings.
+        /// Payload type: DnsResourceDataText.
         /// </summary>
         Txt = 16,
 
         /// <summary>
         /// RFC 1183.
         /// For Responsible Person.
+        /// Payload type: DnsResourceDataResponsiblePerson.
         /// </summary>
         Rp = 17,
 
         /// <summary>
         /// RFCs 1183, 5864.
         /// For AFS Data Base location.
+        /// Payload type: DnsResourceDataAfsDb.
         /// </summary>
         AfsDb = 18,
 
         /// <summary>
         /// RFC 1183.
         /// For X.25 PSDN address.
+        /// Payload type: DnsResourceDataString.
         /// </summary>
         X25 = 19,
 
         /// <summary>
         /// RFC 1183.
         /// For ISDN address.
+        /// Payload type: DnsResourceDataIsdn.
         /// </summary>
         Isdn = 20,
 
         /// <summary>
         /// RFC 1183.
         /// For Route Through.
+        /// Payload type: DnsResourceDataRouteThrough.
         /// </summary>
         Rt = 21,
 
@@ -138,18 +159,21 @@
         /// RFC 1706.
         /// Network Service Access Point.
         /// For NSAP address, NSAP style A record.
+        /// Payload type: DnsResourceDataNetworkServiceAccessPoint.
         /// </summary>
         Nsap = 22,
 
         /// <summary>
         /// RFC 1348.
         /// For domain name pointer, NSAP style.
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         NsapPtr = 23,
 
         /// <summary>
         /// RFCs 2535, 3755, 4034.
         /// For security signature.
+        /// Payload type: DnsResourceDataSig.
         /// </summary>
         Sig = 24, 
 

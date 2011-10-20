@@ -88,6 +88,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Mg:
                 case DnsType.Mr:
                 case DnsType.Ptr:
+                case DnsType.NsapPtr:
                     return new DnsResourceDataDomainName(random.NextDnsDomainName());
                 case DnsType.Soa:
                     return new DnsResourceDataStartOfAuthority(random.NextDnsDomainName(), random.NextDnsDomainName(),
@@ -130,6 +131,11 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.Nsap:
                     return new DnsResourceDataNetworkServiceAccessPoint(random.NextDataSegment(1 + random.Next(10)), random.NextUInt48(), random.NextByte());
+
+                case DnsType.Sig:
+                    return new DnsResourceDataSig(random.NextEnum<DnsType>(), random.NextEnum<DnsAlgorithm>(), random.NextByte(), random.NextUInt(),
+                                                  random.NextUInt(), random.NextUInt(), random.NextUShort(), random.NextDnsDomainName(),
+                                                  random.NextDataSegment(random.Next(100)));
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
