@@ -137,6 +137,11 @@ namespace PcapDotNet.Packets.TestUtils
                                                   random.NextUInt(), random.NextUInt(), random.NextUShort(), random.NextDnsDomainName(),
                                                   random.NextDataSegment(random.Next(100)));
 
+                case DnsType.Key:
+                    return new DnsResourceDataKey(random.NextBool(), random.NextBool(), random.NextEnum<DnsKeyNameType>(), random.NextFlags<DnsKeySignatory>(),
+                                                  random.NextEnum<DnsKeyProtocol>(), random.NextEnum<DnsAlgorithm>(),
+                                                  random.NextBool() ? (ushort?)random.NextUShort() : null, random.NextDataSegment(random.Next(100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }

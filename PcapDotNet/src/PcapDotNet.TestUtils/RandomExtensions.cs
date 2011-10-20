@@ -156,7 +156,9 @@ namespace PcapDotNet.TestUtils
 
             List<object> enumValuesAsUnderlyingType = new List<object>(enumValues.Select(value => Convert.ChangeType(value, underlyingType)));
             List<ulong> enumValuesAsULong;
-            if (underlyingType == typeof(ushort))
+            if (underlyingType == typeof(byte))
+                enumValuesAsULong = new List<ulong>(enumValuesAsUnderlyingType.Cast<byte>().Select(value => (ulong)value));
+            else if (underlyingType == typeof(ushort))
                 enumValuesAsULong = new List<ulong>(enumValuesAsUnderlyingType.Cast<ushort>().Select(value => (ulong)value));
             else
                 throw new ArgumentException("Type " + underlyingType + " is not supported");
