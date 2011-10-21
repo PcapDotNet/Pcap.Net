@@ -153,6 +153,13 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Aaaa:
                     return new DnsResourceDataIpV6(random.NextIpV6Address());
 
+                case DnsType.Loc:
+                    return new DnsResourceDataLocationInformation(random.NextByte(),
+                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
+                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
+                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
+                                                                  random.NextUInt(), random.NextUInt(), random.NextUInt());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }

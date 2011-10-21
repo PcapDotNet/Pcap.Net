@@ -208,6 +208,7 @@
         /// <summary>
         /// RFC 1876.
         /// Location Information.
+        /// Payload type: DnsResourceDataLocationInformation.
         /// </summary>
         Loc = 29,
 
