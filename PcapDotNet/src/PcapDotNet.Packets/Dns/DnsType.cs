@@ -194,12 +194,14 @@
         /// <summary>
         /// RFC 1712.
         /// Geographical Position.
+        /// Payload type: DnsResourceDataGeographicalPosition.
         /// </summary>
         GPos = 27,
 
         /// <summary>
         /// RFC 3596.
         /// IP6 Address.
+        /// Payload type: DnsResourceDataIpV6.
         /// </summary>
         Aaaa = 28,
 
