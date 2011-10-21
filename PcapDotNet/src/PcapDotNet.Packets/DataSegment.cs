@@ -6,6 +6,7 @@ using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets
 {
@@ -260,6 +261,17 @@ namespace PcapDotNet.Packets
         protected IpV4TimeOfDay ReadIpV4TimeOfDay(int offset, Endianity endianity)
         {
             return Buffer.ReadIpV4TimeOfDay(StartOffset + offset, endianity);
+        }
+
+        /// <summary>
+        /// Reads 4 bytes from a specific offset in the segment as an IpV4Address with a given endianity.
+        /// </summary>
+        /// <param name="offset">The offset in the segment to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        internal IpV6Address ReadIpV6Address(int offset, Endianity endianity)
+        {
+            return Buffer.ReadIpV6Address(StartOffset + offset, endianity);
         }
 
         /// <summary>
