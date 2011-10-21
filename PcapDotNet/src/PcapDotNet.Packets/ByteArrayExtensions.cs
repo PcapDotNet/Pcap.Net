@@ -7,6 +7,7 @@ using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets
 {
@@ -316,6 +317,22 @@ namespace PcapDotNet.Packets
             offset += UInt48.SizeOf;
             return result;
         }
+
+        /// <summary>
+        /// Reads 16 bytes from a specific offset as a UInt128 with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        public static UInt128 ReadUInt128(this byte[] buffer, int offset, Endianity endianity)
+        {
+            UInt128 value = ReadUInt128(buffer, offset);
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            return value;
+        }
+
         /*
         /// <summary>
         /// Reads 8 bytes from a specific offset as an int with a given endianity.
@@ -416,6 +433,18 @@ namespace PcapDotNet.Packets
         public static IpV4TimeOfDay ReadIpV4TimeOfDay(this byte[] buffer, ref int offset, Endianity endianity)
         {
             return new IpV4TimeOfDay(buffer.ReadUInt(ref offset, endianity));
+        }
+
+        /// <summary>
+        /// Reads 16 bytes from a specific offset as an IPv6 address with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        public static IpV6Address ReadIpV6Address(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return new IpV6Address(buffer.ReadUInt128(offset, endianity));
         }
 
         /// <summary>
@@ -607,6 +636,20 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// Writes the given value to the buffer using the given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
+        public static void Write(this byte[] buffer, int offset, UInt128 value, Endianity endianity)
+        {
+            if (IsWrongEndianity(endianity))
+                value = HostToNetworkOrder(value);
+            Write(buffer, offset, value);
+        }
+
+        /// <summary>
         /// Writes a string to a byte array in a specific offset using the given encoding.
         /// Increments the offset by the number of bytes written.
         /// </summary>
@@ -723,6 +766,18 @@ namespace PcapDotNet.Packets
             buffer.Write(ref offset, value.MillisecondsSinceMidnightUniversalTime, endianity);
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer using the given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
+        public static void Write(this byte[] buffer, int offset, IpV6Address value, Endianity endianity)
+        {
+            buffer.Write(offset, value.ToValue(), endianity);
+        }
+
 //        public static void WriteCarriageReturnLinefeed(this byte[] buffer, int offset)
 //        {
 //            buffer.Write(ref offset, AsciiBytes.CarriageReturn);
@@ -801,6 +856,25 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        private static UInt128 HostToNetworkOrder(UInt128 value)
+        {
+            UInt128 result;
+
+            unsafe
+            {
+                UInt128* resultPtr = &result;
+                byte* resultBytePtr = (byte*)resultPtr;
+
+                UInt128* valuePtr = &value;
+                byte* valueBytePtr = (byte*)valuePtr;
+
+                for (int i = 0; i != UInt128.SizeOf; ++i)
+                    resultBytePtr[i] = valueBytePtr[UInt128.SizeOf - i - 1];
+            }
+
+            return result;
+        }
+
         private static short ReadShort(byte[] buffer, int offset)
         {
             unsafe
@@ -845,16 +919,16 @@ namespace PcapDotNet.Packets
             }
         }
 
-//        private static long ReadLong(byte[] buffer, int offset)
-//        {
-//            unsafe
-//            {
-//                fixed (byte* ptr = &buffer[offset])
-//                {
-//                    return *((long*)ptr);
-//                }
-//            }
-//        }
+        private static UInt128 ReadUInt128(byte[] buffer, int offset)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    return *((UInt128*)ptr);
+                }
+            }
+        }
 
         private static void Write(byte[] buffer, int offset, short value)
         {
@@ -896,6 +970,17 @@ namespace PcapDotNet.Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     *((UInt48*)ptr) = value;
+                }
+            }
+        }
+
+        private static void Write(byte[] buffer, int offset, UInt128 value)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    *((UInt128*)ptr) = value;
                 }
             }
         }

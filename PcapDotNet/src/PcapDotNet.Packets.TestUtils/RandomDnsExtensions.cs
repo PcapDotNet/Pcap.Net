@@ -150,6 +150,9 @@ namespace PcapDotNet.Packets.TestUtils
                                                                    (random.Next(-180, 180) * random.NextDouble()).ToString("0.##########"),
                                                                    (random.Next(-500, 50000) * random.NextDouble()).ToString("0.##########"));
 
+                case DnsType.Aaaa:
+                    return new DnsResourceDataIpV6(random.NextIpV6Address());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
