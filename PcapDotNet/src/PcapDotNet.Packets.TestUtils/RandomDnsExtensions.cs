@@ -142,6 +142,14 @@ namespace PcapDotNet.Packets.TestUtils
                                                   random.NextEnum<DnsKeyProtocol>(), random.NextEnum<DnsAlgorithm>(),
                                                   random.NextBool() ? (ushort?)random.NextUShort() : null, random.NextDataSegment(random.Next(100)));
 
+                case DnsType.Px:
+                    return new DnsResourceDataX400Pointer(random.NextUShort(), random.NextDnsDomainName(), random.NextDnsDomainName());
+
+                case DnsType.GPos:
+                    return new DnsResourceDataGeographicalPosition((random.Next(-90, 90) * random.NextDouble()).ToString("0.##########"),
+                                                                   (random.Next(-180, 180) * random.NextDouble()).ToString("0.##########"),
+                                                                   (random.Next(-500, 50000) * random.NextDouble()).ToString("0.##########"));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
