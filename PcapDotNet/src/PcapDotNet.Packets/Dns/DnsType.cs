@@ -187,6 +187,7 @@
         /// <summary>
         /// RFC 2163.
         /// X.400 mail mapping information.
+        /// Payload type: DnsResourceDataX400Pointer.
         /// </summary>
         Px = 26, 
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -129,6 +130,15 @@ namespace PcapDotNet.Packets.Dns
         internal abstract DnsResourceData CreateInstance(DataSegment data);
     }
 
+    /// <summary>
+    /// <pre>
+    /// +-----+------+
+    /// | bit | 0-31 |
+    /// +-----+------+
+    /// | 0   | IP   |
+    /// +-----+------+
+    /// </pre>
+    /// </summary>
     [DnsTypeRegistration(Type = DnsType.A)]
     public sealed class DnsResourceDataIpV4 : DnsResourceDataSimple, IEquatable<DnsResourceDataIpV4>
     {
@@ -172,6 +182,13 @@ namespace PcapDotNet.Packets.Dns
         }
     }
 
+    /// <summary>
+    /// <pre>
+    /// +------+
+    /// | NAME |
+    /// +------+
+    /// </pre>
+    /// </summary>
     [DnsTypeRegistration(Type = DnsType.Ns)]
     [DnsTypeRegistration(Type = DnsType.Md)]
     [DnsTypeRegistration(Type = DnsType.Mf)]
@@ -236,8 +253,10 @@ namespace PcapDotNet.Packets.Dns
     /// | bit   | 0-31    |
     /// +-------+---------+
     /// | 0     | MNAME   |
+    /// |       |         |
     /// +-------+---------+
     /// | X     | RNAME   |
+    /// |       |         |
     /// +-------+---------+
     /// | Y     | SERIAL  |
     /// +-------+---------+
@@ -763,6 +782,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | Value  |
     /// +-----+--------+
     /// | 16  | Domain |
+    /// |     |        |
     /// +-----+--------+
     /// </pre>
     /// </summary>
@@ -845,6 +865,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | PREFERENCE |
     /// +-----+------------+
     /// | 16  | EXCHANGE   |
+    /// |     |            |
     /// +-----+------------+
     /// </pre>
     /// </summary>
@@ -960,6 +981,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | subtype  |
     /// +-----+----------+
     /// | 16  | hostname |
+    /// |     |          |
     /// +-----+----------+
     /// </pre>
     /// </summary>
@@ -1055,6 +1077,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | preference        |
     /// +-----+-------------------+
     /// | 16  | intermediate-host |
+    /// |     |                   |
     /// +-----+-------------------+
     /// </pre>
     /// </summary>
@@ -1320,6 +1343,7 @@ namespace PcapDotNet.Packets.Dns
     /// |     |                                   |
     /// +-----+-----------------------------------+
     /// |     | signature                         |
+    /// |     |                                   |
     /// +-----+-----------------------------------+
     /// </pre>
     /// </summary>
@@ -1791,6 +1815,224 @@ namespace PcapDotNet.Packets.Dns
 
             return new DnsResourceDataKey(authenticationProhibited, confidentialityProhibited, nameType, signatory, protocol, algorithm, flagsExtension,
                                           publicKey);
+        }
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----+------------+
+    /// | bit | 0-15       |
+    /// +-----+------------+
+    /// | 0   | Preference |
+    /// +-----+------------+
+    /// | 16  | MAP822     |
+    /// |     |            |
+    /// +-----+------------+
+    /// |     | MAPX400    |
+    /// |     |            |
+    /// +-----+------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Px)]
+    public sealed class DnsResourceDataX400Pointer : DnsResourceData, IEquatable<DnsResourceDataX400Pointer>
+    {
+        private static class Offset
+        {
+            public const int Preference = 0;
+            public const int Map822 = Preference + IpV4Address.SizeOf;
+        }
+
+        private const int ConstantPartLength = Offset.Map822;
+
+        public DnsResourceDataX400Pointer()
+            : this(0, DnsDomainName.Root, DnsDomainName.Root)
+        {
+        }
+
+        public DnsResourceDataX400Pointer(ushort preference, DnsDomainName map822, DnsDomainName mapX400)
+        {
+            Preference = preference;
+            Map822 = map822;
+            MapX400 = mapX400;
+        }
+
+        /// <summary>
+        /// The preference given to this RR among others at the same owner.
+        /// Lower values are preferred.
+        /// </summary>
+        public ushort Preference{ get; private set; }
+
+        /// <summary>
+        /// RFC 822 domain.
+        /// The RFC 822 part of the MCGAM.
+        /// </summary>
+        public DnsDomainName Map822 { get; private set; }
+
+        /// <summary>
+        /// The value of x400-in-domain-syntax derived from the X.400 part of the MCGAM.
+        /// </summary>
+        public DnsDomainName MapX400 { get; private set; }
+
+        public bool Equals(DnsResourceDataX400Pointer other)
+        {
+            return other != null &&
+                   Preference.Equals(other.Preference) &&
+                   Map822.Equals(other.Map822) &&
+                   MapX400.Equals(other.MapX400);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataX400Pointer);
+        }
+
+        internal override int  GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            return ConstantPartLength + Map822.GetLength(compressionData, offsetInDns) + MapX400.GetLength(compressionData, offsetInDns);
+        }
+
+        internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        {
+            buffer.Write(dnsOffset + offsetInDns + Offset.Preference, Preference, Endianity.Big);
+            int numBytesWritten = Map822.Write(buffer, dnsOffset, compressionData, offsetInDns + Offset.Map822);
+            numBytesWritten += MapX400.Write(buffer, dnsOffset, compressionData, offsetInDns + ConstantPartLength + numBytesWritten);
+
+            return ConstantPartLength + numBytesWritten;
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            if (length < ConstantPartLength)
+                return null;
+
+            ushort preference = dns.ReadUShort(offsetInDns + Offset.Preference, Endianity.Big);
+
+            offsetInDns += ConstantPartLength;
+            length -= ConstantPartLength;
+
+            DnsDomainName map822;
+            int map822Length;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out map822, out map822Length))
+                return null;
+            offsetInDns += map822Length;
+            length -= map822Length;
+
+            DnsDomainName mapX400;
+            int mapX400Length;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out mapX400, out mapX400Length))
+                return null;
+            length -= mapX400Length;
+
+            if (length != 0)
+                return null;
+
+            return new DnsResourceDataX400Pointer(preference, map822, mapX400);
+        }
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----------+
+    /// | LONGITUDE |
+    /// +-----------+
+    /// | LATITUDE  |
+    /// +-----------+
+    /// | ALTITUDE  |
+    /// +-----------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.GPos)]
+    public sealed class DnsResourceDataGeographicalPosition : DnsResourceDataSimple, IEquatable<DnsResourceDataGeographicalPosition>
+    {
+        public DnsResourceDataGeographicalPosition()
+            : this(string.Empty, string.Empty, string.Empty)
+        {
+        }
+
+        public DnsResourceDataGeographicalPosition(string longitude, string latitude, string altitude)
+        {
+            Longitude = longitude;
+            Latitude = latitude;
+            Altitude = altitude;
+        }
+
+        /// <summary>
+        /// The real number describing the longitude encoded as a printable string.
+        /// The precision is limited by 256 charcters within the range -90..90 degrees.
+        /// Positive numbers indicate locations north of the equator.
+        /// </summary>
+        public string Longitude { get; private set; }
+
+        /// <summary>
+        /// The real number describing the latitude encoded as a printable string.
+        /// The precision is limited by 256 charcters within the range -180..180 degrees.
+        /// Positive numbers indicate locations east of the prime meridian.
+        /// </summary>
+        public string Latitude { get; private set; }
+
+        /// <summary>
+        /// The real number describing the altitude (in meters) from mean sea-level encoded as a printable string.
+        /// The precision is limited by 256 charcters.
+        /// Positive numbers indicate locations above mean sea-level.
+        /// </summary>
+        public string Altitude { get; private set; }
+
+        public bool Equals(DnsResourceDataGeographicalPosition other)
+        {
+            return other != null &&
+                   Longitude.Equals(other.Longitude) &&
+                   Latitude.Equals(other.Latitude) &&
+                   Altitude.Equals(other.Altitude);
+                   
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataGeographicalPosition);
+        }
+
+        internal override int GetLength()
+        {
+            return Encoding.ASCII.GetByteCount(Longitude) + 1 +
+                   Encoding.ASCII.GetByteCount(Latitude) + 1 +
+                   Encoding.ASCII.GetByteCount(Altitude) + 1;
+        }
+
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            byte[] longtitudeBytes = Encoding.ASCII.GetBytes(Longitude);
+            byte[] latitudeBytes = Encoding.ASCII.GetBytes(Latitude);
+            byte[] altitudeBytes = Encoding.ASCII.GetBytes(Altitude);
+            
+            buffer.Write(ref offset, longtitudeBytes);
+            ++offset;
+            buffer.Write(ref offset, latitudeBytes);
+            ++offset;
+            buffer.Write(ref offset, altitudeBytes);
+            ++offset;
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            int longtitudeNumBytes = data.TakeWhile(value => value != 0).Count();
+            if (longtitudeNumBytes == data.Length)
+                return null;
+            string longtitude = data.SubSegment(0, longtitudeNumBytes).ToString(Encoding.ASCII);
+            data = data.SubSegment(longtitudeNumBytes + 1, data.Length - longtitudeNumBytes - 1);
+
+            int latitudeNumBytes = data.TakeWhile(value => value != 0).Count();
+            if (latitudeNumBytes == data.Length)
+                return null;
+            string latitude = data.SubSegment(0, latitudeNumBytes).ToString(Encoding.ASCII);
+            data = data.SubSegment(latitudeNumBytes + 1, data.Length - latitudeNumBytes - 1);
+
+            int altitudeNumBytes = data.TakeWhile(value => value != 0).Count();
+            if (altitudeNumBytes == data.Length)
+                return null;
+            string altitude = data.SubSegment(0, altitudeNumBytes).ToString(Encoding.ASCII);
+
+            return new DnsResourceDataGeographicalPosition(longtitude, latitude, altitude);
         }
     }
 }
