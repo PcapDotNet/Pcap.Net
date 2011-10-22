@@ -215,24 +215,28 @@
         /// <summary>
         /// RFC 2535, 3755.
         /// Next Domain - OBSOLETE.
+        /// Payload type: DnsResourceDataNextDomain.
         /// </summary>
         Nxt = 30,
 
         /// <summary>
         /// Patton.
-        /// Endpoint Identifier
+        /// Nimrod Endpoint Identifier.
+        /// Payload type: DnsResourceDataAnything.
         /// </summary>
         EId = 31,
 
         /// <summary>
         /// Patton.
         /// Nimrod Locator.
+        /// Payload type: DnsResourceDataAnything.
         /// </summary>
         NimLoc = 32,
 
         /// <summary>
         /// RFC 2782.
         /// Server Selection.
+        /// Payload type: DnsResourceDataServerSelection.
         /// </summary>
         Srv = 33,
 

@@ -3,6 +3,8 @@
 namespace PcapDotNet.Packets.Dns
 {
     [DnsTypeRegistration(Type = DnsType.Null)]
+    [DnsTypeRegistration(Type = DnsType.EId)]
+    [DnsTypeRegistration(Type = DnsType.NimLoc)]
     public sealed class DnsResourceDataAnything : DnsResourceDataSimple, IEquatable<DnsResourceDataAnything>
     {
         public DnsResourceDataAnything()

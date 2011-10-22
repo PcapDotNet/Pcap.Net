@@ -166,6 +166,13 @@ namespace PcapDotNet.Packets.TestUtils
                         typeBitMap[typeBitMap.Length - 1] = random.NextByte(1, 256);
                     return new DnsResourceDataNextDomain(random.NextDnsDomainName(), new DataSegment(typeBitMap));
 
+                case DnsType.EId:
+                case DnsType.NimLoc:
+                    return new DnsResourceDataAnything(random.NextDataSegment(random.Next(32)));
+
+                case DnsType.Srv:
+                    return new DnsResourceDataServerSelection(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextDnsDomainName());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
