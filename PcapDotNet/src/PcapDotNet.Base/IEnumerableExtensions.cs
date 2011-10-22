@@ -222,5 +222,32 @@ namespace PcapDotNet.Base
         {
             return sequence.Count(element => element.Equals(value));
         }
+
+        public static bool IsStrictOrdered<T>(this IEnumerable<T> sequence)
+        {
+            return IsStrictOrdered(sequence, element => element);
+        }
+
+        public static bool IsStrictOrdered<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> keySelector)
+        {
+            return IsStrictOrdered(sequence, keySelector, Comparer<TKey>.Default);
+        }
+
+        public static bool IsStrictOrdered<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> keySelector, IComparer<TKey> comparer)
+        {
+            if (!sequence.Any())
+                return true;
+
+            IEnumerable<TKey> keys = sequence.Select(keySelector);
+            TKey last = keys.First();
+            foreach (TKey key in keys.Skip(1))
+            {
+                if (comparer.Compare(last, key) >= 0)
+                    return false;
+                last = key;
+            }
+
+            return true;
+        }
     }
 }
