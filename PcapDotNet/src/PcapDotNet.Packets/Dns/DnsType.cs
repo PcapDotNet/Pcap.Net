@@ -257,6 +257,7 @@
         /// <summary>
         /// RFC 2230.
         /// Key Exchanger.
+        /// Payload type: DnsResourceDataKeyExchanger.
         /// </summary>
         Kx = 36,
 
@@ -430,13 +431,13 @@
         Axft = 252,
 
         /// <summary>
-        /// RFC 1035].
+        /// RFC 1035.
         /// Mailbox-related RRs (MB, MG or MR).
         /// </summary>
         MailB = 253,
 
         /// <summary>
-        /// RFC 1035].
+        /// RFC 1035.
         /// Mail agent RRs (Obsolete - see MX).
         /// </summary>
         MailA = 254,
