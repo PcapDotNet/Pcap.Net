@@ -243,12 +243,14 @@
         /// <summary>
         /// ATMDOC.
         /// ATM Address.
+        /// Payload type: DnsResourceDataAtmAddress.
         /// </summary>
         AtmA = 34,
 
         /// <summary>
         /// RFCs 2168, 2915, 3403.
         /// Naming Authority Pointer.
+        /// Payload type: DnsResourceDataNamingAuthorityPointer.
         /// </summary>
         NaPtr = 35,
 

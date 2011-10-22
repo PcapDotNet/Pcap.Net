@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dns
 
         public sealed override bool Equals(object obj)
         {
- 	        return Equals(obj as DnsResourceData);
+            return Equals(obj as DnsResourceData);
         }
 
         internal abstract int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns);
@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Dns
             buffer.Write(ref offset, (byte)str.Length);
             str.Write(buffer, ref offset);
         }
-        
+
         private static DnsResourceData TryGetPrototype(DnsType type, DnsClass dnsClass)
         {
             DnsResourceData prototype;
@@ -167,7 +167,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength()
         {
- 	        return IpV4Address.SizeOf;
+            return IpV4Address.SizeOf;
         }
 
         internal override void WriteDataSimple(byte[] buffer, int offset)
@@ -834,7 +834,7 @@ namespace PcapDotNet.Packets.Dns
             return ConstantPartLength + numBytesWritten;
         }
 
-        internal static bool TryRead(out ushort value, out DnsDomainName domainName, 
+        internal static bool TryRead(out ushort value, out DnsDomainName domainName,
                                      DnsDatagram dns, int offsetInDns, int length)
         {
             if (length < ConstantPartLength)
@@ -1033,13 +1033,13 @@ namespace PcapDotNet.Packets.Dns
             : this(DataSegment.Empty)
         {
         }
-        
+
         public DnsResourceDataIsdn(DataSegment isdnAddress)
             : base(isdnAddress)
         {
-            
+
         }
-            
+
         public DnsResourceDataIsdn(DataSegment isdnAddress, DataSegment subAddress)
             : base(isdnAddress, subAddress)
         {
@@ -1358,7 +1358,7 @@ namespace PcapDotNet.Packets.Dns
             public const int Labels = Algorithm + sizeof(byte);
             public const int OriginalTtl = Labels + sizeof(byte);
             public const int SignatureExpiration = OriginalTtl + sizeof(uint);
-            public const int SignatureInception= SignatureExpiration + sizeof(uint);
+            public const int SignatureInception = SignatureExpiration + sizeof(uint);
             public const int KeyTag = SignatureInception + sizeof(uint);
             public const int SignersName = KeyTag + sizeof(ushort);
         }
@@ -1771,9 +1771,9 @@ namespace PcapDotNet.Packets.Dns
         internal override int GetLength()
         {
             return ConstantPartLength + (FlagsExtension != null ? sizeof(ushort) : 0) + PublicKey.Length;
- 	    }
+        }
 
-        internal override void  WriteDataSimple(byte[] buffer, int offset)
+        internal override void WriteDataSimple(byte[] buffer, int offset)
         {
             byte flagsByte0 = 0;
             if (AuthenticationProhibited)
@@ -1787,7 +1787,7 @@ namespace PcapDotNet.Packets.Dns
 
             byte flagsByte1 = 0;
             flagsByte1 |= (byte)((byte)Signatory & Mask.Signatory);
- 	        buffer.Write(offset+ Offset.Signatory, flagsByte1);
+            buffer.Write(offset + Offset.Signatory, flagsByte1);
 
             buffer.Write(offset + Offset.Protocol, (byte)Protocol);
             buffer.Write(offset + Offset.Algorithm, (byte)Algorithm);
@@ -1800,7 +1800,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
- 	        if (data.Length < ConstantPartLength)
+            if (data.Length < ConstantPartLength)
                 return null;
 
             bool authenticationProhibited = data.ReadBool(Offset.AuthenticationProhibited, Mask.AuthenticationProhibited);
@@ -1861,7 +1861,7 @@ namespace PcapDotNet.Packets.Dns
         /// The preference given to this RR among others at the same owner.
         /// Lower values are preferred.
         /// </summary>
-        public ushort Preference{ get; private set; }
+        public ushort Preference { get; private set; }
 
         /// <summary>
         /// RFC 822 domain.
@@ -1887,7 +1887,7 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsResourceDataX400Pointer);
         }
 
-        internal override int  GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
+        internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             return ConstantPartLength + Map822.GetLength(compressionData, offsetInDns) + MapX400.GetLength(compressionData, offsetInDns);
         }
@@ -1984,7 +1984,7 @@ namespace PcapDotNet.Packets.Dns
                    Longitude.Equals(other.Longitude) &&
                    Latitude.Equals(other.Latitude) &&
                    Altitude.Equals(other.Altitude);
-                   
+
         }
 
         public override bool Equals(DnsResourceData other)
@@ -2005,7 +2005,7 @@ namespace PcapDotNet.Packets.Dns
             byte[] longtitudeBytes = Encoding.ASCII.GetBytes(Longitude);
             byte[] latitudeBytes = Encoding.ASCII.GetBytes(Latitude);
             byte[] altitudeBytes = Encoding.ASCII.GetBytes(Altitude);
-            
+
             buffer.Write(ref offset, longtitudeBytes);
             ++offset;
             buffer.Write(ref offset, latitudeBytes);
@@ -2451,7 +2451,7 @@ namespace PcapDotNet.Packets.Dns
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Srv)]
-    public sealed class DnsResourceDataServerSelection: DnsResourceData, IEquatable<DnsResourceDataServerSelection>
+    public sealed class DnsResourceDataServerSelection : DnsResourceData, IEquatable<DnsResourceDataServerSelection>
     {
         private static class Offset
         {
@@ -2572,6 +2572,303 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             return new DnsResourceDataServerSelection(priortiy, weight, port, target);
+        }
+    }
+
+    public enum DnsAtmAddressFormat : byte
+    {
+        /// <summary>
+        /// ATM  End  System Address (AESA) format.
+        /// </summary>
+        AtmEndSystemAddress = 0,
+
+        /// <summary>
+        /// E.164 format.
+        /// </summary>
+        E164 = 1,
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----+---------+
+    /// | bit | 0-7     |
+    /// +-----+---------+
+    /// | 0   | FORMAT  |
+    /// +-----+---------+
+    /// | 8   | ADDRESS |
+    /// |     |         |
+    /// +-----+---------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.AtmA)]
+    public sealed class DnsResourceDataAtmAddress : DnsResourceDataSimple, IEquatable<DnsResourceDataAtmAddress>
+    {
+        private static class Offset
+        {
+            public const int Format = 0;
+            public const int Address = Format + sizeof(byte);
+        }
+
+        public const int ConstantPartLength = Offset.Address;
+
+        public DnsResourceDataAtmAddress()
+            : this(DnsAtmAddressFormat.AtmEndSystemAddress, DataSegment.Empty)
+        {
+        }
+
+        public DnsResourceDataAtmAddress(DnsAtmAddressFormat format, DataSegment address)
+        {
+            Format = format;
+            Address = address;
+        }
+
+        /// <summary>
+        /// The format of Address.
+        /// </summary>
+        public DnsAtmAddressFormat Format { get; private set; }
+
+        /// <summary>
+        /// Variable length string of octets containing the ATM address of the node to which this RR pertains.
+        /// When the format is AESA, the address is coded as described in ISO 8348/AD 2 using the preferred binary encoding of the ISO NSAP format.
+        /// When the format value is E.164, the Address/Number Digits appear in the order in which they would be entered on a numeric keypad.
+        /// Digits are coded in IA5 characters with the leftmost bit of each digit set to 0.
+        /// This ATM address appears in ATM End System Address Octets field (AESA format) or the Address/Number Digits field (E.164 format) of the Called party number information element [ATMUNI3.1].
+        /// Subaddress information is intentionally not included because E.164 subaddress information is used for routing.
+        /// </summary>
+        public DataSegment Address { get; private set; }
+
+        public bool Equals(DnsResourceDataAtmAddress other)
+        {
+            return other != null &&
+                   Format.Equals(other.Format) &&
+                   Address.Equals(other.Address);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataAtmAddress);
+        }
+
+        internal override int GetLength()
+        {
+            return ConstantPartLength + Address.Length;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.Format, (byte)Format);
+            Address.Write(buffer, offset + Offset.Address);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            if (data.Length < ConstantPartLength)
+                return null;
+
+            DnsAtmAddressFormat format = (DnsAtmAddressFormat)data[Offset.Format];
+            DataSegment address = data.SubSegment(Offset.Address, data.Length - ConstantPartLength);
+
+            return new DnsResourceDataAtmAddress(format, address);
+        }
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----+-------+------------+
+    /// | bit | 0-15  | 16-31      |
+    /// +-----+-------+------------+
+    /// | 0   | Order | Preference |
+    /// +-----+-------+------------+
+    /// | 32  | FLAGS              |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// |     | SERVICES           |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// |     | REGEXP             |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// |     | REPLACEMENT        |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NaPtr)]
+    public sealed class DnsResourceDataNamingAuthorityPointer : DnsResourceData, IEquatable<DnsResourceDataNamingAuthorityPointer>
+    {
+        private static class Offset
+        {
+            public const int Order = 0;
+            public const int Preference = Order + sizeof(ushort);
+            public const int Flags = Preference + sizeof(ushort);
+        }
+
+        private const int ConstantPartLength = Offset.Flags;
+
+        public DnsResourceDataNamingAuthorityPointer()
+            : this(0, 0, DataSegment.Empty, DataSegment.Empty, DataSegment.Empty, DnsDomainName.Root)
+        {
+        }
+
+        public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regexp, DnsDomainName replacement)
+        {
+            if (!IsLegalFlags(flags))
+            {
+                throw new ArgumentException(
+                    string.Format("Flags ({0}) contain a non [a-zA-Z0-9] character.",
+                                  Encoding.ASCII.GetString(flags.Buffer, flags.StartOffset, flags.Length)),
+                    "flags");
+            }
+
+            Order = order;
+            Preference = preference;
+            Flags = flags.All(flag => flag < 'a' || flag > 'z') && flags.IsStrictOrdered()
+                        ? flags
+                        : new DataSegment(flags.Select(flag => flag >= 'a' && flag <= 'z' ? (byte)(flag + 'A' - 'a') : flag)
+                                              .Distinct().OrderBy(flag => flag).ToArray());
+            Services = services;
+            Regexp = regexp;
+            Replacement = replacement;
+        }
+
+        /// <summary>
+        /// A 16-bit unsigned integer specifying the order in which the NAPTR records MUST be processed in order to accurately represent the ordered list of Rules.
+        /// The ordering is from lowest to highest.
+        /// If two records have the same order value then they are considered to be the same rule and should be selected based on the combination of the Preference values and Services offered.
+        /// </summary>
+        public ushort Order { get; private set; }
+
+        /// <summary>
+        /// Although it is called "preference" in deference to DNS terminology, this field is equivalent to the Priority value in the DDDS Algorithm.
+        /// It specifies the order in which NAPTR records with equal Order values should be processed, low numbers being processed before high numbers.
+        /// This is similar to the preference field in an MX record, and is used so domain administrators can direct clients towards more capable hosts or lighter weight protocols.
+        /// A client may look at records with higher preference values if it has a good reason to do so such as not supporting some protocol or service very well.
+        /// The important difference between Order and Preference is that once a match is found the client must not consider records with a different Order but they may process records with the same Order but different Preferences.
+        /// The only exception to this is noted in the second important Note in the DDDS algorithm specification concerning allowing clients to use more complex Service determination between steps 3 and 4 in the algorithm.
+        /// Preference is used to give communicate a higher quality of service to rules that are considered the same from an authority standpoint but not from a simple load balancing standpoint.
+        /// 
+        /// It is important to note that DNS contains several load balancing mechanisms and if load balancing among otherwise equal services should be needed then methods such as SRV records or multiple A records should be utilized to accomplish load balancing.
+        /// </summary>
+        public ushort Preference { get; private set; }
+
+        /// <summary>
+        /// Flags to control aspects of the rewriting and interpretation of the fields in the record.
+        /// Flags are single characters from the set A-Z and 0-9.
+        /// The case of the alphabetic characters is not significant.
+        /// The field can be empty.
+        /// 
+        /// It is up to the Application specifying how it is using this Database to define the Flags in this field.
+        /// It must define which ones are terminal and which ones are not.
+        /// </summary>
+        public DataSegment Flags { get; private set; }
+
+        /// <summary>
+        /// Specifies the Service Parameters applicable to this this delegation path.
+        /// It is up to the Application Specification to specify the values found in this field.
+        /// </summary>
+        public DataSegment Services { get; private set; }
+
+        /// <summary>
+        /// A substitution expression that is applied to the original string held by the client in order to construct the next domain name to lookup.
+        /// See the DDDS Algorithm specification for the syntax of this field.
+        /// 
+        /// As stated in the DDDS algorithm, The regular expressions must not be used in a cumulative fashion, that is, they should only be applied to the original string held by the client, never to the domain name produced by a previous NAPTR rewrite.
+        /// The latter is tempting in some applications but experience has shown such use to be extremely fault sensitive, very error prone, and extremely difficult to debug.
+        /// </summary>
+        public DataSegment Regexp { get; private set; }
+
+        /// <summary>
+        /// The next domain-name to query for depending on the potential values found in the flags field.
+        /// This field is used when the regular expression is a simple replacement operation.
+        /// Any value in this field must be a fully qualified domain-name.
+        /// Name compression is not to be used for this field.
+        /// 
+        /// This field and the Regexp field together make up the Substitution Expression in the DDDS Algorithm.
+        /// It is simply a historical optimization specifically for DNS compression that this field exists.
+        /// The fields are also mutually exclusive.  
+        /// If a record is returned that has values for both fields then it is considered to be in error and SHOULD be either ignored or an error returned.
+        /// </summary>
+        public DnsDomainName Replacement { get; private set; }
+
+        public bool Equals(DnsResourceDataNamingAuthorityPointer other)
+        {
+            return other != null &&
+                   Order.Equals(other.Order) &&
+                   Preference.Equals(other.Preference) &&
+                   Flags.Equals(other.Flags) &&
+                   Services.Equals(other.Services) &&
+                   Regexp.Equals(other.Regexp) &&
+                   Replacement.Equals(other.Replacement);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNamingAuthorityPointer);
+        }
+
+        internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
+        {
+            return GetLength();
+        }
+
+        private int GetLength()
+        {
+            return ConstantPartLength + GetStringLength(Flags) + GetStringLength(Services) + GetStringLength(Regexp) + Replacement.NonCompressedLength;
+        }
+
+        internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
+        {
+            int offset = dnsOffset + offsetInDns;
+            buffer.Write(offset + Offset.Order, Order, Endianity.Big);
+            buffer.Write(offset + Offset.Preference, Preference, Endianity.Big);
+            offset += Offset.Flags;
+            WriteString(buffer, ref offset, Flags);
+            WriteString(buffer, ref offset, Services);
+            WriteString(buffer, ref offset, Regexp);
+            Replacement.WriteUncompressed(buffer, offset);
+
+            return GetLength();
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            if (length < ConstantPartLength)
+                return null;
+
+            ushort order = dns.ReadUShort(offsetInDns + Offset.Order, Endianity.Big);
+            ushort preference = dns.ReadUShort(offsetInDns + Offset.Preference, Endianity.Big);
+
+            DataSegment data = dns.SubSegment(offsetInDns + ConstantPartLength, length - ConstantPartLength);
+            int dataOffset = 0;
+
+            DataSegment flags = ReadString(data, ref dataOffset);
+            if (flags == null || !IsLegalFlags(flags))
+                return null;
+
+            DataSegment services = ReadString(data, ref dataOffset);
+            if (services == null)
+                return null;
+
+            DataSegment regexp = ReadString(data, ref dataOffset);
+            if (regexp == null)
+                return null;
+
+            DnsDomainName replacement;
+            int replacementLength;
+            if (!DnsDomainName.TryParse(dns, offsetInDns + ConstantPartLength + dataOffset, length - ConstantPartLength - dataOffset,
+                                        out replacement, out replacementLength))
+            {
+                return null;
+            }
+
+            if (ConstantPartLength + dataOffset + replacementLength != length)
+                return null;
+
+            return new DnsResourceDataNamingAuthorityPointer(order, preference, flags, services, regexp, replacement);
+        }
+
+        private static bool IsLegalFlags(DataSegment flags)
+        {
+            return flags.All(flag => (flag >= '0' && flag <= '9' || flag >= 'A' && flag <= 'Z' || flag >= 'a' && flag <= 'z'));
         }
     }
 }

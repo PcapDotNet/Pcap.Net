@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Dns;
@@ -172,6 +173,18 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.Srv:
                     return new DnsResourceDataServerSelection(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextDnsDomainName());
+
+                case DnsType.AtmA:
+                    return new DnsResourceDataAtmAddress(random.NextEnum<DnsAtmAddressFormat>(), random.NextDataSegment(random.Next(100)));
+
+                case DnsType.NaPtr:
+                    IEnumerable<byte> possibleFlags =
+                        Enumerable.Range('0', '9' - '0' + 1).Concat(Enumerable.Range('a', 'z' - 'a' + 1)).Concat(Enumerable.Range('A', 'Z' - 'A' + 1)).Select(value => (byte)value);
+                    return new DnsResourceDataNamingAuthorityPointer(
+                        random.NextUShort(), random.NextUShort(),
+                        new DataSegment(FuncExtensions.GenerateArray(() => random.NextValue(possibleFlags.ToArray()), 10)),
+                        random.NextDataSegment(random.Next(100)), random.NextDataSegment(random.Next(100)),
+                        random.NextDnsDomainName());
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
