@@ -186,6 +186,9 @@ namespace PcapDotNet.Packets.TestUtils
                         random.NextDataSegment(random.Next(100)), random.NextDataSegment(random.Next(100)),
                         random.NextDnsDomainName());
 
+                case DnsType.Kx:
+                    return new DnsResourceDataKeyExchanger(random.NextUShort(), random.NextDnsDomainName());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
