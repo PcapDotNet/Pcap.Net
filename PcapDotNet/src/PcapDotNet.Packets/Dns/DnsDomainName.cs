@@ -32,6 +32,14 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        public int NonCompressedLength
+        {
+            get
+            {
+                return _labels.Sum(label => label.Length + sizeof(byte)) + sizeof(byte);
+            }
+        }
+
         public override string ToString()
         {
             if (_ascii == null)
@@ -73,6 +81,15 @@ namespace PcapDotNet.Packets.Dns
             }
             domainName = new DnsDomainName(labels);
             return true;
+        }
+
+        internal void WriteUncompressed(byte[] buffer, int offset)
+        {
+            foreach (DataSegment label in _labels)
+            {
+                buffer.Write(ref offset, (byte)label.Length);
+                label.Write(buffer, ref offset);
+            }
         }
 
         internal int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
