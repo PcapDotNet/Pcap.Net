@@ -53,6 +53,8 @@ namespace PcapDotNet.Packets
             get { return Buffer[StartOffset + offset]; }
         }
 
+        public byte Last { get { return this[Length - 1]; } }
+
         /// <summary>
         /// Returns the Segment's bytes as a read only MemoryStream with a non-public buffer.
         /// </summary>

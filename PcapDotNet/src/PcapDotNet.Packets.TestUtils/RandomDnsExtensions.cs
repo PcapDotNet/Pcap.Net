@@ -160,6 +160,12 @@ namespace PcapDotNet.Packets.TestUtils
                                                                   (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
                                                                   random.NextUInt(), random.NextUInt(), random.NextUInt());
 
+                case DnsType.Nxt:
+                    byte[] typeBitMap = random.NextBytes(random.Next(DnsResourceDataNextDomain.MaxTypeBitMapLength + 1));
+                    if (typeBitMap.Length > 0 && typeBitMap[typeBitMap.Length - 1] == 0)
+                        typeBitMap[typeBitMap.Length - 1] = random.NextByte(1, 256);
+                    return new DnsResourceDataNextDomain(random.NextDnsDomainName(), new DataSegment(typeBitMap));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
