@@ -264,6 +264,7 @@
         /// <summary>
         /// RFC 4398.
         /// CERT.
+        /// Payload type: DnsResourceDataCertificate.
         /// </summary>
         Cert = 37,
 

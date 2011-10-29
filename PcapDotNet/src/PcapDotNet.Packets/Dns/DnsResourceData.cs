@@ -1248,7 +1248,8 @@ namespace PcapDotNet.Packets.Dns
     {
         /// <summary>
         /// RFC 4034.
-        /// Field is not used.
+        /// Field is not used or indicates that the algorithm is unknown to a secure DNS, 
+        /// which may simply be the result of the algorithm not having been standardized for DNSSEC.
         /// </summary>
         None = 0,
 
@@ -2923,6 +2924,199 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             return new DnsResourceDataKeyExchanger(preference, keyExchangeHost);
+        }
+    }
+
+    public enum DnsCertificateType : ushort
+    {
+        /// <summary>
+        /// RFC 4398.
+        /// Indicates an X.509 certificate conforming to the profile defined by the IETF PKIX working group. 
+        /// The certificate section will start with a one-octet unsigned OID length and then an X.500 OID indicating the nature of the remainder of the certificate section.
+        /// Note: X.509 certificates do not include their X.500 directory-type-designating OID as a prefix.
+        /// </summary>
+        Pkix = 1,
+
+        /// <summary>
+        /// RFC 4398.
+        /// SPKI certificate.
+        /// </summary>
+        Spki = 2,
+
+        /// <summary>
+        /// RFC 4398.
+        /// Indicates an OpenPGP packet.
+        /// This is used to transfer public key material and revocation signatures.
+        /// The data is binary and must not be encoded into an ASCII armor.
+        /// An implementation should process transferable public keys, but it may handle additional OpenPGP packets.
+        /// </summary>
+        Pgp = 3,
+
+        /// <summary>
+        /// RFC 4398.
+        /// The URL of an X.509 data object.
+        /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
+        /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
+        /// </summary>
+        IPkix = 4,
+
+        /// <summary>
+        /// RFC 4398.
+        /// The URL of an SPKI certificate.
+        /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
+        /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
+        /// </summary>
+        ISpki = 5,
+
+        /// <summary>
+        /// RFC 4398.
+        /// Contains both an OpenPGP fingerprint for the key in question, as well as a URL.
+        /// The certificate portion of the IPgp CERT RR is defined as a one-octet fingerprint length, followed by the OpenPGP fingerprint, followed by the URL.
+        /// The OpenPGP fingerprint is calculated as defined in RFC 2440.
+        /// A zero-length fingerprint or a zero-length URL are legal, and indicate URL-only IPGP data or fingerprint-only IPGP data, respectively.
+        /// A zero-length fingerprint and a zero-length URL are meaningless and invalid.
+        /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
+        /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
+        /// </summary>
+        Ipgp = 6,
+
+        /// <summary>
+        /// RFC 4398.
+        /// Attribute Certificate.
+        /// </summary>
+        AcPkix = 7,
+
+        /// <summary>
+        /// RFC 4398.
+        /// The URL of an Attribute Certificate.
+        /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
+        /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
+        /// </summary>
+        IAcPkix = 8,
+
+        /// <summary>
+        /// RFC 4398.
+        /// Indicates a certificate format defined by an absolute URI.
+        /// The certificate portion of the CERT RR must begin with a null-terminated URI, and the data after the null is the private format certificate itself.
+        /// The URI should be such that a retrieval from it will lead to documentation on the format of the certificate.
+        /// Recognition of private certificate types need not be based on URI equality but can use various forms of pattern matching so that, for example, subtype or version information can also be encoded into the URI.
+        /// </summary>
+        Uri = 253,
+
+        /// <summary>
+        /// RFC 4398.
+        /// Indicates a private format certificate specified by an ISO OID prefix.
+        /// The certificate section will start with a one-octet unsigned OID length and then a BER-encoded OID indicating the nature of the remainder of the certificate section.
+        /// This can be an X.509 certificate format or some other format.
+        /// X.509 certificates that conform to the IETF PKIX profile should be indicated by the PKIX type, not the OID private type.
+        /// Recognition of private certificate types need not be based on OID equality but can use various forms of pattern matching such as OID prefix.
+        /// </summary>
+        Oid = 254,
+    }
+
+    /// <summary>
+    /// <pre>
+    /// +-----+-----------+------+------------+
+    /// | bit | 0-7       | 8-15 | 16-31      |
+    /// +-----+-----------+------+------------+
+    /// | 0   | type             | key tag    |
+    /// +-----+-----------+------+------------+
+    /// | 32  | algorithm | certificate or CRL|
+    /// +-----+-----------+-------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Cert)]
+    public sealed class DnsResourceDataCertificate : DnsResourceDataSimple, IEquatable<DnsResourceDataCertificate>
+    {
+        private static class Offset
+        {
+            public const int Type = 0;
+            public const int KeyTag = Type + sizeof(ushort);
+            public const int Algorithm = KeyTag + sizeof(ushort);
+            public const int Certificate = Algorithm + sizeof(byte);
+        }
+
+        public const int ConstantPartLength = Offset.Certificate;
+
+        public DnsResourceDataCertificate()
+            : this(DnsCertificateType.Pkix, 0, DnsAlgorithm.None, Datagram.Empty)
+        {
+        }
+
+        public DnsResourceDataCertificate(DnsCertificateType certificateType, ushort keyTag, DnsAlgorithm algorithm, DataSegment certificate)
+        {
+            CertificateType = certificateType;
+            KeyTag = keyTag;
+            Algorithm = algorithm;
+            Certificate = certificate;
+        }
+
+        /// <summary>
+        /// The certificate type.
+        /// </summary>
+        public DnsCertificateType CertificateType { get; private set; }
+
+        /// <summary>
+        /// Value computed for the key embedded in the certificate, using the RRSIG Key Tag algorithm.
+        /// This field is used as an efficiency measure to pick which CERT RRs may be applicable to a particular key.
+        /// The key tag can be calculated for the key in question, and then only CERT RRs with the same key tag need to be examined.
+        /// Note that two different keys can have the same key tag.
+        /// However, the key must be transformed to the format it would have as the public key portion of a DNSKEY RR before the key tag is computed.
+        /// This is only possible if the key is applicable to an algorithm and complies to limits (such as key size) defined for DNS security.
+        /// If it is not, the algorithm field must be zero and the tag field is meaningless and should be zero.
+        /// </summary>
+        public ushort KeyTag { get; private set; }
+
+        /// <summary>
+        /// Has the same meaning as the algorithm field in DNSKEY and RRSIG RRs,
+        /// except that a zero algorithm field indicates that the algorithm is unknown to a secure DNS, 
+        /// which may simply be the result of the algorithm not having been standardized for DNSSEC.
+        /// </summary>
+        public DnsAlgorithm Algorithm { get; private set; }
+
+        /// <summary>
+        /// The certificate data according to the type.
+        /// </summary>
+        public DataSegment Certificate { get; private set; }
+
+        public bool Equals(DnsResourceDataCertificate other)
+        {
+            return other != null &&
+                   CertificateType.Equals(other.CertificateType) &&
+                   KeyTag.Equals(other.KeyTag) &&
+                   Algorithm.Equals(other.Algorithm) &&
+                   Certificate.Equals(other.Certificate);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataCertificate);
+        }
+
+        internal override int GetLength()
+        {
+            return ConstantPartLength + Certificate.Length;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.Type, (ushort)CertificateType, Endianity.Big);
+            buffer.Write(offset + Offset.KeyTag, KeyTag, Endianity.Big);
+            buffer.Write(offset + Offset.Algorithm, (byte)Algorithm);
+            Certificate.Write(buffer, offset + Offset.Certificate);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            if (data.Length < ConstantPartLength)
+                return null;
+
+            DnsCertificateType type = (DnsCertificateType)data.ReadUShort(Offset.Type, Endianity.Big);
+            ushort keyTag = data.ReadUShort(Offset.KeyTag, Endianity.Big);
+            DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
+            DataSegment certificate = data.SubSegment(Offset.Certificate, data.Length - ConstantPartLength);
+
+            return new DnsResourceDataCertificate(type, keyTag, algorithm, certificate);
         }
     }
 }
