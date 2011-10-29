@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Numerics;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -163,7 +165,7 @@ namespace PcapDotNet.Packets
         /// <param name="offset">The offset in the segment to start reading.</param>
         /// <param name="length">The number of bytes to read.</param>
         /// <returns>The bytes read from the segment starting from the given offset and in the given length.</returns>
-        protected byte[] ReadBytes(int offset, int length)
+        internal byte[] ReadBytes(int offset, int length)
         {
             return Buffer.ReadBytes(StartOffset + offset, length);
         }
@@ -230,6 +232,11 @@ namespace PcapDotNet.Packets
         internal UInt48 ReadUInt48(int offset, Endianity endianity)
         {
             return Buffer.ReadUInt48(StartOffset + offset, endianity);
+        }
+
+        internal BigInteger ReadUnsignedBigInteger(int offset, int length, Endianity endianity)
+        {
+            return Buffer.ReadUnsignedBigInteger(StartOffset + offset, length, endianity);
         }
 
         /// <summary>

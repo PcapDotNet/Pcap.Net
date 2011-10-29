@@ -271,6 +271,7 @@
         /// <summary>
         /// RFCs 2874, 3226.
         /// A6 (Experimental).
+        /// Payload type: DnsResourceDataA6.
         /// </summary>
         A6 = 38,
         

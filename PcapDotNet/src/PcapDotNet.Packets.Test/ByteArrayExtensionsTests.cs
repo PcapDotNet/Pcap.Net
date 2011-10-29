@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Packets.Test
@@ -144,6 +145,18 @@ namespace PcapDotNet.Packets.Test
             buffer.Write(ref offset, "123", null);
             Assert.IsNotNull(buffer);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        public void ByteArrayUnsignedBigIntegerTest()
+        {
+            byte[] buffer = new byte[100];
+            for (BigInteger expectedValue = 1; expectedValue <= ushort.MaxValue; expectedValue *= 10)
+            {
+                buffer.WriteUnsigned(5, expectedValue, 2, Endianity.Big);
+                BigInteger actualValue = buffer.ReadUnsignedBigInteger(5, 2, Endianity.Big);
+                Assert.AreEqual(expectedValue, actualValue);
+            }
         }
     }
 }

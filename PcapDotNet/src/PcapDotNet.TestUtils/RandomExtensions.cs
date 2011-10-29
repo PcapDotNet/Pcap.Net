@@ -106,6 +106,13 @@ namespace PcapDotNet.TestUtils
             return new UInt128(random.NextULong(), random.NextULong());
         }
 
+        public static UInt128 NextUInt128(this Random random, UInt128 maximumValue)
+        {
+            if (maximumValue <= (UInt128)ulong.MaxValue)
+                return random.NextULong((ulong)maximumValue);
+            return new UInt128(random.NextULong((ulong)(maximumValue >> 64)), random.NextULong());
+        }
+
         public static DateTime NextDateTime(this Random random, DateTime minimumValue, DateTime maximumValue)
         {
             return new DateTime(random.NextLong(minimumValue.ToUniversalTime().Ticks,
