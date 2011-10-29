@@ -5,6 +5,7 @@ using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
@@ -192,6 +193,15 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Cert:
                     return new DnsResourceDataCertificate(random.NextEnum<DnsCertificateType>(), random.NextUShort(), random.NextEnum<DnsAlgorithm>(),
                                                           random.NextDataSegment(random.Next(100)));
+
+                case DnsType.A6:
+                    byte prefixLength = random.NextByte(DnsResourceDataA6.MaxPrefixLength + 1);
+                    UInt128 addressSuffixValue = prefixLength == 0
+                                                     ? random.NextUInt128()
+                                                     : random.NextUInt128(((UInt128)1) << (128 - prefixLength));
+                    return new DnsResourceDataA6(prefixLength,
+                                                 new IpV6Address(addressSuffixValue),
+                                                 random.NextDnsDomainName());
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));

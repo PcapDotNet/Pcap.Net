@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
+using System.Numerics;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -333,36 +335,20 @@ namespace PcapDotNet.Packets
             return value;
         }
 
-        /*
-        /// <summary>
-        /// Reads 8 bytes from a specific offset as an int with a given endianity.
-        /// </summary>
-        /// <param name="buffer">The buffer to read the bytes from.</param>
-        /// <param name="offset">The offset in the buffer to start reading.</param>
-        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
-        /// <returns>The value converted from the read bytes according to the endianity.</returns>
-//        public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
-//        {
-//            long value = ReadLong(buffer, offset);
-//            if (IsWrongEndianity(endianity))
-//                value = IPAddress.HostToNetworkOrder(value);
-//            return value;
-//        }
-        */
+        public static BigInteger ReadUnsignedBigInteger(this byte[] buffer, int offset, int length, Endianity endianity)
+        {
+            BigInteger value = BigInteger.Zero;
+            for (int i = 0; i != length; ++i)
+            {
+                value <<= 8;
+                if (endianity == Endianity.Big)
+                    value += buffer[offset + i];
+                else
+                    value += buffer[offset + length - i - 1];
+            }
+            return value;
+        }
 
-        /*
-        /// <summary>
-        /// Reads 8 bytes from a specific offset as a ulong with a given endianity.
-        /// </summary>
-        /// <param name="buffer">The buffer to read the bytes from.</param>
-        /// <param name="offset">The offset in the buffer to start reading.</param>
-        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
-        /// <returns>The value converted from the read bytes according to the endianity.</returns>
-//        public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
-//        {
-//            return (ulong)ReadLong(buffer, offset, endianity);
-//        }
-        */
         /// <summary>
         /// Reads 6 bytes from a specific offset as a MacAddress with a given endianity.
         /// </summary>
@@ -647,6 +633,20 @@ namespace PcapDotNet.Packets
             if (IsWrongEndianity(endianity))
                 value = HostToNetworkOrder(value);
             Write(buffer, offset, value);
+        }
+
+        public static void WriteUnsigned(this byte[] buffer, int offset, BigInteger value, int length, Endianity endianity)
+        {
+            if (value.Sign < 0)
+                throw new ArgumentOutOfRangeException("value", value, "Must be non-negative.");
+            for (int i = 0; i != length && value != BigInteger.Zero; ++i, value >>= 8)
+            {
+                byte byteValue = (byte)(value & 0xFF);
+                if (endianity == Endianity.Small)
+                    buffer[offset + i] = byteValue;
+                else
+                    buffer[offset + length - i - 1] = byteValue;
+            }
         }
 
         /// <summary>

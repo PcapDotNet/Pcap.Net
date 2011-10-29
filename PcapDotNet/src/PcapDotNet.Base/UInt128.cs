@@ -91,7 +91,7 @@ namespace PcapDotNet.Base
         public static explicit operator ulong(UInt128 value)
         {
             if (value._mostSignificant != 0)
-                throw new OverflowException("Value was either too large or too small for a UInt64.");
+                throw new OverflowException("Value was too large for a UInt64.");
             return value._leastSignificant;
         }
 
@@ -359,6 +359,12 @@ namespace PcapDotNet.Base
                    Equals((UInt128)obj);
         }
 
+        public bool Smaller(UInt128 other)
+        {
+            return _mostSignificant < other._mostSignificant ||
+                   _mostSignificant == other._mostSignificant && _leastSignificant < other._leastSignificant;
+        }
+
         /// <summary>
         /// Returns true iff the two values represent the same value.
         /// </summary>
@@ -381,6 +387,16 @@ namespace PcapDotNet.Base
             return !(value1 == value2);
         }
 
+        public static bool operator <=(UInt128 value1, UInt128 value2)
+        {
+            return !value2.Smaller(value1);
+        }
+
+        public static bool operator >=(UInt128 value1, UInt128 value2)
+        {
+            return !value1.Smaller(value2);
+        }
+
         /// <summary>
         /// Shifts its first operand right by the number of bits specified by its second operand.
         /// </summary>
@@ -390,6 +406,17 @@ namespace PcapDotNet.Base
         public static UInt128 operator >>(UInt128 value, int numberOfBits)
         {
             return RightShift(value, numberOfBits);
+        }
+
+        /// <summary>
+        /// Shifts its first operand left by the number of bits specified by its second operand.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="numberOfBits">The number of bits to shift.</param>
+        /// <returns>The value after it was shifted by the given number of bits.</returns>
+        public static UInt128 operator <<(UInt128 value, int numberOfBits)
+        {
+            return LeftShift(value, numberOfBits);
         }
 
         /// <summary>
@@ -406,6 +433,22 @@ namespace PcapDotNet.Base
             if (numberOfBits == 0)
                 return value;
             return new UInt128(value._mostSignificant >> numberOfBits, (value._leastSignificant >> numberOfBits) + (value._mostSignificant << (64 - numberOfBits)));
+        }
+
+        /// <summary>
+        /// Shifts its first operand left by the number of bits specified by its second operand.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="numberOfBits">The number of bits to shift.</param>
+        /// <returns>The value after it was shifted by the given number of bits.</returns>
+        public static UInt128 LeftShift(UInt128 value, int numberOfBits)
+        {
+            numberOfBits %= 128;
+            if (numberOfBits >= 64)
+                return new UInt128(value._leastSignificant << (numberOfBits - 64), 0);
+            if (numberOfBits == 0)
+                return value;
+            return new UInt128((value._mostSignificant << numberOfBits) + (value._leastSignificant >> (64 - numberOfBits)) , value._leastSignificant << numberOfBits);
         }
 
         /// <summary>
