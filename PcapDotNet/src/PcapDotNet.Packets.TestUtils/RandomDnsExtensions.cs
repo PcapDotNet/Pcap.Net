@@ -207,6 +207,9 @@ namespace PcapDotNet.Packets.TestUtils
                                                  new IpV6Address(addressSuffixValue),
                                                  random.NextDnsDomainName());
 
+                case DnsType.Sink:
+                    return new DnsResourceDataSink(random.NextEnum<DnsSinkCoding>(), random.NextByte(), random.NextDataSegment(random.Next(100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
