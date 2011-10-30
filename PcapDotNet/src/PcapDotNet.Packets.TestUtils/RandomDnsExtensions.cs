@@ -82,6 +82,7 @@ namespace PcapDotNet.Packets.TestUtils
             {
                 case DnsType.A:
                     return new DnsResourceDataIpV4(random.NextIpV4Address());
+
                 case DnsType.Ns:
                 case DnsType.Md:
                 case DnsType.Mf:
@@ -91,10 +92,13 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Mr:
                 case DnsType.Ptr:
                 case DnsType.NsapPtr:
+                case DnsType.DName:
                     return new DnsResourceDataDomainName(random.NextDnsDomainName());
+
                 case DnsType.Soa:
                     return new DnsResourceDataStartOfAuthority(random.NextDnsDomainName(), random.NextDnsDomainName(),
                                                                random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt());
+
                 case DnsType.Null:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(65536)));
 

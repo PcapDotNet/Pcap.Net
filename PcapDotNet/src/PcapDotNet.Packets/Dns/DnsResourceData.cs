@@ -200,6 +200,7 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Mr)]
     [DnsTypeRegistration(Type = DnsType.Ptr)]
     [DnsTypeRegistration(Type = DnsType.NsapPtr)]
+    [DnsTypeRegistration(Type = DnsType.DName)]
     public sealed class DnsResourceDataDomainName : DnsResourceData, IEquatable<DnsResourceDataDomainName>
     {
         public DnsResourceDataDomainName()

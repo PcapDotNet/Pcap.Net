@@ -278,6 +278,7 @@
         /// <summary>
         /// RFC 2672.
         /// DNAME.
+        /// Payload type: DnsResourceDataDomainName.
         /// </summary>
         DName = 39,
 
