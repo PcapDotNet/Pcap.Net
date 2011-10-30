@@ -285,6 +285,7 @@
         /// <summary>
         /// Eastlake.
         /// SINK.
+        /// Payload type: DnsResourceDataSink.
         /// </summary>
         Sink = 40,
 
