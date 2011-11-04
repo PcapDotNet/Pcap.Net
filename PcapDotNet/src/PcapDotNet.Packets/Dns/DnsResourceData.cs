@@ -257,10 +257,10 @@ namespace PcapDotNet.Packets.Dns
     /// | bit   | 0-31    |
     /// +-------+---------+
     /// | 0     | MNAME   |
-    /// |       |         |
+    /// | ...   |         |
     /// +-------+---------+
     /// | X     | RNAME   |
-    /// |       |         |
+    /// | ...   |         |
     /// +-------+---------+
     /// | Y     | SERIAL  |
     /// +-------+---------+
@@ -786,7 +786,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | Value  |
     /// +-----+--------+
     /// | 16  | Domain |
-    /// |     |        |
+    /// | ... |        |
     /// +-----+--------+
     /// </pre>
     /// </summary>
@@ -869,7 +869,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | PREFERENCE |
     /// +-----+------------+
     /// | 16  | EXCHANGE   |
-    /// |     |            |
+    /// | ... |            |
     /// +-----+------------+
     /// </pre>
     /// </summary>
@@ -992,7 +992,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | subtype  |
     /// +-----+----------+
     /// | 16  | hostname |
-    /// |     |          |
+    /// | ... |          |
     /// +-----+----------+
     /// </pre>
     /// </summary>
@@ -1088,7 +1088,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | preference        |
     /// +-----+-------------------+
     /// | 16  | intermediate-host |
-    /// |     |                   |
+    /// | ... |                   |
     /// +-----+-------------------+
     /// </pre>
     /// </summary>
@@ -1352,10 +1352,10 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+--------------+--------------------+
     /// | 128 | key tag      |                    |
     /// +-----+--------------+ signer's name      |
-    /// |     |                                   |
+    /// | ... |                                   |
     /// +-----+-----------------------------------+
     /// |     | signature                         |
-    /// |     |                                   |
+    /// | ... |                                   |
     /// +-----+-----------------------------------+
     /// </pre>
     /// </summary>
@@ -1669,6 +1669,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 32  | public key                                                   |
     /// | or  |                                                              |
     /// | 48  |                                                              |
+    /// | ... |                                                              |
     /// +-----+--------------------------------------------------------------+
     /// </pre>
     /// </summary>
@@ -1838,10 +1839,10 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | Preference |
     /// +-----+------------+
     /// | 16  | MAP822     |
-    /// |     |            |
+    /// | ... |            |
     /// +-----+------------+
     /// |     | MAPX400    |
-    /// |     |            |
+    /// | ... |            |
     /// +-----+------------+
     /// </pre>
     /// </summary>
@@ -2457,7 +2458,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 32  | Port     |
     /// +-----+----------+
     /// | 48  | Target   |
-    /// |     |          |
+    /// | ... |          |
     /// +-----+----------+
     /// </pre>
     /// </summary>
@@ -2601,7 +2602,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | FORMAT  |
     /// +-----+---------+
     /// | 8   | ADDRESS |
-    /// |     |         |
+    /// | ... |         |
     /// +-----+---------+
     /// </pre>
     /// </summary>
@@ -2685,16 +2686,16 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | Order | Preference |
     /// +-----+-------+------------+
     /// | 32  | FLAGS              |
-    /// |     |                    |
+    /// | ... |                    |
     /// +-----+--------------------+
     /// |     | SERVICES           |
-    /// |     |                    |
+    /// | ... |                    |
     /// +-----+--------------------+
     /// |     | REGEXP             |
-    /// |     |                    |
+    /// | ... |                    |
     /// +-----+--------------------+
     /// |     | REPLACEMENT        |
-    /// |     |                    |
+    /// | ... |                    |
     /// +-----+--------------------+
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.NaPtr)]
@@ -2879,7 +2880,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | PREFERENCE        |
     /// +-----+-------------------+
     /// | 16  | EXCHANGER         |
-    /// |     |                   |
+    /// | ... |                   |
     /// +-----+-------------------+
     /// </pre>
     /// </summary>
@@ -3014,7 +3015,10 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | type             | key tag    |
     /// +-----+-----------+------+------------+
     /// | 32  | algorithm | certificate or CRL|
-    /// +-----+-----------+-------------------+
+    /// +-----+-----------+                   |
+    /// |     |                               |
+    /// | ... |                               |
+    /// +-----+-------------------------------+
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Cert)]
@@ -3578,7 +3582,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 0   | coding | subcoding |
     /// +-----+--------+-----------+
     /// | 16  | data               |
-    /// |     |                    |
+    /// | ... |                    |
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
@@ -4034,7 +4038,7 @@ namespace PcapDotNet.Packets.Dns
     /// | 16  | OPTION-LENGTH |
     /// +-----+---------------+
     /// | 32  | OPTION-DATA   |
-    /// |     |               |
+    /// | ... |               |
     /// +-----+---------------+
     /// </pre>
     /// </summary>
@@ -4080,6 +4084,379 @@ namespace PcapDotNet.Packets.Dns
             if (options == null)
                 return null;
             return new DnsResourceDataOptions(options);
+        }
+    }
+    
+    /// <summary>
+    ///  RFCs 2453, 2858.
+    /// </summary>
+    public enum AddressFamily : ushort
+    {
+        /// <summary>
+        /// IP (IP version 4).
+        /// </summary>
+        IpV4 = 1,
+
+        /// <summary>
+        /// IP6 (IP version 6).
+        /// </summary>
+        IpV6 = 2,
+
+        /// <summary>
+        /// Network Service Access Point.
+        /// </summary>
+        Nsap = 3,
+
+        /// <summary>
+        /// High-Level Data Link (8-bit multidrop).
+        /// </summary>
+        Hdlc = 4,
+
+        /// <summary>
+        /// BBN Report 1822.
+        /// </summary>
+        Bbn1822 = 5,
+
+        /// <summary>
+        /// 802 (includes all 802 media plus Ethernet "canonical format").
+        /// </summary>
+        Media802 = 6,
+
+        /// <summary>
+        /// E.163.
+        /// </summary>
+        E163 = 7,
+
+        /// <summary>
+        /// E.164 (SMDS, Frame Relay, ATM).
+        /// </summary>
+        E164 = 8,
+
+        /// <summary>
+        /// F.69 (Telex).
+        /// </summary>
+        F69 = 9,
+
+        /// <summary>
+        /// X.121 (X.25, Frame Relay).
+        /// </summary>
+        X121 = 10,
+
+        /// <summary>
+        /// IPX.
+        /// </summary>
+        Ipx = 11,
+
+        /// <summary>
+        /// Appletalk.
+        /// </summary>
+        AppleTalk = 12,
+
+        /// <summary>
+        /// Decnet IV.
+        /// </summary>
+        DecnetIv = 13,	
+
+        /// <summary>
+        /// Banyan Vines.
+        /// </summary>
+        BanyanVines	= 14,
+
+        /// <summary>
+        /// E.164 with NSAP format subaddress.
+        /// ATM Forum UNI 3.1. October 1995.
+        /// Andy Malis.
+        /// </summary>
+        E164WithNsapFormatSubaddresses = 15,
+
+        /// <summary>
+        /// DNS (Domain Name System).
+        /// </summary>
+        Dns = 16,
+
+        /// <summary>
+        /// Distinguished Name.
+        /// Charles Lynn.
+        /// </summary>
+        DistinguishedName = 17,
+
+        /// <summary>
+        /// AS Number.
+        /// Charles Lynn.
+        /// </summary>
+        AsNumber = 18,
+
+        /// <summary>
+        /// XTP over IP version 4.
+        /// Mike Saul.
+        /// </summary>
+        XtpOverIpV4 = 19,
+
+        /// <summary>
+        /// XTP over IP version 6.
+        /// Mike Saul.
+        /// </summary>
+        XtpOverIpV6 = 20,
+
+        /// <summary>
+        /// XTP native mode XTP.
+        /// Mike Saul.
+        /// </summary>
+        XtpNativeModeXtp = 21,
+
+        /// <summary>
+        /// Fibre Channel World-Wide Port Name.
+        /// Mark Bakke.
+        /// </summary>
+        FibreChannelWorldWidePortName = 22,
+
+        /// <summary>
+        /// Fibre Channel World-Wide Node Name.
+        /// Mark Bakke.
+        /// </summary>
+        FibreChannelWorldWideNodeName = 23,
+
+        /// <summary>
+        /// GWID.
+        /// Subra Hegde.
+        /// </summary>
+        Gwis = 24,
+
+        /// <summary>
+        /// RFCs 4761, 6074.
+        /// AFI for L2VPN information.
+        /// </summary>
+        AfiForL2VpnInformation = 25,
+
+        /// <summary>
+        /// EIGRP Common Service Family.
+        /// Donnie Savage.
+        /// </summary>
+	    EigrpCommonServiceFamily = 16384,
+
+        /// <summary>
+        /// EIGRP IPv4 Service Family.
+        /// Donnie Savage.
+        /// </summary>
+        EigrpIpV4ServiceFamily = 16385,
+
+        /// <summary>
+        /// EIGRP IPv6 Service Family.
+        /// Donnie Savage.
+        /// </summary>
+	    EigrpIpV6ServiceFamily = 16386,
+
+        /// <summary>
+        /// LISP Canonical Address Format (LCAF).
+        /// David Meyer.
+        /// </summary>
+        LispCanonicalAddressFormat = 16387,
+    }
+
+    /// <summary>
+    /// RFC 3123.
+    /// <pre>
+    /// +-----+--------+---+-----------+
+    /// | bit | 0-7    | 8 | 9-15      |
+    /// +-----+--------+---+-----------+
+    /// | 0   | ADDRESSFAMILY          |
+    /// +-----+--------+---+-----------+
+    /// | 16  | PREFIX | N | AFDLENGTH |
+    /// +-----+--------+---+-----------+
+    /// | 32  | AFDPART                |
+    /// | ... |                        |
+    /// +-----+------------------------+
+    /// </pre>
+    /// </summary>
+    public class DnsAddressPrefix : IEquatable<DnsAddressPrefix>
+    {
+        private static class Offset
+        {
+            public const int AddressFamily = 0;
+            public const int PrefixLength = AddressFamily + sizeof(ushort);
+            public const int Negation = PrefixLength + sizeof(byte);
+            public const int AddressFamilyDependentPartLength = Negation;
+            public const int AddressFamilyDependentPart = AddressFamilyDependentPartLength + sizeof(byte);
+        }
+
+        public const int MinimumLength = Offset.AddressFamilyDependentPart;
+
+        private static class Mask
+        {
+            public const byte Negation = 0x80;
+            public const byte AddressFamilyDependentPartLength = 0x7F;
+        }
+
+        public const int AddressFamilyDependentPartMaxLength = (1 << 7) - 1;
+
+
+        public DnsAddressPrefix(AddressFamily addressFamily, byte prefixLength, bool negation, DataSegment addressFamilyDependentPart)
+        {
+            if (addressFamilyDependentPart.Length > AddressFamilyDependentPartMaxLength)
+                throw new ArgumentOutOfRangeException("addressFamilyDependentPart", addressFamilyDependentPart, "Cannot be longer than " + AddressFamilyDependentPartMaxLength);
+
+            AddressFamily = addressFamily;
+            PrefixLength = prefixLength;
+            Negation = negation;
+            AddressFamilyDependentPart = addressFamilyDependentPart;
+        }
+
+        public AddressFamily AddressFamily { get; private set; }
+
+        /// <summary>
+        /// Prefix length.
+        /// Upper and lower bounds and interpretation of this value are address family specific.
+        /// 
+        /// For IPv4, specifies the number of bits of the IPv4 address starting at the most significant bit.
+        /// Legal values range from 0 to 32.
+        /// 
+        /// For IPv6, specifies the number of bits of the IPv6 address starting at the most significant bit.
+        /// Legal values range from 0 to 128.
+        /// </summary>
+        public byte PrefixLength { get; private set; }
+
+        /// <summary>
+        /// Negation flag, indicates the presence of the "!" character in the textual format.
+        /// </summary>
+        public bool Negation { get; private set; }
+
+        /// <summary>
+        /// For IPv4, the encoding follows the encoding specified for the A RR by RFC 1035.
+        /// Trailing zero octets do not bear any information (e.g., there is no semantic difference between 10.0.0.0/16 and 10/16) in an address prefix,
+        /// so the shortest possible AddressFamilyDependentPart can be used to encode it.
+        /// However, for DNSSEC (RFC 2535) a single wire encoding must be used by all.
+        /// Therefore the sender must not include trailing zero octets in the AddressFamilyDependentPart regardless of the value of PrefixLength.
+        /// This includes cases in which AddressFamilyDependentPart length times 8 results in a value less than PrefixLength.
+        /// The AddressFamilyDependentPart is padded with zero bits to match a full octet boundary.
+        /// An IPv4 AddressFamilyDependentPart has a variable length of 0 to 4 octets.
+        /// 
+        /// For IPv6, the 128 bit IPv6 address is encoded in network byte order (high-order byte first).
+        /// The sender must not include trailing zero octets in the AddressFamilyDependentPart regardless of the value of PrefixLength.
+        /// This includes cases in which AddressFamilyDependentPart length times 8 results in a value less than PrefixLength.
+        /// The AddressFamilyDependentPart is padded with zero bits to match a full octet boundary.
+        /// An IPv6 AddressFamilyDependentPart has a variable length of 0 to 16 octets.
+        /// </summary>
+        public DataSegment AddressFamilyDependentPart { get; private set; }
+
+        public int Length
+        {
+            get { return MinimumLength + AddressFamilyDependentPart.Length; }
+        }
+
+        public bool Equals(DnsAddressPrefix other)
+        {
+            return other != null &&
+                   AddressFamily.Equals(other.AddressFamily) &&
+                   PrefixLength.Equals(other.PrefixLength) &&
+                   Negation.Equals(other.Negation) &&
+                   AddressFamilyDependentPart.Equals(other.AddressFamilyDependentPart);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as DnsAddressPrefix);
+        }
+
+        public static DnsAddressPrefix Read(DataSegment data)
+        {
+            if (data.Length < MinimumLength)
+                return null;
+            AddressFamily addressFamily = (AddressFamily)data.ReadUShort(Offset.AddressFamily, Endianity.Big);
+            byte prefixLength = data[Offset.PrefixLength];
+            bool negation = data.ReadBool(Offset.Negation, Mask.Negation);
+            byte addressFamilyDependentPartLength = (byte)(data[Offset.AddressFamilyDependentPartLength] & Mask.AddressFamilyDependentPartLength);
+            
+            if (data.Length < MinimumLength + addressFamilyDependentPartLength)
+                return null;
+            DataSegment addressFamilyDependentPart = data.SubSegment(Offset.AddressFamilyDependentPart, addressFamilyDependentPartLength);
+
+            return new DnsAddressPrefix(addressFamily, prefixLength, negation, addressFamilyDependentPart);
+        }
+
+        public void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.AddressFamily, (ushort)AddressFamily, Endianity.Big);
+            buffer.Write(offset + Offset.PrefixLength, PrefixLength);
+            buffer.Write(offset + Offset.Negation, (byte)((Negation ? Mask.Negation : 0) | AddressFamilyDependentPart.Length));
+            AddressFamilyDependentPart.Write(buffer, offset + Offset.AddressFamilyDependentPart);
+
+            offset += MinimumLength + AddressFamilyDependentPart.Length;
+        }
+    }
+
+    /// <summary>
+    /// RFC 3123.
+    /// <pre>
+    /// 0 Or more of:
+    /// +-----+--------+---+-----------+
+    /// | bit | 0-7    | 8 | 9-15      |
+    /// +-----+--------+---+-----------+
+    /// | 0   | ADDRESSFAMILY          |
+    /// +-----+--------+---+-----------+
+    /// | 16  | PREFIX | N | AFDLENGTH |
+    /// +-----+--------+---+-----------+
+    /// | 32  | AFDPART                |
+    /// | ... |                        |
+    /// +-----+------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Apl)]
+    public sealed class DnsResourceDataAddressPrefixList: DnsResourceDataSimple, IEquatable<DnsResourceDataAddressPrefixList>
+    {
+        public DnsResourceDataAddressPrefixList()
+            : this(new DnsAddressPrefix[0])
+        {
+        }
+
+        public DnsResourceDataAddressPrefixList(IList<DnsAddressPrefix> items)
+        {
+            Items = items.AsReadOnly();
+        }
+
+        public DnsResourceDataAddressPrefixList(params DnsAddressPrefix[] items)
+            : this((IList<DnsAddressPrefix>)items)
+        {
+            Length = items.Sum(item => item.Length);
+        }
+
+        public ReadOnlyCollection<DnsAddressPrefix> Items { get; private set; }
+        public int Length { get; private set; }
+
+        public bool Equals(DnsResourceDataAddressPrefixList other)
+        {
+            return other != null &&
+                   Items.SequenceEqual(other.Items);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataAddressPrefixList);
+        }
+
+        internal override int GetLength()
+        {
+            return Length;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            foreach (DnsAddressPrefix item in Items)
+                item.Write(buffer, ref offset);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            List<DnsAddressPrefix> items = new List<DnsAddressPrefix>();
+            while (data.Length != 0)
+            {
+                DnsAddressPrefix item = DnsAddressPrefix.Read(data);
+                if (item == null)
+                    return null;
+                items.Add(item);
+                data = data.SubSegment(item.Length, data.Length - item.Length);
+            }
+
+            return new DnsResourceDataAddressPrefixList(items);
         }
     }
 }
