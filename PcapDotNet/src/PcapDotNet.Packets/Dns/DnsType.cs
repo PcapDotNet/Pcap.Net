@@ -292,12 +292,14 @@
         /// <summary>
         /// RFC 2671.
         /// OPT.
+        /// Payload type: DnsResourceDataOptions.
         /// </summary>
         Opt = 41,
 
         /// <summary>
         /// RFC 3123.
-        /// APL.
+        /// Address Prefix List.
+        /// Payload type: DnsResourceDataAddressPrefixList.
         /// </summary>
         Apl = 42,
 
