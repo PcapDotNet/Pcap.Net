@@ -158,5 +158,15 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(expectedValue, actualValue);
             }
         }
+
+        [TestMethod]
+        public void ByteArrayULongTest()
+        {
+            ulong expectedValue = 10;
+            byte[] buffer = new byte[8];
+            buffer.Write(0, expectedValue, Endianity.Big);
+            ulong actualValue = buffer.ReadULong(0, Endianity.Big);
+            Assert.AreEqual(expectedValue, actualValue);
+        }
     }
 }

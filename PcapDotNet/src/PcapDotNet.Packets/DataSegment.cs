@@ -234,6 +234,11 @@ namespace PcapDotNet.Packets
             return Buffer.ReadUInt48(StartOffset + offset, endianity);
         }
 
+        internal ulong ReadULong(int offset, Endianity endianity)
+        {
+            return Buffer.ReadULong(StartOffset + offset, endianity);
+        }
+
         internal BigInteger ReadUnsignedBigInteger(int offset, int length, Endianity endianity)
         {
             return Buffer.ReadUnsignedBigInteger(StartOffset + offset, length, endianity);

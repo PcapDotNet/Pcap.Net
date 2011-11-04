@@ -57,8 +57,41 @@ namespace PcapDotNet.Packets.TestUtils
         public static DnsDataResourceRecord NextDnsDataResourceRecord(this Random random)
         {
             DnsType type = random.NextEnum<DnsType>();
-            DnsDataResourceRecord record = new DnsDataResourceRecord(random.NextDnsDomainName(), type, random.NextEnum<DnsClass>(), random.Next(), random.NextDnsResourceData(type));
-            return record;
+            if (type == DnsType.Opt)
+            {
+                return new DnsOptResourceRecord(random.NextDnsDomainName(), random.NextUShort(), random.NextByte(), (DnsOptVersion)random.NextByte(),
+                                                random.NextFlags<DnsOptFlags>(), (DnsResourceDataOptions)random.NextDnsResourceData(type));
+            }
+            return new DnsDataResourceRecord(random.NextDnsDomainName(), type, random.NextEnum<DnsClass>(), random.Next(), random.NextDnsResourceData(type));
+        }
+
+        public static DnsOptions NextDnsOptions(this Random random)
+        {
+            return new DnsOptions(((Func<DnsOption>)(() => random.NextDnsOption())).GenerateArray(random.Next(10)));
+        }
+
+        public static DnsOption NextDnsOption(this Random random)
+        {
+            if (random.NextBool())
+            {
+                return new DnsOptionAnything((DnsOptionCode)random.NextUShort(4, ushort.MaxValue + 1), random.NextDataSegment(random.Next(20)));
+            }
+
+            switch (random.NextEnum<DnsOptionCode>())
+            {
+                case DnsOptionCode.LongLivedQuery:
+                    return new DnsOptionLongLivedQuery(random.NextUShort(), random.NextEnum<DnsLongLivedQueryOpcode>(),
+                                                       random.NextEnum<DnsLongLivedQueryErrorCode>(), random.NextULong(), random.NextUInt());
+
+                case DnsOptionCode.UpdateLease:
+                    return new DnsOptionUpdateLease(random.NextInt());
+
+                case DnsOptionCode.NameServerIdentifier:
+                    return new DnsOptionAnything(DnsOptionCode.NameServerIdentifier, random.NextDataSegment(random.NextInt(0, 100)));
+
+                default:
+                    throw new InvalidOperationException("Invalid value");
+            }
         }
 
         public static DnsDomainName NextDnsDomainName(this Random random)
@@ -152,18 +185,18 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataX400Pointer(random.NextUShort(), random.NextDnsDomainName(), random.NextDnsDomainName());
 
                 case DnsType.GPos:
-                    return new DnsResourceDataGeographicalPosition((random.Next(-90, 90) * random.NextDouble()).ToString("0.##########"),
-                                                                   (random.Next(-180, 180) * random.NextDouble()).ToString("0.##########"),
-                                                                   (random.Next(-500, 50000) * random.NextDouble()).ToString("0.##########"));
+                    return new DnsResourceDataGeographicalPosition((random.NextInt(-90, 90) * random.NextDouble()).ToString("0.##########"),
+                                                                   (random.NextInt(-180, 180) * random.NextDouble()).ToString("0.##########"),
+                                                                   (random.NextInt(-500, 50000) * random.NextDouble()).ToString("0.##########"));
 
                 case DnsType.Aaaa:
                     return new DnsResourceDataIpV6(random.NextIpV6Address());
 
                 case DnsType.Loc:
                     return new DnsResourceDataLocationInformation(random.NextByte(),
-                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
-                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
-                                                                  (ulong)(random.Next(10) * Math.Pow(10, random.Next(10))),
+                                                                  (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
+                                                                  (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
+                                                                  (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
                                                                   random.NextUInt(), random.NextUInt(), random.NextUInt());
 
                 case DnsType.Nxt:
@@ -209,6 +242,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.Sink:
                     return new DnsResourceDataSink(random.NextEnum<DnsSinkCoding>(), random.NextByte(), random.NextDataSegment(random.Next(100)));
+
+                case DnsType.Opt:
+                    return new DnsResourceDataOptions(random.NextDnsOptions());
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));

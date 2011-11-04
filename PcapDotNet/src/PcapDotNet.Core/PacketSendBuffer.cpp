@@ -41,6 +41,4 @@ void PacketSendBuffer::Transmit(pcap_t* pcapDescriptor, bool isSync)
     unsigned int numBytesTransmitted = pcap_sendqueue_transmit(pcapDescriptor, _pcapSendQueue, isSync);
     if (numBytesTransmitted < _pcapSendQueue->len)
         throw PcapError::BuildInvalidOperation("Failed transmiting packets from queue", pcapDescriptor);
-
-	PcapDotNet::Analysis::PcapDotNetAnalysis::PacketSent(Length);
 }

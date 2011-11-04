@@ -241,6 +241,15 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        public DnsOptResourceRecord OptionsRecord
+        {
+            get
+            {
+                ParseAdditionals();
+                return _options;
+            }
+        }
+
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -398,12 +407,16 @@ namespace PcapDotNet.Packets.Dns
         private void ParseAdditionals()
         {
             int nextOffset = 0;
-            ParseRecords(AdditionalsOffset, () => AdditionalCount, DnsDataResourceRecord.Parse, ref _additionals, ref nextOffset);
+            if (ParseRecords(AdditionalsOffset, () => AdditionalCount, DnsDataResourceRecord.Parse, ref _additionals, ref nextOffset) &&
+                _additionals != null)
+            {
+                _options = (DnsOptResourceRecord)_additionals.FirstOrDefault(additional => additional.Type == DnsType.Opt);
+            }
         }
 
         private delegate TRecord ParseRecord<out TRecord>(DnsDatagram dns, int offset, out int numBytesRead);
 
-        private void ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord,
+        private bool ParseRecords<TRecord>(int offset, Func<ushort> countDelegate, ParseRecord<TRecord> parseRecord,
                                            ref ReadOnlyCollection<TRecord> parsedRecords, ref int nextOffset) where TRecord : DnsResourceRecord
         {
             if (parsedRecords == null && Length >= offset)
@@ -424,13 +437,17 @@ namespace PcapDotNet.Packets.Dns
                 }
                 parsedRecords = new ReadOnlyCollection<TRecord>(records.ToArray());
                 nextOffset = offset;
+
+                return true;
             }
+            return false;
         }
 
         private ReadOnlyCollection<DnsQueryResourceRecord> _queries;
         private ReadOnlyCollection<DnsDataResourceRecord> _answers;
         private ReadOnlyCollection<DnsDataResourceRecord> _authorities;
         private ReadOnlyCollection<DnsDataResourceRecord> _additionals;
+        private DnsOptResourceRecord _options;
 
         private int _answersOffset;
         private int _authoritiesOffset;

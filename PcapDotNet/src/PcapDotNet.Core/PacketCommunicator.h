@@ -25,7 +25,6 @@ namespace PcapDotNet { namespace Core
 	private: 
 		static PacketCommunicator()
 		{
-			PcapDotNet::Analysis::PcapDotNetAnalysis::Initialize();
 		}
 
 	public:

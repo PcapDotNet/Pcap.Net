@@ -39,25 +39,21 @@ namespace PcapDotNet.Packets.TestUtils
                         {
                             case GreSourceRouteEntryAddressFamily.AsSourceRoute:
                             {
-                                ushort[] asNumbers = new ushort[random.Next(1, 5)];
-                                for (int j = 0; j != asNumbers.Length; ++j)
-                                    asNumbers[j] = random.NextUShort();
+                                ushort[] asNumbers = ((Func<ushort>)(() => random.NextUShort())).GenerateArray(random.NextInt(1, 5));
                                 routing[i] = new GreSourceRouteEntryAs(asNumbers.AsReadOnly(), random.Next(asNumbers.Length + 1));
                                 break;
                             }
 
                             case GreSourceRouteEntryAddressFamily.IpSourceRoute:
                             {
-                                IpV4Address[] ips = new IpV4Address[random.Next(1, 5)];
-                                for (int j = 0; j != ips.Length; ++j)
-                                    ips[j] = random.NextIpV4Address();
+                                IpV4Address[] ips = ((Func<IpV4Address>)(() => random.NextIpV4Address())).GenerateArray(random.NextInt(1, 5));
                                 routing[i] = new GreSourceRouteEntryIp(ips.AsReadOnly(), random.Next(ips.Length + 1));
                                 break;
                             }
 
                             default:
                             {
-                                int dataLength = random.Next(1, 100);
+                                int dataLength = random.NextInt(1, 100);
                                 routing[i] = new GreSourceRouteEntryUnknown(family, random.NextDatagram(dataLength), random.Next(dataLength + 1));
                                 break;
                             }

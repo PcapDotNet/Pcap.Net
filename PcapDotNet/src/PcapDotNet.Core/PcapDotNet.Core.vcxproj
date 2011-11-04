@@ -22,9 +22,6 @@
     <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PcapDotNet.Analysis, Version=0.8.0.0, Culture=neutral, PublicKeyToken=4b6f3e583145a652">
-      <HintPath>..\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -206,11 +203,27 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\PcapDotNet.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</PostBuildEventUseInBuild>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\$(SolutionName).snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\$(SolutionName).snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\$(SolutionName).snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\$(SolutionName).snk</LinkKeyFile>
+    <LinkDelaySign Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    </LinkDelaySign>
+    <LinkDelaySign Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    </LinkDelaySign>
+    <LinkDelaySign Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    </LinkDelaySign>
+    <LinkDelaySign Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    </LinkDelaySign>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
       <Message>Create Public/Private Key Pair</Message>
-      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
+      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -240,13 +253,14 @@
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
       <Message>Create Public/Private Key Pair</Message>
-      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
+      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -279,13 +293,14 @@
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Message>Create Public/Private Key Pair</Message>
-      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
+      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\3rdParty\WpdPack\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -313,13 +328,14 @@
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
       <Message>Create Public/Private Key Pair</Message>
-      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
+      <Command>if not exist "$(SolutionDir)$(SolutionName).snk" ("%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -350,7 +366,8 @@
       <Command>sn -Ra "$(TargetPath)" "$(SolutionDir)$(SolutionName).snk"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>sn -Ra "$(SolutionDir)\..\3rdParty\PcapDotNet.Analysis\PcapDotNet.Analysis.dll" "$(SolutionDir)$(SolutionName).snk"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

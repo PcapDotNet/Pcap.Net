@@ -101,6 +101,7 @@
     <Compile Include="Dns\DnsDomainNameCompressionMode.cs" />
     <Compile Include="Dns\DnsLayer.cs" />
     <Compile Include="Dns\DnsOpcode.cs" />
+    <Compile Include="Dns\DnsOptionAnything.cs" />
     <Compile Include="Dns\DnsQueryResourceRecord.cs" />
     <Compile Include="Dns\DnsResourceData.cs" />
     <Compile Include="Dns\DnsResourceDataAnything.cs" />
@@ -342,7 +343,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>if not exist "$(SolutionDir)$(SolutionName).snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v6.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</PreBuildEvent>
+    <PreBuildEvent>if not exist "$(SolutionDir)$(SolutionName).snk" ("%25PROGRAMFILES%25\Microsoft SDKs\Windows\v7.0A\bin\sn.exe" -k "$(SolutionDir)$(SolutionName).snk")</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
