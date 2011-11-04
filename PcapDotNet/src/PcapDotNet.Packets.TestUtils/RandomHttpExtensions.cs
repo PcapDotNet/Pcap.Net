@@ -65,11 +65,8 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static string NextHttpToken(this Random random)
         {
-            int tokenLength = random.Next(1, 100);
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i != tokenLength; ++i)
-                stringBuilder.Append(random.NextHttpTokenChar());
-            return stringBuilder.ToString();
+            char[] httpToken = ((Func<char>)(() => random.NextHttpTokenChar())).GenerateArray(random.NextInt(1, 100));
+            return new string(httpToken);
         }
 
         public static char NextHttpTokenChar(this Random random)
@@ -85,7 +82,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static string NextHttpFieldValue(this Random random)
         {
-            int valueLength = random.Next(1, 100);
+            int valueLength = random.NextInt(1, 100);
             StringBuilder stringBuilder = new StringBuilder();
             while (stringBuilder.Length < valueLength)
             {
@@ -178,10 +175,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return HttpField.CreateField(fieldName, random.NextHttpFieldValue());
 
                 case HttpTransferEncodingField.FieldNameUpper:
-                    int numTransferCodings = random.Next(1, 10);
-                    List<string> transferCodings = new List<string>(numTransferCodings);
-                    for (int i = 0; i != numTransferCodings; ++i)
-                        transferCodings.Add(random.NextHttpTransferCoding());
+                    string[] transferCodings = ((Func<string>)(() => random.NextHttpTransferCoding())).GenerateArray(random.NextInt(1, 10));
                     return new HttpTransferEncodingField(transferCodings);
 
                 case HttpContentLengthField.FieldNameUpper:
@@ -267,7 +261,7 @@ namespace PcapDotNet.Packets.TestUtils
                 int numChunks = random.Next(10);
                 for (int i = 0; i != numChunks; ++i)
                 {
-                    int chunkSize = random.Next(1, 1000);
+                    int chunkSize = random.NextInt(1, 1000);
                     chunkedBody.AddRange(Encoding.ASCII.GetBytes(chunkSize.ToString("x")));
                     var chunkExtension = random.NextHttpFieldParameters();
                     foreach (var parameter in chunkExtension)
@@ -281,7 +275,7 @@ namespace PcapDotNet.Packets.TestUtils
                     chunkedBody.AddRange(random.NextDatagram(chunkSize));
                     chunkedBody.AddRange(Encoding.ASCII.GetBytes("\r\n"));
                 }
-                int numZeros = random.Next(1, 10);
+                int numZeros = random.NextInt(1, 10);
                 for (int i = 0; i != numZeros; ++i)
                     chunkedBody.Add((byte)'0');
                 var lastChunkExtension = random.NextHttpFieldParameters();

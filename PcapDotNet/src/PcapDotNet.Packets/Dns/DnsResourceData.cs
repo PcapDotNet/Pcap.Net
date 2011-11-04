@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -3673,6 +3674,412 @@ namespace PcapDotNet.Packets.Dns
             DataSegment dataValue = data.SubSegment(Offset.Data, data.Length - ConstantPartLength);
 
             return new DnsResourceDataSink(coding, subcoding, dataValue);
+        }
+    }
+
+    /// <summary>
+    /// http://files.dns-sd.org/draft-sekar-dns-llq.txt.
+    /// </summary>
+    public enum DnsLongLivedQueryOpcode : ushort
+    {
+        Setup = 1,
+        Refresh = 2,
+        Event = 3,
+    }
+
+    public enum DnsLongLivedQueryErrorCode : ushort
+    {
+        /// <summary>
+        /// The LLQ Setup Request was successful.
+        /// </summary>
+        NoError = 0,
+
+        /// <summary>
+        /// The server cannot grant the LLQ request because it is overloaded,
+        /// or the request exceeds the server's rate limit (see Section 8 "Security Considerations").
+        /// Upon returning this error, the server MUST include in the LEASE-LIFE field a time interval, in seconds,
+        /// after which the client may re-try the LLQ Setup.
+        /// </summary>
+        ServerFull = 1,
+
+        /// <summary>
+        /// The data for this name and type is not expected to change frequently, and the server therefore does not support the requested LLQ.
+        /// The client must not poll for this name and type, nor should it re-try the LLQ Setup, and should instead honor the normal resource record TTLs returned.
+        /// To reduce server load, an administrator MAY return this error for all records with types other than PTR and TXT as a matter of course.
+        /// </summary>
+        Static = 2,
+
+        /// <summary>
+        /// The LLQ was improperly formatted.
+        /// Note that if the rest of the DNS message is properly formatted, the DNS header error code must not include a format error code,
+        ///  as this would cause confusion between a server that does not understand the LLQ format, and a client that sends malformed LLQs.
+        /// </summary>
+        FormatError = 3,
+
+        /// <summary>
+        /// The client attempts to refresh an expired or non-existent LLQ (as determined by the LLQ-ID in the request).
+        /// </summary>
+        NoSuchLlq =  4,
+
+        /// <summary>
+        /// The protocol version specified in the client's request is not supported by the server.
+        /// </summary>
+        BadVersion = 5,
+
+        /// <summary>
+        /// The LLQ was not granted for an unknown reason.
+        /// </summary>
+        UnknownError = 6,
+    }
+
+    public enum DnsOptionCode : ushort
+    {
+        /// <summary>
+        /// http://files.dns-sd.org/draft-sekar-dns-llq.txt.
+        /// LLQ.
+        /// </summary>
+        LongLivedQuery = 1,
+
+        /// <summary>
+        /// http://files.dns-sd.org/draft-sekar-dns-ul.txt.
+        /// UL.
+        /// </summary>
+        UpdateLease = 2,
+
+        /// <summary>
+        /// RFC 5001.
+        /// NSID.
+        /// </summary>
+        NameServerIdentifier = 3,
+    }
+
+    public abstract class DnsOption : IEquatable<DnsOption>
+    {
+        public const int MinimumLength = sizeof(ushort) + sizeof(ushort);
+
+        public DnsOptionCode Code { get; private set; }
+        public int Length { get { return MinimumLength + DataLength; } }
+        public abstract int DataLength { get; }
+
+        public bool Equals(DnsOption other)
+        {
+            return other != null &&
+                   Code.Equals(other.Code) && 
+                   GetType().Equals(other.GetType()) &&
+                   EqualsData(other);
+        }
+
+        public override sealed bool Equals(object obj)
+        {
+            return Equals(obj as DnsOption);
+        }
+
+        internal DnsOption(DnsOptionCode code)
+        {
+            Code = code;
+        }
+
+        internal abstract bool EqualsData(DnsOption other);
+
+        internal void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, (ushort)Code, Endianity.Big);
+            buffer.Write(ref offset, (ushort)DataLength, Endianity.Big);
+            WriteData(buffer, ref offset);
+        }
+
+        internal abstract void WriteData(byte[] buffer, ref int offset);
+
+        internal static DnsOption CreateInstance(DnsOptionCode code, DataSegment data)
+        {
+            switch (code)
+            {
+                case DnsOptionCode.LongLivedQuery:
+                    if (data.Length < DnsOptionLongLivedQuery.MinimumDataLength)
+                        return null;
+                    return DnsOptionLongLivedQuery.Read(data);
+
+                case DnsOptionCode.UpdateLease:
+                    if (data.Length < DnsOptionUpdateLease.MinimumDataLength)
+                        return null;
+                    return DnsOptionUpdateLease.Read(data);
+
+                case DnsOptionCode.NameServerIdentifier:
+                default:
+                    return new DnsOptionAnything(code, data);
+            }
+        }
+    }
+
+    /// <summary>
+    /// http://files.dns-sd.org/draft-sekar-dns-llq.txt.
+    /// <pre>
+    /// +-----+------------+
+    /// | bit | 0-15       |
+    /// +-----+------------+
+    /// | 0   | VERSION    |
+    /// +-----+------------+
+    /// | 16  | LLQ-OPCODE |
+    /// +-----+------------+
+    /// | 32  | ERROR-CODE |
+    /// +-----+------------+
+    /// | 48  | LLQ-ID     |
+    /// |     |            |
+    /// |     |            |
+    /// |     |            |
+    /// +-----+------------+
+    /// | 112 | LEASE-LIFE |
+    /// |     |            |
+    /// +-----+------------+
+    /// </pre>
+    /// </summary>
+    public class DnsOptionLongLivedQuery : DnsOption
+    {
+        private static class Offset
+        {
+            public const int Version = 0;
+            public const int Opcode = Version + sizeof(ushort);
+            public const int ErrorCode = Opcode + sizeof(ushort);
+            public const int Id = ErrorCode + sizeof(ushort);
+            public const int LeaseLife = Id + sizeof(ulong);
+        }
+
+        public const int MinimumDataLength = Offset.LeaseLife + sizeof(uint);
+
+        public DnsOptionLongLivedQuery(ushort version, DnsLongLivedQueryOpcode opcode, DnsLongLivedQueryErrorCode errorCode, ulong id, uint leaseLife)
+            : base(DnsOptionCode.LongLivedQuery)
+        {
+            Version = version;
+            Opcode = opcode;
+            ErrorCode = errorCode;
+            Id = id;
+            LeaseLife = leaseLife;
+        }
+
+        public ushort Version { get; private set; }
+        public DnsLongLivedQueryOpcode Opcode { get; private set; }
+        public DnsLongLivedQueryErrorCode ErrorCode { get; private set; }
+        public ulong Id { get; private set; }
+        public uint LeaseLife { get; private set; }
+
+        public override int DataLength
+        {
+            get { return MinimumDataLength; }
+        }
+
+        internal override bool EqualsData(DnsOption other)
+        {
+            DnsOptionLongLivedQuery castedOther = (DnsOptionLongLivedQuery)other;
+            return Version.Equals(castedOther.Version) &&
+                   Opcode.Equals(castedOther.Opcode) &&
+                   ErrorCode.Equals(castedOther.ErrorCode) &&
+                   Id.Equals(castedOther.Id) &&
+                   LeaseLife.Equals(castedOther.LeaseLife);
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.Version, Version, Endianity.Big);
+            buffer.Write(offset + Offset.Opcode, (ushort)Opcode, Endianity.Big);
+            buffer.Write(offset + Offset.ErrorCode, (ushort)ErrorCode, Endianity.Big);
+            buffer.Write(offset + Offset.Id, Id, Endianity.Big);
+            buffer.Write(offset + Offset.LeaseLife, LeaseLife, Endianity.Big);
+            offset += DataLength;
+        }
+
+        internal static DnsOptionLongLivedQuery Read(DataSegment data)
+        {
+            if (data.Length < MinimumDataLength)
+                return null;
+            ushort version = data.ReadUShort(Offset.Version, Endianity.Big);
+            DnsLongLivedQueryOpcode opcode = (DnsLongLivedQueryOpcode)data.ReadUShort(Offset.Opcode, Endianity.Big);
+            DnsLongLivedQueryErrorCode errorCode = (DnsLongLivedQueryErrorCode)data.ReadUShort(Offset.ErrorCode, Endianity.Big);
+            ulong id = data.ReadULong(Offset.Id, Endianity.Big);
+            uint leaseLife = data.ReadUInt(Offset.LeaseLife, Endianity.Big);
+
+            return new DnsOptionLongLivedQuery(version, opcode, errorCode, id, leaseLife);
+        }
+    }
+
+    /// <summary>
+    /// http://files.dns-sd.org/draft-sekar-dns-ul.txt.
+    /// <pre>
+    /// +-----+-------+
+    /// | bit | 0-31  |
+    /// +-----+-------+
+    /// | 0   | LEASE |
+    /// +-----+-------+
+    /// </pre>
+    /// </summary>
+    public class DnsOptionUpdateLease : DnsOption
+    {
+        public const int MinimumDataLength = sizeof(int);
+
+        public DnsOptionUpdateLease(int lease)
+            : base(DnsOptionCode.UpdateLease)
+        {
+            Lease = lease;
+        }
+
+        /// <summary>
+        /// Indicating the lease life, in seconds, desired by the client.
+        /// In Update Responses, this field contains the actual lease granted by the server.
+        /// Note that the lease granted by the server may be less than, greater than, or equal to the value requested by the client.
+        /// To reduce network and server load, a minimum lease of 30 minutes (1800 seconds) is recommended.
+        /// Note that leases are expected to be sufficiently long as to make timer discrepancies (due to transmission latency, etc.)
+        /// between a client and server negligible.
+        /// Clients that expect the updated records to be relatively static may request appropriately longer leases.
+        /// Servers may grant relatively longer or shorter leases to reduce network traffic due to refreshes, or reduce stale data, respectively.
+        /// </summary>
+        public int Lease { get; private set; }
+
+        public override int DataLength
+        {
+            get { return MinimumDataLength; }
+        }
+
+        internal override bool EqualsData(DnsOption other)
+        {
+            return Lease.Equals(((DnsOptionUpdateLease)other).Lease);
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, Lease, Endianity.Big);
+        }
+
+        internal static DnsOptionUpdateLease Read(DataSegment data)
+        {
+            if (data.Length < MinimumDataLength)
+                return null;
+
+            int lease = data.ReadInt(0, Endianity.Big);
+
+            return new DnsOptionUpdateLease(lease);
+        }
+    }
+
+    public sealed class DnsOptions : IEquatable<DnsOptions>
+    {
+        public static DnsOptions None { get { return _none; } }
+
+        public DnsOptions(IList<DnsOption> options)
+        {
+            Options = options.AsReadOnly();
+            NumBytes = options.Sum(option => option.Length);
+        }
+
+        public DnsOptions(params DnsOption[] options)
+            : this((IList<DnsOption>)options)
+        {
+        }
+
+        public ReadOnlyCollection<DnsOption> Options { get; private set; }
+
+        public int NumBytes { get; private set; }
+
+        public bool Equals(DnsOptions other)
+        {
+            return other != null &&
+                   Options.SequenceEqual(other.Options);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as DnsOptions);
+        }
+
+        private static readonly DnsOptions _none = new DnsOptions();
+
+        internal void Write(byte[] buffer, int offset)
+        {
+            foreach (DnsOption option in Options)
+                option.Write(buffer, ref offset);
+        }
+
+        public static DnsOptions Read(DataSegment data)
+        {
+            List<DnsOption> options = new List<DnsOption>();
+            while (data.Length != 0)
+            {
+                if (data.Length < DnsOption.MinimumLength)
+                    return null;
+                DnsOptionCode code = (DnsOptionCode)data.ReadUShort(0, Endianity.Big);
+                ushort optionDataLength = data.ReadUShort(sizeof(ushort), Endianity.Big);
+                
+                int optionLength = DnsOption.MinimumLength + optionDataLength;
+                if (data.Length < optionLength)
+                    return null;
+                DnsOption option = DnsOption.CreateInstance(code, data.SubSegment(DnsOption.MinimumLength, optionDataLength));
+                if (option == null)
+                    return null;
+                options.Add(option);
+
+                data = data.SubSegment(optionLength, data.Length - optionLength);
+            }
+
+            return new DnsOptions(options);
+        }
+    }
+
+    /// <summary>
+    /// RFC 2671.
+    /// <pre>
+    /// 0 Or more of:
+    /// +-----+---------------+
+    /// | bit | 0-15          |
+    /// +-----+---------------+
+    /// | 0   | OPTION-CODE   |
+    /// +-----+---------------+
+    /// | 16  | OPTION-LENGTH |
+    /// +-----+---------------+
+    /// | 32  | OPTION-DATA   |
+    /// |     |               |
+    /// +-----+---------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Opt)]
+    public sealed class DnsResourceDataOptions : DnsResourceDataSimple, IEquatable<DnsResourceDataOptions>
+    {
+        public DnsResourceDataOptions()
+            : this(DnsOptions.None)
+        {
+        }
+
+        public DnsResourceDataOptions(DnsOptions options)
+        {
+            Options = options;
+        }
+
+        public DnsOptions Options { get; private set; }
+
+        public bool Equals(DnsResourceDataOptions other)
+        {
+            return other != null &&
+                   Options.Equals(other.Options);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataOptions);
+        }
+
+        internal override int GetLength()
+        {
+            return Options.NumBytes;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            Options.Write(buffer, offset);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            DnsOptions options = DnsOptions.Read(data);
+            if (options == null)
+                return null;
+            return new DnsResourceDataOptions(options);
         }
     }
 }

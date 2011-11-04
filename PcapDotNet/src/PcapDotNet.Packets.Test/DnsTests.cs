@@ -10,6 +10,7 @@ using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -142,6 +143,30 @@ namespace PcapDotNet.Packets.Test
 
             dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
             TestDomainNameCompression(6, dnsLayer);
+        }
+
+        [TestMethod]
+        public void DnsOptResourceRecordTest()
+        {
+            Random random = new Random();
+            for (int i = 0; i != 100; ++i)
+            {
+                DnsDomainName domainName = random.NextDnsDomainName();
+                ushort sendersUdpPayloadSize = random.NextUShort();
+                byte extendedRcode = random.NextByte();
+                DnsOptVersion version = (DnsOptVersion)random.NextByte();
+                DnsOptFlags flags = (DnsOptFlags)random.NextUShort();
+                DnsResourceDataOptions data = (DnsResourceDataOptions)random.NextDnsResourceData(DnsType.Opt);
+
+                DnsOptResourceRecord record = new DnsOptResourceRecord(domainName, sendersUdpPayloadSize, extendedRcode, version, flags, data);
+                
+                Assert.AreEqual(domainName, record.DomainName);
+                Assert.AreEqual(sendersUdpPayloadSize, record.SendersUdpPayloadSize);
+                Assert.AreEqual(extendedRcode, record.ExtendedRcode);
+                Assert.AreEqual(version, record.Version);
+                Assert.AreEqual(flags, record.Flags);
+                Assert.AreEqual(data, record.Data);
+            }
         }
 
         [TestMethod]

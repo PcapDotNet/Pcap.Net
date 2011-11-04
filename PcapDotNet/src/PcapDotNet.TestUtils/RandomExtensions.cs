@@ -16,12 +16,12 @@ namespace PcapDotNet.TestUtils
 
         public static byte NextByte(this Random random, int minValue, int maxValue)
         {
-            return (byte)random.Next(minValue, maxValue);
+            return (byte)random.NextInt(minValue, maxValue);
         }
 
         public static byte NextByte(this Random random, int maxValue)
         {
-            return (byte)random.Next(maxValue);
+            return (byte)random.NextInt(0, maxValue);
         }
 
         public static byte NextByte(this Random random)
@@ -38,12 +38,17 @@ namespace PcapDotNet.TestUtils
 
         public static char NextChar(this Random random, char minValue, char maxValue)
         {
-            return (char)random.Next(minValue, maxValue);
+            return (char)random.NextInt(minValue, maxValue);
         }
 
         public static ushort NextUShort(this Random random, int maxValue)
         {
-            return (ushort)random.Next(maxValue);
+            return (ushort)random.NextInt(0, maxValue);
+        }
+
+        public static ushort NextUShort(this Random random, ushort minValue, int maxValue)
+        {
+            return (ushort)random.NextInt(minValue, maxValue);
         }
 
         public static ushort NextUShort(this Random random)
@@ -53,12 +58,27 @@ namespace PcapDotNet.TestUtils
 
         public static UInt24 NextUInt24(this Random random)
         {
-            return (UInt24)random.Next(UInt24.MaxValue + 1);
+            return (UInt24)random.NextInt(0, UInt24.MaxValue + 1);
+        }
+
+        public static int NextInt(this Random random)
+        {
+            return random.Next(int.MinValue, int.MaxValue);
+        }
+
+        public static int NextInt(this Random random, int maxValue)
+        {
+            return random.Next(int.MinValue, maxValue);
+        }
+
+        public static int NextInt(this Random random, int minValue, int maxValue)
+        {
+            return random.Next(minValue, maxValue);
         }
 
         public static uint NextUInt(this Random random)
         {
-            return (uint)random.Next(int.MinValue, int.MaxValue);
+            return (uint)random.NextInt();
         }
 
         public static uint NextUInt(this Random random, uint maxValue)

@@ -114,7 +114,7 @@ namespace PcapDotNet.Packets
 
         private Options(IList<T> options, bool isValid)
         {
-            _options = new ReadOnlyCollection<T>(options);
+            _options = options.AsReadOnly();
 
             IsValid = isValid;
 

@@ -320,6 +320,19 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
+        {
+            long value = ReadLong(buffer, offset);
+            if (IsWrongEndianity(endianity))
+                value = IPAddress.HostToNetworkOrder(value);
+            return value;
+        }
+
+        public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
+        {
+            return (ulong)buffer.ReadLong(offset, endianity);
+        }
+
         /// <summary>
         /// Reads 16 bytes from a specific offset as a UInt128 with a given endianity.
         /// </summary>
@@ -617,8 +630,20 @@ namespace PcapDotNet.Packets
         /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
         public static void Write(this byte[] buffer, ref int offset, UInt48 value, Endianity endianity)
         {
-            Write(buffer, offset, value, endianity);
+            buffer.Write(offset, value, endianity);
             offset += UInt48.SizeOf;
+        }
+
+        public static void Write(this byte[] buffer, int offset, long value, Endianity endianity)
+        {
+            if (IsWrongEndianity(endianity))
+                value = IPAddress.HostToNetworkOrder(value);
+            Write(buffer, offset, value);
+        }
+
+        public static void Write(this byte[] buffer, int offset, ulong value, Endianity endianity)
+        {
+            buffer.Write(offset, (long)value, endianity);
         }
 
         /// <summary>
@@ -919,6 +944,17 @@ namespace PcapDotNet.Packets
             }
         }
 
+        private static long ReadLong(byte[] buffer, int offset)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    return *((long*)ptr);
+                }
+            }
+        }
+
         private static UInt128 ReadUInt128(byte[] buffer, int offset)
         {
             unsafe
@@ -970,6 +1006,17 @@ namespace PcapDotNet.Packets
                 fixed (byte* ptr = &buffer[offset])
                 {
                     *((UInt48*)ptr) = value;
+                }
+            }
+        }
+
+        private static void Write(byte[] buffer, int offset, long value)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[offset])
+                {
+                    *((long*)ptr) = value;
                 }
             }
         }

@@ -96,7 +96,7 @@ namespace PcapDotNet.Packets.Test
                 IpV4Layer ipV4Layer = random.NextIpV4Layer();
                 ipV4Layer.HeaderChecksum = null;
 
-                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(0, 50 * 1024));
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.NextInt(0, 50 * 1024));
 
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, payloadLayer);
 

@@ -26,6 +26,7 @@ namespace PcapDotNet.Packets.Dns
     /// | ...  |                                                 |
     /// +------+-------------------------------------------------+
     /// </pre>
+    /// </summary>
     public abstract class DnsResourceRecord
     {
         private static class OffsetAfterDomainName
