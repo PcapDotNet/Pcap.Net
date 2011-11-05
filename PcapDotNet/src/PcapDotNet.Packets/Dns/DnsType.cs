@@ -306,6 +306,7 @@
         /// <summary>
         /// RFCs 3658, 4034.
         /// Delegation Signer.
+        /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
         Ds = 43,
 

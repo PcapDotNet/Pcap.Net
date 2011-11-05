@@ -89,7 +89,7 @@ namespace PcapDotNet.Packets.Dns
                 select new
                        {
                            attribute.Type,
-                           Prototype = (DnsResourceData)Activator.CreateInstance(type),
+                           Prototype = (DnsResourceData)Activator.CreateInstance(type, true),
                        };
 
             return prototypes.ToDictionary(prototype => prototype.Type, prototype => prototype.Prototype);
@@ -145,11 +145,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.A)]
     public sealed class DnsResourceDataIpV4 : DnsResourceDataSimple, IEquatable<DnsResourceDataIpV4>
     {
-        public DnsResourceDataIpV4()
-            : this(IpV4Address.Zero)
-        {
-        }
-
         public DnsResourceDataIpV4(IpV4Address data)
         {
             Data = data;
@@ -165,6 +160,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataIpV4);
+        }
+
+        internal DnsResourceDataIpV4()
+            : this(IpV4Address.Zero)
+        {
         }
 
         internal override int GetLength()
@@ -204,11 +204,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.DName)]
     public sealed class DnsResourceDataDomainName : DnsResourceData, IEquatable<DnsResourceDataDomainName>
     {
-        public DnsResourceDataDomainName()
-            : this(DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataDomainName(DnsDomainName data)
         {
             Data = data;
@@ -224,6 +219,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataDomainName);
+        }
+
+        internal DnsResourceDataDomainName()
+            : this(DnsDomainName.Root)
+        {
         }
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -287,11 +287,6 @@ namespace PcapDotNet.Packets.Dns
         }
 
         private const int ConstantPartLength = Offset.MinimumTtl + sizeof(uint);
-
-        public DnsResourceDataStartOfAuthority()
-            : this(DnsDomainName.Root, DnsDomainName.Root, 0, 0, 0, 0, 0)
-        {
-        }
 
         public DnsResourceDataStartOfAuthority(DnsDomainName mainNameServer, DnsDomainName responsibleMailBox,
                                                SerialNumber32 serial, uint refresh, uint retry, uint expire, uint minimumTtl)
@@ -357,6 +352,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataStartOfAuthority);
+        }
+
+        internal DnsResourceDataStartOfAuthority()
+            : this(DnsDomainName.Root, DnsDomainName.Root, 0, 0, 0, 0, 0)
+        {
         }
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -430,11 +430,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.BitMap;
 
-        public DnsResourceDataWellKnownService()
-            : this(IpV4Address.Zero, IpV4Protocol.Ip, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataWellKnownService(IpV4Address address, IpV4Protocol protocol, DataSegment bitMap)
         {
             Address = address;
@@ -468,6 +463,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataWellKnownService);
+        }
+
+        internal DnsResourceDataWellKnownService()
+            : this(IpV4Address.Zero, IpV4Protocol.Ip, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -554,11 +554,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.X25)]
     public sealed class DnsResourceDataString : DnsResourceDataSimple, IEquatable<DnsResourceDataString>
     {
-        public DnsResourceDataString()
-            : this(DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataString(DataSegment str)
         {
             String = str;
@@ -575,6 +570,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataString);
+        }
+
+        internal DnsResourceDataString()
+            : this(DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -611,11 +611,6 @@ namespace PcapDotNet.Packets.Dns
     {
         private const int NumStrings = 2;
 
-        public DnsResourceDataHostInformation()
-            : this(DataSegment.Empty, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataHostInformation(DataSegment cpu, DataSegment os)
             : base(cpu, os)
         {
@@ -624,6 +619,11 @@ namespace PcapDotNet.Packets.Dns
         public DataSegment Cpu { get { return Strings[0]; } }
 
         public DataSegment Os { get { return Strings[1]; } }
+
+        internal DnsResourceDataHostInformation()
+            : this(DataSegment.Empty, DataSegment.Empty)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
@@ -704,7 +704,7 @@ namespace PcapDotNet.Packets.Dns
     {
         private const int NumDomains = 2;
 
-        public DnsResourceData2DomainNames(DnsDomainName first, DnsDomainName second)
+        internal DnsResourceData2DomainNames(DnsDomainName first, DnsDomainName second)
             : base(first, second)
         {
         }
@@ -742,11 +742,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.MInfo)]
     public sealed class DnsResourceDataMailingListInfo : DnsResourceData2DomainNames
     {
-        public DnsResourceDataMailingListInfo()
-            : this(DnsDomainName.Root, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataMailingListInfo(DnsDomainName mailingList, DnsDomainName errorMailBox)
             : base(mailingList, errorMailBox)
         {
@@ -766,6 +761,11 @@ namespace PcapDotNet.Packets.Dns
         /// If this domain name names the root, errors should be returned to the sender of the message.
         /// </summary>
         public DnsDomainName ErrorMailBox { get { return Second; } }
+
+        internal DnsResourceDataMailingListInfo()
+            : this(DnsDomainName.Root, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -876,11 +876,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Mx)]
     public sealed class DnsResourceDataMailExchange : DnsResourceDataUShortDomainName
     {
-        public DnsResourceDataMailExchange()
-            : this(0, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataMailExchange(ushort preference, DnsDomainName mailExchangeHost)
             : base(preference, mailExchangeHost)
         {
@@ -896,6 +891,11 @@ namespace PcapDotNet.Packets.Dns
         /// Specifies a host willing to act as a mail exchange for the owner name.
         /// </summary>
         public DnsDomainName MailExchangeHost { get { return DomainName; } }
+
+        internal DnsResourceDataMailExchange()
+            : this(0, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -918,16 +918,16 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Txt)]
     public sealed class DnsResourceDataText : DnsResourceDataStrings
     {
-        public DnsResourceDataText()
-        {
-        }
-
         public DnsResourceDataText(ReadOnlyCollection<DataSegment> strings)
             : base(strings)
         {
         }
 
         public ReadOnlyCollection<DataSegment> Text { get { return Strings; } }
+
+        internal DnsResourceDataText()
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
@@ -948,11 +948,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Rp)]
     public sealed class DnsResourceDataResponsiblePerson : DnsResourceData2DomainNames
     {
-        public DnsResourceDataResponsiblePerson()
-            : this(DnsDomainName.Root, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataResponsiblePerson(DnsDomainName mailBox, DnsDomainName textDomain)
             : base(mailBox, textDomain)
         {
@@ -972,6 +967,11 @@ namespace PcapDotNet.Packets.Dns
         /// The root domain name (just ".") may be specified for TextDomain to indicate that the TXT_DNAME is absent, and no associated TXT RR exists.
         /// </summary>
         public DnsDomainName TextDomain { get { return Second; } }
+
+        internal DnsResourceDataResponsiblePerson()
+            : this(DnsDomainName.Root, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -999,11 +999,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.AfsDb)]
     public sealed class DnsResourceDataAfsDb : DnsResourceDataUShortDomainName
     {
-        public DnsResourceDataAfsDb()
-            : this(0, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataAfsDb(ushort subType, DnsDomainName hostname)
             : base(subType, hostname)
         {
@@ -1012,6 +1007,11 @@ namespace PcapDotNet.Packets.Dns
         public ushort SubType { get { return Value; } }
 
         public DnsDomainName Hostname { get { return DomainName; } }
+
+        internal DnsResourceDataAfsDb()
+            : this(0, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -1039,11 +1039,6 @@ namespace PcapDotNet.Packets.Dns
         private const int MinNumStrings = 1;
         private const int MaxNumStrings = 2;
 
-        public DnsResourceDataIsdn()
-            : this(DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataIsdn(DataSegment isdnAddress)
             : base(isdnAddress)
         {
@@ -1066,6 +1061,11 @@ namespace PcapDotNet.Packets.Dns
         /// Specifies the subaddress (SA).
         /// </summary>
         public DataSegment SubAddress { get { return Strings.Count == MaxNumStrings ? Strings[1] : null; } }
+
+        internal DnsResourceDataIsdn()
+            : this(DataSegment.Empty)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
@@ -1095,11 +1095,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Rt)]
     public sealed class DnsResourceDataRouteThrough : DnsResourceDataUShortDomainName
     {
-        public DnsResourceDataRouteThrough()
-            : this(0, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataRouteThrough(ushort preference, DnsDomainName intermediateHost)
             : base(preference, intermediateHost)
         {
@@ -1116,6 +1111,11 @@ namespace PcapDotNet.Packets.Dns
         /// The DNS RRs associated with IntermediateHost are expected to include at least one A, X25, or ISDN record.
         /// </summary>
         public DnsDomainName IntermediateHost { get { return DomainName; } }
+
+        internal DnsResourceDataRouteThrough()
+            : this(0, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -1164,11 +1164,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = MinAreaAddressLength + OffsetAfterArea.Selector + sizeof(byte);
 
-        public DnsResourceDataNetworkServiceAccessPoint()
-            : this(new DataSegment(new byte[MinAreaAddressLength]), 0, 0)
-        {
-        }
-
         public DnsResourceDataNetworkServiceAccessPoint(DataSegment areaAddress, UInt48 systemIdentifier, byte selector)
         {
             if (areaAddress.Length < MinAreaAddressLength)
@@ -1212,6 +1207,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataNetworkServiceAccessPoint);
+        }
+
+        internal DnsResourceDataNetworkServiceAccessPoint()
+            : this(new DataSegment(new byte[MinAreaAddressLength]), 0, 0)
+        {
         }
 
         internal override int GetLength()
@@ -1376,11 +1376,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.SignersName;
 
-        public DnsResourceDataSig()
-            : this(DnsType.A, DnsAlgorithm.None, 0, 0, 0, 0, 0, DnsDomainName.Root, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataSig(DnsType typeCovered, DnsAlgorithm algorithm, byte labels, uint originalTtl, SerialNumber32 signatureExpiration,
                                   SerialNumber32 signatureInception, ushort keyTag, DnsDomainName signersName, DataSegment signature)
         {
@@ -1493,6 +1488,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataSig);
+        }
+
+        internal DnsResourceDataSig()
+            : this(DnsType.A, DnsAlgorithm.None, 0, 0, 0, 0, 0, DnsDomainName.Root, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -1699,11 +1699,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.FlagsExtension;
 
-        public DnsResourceDataKey()
-            : this(false, false, DnsKeyNameType.ZoneKey, DnsKeySignatory.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, DnsKeyNameType nameType, DnsKeySignatory signatory,
                                   DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension, DataSegment publicKey)
         {
@@ -1778,6 +1773,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataKey);
+        }
+
+        internal DnsResourceDataKey()
+            : this(false, false, DnsKeyNameType.ZoneKey, DnsKeySignatory.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -1857,11 +1857,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.Map822;
 
-        public DnsResourceDataX400Pointer()
-            : this(0, DnsDomainName.Root, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataX400Pointer(ushort preference, DnsDomainName map822, DnsDomainName mapX400)
         {
             Preference = preference;
@@ -1897,6 +1892,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataX400Pointer);
+        }
+
+        internal DnsResourceDataX400Pointer()
+            : this(0, DnsDomainName.Root, DnsDomainName.Root)
+        {
         }
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
@@ -1957,11 +1957,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.GPos)]
     public sealed class DnsResourceDataGeographicalPosition : DnsResourceDataSimple, IEquatable<DnsResourceDataGeographicalPosition>
     {
-        public DnsResourceDataGeographicalPosition()
-            : this(string.Empty, string.Empty, string.Empty)
-        {
-        }
-
         public DnsResourceDataGeographicalPosition(string longitude, string latitude, string altitude)
         {
             Longitude = longitude;
@@ -2002,6 +1997,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataGeographicalPosition);
+        }
+
+        internal DnsResourceDataGeographicalPosition()
+            : this(string.Empty, string.Empty, string.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -2061,11 +2061,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Aaaa)]
     public sealed class DnsResourceDataIpV6 : DnsResourceDataSimple, IEquatable<DnsResourceDataIpV6>
     {
-        public DnsResourceDataIpV6()
-            : this(IpV6Address.Zero)
-        {
-        }
-
         public DnsResourceDataIpV6(IpV6Address data)
         {
             Data = data;
@@ -2081,6 +2076,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataIpV6);
+        }
+
+        internal DnsResourceDataIpV6()
+            : this(IpV6Address.Zero)
+        {
         }
 
         internal override int GetLength()
@@ -2133,11 +2133,6 @@ namespace PcapDotNet.Packets.Dns
         }
 
         public const int Length = Offset.Altitude + sizeof(uint);
-
-        public DnsResourceDataLocationInformation()
-            : this(0, 0, 0, 0, 0, 0, 0)
-        {
-        }
 
         public DnsResourceDataLocationInformation(byte version, ulong size, ulong horizontalPrecision, ulong verticalPrecision, uint latitude, uint longitude,
                                                   uint altitude)
@@ -2236,6 +2231,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsResourceDataLocationInformation);
         }
 
+        internal DnsResourceDataLocationInformation()
+            : this(0, 0, 0, 0, 0, 0, 0)
+        {
+        }
+
         internal override int GetLength()
         {
             return Length;
@@ -2327,11 +2327,6 @@ namespace PcapDotNet.Packets.Dns
         public const int MaxTypeBitMapLength = 16;
         public const DnsType MaxTypeBitMapDnsType = (DnsType)(8 * MaxTypeBitMapLength);
 
-        public DnsResourceDataNextDomain()
-            : this(DnsDomainName.Root, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataNextDomain(DnsDomainName nextDomainName, DataSegment typeBitMap)
         {
             if (typeBitMap.Length > MaxTypeBitMapLength)
@@ -2407,6 +2402,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsResourceDataNextDomain);
         }
 
+        internal DnsResourceDataNextDomain()
+            : this(DnsDomainName.Root, DataSegment.Empty)
+        {
+        }
+
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             return NextDomainName.GetLength(compressionData, offsetInDns) + TypeBitMap.Length;
@@ -2475,11 +2475,6 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.Target;
 
-        public DnsResourceDataServerSelection()
-            : this(0, 0, 0, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataServerSelection(ushort priority, ushort weight, ushort port, DnsDomainName target)
         {
             Priority = priority;
@@ -2543,6 +2538,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataServerSelection);
+        }
+
+        internal DnsResourceDataServerSelection()
+            : this(0, 0, 0, DnsDomainName.Root)
+        {
         }
 
         internal override int GetLength()
@@ -2617,11 +2617,6 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.Address;
 
-        public DnsResourceDataAtmAddress()
-            : this(DnsAtmAddressFormat.AtmEndSystemAddress, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataAtmAddress(DnsAtmAddressFormat format, DataSegment address)
         {
             Format = format;
@@ -2653,6 +2648,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataAtmAddress);
+        }
+
+        internal DnsResourceDataAtmAddress()
+            : this(DnsAtmAddressFormat.AtmEndSystemAddress, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -2709,11 +2709,6 @@ namespace PcapDotNet.Packets.Dns
         }
 
         private const int ConstantPartLength = Offset.Flags;
-
-        public DnsResourceDataNamingAuthorityPointer()
-            : this(0, 0, DataSegment.Empty, DataSegment.Empty, DataSegment.Empty, DnsDomainName.Root)
-        {
-        }
 
         public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regexp, DnsDomainName replacement)
         {
@@ -2811,6 +2806,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsResourceDataNamingAuthorityPointer);
         }
 
+        internal DnsResourceDataNamingAuthorityPointer()
+            : this(0, 0, DataSegment.Empty, DataSegment.Empty, DataSegment.Empty, DnsDomainName.Root)
+        {
+        }
+
         internal override int GetLength()
         {
             return ConstantPartLength + GetStringLength(Flags) + GetStringLength(Services) + GetStringLength(Regexp) + Replacement.NonCompressedLength;
@@ -2887,11 +2887,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Kx)]
     public sealed class DnsResourceDataKeyExchanger : DnsResourceDataUShortDomainName
     {
-        public DnsResourceDataKeyExchanger()
-            : this(0, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataKeyExchanger(ushort preference, DnsDomainName keyExchanger)
             : base(preference, keyExchanger)
         {
@@ -2907,6 +2902,11 @@ namespace PcapDotNet.Packets.Dns
         /// Specifies a host willing to act as a key exchange for the owner name.
         /// </summary>
         public DnsDomainName KeyExchangeHost { get { return DomainName; } }
+
+        internal DnsResourceDataKeyExchanger()
+            : this(0, DnsDomainName.Root)
+        {
+        }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
@@ -3034,11 +3034,6 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.Certificate;
 
-        public DnsResourceDataCertificate()
-            : this(DnsCertificateType.Pkix, 0, DnsAlgorithm.None, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataCertificate(DnsCertificateType certificateType, ushort keyTag, DnsAlgorithm algorithm, DataSegment certificate)
         {
             CertificateType = certificateType;
@@ -3087,6 +3082,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataCertificate);
+        }
+
+        internal DnsResourceDataCertificate()
+            : this(DnsCertificateType.Pkix, 0, DnsAlgorithm.None, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -3138,11 +3138,6 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.AddressSuffix;
 
-        public DnsResourceDataA6()
-            : this(0, IpV6Address.Zero, DnsDomainName.Root)
-        {
-        }
-
         public DnsResourceDataA6(byte prefixLength, IpV6Address addressSuffix, DnsDomainName prefixName)
         {
             PrefixLength = prefixLength;
@@ -3184,6 +3179,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataA6);
+        }
+
+        internal DnsResourceDataA6()
+            : this(0, IpV6Address.Zero, DnsDomainName.Root)
+        {
         }
 
         internal override int GetLength()
@@ -3598,11 +3598,6 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.Data;
 
-        public DnsResourceDataSink()
-            : this(DnsSinkCodingSubcoding.Asn1SnmpBer, DataSegment.Empty)
-        {
-        }
-
         public DnsResourceDataSink(DnsSinkCodingSubcoding codingSubcoding, DataSegment data)
             : this((DnsSinkCoding)((ushort)codingSubcoding >> 8), (byte)((ushort)codingSubcoding & 0x00FF), data)
         {
@@ -3654,6 +3649,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataSink);
+        }
+
+        internal DnsResourceDataSink()
+            : this(DnsSinkCodingSubcoding.Asn1SnmpBer, DataSegment.Empty)
+        {
         }
 
         internal override int GetLength()
@@ -4045,11 +4045,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Opt)]
     public sealed class DnsResourceDataOptions : DnsResourceDataSimple, IEquatable<DnsResourceDataOptions>
     {
-        public DnsResourceDataOptions()
-            : this(DnsOptions.None)
-        {
-        }
-
         public DnsResourceDataOptions(DnsOptions options)
         {
             Options = options;
@@ -4066,6 +4061,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataOptions);
+        }
+
+        internal DnsResourceDataOptions()
+            : this(DnsOptions.None)
+        {
         }
 
         internal override int GetLength()
@@ -4403,11 +4403,6 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Apl)]
     public sealed class DnsResourceDataAddressPrefixList: DnsResourceDataSimple, IEquatable<DnsResourceDataAddressPrefixList>
     {
-        public DnsResourceDataAddressPrefixList()
-            : this(new DnsAddressPrefix[0])
-        {
-        }
-
         public DnsResourceDataAddressPrefixList(IList<DnsAddressPrefix> items)
         {
             Items = items.AsReadOnly();
@@ -4431,6 +4426,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataAddressPrefixList);
+        }
+
+        internal DnsResourceDataAddressPrefixList()
+            : this(new DnsAddressPrefix[0])
+        {
         }
 
         internal override int GetLength()
@@ -4457,6 +4457,130 @@ namespace PcapDotNet.Packets.Dns
             }
 
             return new DnsResourceDataAddressPrefixList(items);
+        }
+    }
+
+    public enum DnsDigestType : byte
+    {
+        /// <summary>
+        /// RFC 3658.
+        /// SHA-1.
+        /// </summary>
+        Sha1 = 1,
+
+        /// <summary>
+        /// RFC 4509.
+        /// SHA-256.
+        /// </summary>
+        Sha256 = 2,
+
+        /// <summary>
+        /// RFC 5933.
+        /// GOST R 34.11-94.
+        /// </summary>
+        GostR341194 = 3,
+    }
+
+    /// <summary>
+    /// RFC 3658.
+    /// <pre>
+    /// 0 Or more of:
+    /// +-----+---------+-----------+-------------+
+    /// | bit | 0-15    | 16-23     | 24-31       |
+    /// +-----+---------+-----------+-------------+
+    /// | 0   | key tag | algorithm | Digest type |
+    /// +-----+---------+-----------+-------------+
+    /// | 32  | digest                            |
+    /// | ... |                                   |
+    /// +-----+-----------------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.Ds)]
+    public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>
+    {
+        public static class Offset
+        {
+            public const int KeyTag = 0;
+            public const int Algorithm = KeyTag + sizeof(ushort);
+            public const int DigestType = Algorithm + sizeof(byte);
+            public const int Digest = DigestType + sizeof(byte);
+        }
+
+        public const int ConstPartLength = Offset.Digest;
+
+        public DnsResourceDataDelegationSigner(ushort keyTag, DnsAlgorithm algorithm, DnsDigestType digestType, DataSegment digest)
+        {
+            KeyTag = keyTag;
+            Algorithm = algorithm;
+            DigestType = digestType;
+            Digest = digest;
+        }
+
+        /// <summary>
+        /// Lists the key tag of the DNSKEY RR referred to by the DS record.
+        /// The Key Tag used by the DS RR is identical to the Key Tag used by RRSIG RRs.
+        /// Calculated as specified in RFC 2535.
+        /// </summary>
+        public ushort KeyTag { get; private set; }
+
+        /// <summary>
+        /// Algorithm must be allowed to sign DNS data.
+        /// </summary>
+        public DnsAlgorithm Algorithm { get; private set; }
+
+        /// <summary>
+        /// An identifier for the digest algorithm used.
+        /// </summary>
+        public DnsDigestType DigestType { get; private set; }
+
+        /// <summary>
+        /// Calculated over the canonical name of the delegated domain name followed by the whole RDATA of the KEY record (all four fields).
+        /// digest = hash(canonical FQDN on KEY RR | KEY_RR_rdata)
+        /// KEY_RR_rdata = Flags | Protocol | Algorithm | Public Key
+        /// </summary>
+        public DataSegment Digest { get; private set; }
+
+
+        public bool Equals(DnsResourceDataDelegationSigner other)
+        {
+            return other != null &&
+                   KeyTag.Equals(other.KeyTag) &&
+                   Algorithm.Equals(other.Algorithm) &&
+                   DigestType.Equals(other.DigestType) &&
+                   Digest.Equals(other.Digest);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataDelegationSigner);
+        }
+
+        internal DnsResourceDataDelegationSigner()
+            : this(0, DnsAlgorithm.None, DnsDigestType.Sha1, DataSegment.Empty)
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return ConstPartLength + Digest.Length;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.KeyTag, KeyTag, Endianity.Big);
+            buffer.Write(offset + Offset.Algorithm, (byte)Algorithm);
+            buffer.Write(offset + Offset.DigestType, (byte)DigestType);
+            Digest.Write(buffer, offset + Offset.Digest);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            ushort keyTag = data.ReadUShort(Offset.KeyTag, Endianity.Big);
+            DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
+            DnsDigestType digestType = (DnsDigestType)data[Offset.DigestType];
+            DataSegment digest = data.SubSegment(Offset.Digest, data.Length - ConstPartLength);
+
+            return new DnsResourceDataDelegationSigner(keyTag, algorithm, digestType, digest);
         }
     }
 }

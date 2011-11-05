@@ -247,12 +247,15 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataOptions(random.NextDnsOptions());
 
                 case DnsType.Apl:
-                    return
-                        new DnsResourceDataAddressPrefixList(
-                            ((Func<DnsAddressPrefix>)
-                             (() =>
-                              new DnsAddressPrefix(random.NextEnum<AddressFamily>(), random.NextByte(), random.NextBool(),
-                                                   random.NextDataSegment(random.Next(0, 128))))).GenerateArray(random.Next(10)));
+                    return new DnsResourceDataAddressPrefixList(
+                        ((Func<DnsAddressPrefix>)
+                         (() =>
+                          new DnsAddressPrefix(random.NextEnum<AddressFamily>(), random.NextByte(), random.NextBool(),
+                                               random.NextDataSegment(random.Next(0, 128))))).GenerateArray(random.Next(10)));
+
+                case DnsType.Ds:
+                    return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),
+                                                               random.NextDataSegment(random.Next(50)));
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
