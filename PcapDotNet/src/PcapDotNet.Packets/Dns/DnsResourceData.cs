@@ -1272,7 +1272,7 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// RFCs 2536, 3755.
-        /// DSA.
+        /// DSA - Digital Signature Algorithm.
         /// Implementation is mandatory.
         /// </summary>
         Dsa = 3,
@@ -4581,6 +4581,105 @@ namespace PcapDotNet.Packets.Dns
             DataSegment digest = data.SubSegment(Offset.Digest, data.Length - ConstPartLength);
 
             return new DnsResourceDataDelegationSigner(keyTag, algorithm, digestType, digest);
+        }
+    }
+
+    /// <summary>
+    /// RFC 4255.
+    /// </summary>
+    public enum DnsFingerprintType : byte
+    {
+        /// <summary>
+        /// RFC 4255.
+        /// </summary>
+        Sha1 = 1,
+    }
+
+    /// <summary>
+    /// RFC 4255.
+    /// <pre>
+    /// +-----+-----------+-----------+
+    /// | bit | 0-7       | 8-15      |
+    /// +-----+-----------+-----------+
+    /// | 0   | algorithm | fp type   |
+    /// +-----+-----------+-----------+
+    /// | 16  | fingerprint           |
+    /// | ... |                       |
+    /// +-----+-----------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.SshFp)]
+    public sealed class DnsResourceDataSshFingerprint : DnsResourceDataSimple, IEquatable<DnsResourceDataSshFingerprint>
+    {
+        public static class Offset
+        {
+            public const int Algorithm = 0;
+            public const int FingerprintType = Algorithm + sizeof(byte);
+            public const int Fingerprint = FingerprintType + sizeof(byte);
+        }
+
+        public const int ConstPartLength = Offset.Fingerprint;
+
+        public DnsResourceDataSshFingerprint(DnsAlgorithm algorithm, DnsFingerprintType fingerprintType, DataSegment fingerprint)
+        {
+            Algorithm = algorithm;
+            FingerprintType = fingerprintType;
+            Fingerprint = fingerprint;
+        }
+
+        /// <summary>
+        /// Describes the algorithm of the public key.
+        /// </summary>
+        public DnsAlgorithm Algorithm { get; private set; }
+
+        /// <summary>
+        /// Describes the message-digest algorithm used to calculate the fingerprint of the public key.
+        /// </summary>
+        public DnsFingerprintType FingerprintType { get; private set; }
+
+        /// <summary>
+        /// The fingerprint is calculated over the public key blob.
+        /// The message-digest algorithm is presumed to produce an opaque octet string output, which is placed as-is in the RDATA fingerprint field.
+        /// </summary>
+        public DataSegment Fingerprint { get; private set; }
+
+        public bool Equals(DnsResourceDataSshFingerprint other)
+        {
+            return other != null &&
+                   Algorithm.Equals(other.Algorithm) &&
+                   FingerprintType.Equals(other.FingerprintType) &&
+                   Fingerprint.Equals(other.Fingerprint);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataSshFingerprint);
+        }
+
+        internal DnsResourceDataSshFingerprint()
+            : this(DnsAlgorithm.None, DnsFingerprintType.Sha1, DataSegment.Empty)
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return ConstPartLength + Fingerprint.Length;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.Algorithm, (byte)Algorithm);
+            buffer.Write(offset + Offset.FingerprintType, (byte)FingerprintType);
+            Fingerprint.Write(buffer, offset + Offset.Fingerprint);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
+            DnsFingerprintType fingerprintType = (DnsFingerprintType)data[Offset.FingerprintType];
+            DataSegment fingerprint = data.SubSegment(Offset.Fingerprint, data.Length - ConstPartLength);
+
+            return new DnsResourceDataSshFingerprint(algorithm, fingerprintType, fingerprint);
         }
     }
 }

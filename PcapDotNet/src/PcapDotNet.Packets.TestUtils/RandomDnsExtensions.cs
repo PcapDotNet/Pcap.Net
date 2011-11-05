@@ -257,6 +257,10 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),
                                                                random.NextDataSegment(random.Next(50)));
 
+                case DnsType.SshFp:
+                    return new DnsResourceDataSshFingerprint(random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsFingerprintType>(),
+                                                             random.NextDataSegment(random.Next(20)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
