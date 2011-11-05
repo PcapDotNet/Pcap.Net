@@ -313,6 +313,8 @@
         /// <summary>
         /// RFC 4255.
         /// SSH Key Fingerprint.
+        /// Used to store a fingerprint of an SSH public host key that is associated with a Domain Name System (DNS) name.
+        /// Payload type: DnsResourceDataSshFingerprint.
         /// </summary>
         SshFp = 44,
 
