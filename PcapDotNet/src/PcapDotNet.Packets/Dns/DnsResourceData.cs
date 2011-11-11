@@ -4597,6 +4597,16 @@ namespace PcapDotNet.Packets.Dns
 
     /// <summary>
     /// RFC 4255.
+    /// Describes the algorithm of the public key.
+    /// </summary>
+    public enum DnsFingerprintPublicKeyAlgorithm
+    {
+        Rsa = 1,
+        Dss = 2,
+    }
+
+    /// <summary>
+    /// RFC 4255.
     /// <pre>
     /// +-----+-----------+-----------+
     /// | bit | 0-7       | 8-15      |
@@ -4620,7 +4630,7 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstPartLength = Offset.Fingerprint;
 
-        public DnsResourceDataSshFingerprint(DnsAlgorithm algorithm, DnsFingerprintType fingerprintType, DataSegment fingerprint)
+        public DnsResourceDataSshFingerprint(DnsFingerprintPublicKeyAlgorithm algorithm, DnsFingerprintType fingerprintType, DataSegment fingerprint)
         {
             Algorithm = algorithm;
             FingerprintType = fingerprintType;
@@ -4630,7 +4640,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Describes the algorithm of the public key.
         /// </summary>
-        public DnsAlgorithm Algorithm { get; private set; }
+        public DnsFingerprintPublicKeyAlgorithm Algorithm { get; private set; }
 
         /// <summary>
         /// Describes the message-digest algorithm used to calculate the fingerprint of the public key.
@@ -4657,7 +4667,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataSshFingerprint()
-            : this(DnsAlgorithm.None, DnsFingerprintType.Sha1, DataSegment.Empty)
+            : this(DnsFingerprintPublicKeyAlgorithm.Rsa, DnsFingerprintType.Sha1, DataSegment.Empty)
         {
         }
 
@@ -4675,11 +4685,372 @@ namespace PcapDotNet.Packets.Dns
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
-            DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
+            DnsFingerprintPublicKeyAlgorithm algorithm = (DnsFingerprintPublicKeyAlgorithm)data[Offset.Algorithm];
             DnsFingerprintType fingerprintType = (DnsFingerprintType)data[Offset.FingerprintType];
             DataSegment fingerprint = data.SubSegment(Offset.Fingerprint, data.Length - ConstPartLength);
 
             return new DnsResourceDataSshFingerprint(algorithm, fingerprintType, fingerprint);
+        }
+    }
+
+    public abstract class DnsGateway : IEquatable<DnsGateway>
+    {
+        public static DnsGatewayNone None { get { return _none; } }
+
+        public abstract DnsGatewayType Type { get; }
+
+        public abstract int Length { get; }
+
+        public abstract bool Equals(DnsGateway other);
+
+        public override bool Equals(object obj)
+        {
+ 	         return Equals(obj as DnsGateway);
+        }
+
+        internal abstract void Write(byte[] buffer, int offset);
+
+        internal static DnsGateway CreateInstance(DnsGatewayType gatewayType, DnsDatagram dns, int offsetInDns, int length)
+        {
+            switch (gatewayType)
+            {
+                case DnsGatewayType.None:
+                    return None;
+
+                case DnsGatewayType.IpV4:
+                    if (length < IpV4Address.SizeOf)
+                        return null;
+                    return new DnsGatewayIpV4(dns.ReadIpV4Address(offsetInDns, Endianity.Big));
+
+                case DnsGatewayType.IpV6:
+                    if (length < IpV6Address.SizeOf)
+                        return null;
+                    return new DnsGatewayIpV6(dns.ReadIpV6Address(offsetInDns, Endianity.Big));
+
+                case DnsGatewayType.DomainName:
+                    DnsDomainName domainName;
+                    int numBytesRead;
+                    if (!DnsDomainName.TryParse(dns, offsetInDns, length, out domainName, out numBytesRead))
+                        return null;
+                    return new DnsGatewayDomainName(domainName);
+
+                default:
+                    return null;
+            }
+        }
+
+        private static DnsGatewayNone _none = new DnsGatewayNone();
+    }
+
+    public class DnsGatewayNone : DnsGateway, IEquatable<DnsGatewayNone>
+    {
+        public override DnsGatewayType Type
+        {
+            get { return DnsGatewayType.None; }
+        }
+
+        public override int Length
+        {
+            get { return 0; }
+        }
+
+        public bool Equals(DnsGatewayNone other)
+        {
+            return other != null;
+        }
+
+        public override bool Equals(DnsGateway other)
+        {
+            return Equals(other as DnsGatewayNone);
+        }
+
+        internal DnsGatewayNone()
+        {
+        }
+
+        internal override void Write(byte[] buffer, int offset)
+        {
+        }
+    }
+
+    public class DnsGatewayIpV4 : DnsGateway, IEquatable<DnsGatewayIpV4>
+    {
+        public DnsGatewayIpV4(IpV4Address value)
+        {
+            Value = value;
+        }
+
+        public IpV4Address Value { get; private set; }
+
+        public override DnsGatewayType Type
+        {
+            get { return DnsGatewayType.IpV4; }
+        }
+
+        public override int Length
+        {
+            get { return IpV4Address.SizeOf; }
+        }
+
+        public bool Equals(DnsGatewayIpV4 other)
+        {
+            return other != null &&
+                   Value.Equals(other.Value);
+        }
+
+        public override bool Equals(DnsGateway other)
+        {
+            return Equals(other as DnsGatewayIpV4);
+        }
+
+        internal override void Write(byte[] buffer, int offset)
+        {
+            buffer.Write(offset, Value, Endianity.Big);
+        }
+    }
+
+    public class DnsGatewayIpV6 : DnsGateway, IEquatable<DnsGatewayIpV6>
+    {
+        public DnsGatewayIpV6(IpV6Address value)
+        {
+            Value = value;
+        }
+
+        public IpV6Address Value { get; private set; }
+
+        public override DnsGatewayType Type
+        {
+            get { return DnsGatewayType.IpV6; }
+        }
+
+        public override int Length
+        {
+            get { return IpV6Address.SizeOf; }
+        }
+
+        public bool Equals(DnsGatewayIpV6 other)
+        {
+            return other != null &&
+                   Value.Equals(other.Value);
+        }
+
+        public override bool Equals(DnsGateway other)
+        {
+            return Equals(other as DnsGatewayIpV6);
+        }
+
+        internal override void Write(byte[] buffer, int offset)
+        {
+            buffer.Write(offset, Value, Endianity.Big);
+        }
+    }
+
+    public class DnsGatewayDomainName : DnsGateway, IEquatable<DnsGatewayDomainName>
+    {
+        public DnsGatewayDomainName(DnsDomainName value)
+        {
+            Value = value;
+        }
+
+        public DnsDomainName Value { get; private set; }
+
+        public override DnsGatewayType Type
+        {
+            get { return DnsGatewayType.DomainName; }
+        }
+
+        public override int Length
+        {
+            get { return Value.NonCompressedLength; }
+        }
+
+        public bool Equals(DnsGatewayDomainName other)
+        {
+            return other != null &&
+                   Value.Equals(other.Value);
+        }
+
+        public override bool Equals(DnsGateway other)
+        {
+            return Equals(other as DnsGatewayDomainName);
+        }
+
+        internal override void Write(byte[] buffer, int offset)
+        {
+            Value.WriteUncompressed(buffer, offset);
+        }
+    }
+
+    /// <summary>
+    /// Indicates the format of the information that is stored in the gateway field.
+    /// </summary>
+    public enum DnsGatewayType : byte
+    {
+        /// <summary>
+        /// No gateway is present.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// A 4-byte IPv4 address is present.
+        /// </summary>
+        IpV4 = 1,
+
+        /// <summary>
+        /// A 16-byte IPv6 address is present.
+        /// </summary>
+        IpV6 = 2,
+   
+        /// <summary>
+        /// A wire-encoded domain name is present.
+        /// The wire-encoded format is self-describing, so the length is implicit.
+        /// The domain name must not be compressed.
+        /// </summary>
+        DomainName = 3,
+    }
+
+    /// <summary>
+    /// Identifies the public key's cryptographic algorithm and determines the format of the public key field.
+    /// </summary>
+    public enum DnsGatewayPublicKeyAlgorithm : byte
+    {
+        /// <summary>
+        /// Indicates that no key is present.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// A DSA key is present, in the format defined in RFC 2536.
+        /// </summary>
+        Dsa = 1,
+
+        /// <summary>
+        /// A RSA key is present, in the format defined in RFC 3110 with the following changes:
+        /// The earlier definition of RSA/MD5 in RFC 2065 limited the exponent and modulus to 2552 bits in length.
+        /// RFC 3110 extended that limit to 4096 bits for RSA/SHA1 keys
+        /// The IPSECKEY RR imposes no length limit on RSA public keys, other than the 65535 octet limit imposed by the two-octet length encoding.
+        /// This length extension is applicable only to IPSECKEY; it is not applicable to KEY RRs. 
+        /// </summary>
+        Rsa = 2,
+    }
+
+    /// <summary>
+    /// RFC 4025.
+    /// <pre>
+    /// +-----+--------------+
+    /// | bit | 0-7          |
+    /// +-----+--------------+
+    /// | 0   | precedence   |
+    /// +-----+--------------+
+    /// | 8   | gateway type |
+    /// +-----+--------------+
+    /// | 16  | algorithm    |
+    /// +-----+--------------+
+    /// | 24  | gateway      |
+    /// | ... |              |
+    /// +-----+--------------+
+    /// |     | public key   |
+    /// | ... |              |
+    /// +-----+--------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.IpSecKey)]
+    public sealed class DnsResourceDataIpSecKey : DnsResourceDataNoCompression, IEquatable<DnsResourceDataIpSecKey>
+    {
+        public static class Offset
+        {
+            public const int Precedence = 0;
+            public const int GatewayType = Precedence + sizeof(byte);
+            public const int Algorithm = GatewayType + sizeof(byte);
+            public const int Gateway = Algorithm + sizeof(byte);
+        }
+
+        public const int ConstPartLength = Offset.Gateway;
+
+        public DnsResourceDataIpSecKey(byte precedence, DnsGateway gateway, DnsGatewayPublicKeyAlgorithm algorithm, DataSegment publicKey)
+        {
+            Precedence = precedence;
+            Gateway = gateway;
+            Algorithm = algorithm;
+            PublicKey = publicKey;
+        }
+
+        /// <summary>
+        /// Precedence for this record.
+        /// Gateways listed in IPSECKEY records with lower precedence are to be attempted first.
+        /// Where there is a tie in precedence, the order should be non-deterministic.
+        /// </summary>
+        public byte Precedence { get; private set; }
+
+        /// <summary>
+        /// Indicates the format of the information that is stored in the gateway field.
+        /// </summary>
+        public DnsGatewayType GatewayType { get { return Gateway.Type; } }
+
+        /// <summary>
+        /// Indicates a gateway to which an IPsec tunnel may be created in order to reach the entity named by this resource record.
+        /// </summary>
+        public DnsGateway Gateway { get; private set;}
+
+        /// <summary>
+        /// Identifies the public key's cryptographic algorithm and determines the format of the public key field.
+        /// </summary>
+        public DnsGatewayPublicKeyAlgorithm Algorithm { get; private set;} 
+
+        /// <summary>
+        /// Contains the algorithm-specific portion of the KEY RR RDATA.
+        /// </summary>
+        public DataSegment PublicKey { get; private set; }
+
+        public bool Equals(DnsResourceDataIpSecKey other)
+        {
+            return other != null &&
+                   Precedence.Equals(other.Precedence) &&
+                   Gateway.Equals(other.Gateway) &&
+                   Algorithm.Equals(other.Algorithm) &&
+                   PublicKey.Equals(other.PublicKey);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataIpSecKey);
+        }
+
+        internal DnsResourceDataIpSecKey()
+            : this(0, DnsGateway.None, DnsGatewayPublicKeyAlgorithm.None, DataSegment.Empty)
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return ConstPartLength + Gateway.Length + PublicKey.Length;
+        }
+
+        internal override int WriteData(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.Precedence, Precedence);
+            buffer.Write(offset + Offset.GatewayType, (byte)GatewayType);
+            buffer.Write(offset + Offset.Algorithm, (byte)Algorithm);
+            Gateway.Write(buffer, offset + Offset.Gateway);
+            PublicKey.Write(buffer, offset + ConstPartLength + Gateway.Length);
+
+            return GetLength();
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            if (length < ConstPartLength)
+                return null;
+
+            byte precedence = dns[offsetInDns + Offset.Precedence];
+            DnsGatewayType gatewayType = (DnsGatewayType)dns[offsetInDns + Offset.GatewayType];
+            DnsGatewayPublicKeyAlgorithm algorithm = (DnsGatewayPublicKeyAlgorithm)dns[offsetInDns + Offset.Algorithm];
+            DnsGateway gateway = DnsGateway.CreateInstance(gatewayType, dns, offsetInDns + Offset.Gateway, length - ConstPartLength);
+            if (gateway == null)
+                return null;
+            DataSegment publicKey = dns.SubSegment(offsetInDns + ConstPartLength + gateway.Length, length - ConstPartLength - gateway.Length);
+
+            return new DnsResourceDataIpSecKey(precedence, gateway, algorithm, publicKey);
         }
     }
 }
