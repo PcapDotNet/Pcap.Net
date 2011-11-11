@@ -321,6 +321,7 @@
         /// <summary>
         /// RFC 4025.
         /// IPSECKEY.
+        /// Payload type: DnsResourceDataIpSecKey.
         /// </summary>
         IpSecKey = 45,
 

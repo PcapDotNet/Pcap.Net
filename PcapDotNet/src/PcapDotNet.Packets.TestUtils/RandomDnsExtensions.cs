@@ -258,12 +258,39 @@ namespace PcapDotNet.Packets.TestUtils
                                                                random.NextDataSegment(random.Next(50)));
 
                 case DnsType.SshFp:
-                    return new DnsResourceDataSshFingerprint(random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsFingerprintType>(),
+                    return new DnsResourceDataSshFingerprint(random.NextEnum<DnsFingerprintPublicKeyAlgorithm>(), random.NextEnum<DnsFingerprintType>(),
                                                              random.NextDataSegment(random.Next(20)));
+
+                case DnsType.IpSecKey:
+                    return new DnsResourceDataIpSecKey(random.NextByte(), random.NextDnsGateway(), random.NextEnum<DnsGatewayPublicKeyAlgorithm>(),
+                                                       random.NextDataSegment(random.Next(100)));
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
+        }
+
+        public static DnsGateway NextDnsGateway(this Random random)
+        {
+            DnsGatewayType gatewayType = random.NextEnum<DnsGatewayType>();
+            switch (gatewayType)
+            {
+                case DnsGatewayType.None:
+                    return DnsGateway.None;
+
+                case DnsGatewayType.IpV4:
+                    return new DnsGatewayIpV4(random.NextIpV4Address());
+
+                case DnsGatewayType.IpV6:
+                    return new DnsGatewayIpV6(random.NextIpV6Address());
+
+                case DnsGatewayType.DomainName:
+                    return new DnsGatewayDomainName(random.NextDnsDomainName());
+
+                default:
+                    throw new InvalidOperationException(string.Format("Invalid gateway type: {0}", gatewayType));
+            }
+                    
         }
     }
 }
