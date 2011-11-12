@@ -266,6 +266,10 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataIpSecKey(random.NextByte(), random.NextDnsGateway(), random.NextEnum<DnsGatewayPublicKeyAlgorithm>(),
                                                        random.NextDataSegment(random.Next(100)));
 
+                case DnsType.NSec:
+                    return new DnsResourceDataNextDomainSecure(random.NextDnsDomainName(),
+                                                               ((Func<DnsType>)(() => random.NextEnum<DnsType>())).GenerateArray(random.Next(100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }

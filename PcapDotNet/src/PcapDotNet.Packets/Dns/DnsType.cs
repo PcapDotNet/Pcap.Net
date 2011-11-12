@@ -335,6 +335,7 @@
         /// <summary>
         /// RFCs 3755, 4034.
         /// NSEC.
+        /// Payload type: DnsResourceDataNextDomainSecure.
         /// </summary>
         NSec = 47,
 
