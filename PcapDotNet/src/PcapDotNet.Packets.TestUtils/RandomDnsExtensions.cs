@@ -172,6 +172,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataNetworkServiceAccessPoint(random.NextDataSegment(1 + random.Next(10)), random.NextUInt48(), random.NextByte());
 
                 case DnsType.Sig:
+                case DnsType.RrSig:
                     return new DnsResourceDataSig(random.NextEnum<DnsType>(), random.NextEnum<DnsAlgorithm>(), random.NextByte(), random.NextUInt(),
                                                   random.NextUInt(), random.NextUInt(), random.NextUShort(), random.NextDnsDomainName(),
                                                   random.NextDataSegment(random.Next(100)));
