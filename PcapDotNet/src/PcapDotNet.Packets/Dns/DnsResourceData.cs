@@ -2314,6 +2314,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// RFC 2535.
     /// <pre>
     /// +------------------+
     /// | next domain name |
@@ -2322,6 +2323,7 @@ namespace PcapDotNet.Packets.Dns
     /// | type bit map     |
     /// |                  |
     /// +------------------+
+    /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Nxt)]
     public sealed class DnsResourceDataNextDomain : DnsResourceData, IEquatable<DnsResourceDataNextDomain>
@@ -5054,5 +5056,180 @@ namespace PcapDotNet.Packets.Dns
 
             return new DnsResourceDataIpSecKey(precedence, gateway, algorithm, publicKey);
         }
+    }
+
+    /// <summary>
+    /// RFC 4034.
+    /// <pre>
+    /// +------------------+
+    /// | next domain name |
+    /// |                  |
+    /// +------------------+
+    /// | type bit map     |
+    /// |                  |
+    /// +------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NSec)]
+    public sealed class DnsResourceDataNextDomainSecure : DnsResourceDataNoCompression, IEquatable<DnsResourceDataNextDomainSecure>
+    {
+        private const int MaxTypeBitmapsLength = 256 * (2 + 32);
+
+        public DnsResourceDataNextDomainSecure(DnsDomainName nextDomainName, IEnumerable<DnsType> typesExist)
+        {
+            NextDomainName = nextDomainName;
+            _typesExist = typesExist.Distinct().ToList();
+            _typesExist.Sort();
+            TypesExist = _typesExist.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Contains the next owner name (in the canonical ordering of the zone) that has authoritative data or contains a delegation point NS RRset;
+        /// The value of the Next Domain Name field in the last NSEC record in the zone is the name of the zone apex (the owner name of the zone's SOA RR).
+        /// This indicates that the owner name of the NSEC RR is the last name in the canonical ordering of the zone.
+        ///
+        /// Owner names of RRsets for which the given zone is not authoritative (such as glue records) must not be listed in the Next Domain Name
+        /// unless at least one authoritative RRset exists at the same owner name.
+        /// </summary>
+        public DnsDomainName NextDomainName { get; private set; }
+
+        /// <summary>
+        /// Identifies the RRset types that exist at the NSEC RR's owner name.
+        /// Ordered by the DnsType value.
+        /// </summary>
+        public ReadOnlyCollection<DnsType> TypesExist { get; private set; }
+
+        public bool IsTypePresentForOwner(DnsType dnsType)
+        {
+            return _typesExist.BinarySearch(dnsType) >= 0;
+        }
+
+        public bool Equals(DnsResourceDataNextDomainSecure other)
+        {
+            return other != null &&
+                   NextDomainName.Equals(other.NextDomainName) &&
+                   TypesExist.SequenceEqual(other.TypesExist);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNextDomainSecure);
+        }
+
+        internal DnsResourceDataNextDomainSecure()
+            : this(DnsDomainName.Root, new DnsType[0])
+        {
+        }
+
+        internal override int GetLength()
+        {
+            int length = NextDomainName.NonCompressedLength;
+            int previousWindow = -1;
+            int maxBit = -1;
+            foreach (DnsType dnsType in TypesExist)
+            {
+                byte window = (byte)(((ushort)dnsType) >> 8);
+                if (window > previousWindow)
+                {
+                    if (maxBit != -1)
+                        length += 2 + maxBit / 8 + 1;
+                    previousWindow = window;
+                    maxBit = -1;
+                }
+
+                byte bit = (byte)dnsType;
+                maxBit = Math.Max(bit, maxBit);
+            }
+
+            if (maxBit != -1)
+                length += 2 + maxBit / 8 + 1;
+
+            return length;
+        }
+
+        internal override int WriteData(byte[] buffer, int offset)
+        {
+            int originalOffset = offset;
+            NextDomainName.WriteUncompressed(buffer, offset);
+            offset += NextDomainName.NonCompressedLength;
+            int previousWindow = -1;
+            int maxBit = -1;
+            byte[] windowBitmap = null;
+            foreach (DnsType dnsType in TypesExist)
+            {
+                byte window = (byte)(((ushort)dnsType) >> 8);
+                if (window > previousWindow)
+                {
+                    if (maxBit != -1)
+                        WriteBitmap(buffer, ref offset, (byte)previousWindow, maxBit, windowBitmap);
+                    previousWindow = window;
+                    windowBitmap = new byte[32];
+                    maxBit = -1;
+                }
+
+                byte bit = (byte)dnsType;
+                maxBit = Math.Max(bit, maxBit);
+                windowBitmap[bit / 8] |= (byte)(1 << (7 - bit % 8));
+            }
+
+            if (maxBit != -1)
+                WriteBitmap(buffer, ref offset, (byte)previousWindow, maxBit, windowBitmap);
+
+            return offset - originalOffset;
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            DnsDomainName nextDomainName;
+            int nextDomainNameLength;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out nextDomainName, out nextDomainNameLength))
+                return null;
+            offsetInDns += nextDomainNameLength;
+            length -= nextDomainNameLength;
+
+            if (length > MaxTypeBitmapsLength)
+                return null;
+
+            List<DnsType> typesExist = new List<DnsType>();
+            while (length != 0)
+            {
+                if (length < 3)
+                    return null;
+                byte window = dns[offsetInDns++];
+                byte bitmapLength = dns[offsetInDns++];
+                length -= 2;
+
+                if (bitmapLength < 1 || bitmapLength > 32 || length < bitmapLength)
+                    return null;
+                for (int i = 0; i != bitmapLength; ++i)
+                {
+                    byte bits = dns[offsetInDns++];
+                    int bitIndex = 0;
+                    while (bits != 0)
+                    {
+                        if ((byte)(bits & 0x80) == 0x80)
+                        {
+                            typesExist.Add((DnsType)((window << 8) + 8 * i + bitIndex));
+                        }
+                        bits <<= 1;
+                        ++bitIndex;
+                    }
+                }
+                length -= bitmapLength;
+            }
+
+            return new DnsResourceDataNextDomainSecure(nextDomainName, typesExist);
+        }
+
+        private static void WriteBitmap(byte[] buffer, ref int offset, byte window, int maxBit, byte[] windowBitmap)
+        {
+            buffer.Write(ref offset, window);
+            byte numBytes = (byte)(maxBit / 8 + 1);
+            buffer.Write(ref offset, numBytes);
+            DataSegment data = new DataSegment(windowBitmap, 0, numBytes);
+            data.Write(buffer, ref offset);
+        }
+
+        private readonly List<DnsType> _typesExist;
     }
 }
