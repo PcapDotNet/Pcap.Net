@@ -328,6 +328,7 @@
         /// <summary>
         /// RFCs 3755, 4034.
         /// RRSIG.
+        /// Payload type: DnsResourceDataSig.
         /// </summary>
         RrSig = 46,
 

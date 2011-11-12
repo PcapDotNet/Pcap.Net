@@ -1338,6 +1338,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// RFCs 2535, 4034.
     /// <pre>
     /// +-----+--------------+-----------+--------+
     /// | bit | 0-15         | 16-23     | 24-31  |
@@ -1360,6 +1361,7 @@ namespace PcapDotNet.Packets.Dns
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Sig)]
+    [DnsTypeRegistration(Type = DnsType.RrSig)]
     public sealed class DnsResourceDataSig : DnsResourceData, IEquatable<DnsResourceDataSig>
     {
         private static class Offset
