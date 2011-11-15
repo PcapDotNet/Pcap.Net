@@ -342,6 +342,8 @@
         /// <summary>
         /// RFCs 3755, 4034.
         /// DNSKEY.
+        /// Represents the public key.
+        /// Payload type: DnsResourceDataDnsKey.
         /// </summary>
         DnsKey = 48,
 
