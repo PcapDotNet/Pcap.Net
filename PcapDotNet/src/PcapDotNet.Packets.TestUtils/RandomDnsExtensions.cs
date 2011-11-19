@@ -208,6 +208,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.EId:
                 case DnsType.NimLoc:
+                case DnsType.Dhcid:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(32)));
 
                 case DnsType.Srv:
