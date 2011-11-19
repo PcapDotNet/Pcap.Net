@@ -5059,71 +5059,39 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
-    /// RFC 4034.
-    /// <pre>
-    /// +------------------+
-    /// | next domain name |
-    /// |                  |
-    /// +------------------+
-    /// | type bit map     |
-    /// |                  |
-    /// +------------------+
-    /// </pre>
+    /// RFCs 4034, 5155.
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.NSec)]
-    public sealed class DnsResourceDataNextDomainSecure : DnsResourceDataNoCompression, IEquatable<DnsResourceDataNextDomainSecure>
+    internal class DnsTypeBitmaps : IEquatable<DnsTypeBitmaps>
     {
         private const int MaxTypeBitmapsLength = 256 * (2 + 32);
 
-        public DnsResourceDataNextDomainSecure(DnsDomainName nextDomainName, IEnumerable<DnsType> typesExist)
+        public DnsTypeBitmaps(IEnumerable<DnsType> typesExist)
         {
-            NextDomainName = nextDomainName;
-            _typesExist = typesExist.Distinct().ToList();
-            _typesExist.Sort();
-            TypesExist = _typesExist.AsReadOnly();
+            TypesExist = typesExist.Distinct().ToList();
+            TypesExist.Sort();
         }
 
-        /// <summary>
-        /// Contains the next owner name (in the canonical ordering of the zone) that has authoritative data or contains a delegation point NS RRset;
-        /// The value of the Next Domain Name field in the last NSEC record in the zone is the name of the zone apex (the owner name of the zone's SOA RR).
-        /// This indicates that the owner name of the NSEC RR is the last name in the canonical ordering of the zone.
-        ///
-        /// Owner names of RRsets for which the given zone is not authoritative (such as glue records) must not be listed in the Next Domain Name
-        /// unless at least one authoritative RRset exists at the same owner name.
-        /// </summary>
-        public DnsDomainName NextDomainName { get; private set; }
-
-        /// <summary>
-        /// Identifies the RRset types that exist at the NSEC RR's owner name.
-        /// Ordered by the DnsType value.
-        /// </summary>
-        public ReadOnlyCollection<DnsType> TypesExist { get; private set; }
-
-        public bool IsTypePresentForOwner(DnsType dnsType)
+        public bool Contains(DnsType dnsType)
         {
-            return _typesExist.BinarySearch(dnsType) >= 0;
+            return TypesExist.BinarySearch(dnsType) >= 0;
         }
 
-        public bool Equals(DnsResourceDataNextDomainSecure other)
+        public List<DnsType> TypesExist { get; private set;}
+
+        public bool Equals(DnsTypeBitmaps other)
         {
             return other != null &&
-                   NextDomainName.Equals(other.NextDomainName) &&
                    TypesExist.SequenceEqual(other.TypesExist);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool  Equals(object obj)
         {
-            return Equals(other as DnsResourceDataNextDomainSecure);
+            return Equals(obj as DnsTypeBitmaps);
         }
 
-        internal DnsResourceDataNextDomainSecure()
-            : this(DnsDomainName.Root, new DnsType[0])
+        public int GetLength()
         {
-        }
-
-        internal override int GetLength()
-        {
-            int length = NextDomainName.NonCompressedLength;
+            int length = 0;
             int previousWindow = -1;
             int maxBit = -1;
             foreach (DnsType dnsType in TypesExist)
@@ -5147,11 +5115,9 @@ namespace PcapDotNet.Packets.Dns
             return length;
         }
 
-        internal override int WriteData(byte[] buffer, int offset)
+        public int Write(byte[] buffer, int offset)
         {
             int originalOffset = offset;
-            NextDomainName.WriteUncompressed(buffer, offset);
-            offset += NextDomainName.NonCompressedLength;
             int previousWindow = -1;
             int maxBit = -1;
             byte[] windowBitmap = null;
@@ -5178,15 +5144,8 @@ namespace PcapDotNet.Packets.Dns
             return offset - originalOffset;
         }
 
-        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        public static DnsTypeBitmaps CreateInstance(byte[] buffer, int offset, int length)
         {
-            DnsDomainName nextDomainName;
-            int nextDomainNameLength;
-            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out nextDomainName, out nextDomainNameLength))
-                return null;
-            offsetInDns += nextDomainNameLength;
-            length -= nextDomainNameLength;
-
             if (length > MaxTypeBitmapsLength)
                 return null;
 
@@ -5195,15 +5154,15 @@ namespace PcapDotNet.Packets.Dns
             {
                 if (length < 3)
                     return null;
-                byte window = dns[offsetInDns++];
-                byte bitmapLength = dns[offsetInDns++];
+                byte window = buffer[offset++];
+                byte bitmapLength = buffer[offset++];
                 length -= 2;
 
                 if (bitmapLength < 1 || bitmapLength > 32 || length < bitmapLength)
                     return null;
                 for (int i = 0; i != bitmapLength; ++i)
                 {
-                    byte bits = dns[offsetInDns++];
+                    byte bits = buffer[offset++];
                     int bitIndex = 0;
                     while (bits != 0)
                     {
@@ -5218,7 +5177,7 @@ namespace PcapDotNet.Packets.Dns
                 length -= bitmapLength;
             }
 
-            return new DnsResourceDataNextDomainSecure(nextDomainName, typesExist);
+            return new DnsTypeBitmaps(typesExist);
         }
 
         private static void WriteBitmap(byte[] buffer, ref int offset, byte window, int maxBit, byte[] windowBitmap)
@@ -5229,8 +5188,101 @@ namespace PcapDotNet.Packets.Dns
             DataSegment data = new DataSegment(windowBitmap, 0, numBytes);
             data.Write(buffer, ref offset);
         }
+    }
 
-        private readonly List<DnsType> _typesExist;
+    /// <summary>
+    /// RFC 4034.
+    /// <pre>
+    /// +------------------+
+    /// | next domain name |
+    /// |                  |
+    /// +------------------+
+    /// | type bit map     |
+    /// |                  |
+    /// +------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NSec)]
+    public sealed class DnsResourceDataNextDomainSecure : DnsResourceDataNoCompression, IEquatable<DnsResourceDataNextDomainSecure>
+    {
+        public DnsResourceDataNextDomainSecure(DnsDomainName nextDomainName, IEnumerable<DnsType> typesExist)
+            : this(nextDomainName, new DnsTypeBitmaps(typesExist))
+        {
+        }
+
+        /// <summary>
+        /// Contains the next owner name (in the canonical ordering of the zone) that has authoritative data or contains a delegation point NS RRset;
+        /// The value of the Next Domain Name field in the last NSEC record in the zone is the name of the zone apex (the owner name of the zone's SOA RR).
+        /// This indicates that the owner name of the NSEC RR is the last name in the canonical ordering of the zone.
+        ///
+        /// Owner names of RRsets for which the given zone is not authoritative (such as glue records) must not be listed in the Next Domain Name
+        /// unless at least one authoritative RRset exists at the same owner name.
+        /// </summary>
+        public DnsDomainName NextDomainName { get; private set; }
+
+        /// <summary>
+        /// Identifies the RRset types that exist at the NSEC RR's owner name.
+        /// Ordered by the DnsType value.
+        /// </summary>
+        public ReadOnlyCollection<DnsType> TypesExist { get { return _typeBitmaps.TypesExist.AsReadOnly(); } }
+
+        public bool IsTypePresentForOwner(DnsType dnsType)
+        {
+            return _typeBitmaps.Contains(dnsType);
+        }
+
+        public bool Equals(DnsResourceDataNextDomainSecure other)
+        {
+            return other != null &&
+                   NextDomainName.Equals(other.NextDomainName) &&
+                   _typeBitmaps.Equals(other._typeBitmaps);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNextDomainSecure);
+        }
+
+        internal DnsResourceDataNextDomainSecure()
+            : this(DnsDomainName.Root, new DnsType[0])
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return NextDomainName.NonCompressedLength + _typeBitmaps.GetLength();
+        }
+
+        internal override int WriteData(byte[] buffer, int offset)
+        {
+            NextDomainName.WriteUncompressed(buffer, offset);
+            int nextDomainNameLength = NextDomainName.NonCompressedLength;
+            return nextDomainNameLength + _typeBitmaps.Write(buffer, offset + nextDomainNameLength);
+        }
+
+        internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
+        {
+            DnsDomainName nextDomainName;
+            int nextDomainNameLength;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out nextDomainName, out nextDomainNameLength))
+                return null;
+            offsetInDns += nextDomainNameLength;
+            length -= nextDomainNameLength;
+
+            DnsTypeBitmaps typeBitmaps = DnsTypeBitmaps.CreateInstance(dns.Buffer, dns.StartOffset + offsetInDns, length);
+            if (typeBitmaps == null)
+                return null;
+
+            return new DnsResourceDataNextDomainSecure(nextDomainName, typeBitmaps);
+        }
+
+        private DnsResourceDataNextDomainSecure(DnsDomainName nextDomainName, DnsTypeBitmaps typeBitmaps)
+        {
+            NextDomainName = nextDomainName;
+            _typeBitmaps = typeBitmaps;
+        }
+
+        private readonly DnsTypeBitmaps _typeBitmaps;
     }
 
     /// <summary>
@@ -5368,4 +5420,200 @@ namespace PcapDotNet.Packets.Dns
         }
     }
 
+    /// <summary>
+    /// RFC 5155.
+    /// </summary>
+    [Flags]
+    public enum DnsSecNSec3Flags : byte
+    {
+        None = 0x00,
+
+        /// <summary>
+        /// RFC 5155.
+        /// Indicates whether this NSEC3 RR may cover unsigned delegations.
+        /// If set, the NSEC3 record covers zero or more unsigned delegations.
+        /// If clear, the NSEC3 record covers zero unsigned delegations.
+        /// </summary>
+        OptOut = 0x01,
+    }
+
+    /// <summary>
+    /// RFC 5155.
+    /// </summary>
+    public enum DnsSecNSec3HashAlgorithm : byte
+    {
+        /// <summary>
+        /// RFC 5155.
+        /// </summary>
+        Sha1 = 0x01,
+    }
+
+    /// <summary>
+    /// RFC 5155.
+    /// <pre>
+    /// +-----+-------------+----------+--------+------------+
+    /// | bit | 0-7         | 8-14     | 15     | 16-31      |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 0   | Hash Alg    | Reserved | OptOut | Iterations |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 32  | Salt Length | Salt                           |
+    /// +-----+-------------+                                |
+    /// | ... |                                              |
+    /// +-----+-------------+--------------------------------+
+    /// |     | Hash Length | Next Hashed Owner Name         |
+    /// +-----+-------------+                                |
+    /// | ... |                                              |
+    /// +-----+----------------------------------------------+
+    /// |     | Type Bit Maps                                |
+    /// | ... |                                              |
+    /// +-----+----------------------------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NSec3)]
+    public sealed class DnsResourceDataNextDomainSecure3 : DnsResourceDataSimple, IEquatable<DnsResourceDataNextDomainSecure3>
+    {
+        private static class Offset
+        {
+            public const int HashAlgorithm = 0;
+            public const int Flags = HashAlgorithm + sizeof(byte);
+            public const int Iterations = Flags + sizeof(byte);
+            public const int SaltLength = Iterations + sizeof(ushort);
+            public const int Salt = SaltLength + sizeof(byte);
+        }
+
+        private const int ConstantPartLength = Offset.Salt + sizeof(byte);
+
+        public DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
+                                                DataSegment nextHashedOwnerName, IEnumerable<DnsType> existTypes)
+            : this(hashAlgorithm, flags, iterations, salt, nextHashedOwnerName, new DnsTypeBitmaps(existTypes))
+        {
+        }
+
+        /// <summary>
+        /// Identifies the cryptographic hash algorithm used to construct the hash-value.
+        /// </summary>
+        public DnsSecNSec3HashAlgorithm HashAlgorithm { get; private set; }
+
+        /// <summary>
+        /// Can be used to indicate different processing.
+        /// All undefined flags must be zero.
+        /// </summary>
+        public DnsSecNSec3Flags Flags { get; private set; }
+
+        /// <summary>
+        /// Defines the number of additional times the hash function has been performed.
+        /// More iterations result in greater resiliency of the hash value against dictionary attacks, but at a higher computational cost for both the server and resolver.
+        /// </summary>
+        public ushort Iterations { get; private set; }
+
+        /// <summary>
+        /// Appended to the original owner name before hashing in order to defend against pre-calculated dictionary attacks.
+        /// </summary>
+        public DataSegment Salt { get; private set; }
+
+        /// <summary>
+        /// Contains the next hashed owner name in hash order.
+        /// This value is in binary format.
+        /// Given the ordered set of all hashed owner names, the Next Hashed Owner Name field contains the hash of an owner name that immediately follows the owner name of the given NSEC3 RR.
+        /// The value of the Next Hashed Owner Name field in the last NSEC3 RR in the zone is the same as the hashed owner name of the first NSEC3 RR in the zone in hash order.
+        /// Note that, unlike the owner name of the NSEC3 RR, the value of this field does not contain the appended zone name.
+        /// </summary>
+        public DataSegment NextHashedOwnerName { get; private set; }
+
+        /// <summary>
+        /// Identifies the RRSet types that exist at the original owner name of the NSEC3 RR.
+        /// </summary>
+        public ReadOnlyCollection<DnsType> TypesExist { get { return _typeBitmaps.TypesExist.AsReadOnly(); } }
+
+        public bool Equals(DnsResourceDataNextDomainSecure3 other)
+        {
+            return other != null &&
+                   HashAlgorithm.Equals(other.HashAlgorithm) &&
+                   Flags.Equals(other.Flags) &&
+                   Iterations.Equals(other.Iterations) &&
+                   Salt.Equals(other.Salt) &&
+                   NextHashedOwnerName.Equals(other.NextHashedOwnerName) &&
+                   _typeBitmaps.Equals(other._typeBitmaps);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNextDomainSecure3);
+        }
+
+        internal DnsResourceDataNextDomainSecure3()
+            : this(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0, DataSegment.Empty, DataSegment.Empty, new DnsType[0])
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return ConstantPartLength + Salt.Length + NextHashedOwnerName.Length + _typeBitmaps.GetLength();
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.HashAlgorithm, (byte)HashAlgorithm);
+            buffer.Write(offset + Offset.Flags, (byte)Flags);
+            buffer.Write(offset + Offset.Iterations, Iterations, Endianity.Big);
+            buffer.Write(offset + Offset.SaltLength, (byte)Salt.Length);
+            Salt.Write(buffer, offset + Offset.Salt);
+            buffer.Write(offset + NextHashedOwnerNameLengthOffset, (byte)NextHashedOwnerName.Length);
+            NextHashedOwnerName.Write(buffer, offset + NextHashedOwnerNameOffset);
+            _typeBitmaps.Write(buffer, offset + TypeBitmapsOffset);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            if (data.Length < ConstantPartLength)
+                return null;
+
+            DnsSecNSec3HashAlgorithm hashAlgorithm = (DnsSecNSec3HashAlgorithm)data[Offset.HashAlgorithm];
+            DnsSecNSec3Flags flags = (DnsSecNSec3Flags)data[Offset.Flags];
+            ushort iterations = data.ReadUShort(Offset.Iterations, Endianity.Big);
+            
+            int saltLength = data[Offset.SaltLength];
+            if (data.Length - Offset.Salt < saltLength + sizeof(byte))
+                return null;
+            DataSegment salt = data.SubSegment(Offset.Salt, saltLength);
+
+            int nextHashedOwnerNameLengthOffset = Offset.Salt + saltLength;
+            int nextHashedOwnerNameOffset = nextHashedOwnerNameLengthOffset + sizeof(byte);
+            int nextHashedOwnerNameLength = data[nextHashedOwnerNameLengthOffset];
+            if (data.Length - nextHashedOwnerNameOffset < nextHashedOwnerNameLength)
+                return null;
+            DataSegment nextHashedOwnerName = data.SubSegment(nextHashedOwnerNameOffset, nextHashedOwnerNameLength);
+
+            int typeBitmapsOffset = nextHashedOwnerNameOffset + nextHashedOwnerNameLength;
+            DnsTypeBitmaps typeBitmaps = DnsTypeBitmaps.CreateInstance(data.Buffer, data.StartOffset + typeBitmapsOffset, data.Length - typeBitmapsOffset);
+            if (typeBitmaps == null)
+                return null;
+
+            return new DnsResourceDataNextDomainSecure3(hashAlgorithm, flags, iterations, salt, nextHashedOwnerName, typeBitmaps);
+        }
+
+        private DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
+                                                 DataSegment nextHashedOwnerName, DnsTypeBitmaps typeBitmaps)
+        {
+            if (salt.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("salt", salt.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
+            if (nextHashedOwnerName.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("nextHashedOwnerName", nextHashedOwnerName.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
+
+            HashAlgorithm = hashAlgorithm;
+            Flags = flags;
+            Iterations = iterations;
+            Salt = salt;
+            NextHashedOwnerName = nextHashedOwnerName;
+            _typeBitmaps = typeBitmaps;
+        }
+
+        private int NextHashedOwnerNameLengthOffset { get { return Offset.Salt + Salt.Length; } }
+
+        private int NextHashedOwnerNameOffset { get { return NextHashedOwnerNameLengthOffset + sizeof(byte); } }
+
+        private int TypeBitmapsOffset { get { return NextHashedOwnerNameOffset + NextHashedOwnerName.Length; } }
+
+        private readonly DnsTypeBitmaps _typeBitmaps;
+    }
 }
