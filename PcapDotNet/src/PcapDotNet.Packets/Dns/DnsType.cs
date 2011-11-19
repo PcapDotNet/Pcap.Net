@@ -350,6 +350,8 @@
         /// <summary>
         /// RFC 4701.
         /// DHCID.
+        /// Dynamic Host Configuration Information.
+        /// Payload type: DnsResourceDataAnything.
         /// </summary>
         Dhcid = 49,
 
