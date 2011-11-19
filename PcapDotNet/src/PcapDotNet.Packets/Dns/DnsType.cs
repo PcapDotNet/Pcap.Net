@@ -365,6 +365,7 @@
         /// <summary>
         /// RFC 5155.
         /// NSEC3PARAM.
+        /// Payload type: DnsResourceDataNextDomainSecure3Parameters.
         /// </summary>
         NSec3Param = 51,
 

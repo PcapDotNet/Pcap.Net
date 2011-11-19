@@ -5459,18 +5459,10 @@ namespace PcapDotNet.Packets.Dns
     /// | 32  | Salt Length | Salt                           |
     /// +-----+-------------+                                |
     /// | ... |                                              |
-    /// +-----+-------------+--------------------------------+
-    /// |     | Hash Length | Next Hashed Owner Name         |
-    /// +-----+-------------+                                |
-    /// | ... |                                              |
     /// +-----+----------------------------------------------+
-    /// |     | Type Bit Maps                                |
-    /// | ... |                                              |
+    /// | ... | ...                                          |
     /// +-----+----------------------------------------------+
-    /// </pre>
-    /// </summary>
-    [DnsTypeRegistration(Type = DnsType.NSec3)]
-    public sealed class DnsResourceDataNextDomainSecure3 : DnsResourceDataSimple, IEquatable<DnsResourceDataNextDomainSecure3>
+    public abstract class DnsResourceDataNextDomainSecure3Base : DnsResourceDataSimple
     {
         private static class Offset
         {
@@ -5481,13 +5473,7 @@ namespace PcapDotNet.Packets.Dns
             public const int Salt = SaltLength + sizeof(byte);
         }
 
-        private const int ConstantPartLength = Offset.Salt + sizeof(byte);
-
-        public DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
-                                                DataSegment nextHashedOwnerName, IEnumerable<DnsType> existTypes)
-            : this(hashAlgorithm, flags, iterations, salt, nextHashedOwnerName, new DnsTypeBitmaps(existTypes))
-        {
-        }
+        private const int ConstantPartLength = Offset.Salt;
 
         /// <summary>
         /// Identifies the cryptographic hash algorithm used to construct the hash-value.
@@ -5511,6 +5497,100 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Salt { get; private set; }
 
+        internal bool EqualsParameters(DnsResourceDataNextDomainSecure3Base other)
+        {
+            return other != null &&
+                   HashAlgorithm.Equals(other.HashAlgorithm) &&
+                   Flags.Equals(other.Flags) &&
+                   Iterations.Equals(other.Iterations) &&
+                   Salt.Equals(other.Salt);
+        }
+
+        internal DnsResourceDataNextDomainSecure3Base(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)
+        {
+            if (salt.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("salt", salt.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
+
+            HashAlgorithm = hashAlgorithm;
+            Flags = flags;
+            Iterations = iterations;
+            Salt = salt;
+        }
+
+        internal int ParametersLength { get { return GetParametersLength(Salt.Length); } }
+
+        internal static int GetParametersLength(int saltLength)
+        {
+            return ConstantPartLength + saltLength;
+        }
+
+        internal void WriteParameters(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + Offset.HashAlgorithm, (byte)HashAlgorithm);
+            buffer.Write(offset + Offset.Flags, (byte)Flags);
+            buffer.Write(offset + Offset.Iterations, Iterations, Endianity.Big);
+            buffer.Write(offset + Offset.SaltLength, (byte)Salt.Length);
+            Salt.Write(buffer, offset + Offset.Salt);
+        }
+
+        internal static bool TryReadParameters(DataSegment data, out DnsSecNSec3HashAlgorithm hashAlgorithm, out DnsSecNSec3Flags flags, out ushort iterations, out DataSegment salt)
+        {
+            if (data.Length < ConstantPartLength)
+            {
+                hashAlgorithm = DnsSecNSec3HashAlgorithm.Sha1;
+                flags = DnsSecNSec3Flags.None;
+                iterations = 0;
+                salt = null;
+                return false;
+            }
+
+            hashAlgorithm = (DnsSecNSec3HashAlgorithm)data[Offset.HashAlgorithm];
+            flags = (DnsSecNSec3Flags)data[Offset.Flags];
+            iterations = data.ReadUShort(Offset.Iterations, Endianity.Big);
+            
+            int saltLength = data[Offset.SaltLength];
+            if (data.Length - Offset.Salt < saltLength)
+            {
+                salt = null;
+                return false;
+            }
+            salt = data.SubSegment(Offset.Salt, saltLength);
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5155.
+    /// <pre>
+    /// +-----+-------------+----------+--------+------------+
+    /// | bit | 0-7         | 8-14     | 15     | 16-31      |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 0   | Hash Alg    | Reserved | OptOut | Iterations |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 32  | Salt Length | Salt                           |
+    /// +-----+-------------+                                |
+    /// | ... |                                              |
+    /// +-----+-------------+--------------------------------+
+    /// |     | Hash Length | Next Hashed Owner Name         |
+    /// +-----+-------------+                                |
+    /// | ... |                                              |
+    /// +-----+----------------------------------------------+
+    /// |     | Type Bit Maps                                |
+    /// | ... |                                              |
+    /// +-----+----------------------------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NSec3)]
+    public sealed class DnsResourceDataNextDomainSecure3 : DnsResourceDataNextDomainSecure3Base, IEquatable<DnsResourceDataNextDomainSecure3>
+    {
+        //private const int ConstantPartLength = Offset.Salt + sizeof(byte);
+
+        public DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
+                                                DataSegment nextHashedOwnerName, IEnumerable<DnsType> existTypes)
+            : this(hashAlgorithm, flags, iterations, salt, nextHashedOwnerName, new DnsTypeBitmaps(existTypes))
+        {
+        }
+
         /// <summary>
         /// Contains the next hashed owner name in hash order.
         /// This value is in binary format.
@@ -5527,11 +5607,7 @@ namespace PcapDotNet.Packets.Dns
 
         public bool Equals(DnsResourceDataNextDomainSecure3 other)
         {
-            return other != null &&
-                   HashAlgorithm.Equals(other.HashAlgorithm) &&
-                   Flags.Equals(other.Flags) &&
-                   Iterations.Equals(other.Iterations) &&
-                   Salt.Equals(other.Salt) &&
+            return EqualsParameters(other) &&
                    NextHashedOwnerName.Equals(other.NextHashedOwnerName) &&
                    _typeBitmaps.Equals(other._typeBitmaps);
         }
@@ -5548,16 +5624,12 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength()
         {
-            return ConstantPartLength + Salt.Length + NextHashedOwnerName.Length + _typeBitmaps.GetLength();
+            return ParametersLength + sizeof(byte) + NextHashedOwnerName.Length + _typeBitmaps.GetLength();
         }
 
         internal override void WriteDataSimple(byte[] buffer, int offset)
         {
-            buffer.Write(offset + Offset.HashAlgorithm, (byte)HashAlgorithm);
-            buffer.Write(offset + Offset.Flags, (byte)Flags);
-            buffer.Write(offset + Offset.Iterations, Iterations, Endianity.Big);
-            buffer.Write(offset + Offset.SaltLength, (byte)Salt.Length);
-            Salt.Write(buffer, offset + Offset.Salt);
+            WriteParameters(buffer, offset);
             buffer.Write(offset + NextHashedOwnerNameLengthOffset, (byte)NextHashedOwnerName.Length);
             NextHashedOwnerName.Write(buffer, offset + NextHashedOwnerNameOffset);
             _typeBitmaps.Write(buffer, offset + TypeBitmapsOffset);
@@ -5565,19 +5637,16 @@ namespace PcapDotNet.Packets.Dns
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
-            if (data.Length < ConstantPartLength)
+            DnsSecNSec3HashAlgorithm hashAlgorithm;
+            DnsSecNSec3Flags flags;
+            ushort iterations;
+            DataSegment salt;
+            if (!TryReadParameters(data, out hashAlgorithm, out flags, out iterations, out salt))
                 return null;
 
-            DnsSecNSec3HashAlgorithm hashAlgorithm = (DnsSecNSec3HashAlgorithm)data[Offset.HashAlgorithm];
-            DnsSecNSec3Flags flags = (DnsSecNSec3Flags)data[Offset.Flags];
-            ushort iterations = data.ReadUShort(Offset.Iterations, Endianity.Big);
-            
-            int saltLength = data[Offset.SaltLength];
-            if (data.Length - Offset.Salt < saltLength + sizeof(byte))
+            int nextHashedOwnerNameLengthOffset = GetParametersLength(salt.Length);
+            if (data.Length - nextHashedOwnerNameLengthOffset < sizeof(byte))
                 return null;
-            DataSegment salt = data.SubSegment(Offset.Salt, saltLength);
-
-            int nextHashedOwnerNameLengthOffset = Offset.Salt + saltLength;
             int nextHashedOwnerNameOffset = nextHashedOwnerNameLengthOffset + sizeof(byte);
             int nextHashedOwnerNameLength = data[nextHashedOwnerNameLengthOffset];
             if (data.Length - nextHashedOwnerNameOffset < nextHashedOwnerNameLength)
@@ -5594,26 +5663,84 @@ namespace PcapDotNet.Packets.Dns
 
         private DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
                                                  DataSegment nextHashedOwnerName, DnsTypeBitmaps typeBitmaps)
+            : base(hashAlgorithm, flags, iterations, salt)
         {
-            if (salt.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("salt", salt.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
             if (nextHashedOwnerName.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException("nextHashedOwnerName", nextHashedOwnerName.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
 
-            HashAlgorithm = hashAlgorithm;
-            Flags = flags;
-            Iterations = iterations;
-            Salt = salt;
             NextHashedOwnerName = nextHashedOwnerName;
             _typeBitmaps = typeBitmaps;
         }
 
-        private int NextHashedOwnerNameLengthOffset { get { return Offset.Salt + Salt.Length; } }
+        private int NextHashedOwnerNameLengthOffset { get { return ParametersLength; } }
 
         private int NextHashedOwnerNameOffset { get { return NextHashedOwnerNameLengthOffset + sizeof(byte); } }
 
         private int TypeBitmapsOffset { get { return NextHashedOwnerNameOffset + NextHashedOwnerName.Length; } }
 
         private readonly DnsTypeBitmaps _typeBitmaps;
+    }
+
+    /// <summary>
+    /// RFC 5155.
+    /// <pre>
+    /// +-----+-------------+----------+--------+------------+
+    /// | bit | 0-7         | 8-14     | 15     | 16-31      |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 0   | Hash Alg    | Reserved | OptOut | Iterations |
+    /// +-----+-------------+----------+--------+------------+
+    /// | 32  | Salt Length | Salt                           |
+    /// +-----+-------------+                                |
+    /// | ... |                                              |
+    /// +-----+----------------------------------------------+
+    /// </pre>
+    /// </summary>
+    [DnsTypeRegistration(Type = DnsType.NSec3Param)]
+    public sealed class DnsResourceDataNextDomainSecure3Parameters : DnsResourceDataNextDomainSecure3Base, IEquatable<DnsResourceDataNextDomainSecure3Parameters>
+    {
+        public DnsResourceDataNextDomainSecure3Parameters(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)
+            : base(hashAlgorithm, flags, iterations, salt)
+        {
+        }
+
+        public bool Equals(DnsResourceDataNextDomainSecure3Parameters other)
+        {
+            return EqualsParameters(other);
+        }
+
+        public override bool Equals(DnsResourceData other)
+        {
+            return Equals(other as DnsResourceDataNextDomainSecure3Parameters);
+        }
+
+        internal DnsResourceDataNextDomainSecure3Parameters()
+            : this(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0, DataSegment.Empty)
+        {
+        }
+
+        internal override int GetLength()
+        {
+            return ParametersLength;
+        }
+
+        internal override void WriteDataSimple(byte[] buffer, int offset)
+        {
+            WriteParameters(buffer, offset);
+        }
+
+        internal override DnsResourceData CreateInstance(DataSegment data)
+        {
+            DnsSecNSec3HashAlgorithm hashAlgorithm;
+            DnsSecNSec3Flags flags;
+            ushort iterations;
+            DataSegment salt;
+            if (!TryReadParameters(data, out hashAlgorithm, out flags, out iterations, out salt))
+                return null;
+
+            if (data.Length != GetParametersLength(salt.Length))
+                return null;
+
+            return new DnsResourceDataNextDomainSecure3Parameters(hashAlgorithm, flags, iterations, salt);
+        }
     }
 }
