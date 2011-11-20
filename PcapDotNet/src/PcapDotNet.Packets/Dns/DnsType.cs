@@ -372,6 +372,7 @@
         /// <summary>
         /// RFC 5205.
         /// Host Identity Protocol.
+        /// Payload type: DnsResourceDataHostIdentityProtocol.
         /// </summary>
         Hip = 55,
 
