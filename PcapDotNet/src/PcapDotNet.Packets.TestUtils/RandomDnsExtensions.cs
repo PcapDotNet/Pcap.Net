@@ -264,7 +264,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                              random.NextDataSegment(random.Next(20)));
 
                 case DnsType.IpSecKey:
-                    return new DnsResourceDataIpSecKey(random.NextByte(), random.NextDnsGateway(), random.NextEnum<DnsGatewayPublicKeyAlgorithm>(),
+                    return new DnsResourceDataIpSecKey(random.NextByte(), random.NextDnsGateway(), random.NextEnum<DnsPublicKeyAlgorithm>(),
                                                        random.NextDataSegment(random.Next(100)));
 
                 case DnsType.NSec:
@@ -281,6 +281,11 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.NSec3Param:
                     return new DnsResourceDataNextDomainSecure3Parameters(random.NextEnum<DnsSecNSec3HashAlgorithm>(), random.NextFlags<DnsSecNSec3Flags>(),
                                                                           random.NextUShort(), random.NextDataSegment(random.Next(10)));
+
+                case DnsType.Hip:
+                    return new DnsResourceDataHostIdentityProtocol(random.NextDataSegment(random.NextInt(0, 100)), random.NextEnum<DnsPublicKeyAlgorithm>(),
+                                                                   random.NextDataSegment(random.NextInt(0, 100)),
+                                                                   ((Func<DnsDomainName>)(() => random.NextDnsDomainName())).GenerateArray(random.NextInt(0, 10)));
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
