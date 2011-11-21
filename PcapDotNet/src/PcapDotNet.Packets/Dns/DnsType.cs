@@ -379,6 +379,7 @@
         /// <summary>
         /// Reid.
         /// NINFO.
+        /// Payload type: DnsResourceDataNInfo.
         /// </summary>
         NInfo = 56,
 

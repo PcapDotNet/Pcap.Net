@@ -287,6 +287,9 @@ namespace PcapDotNet.Packets.TestUtils
                                                                    random.NextDataSegment(random.NextInt(0, 100)),
                                                                    ((Func<DnsDomainName>)(() => random.NextDnsDomainName())).GenerateArray(random.NextInt(0, 10)));
 
+                case DnsType.NInfo:
+                    return new DnsResourceDataNInfo(((Func<DataSegment>)(() => random.NextDataSegment(random.NextInt(1, 10)))).GenerateArray(10).AsReadOnly());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
