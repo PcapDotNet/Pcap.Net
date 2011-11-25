@@ -386,6 +386,8 @@
         /// <summary>
         /// Reid.
         /// RKEY.
+        /// Can be used to encrypt NAPTR record.
+        /// Payload type: DnsResourceDataRKey.
         /// </summary>
         RKey = 57,
 

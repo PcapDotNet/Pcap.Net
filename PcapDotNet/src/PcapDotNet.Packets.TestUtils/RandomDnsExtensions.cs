@@ -290,6 +290,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.NInfo:
                     return new DnsResourceDataNInfo(((Func<DataSegment>)(() => random.NextDataSegment(random.NextInt(1, 10)))).GenerateArray(10).AsReadOnly());
 
+                case DnsType.RKey:
+                    return new DnsResourceDataRKey(random.NextUShort(), random.NextByte(), random.NextEnum<DnsAlgorithm>(), random.NextDataSegment(random.NextInt(0, 100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
