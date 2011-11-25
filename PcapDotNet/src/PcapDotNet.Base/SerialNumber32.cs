@@ -4,6 +4,7 @@ namespace PcapDotNet.Base
 {
     public struct SerialNumber32 : IEquatable<SerialNumber32>, IComparable<SerialNumber32>
     {
+        public const int SizeOf = sizeof(uint);
         public const int SerialBits = 32;
         public const uint MaxAdditiveNumber = ((uint)1 << (SerialBits - 1)) - 1;
 

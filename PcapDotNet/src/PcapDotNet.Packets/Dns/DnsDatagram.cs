@@ -73,7 +73,7 @@ namespace PcapDotNet.Packets.Dns
             public const byte IsRecusionDesired = 0x01;
             public const byte IsRecusionAvailable = 0x80;
             public const byte FutureUse = 0x60;
-            public const byte ResponseCode = 0x1F;
+            public const ushort ResponseCode = 0x1F;
         }
 
         private static class Shift
@@ -327,7 +327,7 @@ namespace PcapDotNet.Packets.Dns
             if (isRecursionAvailable)
                 flags1 |= Mask.IsRecusionAvailable;
             flags1 |= (byte)((futureUse << Shift.FutureUse) & Mask.FutureUse);
-            flags1 |= (byte)((byte)responseCode & Mask.ResponseCode);
+            flags1 |= (byte)((ushort)responseCode & Mask.ResponseCode);
             buffer.Write(offset + Offset.IsRecusionAvailable, flags1);
             DnsDomainNameCompressionData compressionData = new DnsDomainNameCompressionData(domainNameCompressionMode);
             int recordOffset = HeaderLength;
