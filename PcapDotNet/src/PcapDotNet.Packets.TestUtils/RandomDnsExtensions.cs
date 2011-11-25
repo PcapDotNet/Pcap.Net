@@ -256,6 +256,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                random.NextDataSegment(random.Next(0, 128))))).GenerateArray(random.Next(10)));
 
                 case DnsType.Ds:
+                case DnsType.Cds:
                     return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),
                                                                random.NextDataSegment(random.Next(50)));
 

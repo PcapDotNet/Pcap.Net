@@ -4500,6 +4500,7 @@ namespace PcapDotNet.Packets.Dns
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Ds)]
+    [DnsTypeRegistration(Type = DnsType.Cds)]
     public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>
     {
         public static class Offset

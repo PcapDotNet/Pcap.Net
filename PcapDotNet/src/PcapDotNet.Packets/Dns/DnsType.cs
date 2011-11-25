@@ -401,6 +401,7 @@
         /// <summary>
         /// Barwood.
         /// Child DS.
+        /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
         Cds = 59,
 
