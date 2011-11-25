@@ -393,7 +393,8 @@
 
         /// <summary>
         /// Wijngaards.
-        /// Trust Anchor LINK.
+        /// DNSSEC Trust Anchor LINK.
+        /// Payload type: DnsResourceDataTrustAnchorLink.
         /// </summary>
         TaLink = 58,
 

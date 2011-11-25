@@ -293,6 +293,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.RKey:
                     return new DnsResourceDataRKey(random.NextUShort(), random.NextByte(), random.NextEnum<DnsAlgorithm>(), random.NextDataSegment(random.NextInt(0, 100)));
 
+                case DnsType.TaLink:
+                    return new DnsResourceDataTrustAnchorLink(random.NextDnsDomainName(), random.NextDnsDomainName());
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
