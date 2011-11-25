@@ -149,6 +149,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataMailExchange(random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.Txt:
+                case DnsType.Spf:
                     return new DnsResourceDataText(((Func<DataSegment>)(() => random.NextDataSegment(random.Next(10)))).GenerateArray(10).AsReadOnly());
 
                 case DnsType.Rp:
@@ -296,6 +297,11 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.TaLink:
                     return new DnsResourceDataTrustAnchorLink(random.NextDnsDomainName(), random.NextDnsDomainName());
+
+                case DnsType.TKey:
+                    return new DnsResourceDataTransactionKey(random.NextDnsDomainName(), random.NextUInt(), random.NextUInt(),
+                                                             random.NextEnum<DnsTransactionKeyMode>(), random.NextEnum<DnsResponseCode>(),
+                                                             random.NextDataSegment(random.NextInt(0, 100)), random.NextDataSegment(random.NextInt(0, 100)));
 
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));

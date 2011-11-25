@@ -3,7 +3,7 @@
     /// <summary>
     /// RFCs 1035, 2136, 2671, 2845, 2930, 4635.
     /// </summary>
-    public enum DnsResponseCode : byte
+    public enum DnsResponseCode : ushort
     {
         /// <summary>
         /// RFC 1035.

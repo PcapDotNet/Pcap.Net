@@ -407,32 +407,39 @@
 
         /// <summary>
         /// RFC 4408.
+        /// Sender Policy Framework.
+        /// Payload type: DnsResourceDataText.
         /// </summary>
         Spf = 99,
 
         /// <summary>
         /// IANA-Reserved.
+        /// Not documented.
         /// </summary>
         UInfo = 100,
 
         /// <summary>
         /// IANA-Reserved.
+        /// Not documented.
         /// </summary>
         Uid = 101,
 
         /// <summary>
         /// IANA-Reserved.
+        /// Not documented.
         /// </summary>
         Gid = 102,
 
         /// <summary>
         /// IANA-Reserved.
+        /// Not documented.
         /// </summary>
         UnSpec = 103,
 
         /// <summary>
         /// RFC 2930.
         /// Transaction Key.
+        /// Payload type: DnsResourceDataTransactionKey.
         /// </summary>
         TKey = 249,
 
