@@ -11,6 +11,7 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public sealed class DnsDomainName : IEquatable<DnsDomainName>
     {
+        public const int RootLength = sizeof(byte);
         private const byte MaxLabelLength = 63;
         private const ushort CompressionMarker = 0xC000;
         internal const ushort OffsetMask = 0x3FFF;
