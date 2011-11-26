@@ -446,6 +446,7 @@
         /// <summary>
         /// RFC 2845.
         /// Transaction Signature.
+        /// Payload type: DnsResourceDataTransactionSignature.
         /// </summary>
         TSig = 250,
 

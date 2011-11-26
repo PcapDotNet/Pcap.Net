@@ -303,6 +303,11 @@ namespace PcapDotNet.Packets.TestUtils
                                                              random.NextEnum<DnsTransactionKeyMode>(), random.NextEnum<DnsResponseCode>(),
                                                              random.NextDataSegment(random.NextInt(0, 100)), random.NextDataSegment(random.NextInt(0, 100)));
 
+                case DnsType.TSig:
+                    return new DnsResourceDataTransactionSignature(random.NextDnsDomainName(), random.NextUInt48(), random.NextUShort(),
+                                                                   random.NextDataSegment(random.NextInt(0, 100)), random.NextUShort(),
+                                                                   random.NextEnum<DnsResponseCode>(), random.NextDataSegment(random.NextInt(0, 100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
