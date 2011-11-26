@@ -308,6 +308,10 @@ namespace PcapDotNet.Packets.TestUtils
                                                                    random.NextDataSegment(random.NextInt(0, 100)), random.NextUShort(),
                                                                    random.NextEnum<DnsResponseCode>(), random.NextDataSegment(random.NextInt(0, 100)));
 
+                case DnsType.Uri:
+                    return new DnsResourceDataUri(random.NextUShort(), random.NextUShort(),
+                                                  ((Func<DataSegment>)(() => random.NextDataSegment(random.NextInt(0, 100)))).GenerateArray(random.NextInt(0, 10)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
@@ -338,7 +342,6 @@ namespace PcapDotNet.Packets.TestUtils
                 default:
                     throw new InvalidOperationException(string.Format("Invalid gateway type: {0}", gatewayType));
             }
-                    
         }
     }
 }

@@ -453,24 +453,28 @@
         /// <summary>
         /// RFC 1995.
         /// Incremental transfer.
+        /// Query Type.
         /// </summary>
         Ixfr = 251,
 
         /// <summary>
         /// RFCs 1035, 5936.
         /// Transfer of an entire zone.
+        /// Query Type.
         /// </summary>
-        Axft = 252,
+        Axfr = 252,
 
         /// <summary>
         /// RFC 1035.
         /// Mailbox-related RRs (MB, MG or MR).
+        /// Query Type.
         /// </summary>
         MailB = 253,
 
         /// <summary>
         /// RFC 1035.
         /// Mail agent RRs (Obsolete - see MX).
+        /// Query Type.
         /// </summary>
         MailA = 254,
 
@@ -484,6 +488,7 @@
         /// <summary>
         /// Faltstrom.
         /// URI.
+        /// Payload type: DnsResourceDataUri.
         /// </summary>
         Uri = 256,
 
