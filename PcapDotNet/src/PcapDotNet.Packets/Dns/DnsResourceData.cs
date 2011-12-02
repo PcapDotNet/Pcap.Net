@@ -4503,6 +4503,7 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Ds)]
     [DnsTypeRegistration(Type = DnsType.Cds)]
     [DnsTypeRegistration(Type = DnsType.Ta)]
+    [DnsTypeRegistration(Type = DnsType.Dlv)]
     public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>
     {
         public static class Offset
