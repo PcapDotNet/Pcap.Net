@@ -509,6 +509,7 @@
         /// <summary>
         /// RFC 4431.
         /// DNSSEC Lookaside Validation.
+        /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
         Dlv = 32769,
     }
