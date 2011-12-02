@@ -312,6 +312,11 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataUri(random.NextUShort(), random.NextUShort(),
                                                   ((Func<DataSegment>)(() => random.NextDataSegment(random.NextInt(0, 100)))).GenerateArray(random.NextInt(0, 10)));
 
+                case DnsType.Caa:
+                    return new DnsResourceDataCertificationAuthorityAuthorization(random.NextFlags<DnsCertificationAuthorityAuthorizationFlags>(),
+                                                                                  random.NextDataSegment(random.NextInt(0, 16)),
+                                                                                  random.NextDataSegment(random.NextInt(0, 100)));
+
                 default:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(100)));
             }
