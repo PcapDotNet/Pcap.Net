@@ -501,7 +501,8 @@
 
         /// <summary>
         /// Weiler. 2005-12-13.
-        /// DNSSEC Trust Authorities.
+        /// DNSSEC Trust Authorities or Trust Anchor.
+        /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
         Ta = 32768,
 
