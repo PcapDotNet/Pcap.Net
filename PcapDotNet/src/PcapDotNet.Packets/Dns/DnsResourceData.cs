@@ -20,6 +20,14 @@ namespace PcapDotNet.Packets.Dns
 
     public abstract class DnsResourceData : IEquatable<DnsResourceData>
     {
+        public static Type GetDnsResourceDataType(DnsType dnsType)
+        {
+            DnsResourceData prototype = TryGetPrototype(dnsType);
+            if (prototype == null)
+                return null;
+            return prototype.GetType();
+        }
+
         public abstract bool Equals(DnsResourceData other);
 
         public sealed override bool Equals(object obj)
@@ -41,7 +49,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal static DnsResourceData Read(DnsDatagram dns, DnsType type, DnsClass dnsClass, int offsetInDns, int length)
         {
-            DnsResourceData prototype = TryGetPrototype(type, dnsClass);
+            DnsResourceData prototype = TryGetPrototype(type);
             if (prototype != null)
                 return prototype.CreateInstance(dns, offsetInDns, length);
             return new DnsResourceDataAnything(dns.SubSegment(offsetInDns, length));
@@ -72,7 +80,7 @@ namespace PcapDotNet.Packets.Dns
             str.Write(buffer, ref offset);
         }
 
-        private static DnsResourceData TryGetPrototype(DnsType type, DnsClass dnsClass)
+        private static DnsResourceData TryGetPrototype(DnsType type)
         {
             DnsResourceData prototype;
             if (!_prototypes.TryGetValue(type, out prototype))
