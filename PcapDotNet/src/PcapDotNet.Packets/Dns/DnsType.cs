@@ -495,6 +495,7 @@
         /// <summary>
         /// Hallam-Baker.
         /// Certification Authority Authorization.
+        /// Payload type: DnsResourceDataCertificationAuthorityAuthorization.
         /// </summary>
         Caa = 257,
 
