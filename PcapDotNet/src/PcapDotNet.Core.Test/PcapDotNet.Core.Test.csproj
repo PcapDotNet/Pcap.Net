@@ -75,6 +75,17 @@
     <Compile Include="MarshalingServicesTests.cs" />
     <Compile Include="MoreIpV4Option.cs" />
     <Compile Include="MoreTcpOption.cs" />
+    <Compile Include="WiresharkDatagramComparer.cs" />
+    <Compile Include="WiresharkDatagramComparerArp.cs" />
+    <Compile Include="WiresharkDatagramComparerEthernet.cs" />
+    <Compile Include="WiresharkDatagramComparerGre.cs" />
+    <Compile Include="WiresharkDatagramComparerHttp.cs" />
+    <Compile Include="WiresharkDatagramComparerIcmp.cs" />
+    <Compile Include="WiresharkDatagramComparerIgmp.cs" />
+    <Compile Include="WiresharkDatagramComparerIpV4.cs" />
+    <Compile Include="WiresharkDatagramComparerSimple.cs" />
+    <Compile Include="WiresharkDatagramComparerTcp.cs" />
+    <Compile Include="WiresharkDatagramComparerUdp.cs" />
     <Compile Include="WiresharkStringExtensions.cs" />
     <Compile Include="XElementExtensions.cs" />
     <Compile Include="PacketDumpFileTests.cs" />
