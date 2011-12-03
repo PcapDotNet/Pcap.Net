@@ -1248,9 +1248,11 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.flags":
-                        field.AssertShow("0x" + 
-                            ((tcpDatagram.ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum ? "1" : "") + 
-                            ((byte)tcpDatagram.ControlBits).ToString("x" + 2 * sizeof(byte)));
+                        ushort flags =
+                            (ushort)((tcpDatagram.Reserved << 9) |
+                                     (((tcpDatagram.ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum ? 1 : 0) << 8) |
+                                     (byte)tcpDatagram.ControlBits);
+                        field.AssertShow("0x" + flags.ToString("x" + 2 * sizeof(byte)));
                         foreach (var flagField in field.Fields())
                         {
                             switch (flagField.Name())
