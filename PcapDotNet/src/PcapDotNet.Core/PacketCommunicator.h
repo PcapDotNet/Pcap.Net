@@ -218,7 +218,7 @@ namespace PcapDotNet { namespace Core
 
         /// <summary>
         /// Collect a group of packets.
-        /// Similar to ReceiveSomePackets() except it keeps reading packets until conut packets are processed or an error occurs. It does not return when live read timeouts occur.
+        /// Similar to ReceiveSomePackets() except it keeps reading packets until count packets are processed or an error occurs. It does not return when live read timeouts occur.
         /// <seealso cref="ReceivePacket"/>
         /// <seealso cref="ReceiveSomePackets"/>
         /// <seealso cref="Break"/>
