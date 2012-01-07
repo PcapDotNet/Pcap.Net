@@ -554,6 +554,11 @@ namespace PcapDotNet.Base
             return ((long)this).ToString(CultureInfo.InvariantCulture);
         }
 
+        public string ToString(string format)
+        {
+            return ((long)this).ToString(format);
+        }
+
         private UInt48(long value)
         {
             _mostSignificant = (ushort)(value >> 32);

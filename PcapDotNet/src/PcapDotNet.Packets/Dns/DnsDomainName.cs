@@ -33,6 +33,11 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        public bool IsRoot
+        {
+            get { return NumLabels == 0; }
+        }
+
         public int NonCompressedLength
         {
             get
@@ -43,9 +48,9 @@ namespace PcapDotNet.Packets.Dns
 
         public override string ToString()
         {
-            if (_ascii == null)
-                _ascii = _labels.Select(label => label.ToString(Encoding.UTF8)).SequenceToString('.') + ".";
-            return _ascii;
+            if (_utf8 == null)
+                _utf8 = _labels.Select(label => label.ToString(Encoding.UTF8)).SequenceToString('.') + ".";
+            return _utf8;
         }
 
         public bool Equals(DnsDomainName other)
@@ -160,6 +165,6 @@ namespace PcapDotNet.Packets.Dns
         private static readonly DnsDomainName _root = new DnsDomainName("");
 
         private readonly List<DataSegment> _labels;
-        private string _ascii;
+        private string _utf8;
     }
 }

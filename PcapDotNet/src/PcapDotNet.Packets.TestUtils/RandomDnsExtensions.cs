@@ -14,6 +14,8 @@ namespace PcapDotNet.Packets.TestUtils
     {
         public static DnsLayer NextDnsLayer(this Random random)
         {
+            const int MaxRecordsPerSection = 5;
+
             DnsLayer dnsLayer = new DnsLayer();
             dnsLayer.Id = random.NextUShort();
             dnsLayer.IsQuery = random.NextBool();
@@ -22,25 +24,26 @@ namespace PcapDotNet.Packets.TestUtils
             dnsLayer.IsTruncated = random.NextBool();
             dnsLayer.IsRecusionDesired = random.NextBool();
             dnsLayer.IsRecusionAvailable = random.NextBool();
-            dnsLayer.FutureUse = random.NextByte(DnsDatagram.MaxFutureUse + 1);
-            dnsLayer.ResponseCode = random.NextEnum<DnsResponseCode>();
+            dnsLayer.FutureUse = random.NextBool();
+            dnsLayer.ResponseCode = random.NextEnum(DnsResponseCode.BadVersOrBadSig, DnsResponseCode.BadKey, DnsResponseCode.BadTime, DnsResponseCode.BadMode,
+                                                    DnsResponseCode.BadName, DnsResponseCode.BadAlg, DnsResponseCode.BadTrunc);
             dnsLayer.DomainNameCompressionMode = random.NextEnum<DnsDomainNameCompressionMode>();
-            int numQueries = random.Next(10);
+            int numQueries = random.Next(MaxRecordsPerSection + 1);
             List<DnsQueryResourceRecord> queries = new List<DnsQueryResourceRecord>();
             for (int i = 0; i != numQueries; ++i)
                 queries.Add(random.NextDnsQueryResourceRecord());
             dnsLayer.Queries = queries;
-            int numAnswers = random.Next(10);
+            int numAnswers = random.Next(MaxRecordsPerSection + 1);
             List<DnsDataResourceRecord> answers = new List<DnsDataResourceRecord>();
             for (int i = 0; i != numAnswers; ++i)
                 answers.Add(random.NextDnsDataResourceRecord());
             dnsLayer.Answers = answers;
-            int numAuthorities = random.Next(10);
+            int numAuthorities = random.Next(MaxRecordsPerSection + 1);
             List<DnsDataResourceRecord> authorities = new List<DnsDataResourceRecord>();
             for (int i = 0; i != numAuthorities; ++i)
                 authorities.Add(random.NextDnsDataResourceRecord());
             dnsLayer.Authorities = authorities;
-            int numAdditionals = random.Next(10);
+            int numAdditionals = random.Next(MaxRecordsPerSection + 1);
             List<DnsDataResourceRecord> additionals = new List<DnsDataResourceRecord>();
             for (int i = 0; i != numAdditionals; ++i)
                 additionals.Add(random.NextDnsDataResourceRecord());
@@ -179,7 +182,8 @@ namespace PcapDotNet.Packets.TestUtils
                                                   random.NextDataSegment(random.Next(100)));
 
                 case DnsType.Key:
-                    return new DnsResourceDataKey(random.NextBool(), random.NextBool(), random.NextEnum<DnsKeyNameType>(), random.NextFlags<DnsKeySignatory>(),
+                    return new DnsResourceDataKey(random.NextBool(), random.NextBool(), random.NextBool(), random.NextBool(), random.NextBool(),
+                                                  random.NextBool(), random.NextEnum<DnsKeyNameType>(), random.NextFlags<DnsKeySignatory>(),
                                                   random.NextEnum<DnsKeyProtocol>(), random.NextEnum<DnsAlgorithm>(),
                                                   random.NextBool() ? (ushort?)random.NextUShort() : null, random.NextDataSegment(random.Next(100)));
 
@@ -275,7 +279,8 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataNextDomainSecure(random.NextDnsDomainName(), random.NextDnsTypeArray(random.Next(100)));
 
                 case DnsType.DnsKey:
-                    return new DnsResourceDataDnsKey(random.NextBool(), random.NextBool(), random.NextByte(), random.NextEnum<DnsAlgorithm>(), random.NextDataSegment(random.Next(100)));
+                    return new DnsResourceDataDnsKey(random.NextBool(), random.NextBool(), random.NextBool(), random.NextByte(), random.NextEnum<DnsAlgorithm>(),
+                                                     random.NextDataSegment(random.Next(100)));
 
                 case DnsType.NSec3:
                     return new DnsResourceDataNextDomainSecure3(random.NextEnum<DnsSecNSec3HashAlgorithm>(), random.NextFlags<DnsSecNSec3Flags>(),

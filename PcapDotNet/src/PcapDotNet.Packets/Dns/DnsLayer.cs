@@ -30,8 +30,12 @@ namespace PcapDotNet.Packets.Dns
 
         public bool IsRecusionAvailable { get; set;}
 
-        public byte FutureUse { get; set; }
+        public bool FutureUse { get; set; }
 
+        public bool IsAuthenticData { get; set; }
+
+        public bool IsCheckingDisabled { get; set; }
+        
         public DnsResponseCode ResponseCode { get; set; }
 
         public List<DnsQueryResourceRecord> Queries { get; set; }
@@ -77,8 +81,8 @@ namespace PcapDotNet.Packets.Dns
         protected override void Write(byte[] buffer, int offset)
         {
             DnsDatagram.Write(buffer, offset,
-                              Id, IsResponse, Opcode, IsAuthoritiveAnswer, IsTruncated, IsRecusionDesired, IsRecusionAvailable, FutureUse, ResponseCode,
-                              Queries, Answers, Authorities, Additionals, DomainNameCompressionMode);
+                              Id, IsResponse, Opcode, IsAuthoritiveAnswer, IsTruncated, IsRecusionDesired, IsRecusionAvailable, FutureUse, IsAuthenticData,
+                              IsCheckingDisabled, ResponseCode, Queries, Answers, Authorities, Additionals, DomainNameCompressionMode);
         }
 
         /// <summary>
@@ -99,15 +103,17 @@ namespace PcapDotNet.Packets.Dns
         public bool Equals(DnsLayer other)
         {
             return other != null &&
-                   Id == other.Id &&
-                   IsQuery == other.IsQuery &&
-                   Opcode == other.Opcode &&
-                   IsAuthoritiveAnswer == other.IsAuthoritiveAnswer &&
-                   IsTruncated == other.IsTruncated &&
-                   IsRecusionDesired == other.IsRecusionDesired &&
-                   IsRecusionAvailable == other.IsRecusionAvailable &&
-                   FutureUse == other.FutureUse &&
-                   ResponseCode == other.ResponseCode &&
+                   Id.Equals(other.Id) &&
+                   IsQuery.Equals(other.IsQuery) &&
+                   Opcode.Equals(other.Opcode) &&
+                   IsAuthoritiveAnswer.Equals(other.IsAuthoritiveAnswer) &&
+                   IsTruncated.Equals(other.IsTruncated) &&
+                   IsRecusionDesired.Equals(other.IsRecusionDesired) &&
+                   IsRecusionAvailable.Equals(other.IsRecusionAvailable) &&
+                   FutureUse.Equals(other.FutureUse) &&
+                   IsAuthenticData.Equals(other.IsAuthenticData) &&
+                   IsCheckingDisabled.Equals(other.IsCheckingDisabled) &&
+                   ResponseCode.Equals(other.ResponseCode) &&
                    (Queries.IsNullOrEmpty() && other.Queries.IsNullOrEmpty() || Queries.SequenceEqual(other.Queries)) &&
                    (Answers.IsNullOrEmpty() && other.Answers.IsNullOrEmpty() || Answers.SequenceEqual(other.Answers)) &&
                    (Authorities.IsNullOrEmpty() && other.Authorities.IsNullOrEmpty() || Authorities.SequenceEqual(other.Authorities)) &&

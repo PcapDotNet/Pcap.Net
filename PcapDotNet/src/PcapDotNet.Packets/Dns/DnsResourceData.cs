@@ -1256,7 +1256,7 @@ namespace PcapDotNet.Packets.Dns
     /// RFCs 2535, 2536, 2537, 2539, 3110, 3755, 4034, 5155, 5702, 5933.
     /// The key algorithm.
     /// </summary>
-    public enum DnsAlgorithm
+    public enum DnsAlgorithm : byte
     {
         /// <summary>
         /// RFC 4034.
@@ -1667,21 +1667,22 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// RFC 2065, 2535.
     /// <pre>
-    /// +-----+---+---+----------+----+----------+--------+----------+-------+
-    /// | bit | 0 | 1 | 2        | 3  | 4-5      | 6-7    | 8-11     | 12-15 |
-    /// +-----+---+---+----------+----+----------+--------+----------+-------+
-    /// | 0   | A | C | Reserved | XT | Reserved | NAMTYP | Reserved | SIG   |
-    /// +-----+---+---+----------+----+----------+--------+----------+-------+
-    /// | 16  | protocol                                  | algorithm        |
-    /// +-----+-------------------------------------------+------------------+
-    /// | 32  | Flags extension (optional)                                   |
-    /// +-----+--------------------------------------------------------------+
-    /// | 32  | public key                                                   |
-    /// | or  |                                                              |
-    /// | 48  |                                                              |
-    /// | ... |                                                              |
-    /// +-----+--------------------------------------------------------------+
+    /// +-----+---+---+--------------+----+----------+------+--------+-------+-------+----------+-------+
+    /// | bit | 0 | 1 | 2            | 3  | 4        | 5    | 6-7    | 8     | 9     | 10-11    | 12-15 |
+    /// +-----+---+---+--------------+----+----------+------+--------+-------+-------+----------+-------+
+    /// | 0   | A | C | experimental | XT | Reserved | user | NAMTYP | IPSEC | email | Reserved | SIG   |
+    /// +-----+---+---+--------------+----+----------+------+--------+-------+-------+----------+-------+
+    /// | 16  | protocol                                             | algorithm                        |
+    /// +-----+------------------------------------------------------+----------------------------------+
+    /// | 32  | Flags extension (optional)                                                              |
+    /// +-----+-----------------------------------------------------------------------------------------+
+    /// | 32  | public key                                                                              |
+    /// | or  |                                                                                         |
+    /// | 48  |                                                                                         |
+    /// | ... |                                                                                         |
+    /// +-----+-----------------------------------------------------------------------------------------+
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Key)]
@@ -1691,8 +1692,12 @@ namespace PcapDotNet.Packets.Dns
         {
             public const int AuthenticationProhibited = 0;
             public const int ConfidentialityProhibited = 0;
+            public const int Experimental = 0;
             public const int IsFlagsExtension = 0;
+            public const int UserAssociated = 0;
             public const int NameType = 0;
+            public const int IpSec = 1;
+            public const int Email = 1;
             public const int Signatory = 1;
             public const int Protocol = sizeof(ushort);
             public const int Algorithm = Protocol + sizeof(byte);
@@ -1703,18 +1708,27 @@ namespace PcapDotNet.Packets.Dns
         {
             public const byte AuthenticationProhibited = 0x80;
             public const byte ConfidentialityProhibited = 0x40;
+            public const byte Experimental = 0x20;
             public const byte IsFlagsExtension = 0x10;
+            public const byte UserAssociated = 0x04;
+            public const byte IpSec = 0x80;
+            public const byte Email = 0x40;
             public const byte NameType = 0x03;
             public const byte Signatory = 0x0F;
         }
 
         private const int ConstantPartLength = Offset.FlagsExtension;
 
-        public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, DnsKeyNameType nameType, DnsKeySignatory signatory,
-                                  DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension, DataSegment publicKey)
+        public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, bool experimental, bool userAssociated, bool ipSec, bool email,
+                                  DnsKeyNameType nameType, DnsKeySignatory signatory, DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension,
+                                  DataSegment publicKey)
         {
             AuthenticationProhibited = authenticationProhibited;
             ConfidentialityProhibited = confidentialityProhibited;
+            Experimental = experimental;
+            UserAssociated = userAssociated;
+            IpSec = ipSec;
+            Email = email;
             FlagsExtension = flagsExtension;
             NameType = nameType;
             Signatory = signatory;
@@ -1732,6 +1746,43 @@ namespace PcapDotNet.Packets.Dns
         /// Use of the key is prohibited for confidentiality.
         /// </summary>
         public bool ConfidentialityProhibited { get; private set; }
+
+        /// <summary>
+        /// Ignored if the type field indicates "no key" and the following description assumes that type field to be non-zero.
+        /// Keys may be associated with zones, entities, or users for experimental, trial, or optional use, in which case this bit will be one.
+        /// If this bit is a zero, it means that the use or availability of security based on the key is "mandatory". 
+        /// Thus, if this bit is off for a zone key, the zone should be assumed secured by SIG RRs and any responses indicating the zone is not secured should be considered bogus.
+        /// If this bit is a one for a host or end entity, it might sometimes operate in a secure mode and at other times operate without security.
+        /// The experimental bit, like all other aspects of the KEY RR, is only effective if the KEY RR is appropriately signed by a SIG RR.
+        /// The experimental bit must be zero for safe secure operation and should only be a one for a minimal transition period.
+        /// </summary>
+        public bool Experimental { get; private set; }
+
+        /// <summary>
+        /// Indicates that this is a key associated with a "user" or "account" at an end entity, usually a host.
+        /// The coding of the owner name is that used for the responsible individual mailbox in the SOA and RP RRs:
+        /// The owner name is the user name as the name of a node under the entity name.
+        /// For example, "j.random_user" on host.subdomain.domain could have a public key associated through a KEY RR
+        /// with name j\.random_user.host.subdomain.domain and the user bit a one.
+        /// It could be used in an security protocol where authentication of a user was desired.
+        /// This key might be useful in IP or other security for a user level service such a telnet, ftp, rlogin, etc.
+        /// </summary>
+        public bool UserAssociated { get; private set; }
+
+        /// <summary>
+        /// Indicates that this key is valid for use in conjunction with that security standard.
+        /// This key could be used in connection with secured communication on behalf of an end entity or user whose name is the owner name of the KEY RR
+        /// if the entity or user bits are on.
+        /// The presence of a KEY resource with the IPSEC and entity bits on and experimental and no-key bits off is an assertion that the host speaks IPSEC.
+        /// </summary>
+        public bool IpSec { get; private set; }
+
+        /// <summary>
+        /// Indicates that this key is valid for use in conjunction with MIME security multiparts.
+        /// This key could be used in connection with secured communication on behalf of an end entity or user
+        /// whose name is the owner name of the KEY RR if the entity or user bits are on.
+        /// </summary>
+        public bool Email { get; private set; }
 
         /// <summary>
         /// The name type.
@@ -1771,6 +1822,10 @@ namespace PcapDotNet.Packets.Dns
             return other != null &&
                    AuthenticationProhibited.Equals(other.AuthenticationProhibited) &&
                    ConfidentialityProhibited.Equals(other.ConfidentialityProhibited) &&
+                   Experimental.Equals(other.Experimental) &&
+                   UserAssociated.Equals(other.UserAssociated) &&
+                   IpSec.Equals(other.IpSec) &&
+                   Email.Equals(other.Email) &&
                    NameType.Equals(other.NameType) &&
                    Signatory.Equals(other.Signatory) &&
                    Protocol.Equals(other.Protocol) &&
@@ -1787,7 +1842,8 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataKey()
-            : this(false, false, DnsKeyNameType.ZoneKey, DnsKeySignatory.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null, DataSegment.Empty)
+            : this(false, false, false, false, false, false, DnsKeyNameType.ZoneKey, DnsKeySignatory.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null,
+                   DataSegment.Empty)
         {
         }
 
@@ -1803,12 +1859,20 @@ namespace PcapDotNet.Packets.Dns
                 flagsByte0 |= Mask.AuthenticationProhibited;
             if (ConfidentialityProhibited)
                 flagsByte0 |= Mask.ConfidentialityProhibited;
+            if (Experimental)
+                flagsByte0 |= Mask.Experimental;
+            if (UserAssociated)
+                flagsByte0 |= Mask.UserAssociated;
             if (FlagsExtension.HasValue)
                 flagsByte0 |= Mask.IsFlagsExtension;
             flagsByte0 |= (byte)((byte)NameType & Mask.NameType);
             buffer.Write(offset + Offset.AuthenticationProhibited, flagsByte0);
 
             byte flagsByte1 = 0;
+            if (IpSec)
+                flagsByte1 |= Mask.IpSec;
+            if (Email)
+                flagsByte1 |= Mask.Email;
             flagsByte1 |= (byte)((byte)Signatory & Mask.Signatory);
             buffer.Write(offset + Offset.Signatory, flagsByte1);
 
@@ -1828,7 +1892,11 @@ namespace PcapDotNet.Packets.Dns
 
             bool authenticationProhibited = data.ReadBool(Offset.AuthenticationProhibited, Mask.AuthenticationProhibited);
             bool confidentialityProhibited = data.ReadBool(Offset.ConfidentialityProhibited, Mask.ConfidentialityProhibited);
+            bool experimental = data.ReadBool(Offset.Experimental, Mask.Experimental);
             bool isFlagsExtension = data.ReadBool(Offset.IsFlagsExtension, Mask.IsFlagsExtension);
+            bool userAssociated = data.ReadBool(Offset.UserAssociated, Mask.UserAssociated);
+            bool ipSec = data.ReadBool(Offset.IpSec, Mask.IpSec);
+            bool email = data.ReadBool(Offset.Email, Mask.Email);
             DnsKeyNameType nameType = (DnsKeyNameType)(data[Offset.NameType] & Mask.NameType);
             DnsKeySignatory signatory = (DnsKeySignatory)(data[Offset.Signatory] & Mask.Signatory);
             DnsKeyProtocol protocol = (DnsKeyProtocol)data[Offset.Protocol];
@@ -1837,8 +1905,8 @@ namespace PcapDotNet.Packets.Dns
             int publicKeyOffset = Offset.FlagsExtension + (isFlagsExtension ? sizeof(ushort) : 0);
             DataSegment publicKey = data.SubSegment(publicKeyOffset, data.Length - publicKeyOffset);
 
-            return new DnsResourceDataKey(authenticationProhibited, confidentialityProhibited, nameType, signatory, protocol, algorithm, flagsExtension,
-                                          publicKey);
+            return new DnsResourceDataKey(authenticationProhibited, confidentialityProhibited, experimental, userAssociated, ipSec, email, nameType, signatory,
+                                          protocol, algorithm, flagsExtension, publicKey);
         }
     }
 
@@ -1863,7 +1931,7 @@ namespace PcapDotNet.Packets.Dns
         private static class Offset
         {
             public const int Preference = 0;
-            public const int Map822 = Preference + IpV4Address.SizeOf;
+            public const int Map822 = Preference + sizeof(ushort);
         }
 
         private const int ConstantPartLength = Offset.Map822;
@@ -2029,32 +2097,35 @@ namespace PcapDotNet.Packets.Dns
             byte[] latitudeBytes = Encoding.ASCII.GetBytes(Latitude);
             byte[] altitudeBytes = Encoding.ASCII.GetBytes(Altitude);
 
+            buffer.Write(ref offset, (byte)longtitudeBytes.Length);
             buffer.Write(ref offset, longtitudeBytes);
-            ++offset;
+            buffer.Write(ref offset, (byte)latitudeBytes.Length);
             buffer.Write(ref offset, latitudeBytes);
-            ++offset;
+            buffer.Write(ref offset, (byte)altitudeBytes.Length);
             buffer.Write(ref offset, altitudeBytes);
-            ++offset;
         }
 
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
-            int longtitudeNumBytes = data.TakeWhile(value => value != 0).Count();
-            if (longtitudeNumBytes == data.Length)
+            if (data.Length < 3)
                 return null;
-            string longtitude = data.SubSegment(0, longtitudeNumBytes).ToString(Encoding.ASCII);
+
+            int longtitudeNumBytes = data[0];
+            if (data.Length < longtitudeNumBytes + 3)
+                return null;
+            string longtitude = data.SubSegment(1, longtitudeNumBytes).ToString(Encoding.ASCII);
             data = data.SubSegment(longtitudeNumBytes + 1, data.Length - longtitudeNumBytes - 1);
 
-            int latitudeNumBytes = data.TakeWhile(value => value != 0).Count();
-            if (latitudeNumBytes == data.Length)
+            int latitudeNumBytes = data[0];
+            if (data.Length < latitudeNumBytes + 2)
                 return null;
-            string latitude = data.SubSegment(0, latitudeNumBytes).ToString(Encoding.ASCII);
+            string latitude = data.SubSegment(1, latitudeNumBytes).ToString(Encoding.ASCII);
             data = data.SubSegment(latitudeNumBytes + 1, data.Length - latitudeNumBytes - 1);
 
-            int altitudeNumBytes = data.TakeWhile(value => value != 0).Count();
-            if (altitudeNumBytes == data.Length)
+            int altitudeNumBytes = data[0];
+            if (data.Length != altitudeNumBytes + 1)
                 return null;
-            string altitude = data.SubSegment(0, altitudeNumBytes).ToString(Encoding.ASCII);
+            string altitude = data.SubSegment(1, altitudeNumBytes).ToString(Encoding.ASCII);
 
             return new DnsResourceDataGeographicalPosition(longtitude, latitude, altitude);
         }
@@ -2368,6 +2439,25 @@ namespace PcapDotNet.Packets.Dns
         /// If the zero bit of the type bit map is a one, it indicates that a different format is being used which will always be the case if a type number greater than 127 is present.
         /// </summary>
         public DataSegment TypeBitMap { get; private set; }
+
+        public IEnumerable<DnsType> TypesExist
+        {
+            get
+            {
+                ushort typeValue = 0;
+                for (int byteOffset = 0; byteOffset != TypeBitMap.Length; ++byteOffset)
+                {
+                    byte mask = 0x80;
+                    for (int i = 0; i != 8; ++i)
+                    {
+                        if (TypeBitMap.ReadBool(byteOffset, mask))
+                            yield return (DnsType)typeValue;
+                        ++typeValue;
+                        mask >>= 1;
+                    }
+                }
+            }
+        }
 
         public bool IsTypePresentForOwner(DnsType dnsType)
         {
@@ -2886,6 +2976,7 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
+    /// RFC 2230.
     /// <pre>
     /// +-----+-------------------+
     /// | bit | 0-15              |
@@ -4529,7 +4620,23 @@ namespace PcapDotNet.Packets.Dns
             KeyTag = keyTag;
             Algorithm = algorithm;
             DigestType = digestType;
-            Digest = digest;
+            int maxDigestLength;
+            switch (DigestType)
+            {
+                case DnsDigestType.Sha1:
+                    maxDigestLength = 20;
+                    break;
+
+                case DnsDigestType.Sha256:
+                    maxDigestLength = 32;
+                    break;
+
+                default:
+                    maxDigestLength = int.MaxValue;
+                    break;
+            }
+            Digest = digest.SubSegment(0, Math.Min(digest.Length, maxDigestLength));
+            ExtraDigest = digest.SubSegment(Digest.Length, digest.Length - Digest.Length);
         }
 
         /// <summary>
@@ -4553,9 +4660,14 @@ namespace PcapDotNet.Packets.Dns
         /// Calculated over the canonical name of the delegated domain name followed by the whole RDATA of the KEY record (all four fields).
         /// digest = hash(canonical FQDN on KEY RR | KEY_RR_rdata)
         /// KEY_RR_rdata = Flags | Protocol | Algorithm | Public Key
+        /// The size of the digest may vary depending on the digest type.
         /// </summary>
         public DataSegment Digest { get; private set; }
 
+        /// <summary>
+        /// The extra digest bytes after number of bytes according to the digest type.
+        /// </summary>
+        public DataSegment ExtraDigest { get; private set; }
 
         public bool Equals(DnsResourceDataDelegationSigner other)
         {
@@ -4615,7 +4727,7 @@ namespace PcapDotNet.Packets.Dns
     /// RFC 4255.
     /// Describes the algorithm of the public key.
     /// </summary>
-    public enum DnsFingerprintPublicKeyAlgorithm
+    public enum DnsFingerprintPublicKeyAlgorithm : byte
     {
         Rsa = 1,
         Dss = 2,
@@ -5298,18 +5410,18 @@ namespace PcapDotNet.Packets.Dns
     }
 
     /// <summary>
-    /// RFC 4034.
+    /// RFC 4034, 5011.
     /// <pre>
-    /// +-----+----------+----------+----------+--------------------+
-    /// | bit | 0-6      | 7        | 8-14     | 15                 |
-    /// +-----+----------+----------+----------+--------------------+
-    /// | 0   | Reserved | Zone Key | Reserved | Secure Entry Point |
-    /// +-----+----------+----------+----------+--------------------+
-    /// | 16  | Protocol            | Algorithm                     |
-    /// +-----+---------------------+-------------------------------+
-    /// | 32  | Public Key                                          |
-    /// | ... |                                                     |
-    /// +-----+---------------------+-------------------------------+
+    /// +-----+----------+----------+--------+----------+--------------------+
+    /// | bit | 0-6      | 7        | 8      | 9-14     | 15                 |
+    /// +-----+----------+----------+--------+----------+--------------------+
+    /// | 0   | Reserved | Zone Key | Revoke | Reserved | Secure Entry Point |
+    /// +-----+----------+----------+--------+----------+--------------------+
+    /// | 16  | Protocol            | Algorithm                              |
+    /// +-----+---------------------+----------------------------------------+
+    /// | 32  | Public Key                                                   |
+    /// | ... |                                                              |
+    /// +-----+--------------------------------------------------------------+
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.DnsKey)]
@@ -5320,6 +5432,7 @@ namespace PcapDotNet.Packets.Dns
         private static class Offset
         {
             public const int ZoneKey = 0;
+            public const int Revoke = 1;
             public const int SecureEntryPoint = 1;
             public const int Protocol = sizeof(ushort);
             public const int Algorithm = Protocol + sizeof(byte);
@@ -5329,14 +5442,16 @@ namespace PcapDotNet.Packets.Dns
         private static class Mask
         {
             public const byte ZoneKey = 0x01;
+            public const byte Revoke = 0x80;
             public const byte SecureEntryPoint = 0x01;
         }
 
         private const int ConstantPartLength = Offset.PublicKey;
 
-        public DnsResourceDataDnsKey(bool zoneKey, bool secureEntryPoint, byte protocol,  DnsAlgorithm algorithm, DataSegment publicKey)
+        public DnsResourceDataDnsKey(bool zoneKey, bool revoke, bool secureEntryPoint, byte protocol,  DnsAlgorithm algorithm, DataSegment publicKey)
         {
             ZoneKey = zoneKey;
+            Revoke = revoke;
             SecureEntryPoint = secureEntryPoint;
             Protocol = protocol;
             Algorithm = algorithm;
@@ -5348,6 +5463,12 @@ namespace PcapDotNet.Packets.Dns
         /// If false, then the DNSKEY record holds some other type of DNS public key and must not be used to verify RRSIGs that cover RRsets.
         /// </summary>
         public bool ZoneKey { get; private set; }
+
+        /// <summary>
+        /// If true, and the resolver sees an RRSIG(DNSKEY) signed by the associated key,
+        /// then the resolver must consider this key permanently invalid for all purposes except for validating the revocation.
+        /// </summary>
+        public bool Revoke { get; private set; }
 
         /// <summary>
         /// RFC 3757.
@@ -5379,6 +5500,7 @@ namespace PcapDotNet.Packets.Dns
         {
             return other != null &&
                    ZoneKey.Equals(other.ZoneKey) &&
+                   Revoke.Equals(other.Revoke) &&
                    SecureEntryPoint.Equals(other.SecureEntryPoint) &&
                    Protocol.Equals(other.Protocol) &&
                    Algorithm.Equals(other.Algorithm) &&
@@ -5391,7 +5513,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataDnsKey()
-            : this(false, false, ProtocolValue, DnsAlgorithm.None, DataSegment.Empty)
+            : this(false, false, false, ProtocolValue, DnsAlgorithm.None, DataSegment.Empty)
         {
         }
 
@@ -5408,6 +5530,8 @@ namespace PcapDotNet.Packets.Dns
             buffer.Write(offset + Offset.ZoneKey, flagsByte0);
 
             byte flagsByte1 = 0;
+            if (Revoke)
+                flagsByte1 |= Mask.Revoke;
             if (SecureEntryPoint)
                 flagsByte1 |= Mask.SecureEntryPoint;
             buffer.Write(offset + Offset.SecureEntryPoint, flagsByte1);
@@ -5423,12 +5547,13 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             bool zoneKey = data.ReadBool(Offset.ZoneKey, Mask.ZoneKey);
+            bool revoke = data.ReadBool(Offset.Revoke, Mask.Revoke);
             bool secureEntryPoint = data.ReadBool(Offset.SecureEntryPoint, Mask.SecureEntryPoint);
             byte protocol = data[Offset.Protocol];
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
             DataSegment publicKey = data.SubSegment(Offset.PublicKey, data.Length - ConstantPartLength);
 
-            return new DnsResourceDataDnsKey(zoneKey, secureEntryPoint, protocol, algorithm, publicKey);
+            return new DnsResourceDataDnsKey(zoneKey, revoke, secureEntryPoint, protocol, algorithm, publicKey);
         }
     }
 

@@ -178,7 +178,7 @@
         Sig = 24, 
 
         /// <summary>
-        /// RFCs 2535, 3755, 4034.
+        /// RFCs 2065, 2535, 3755, 4034.
         /// For security key.
         /// Payload type: DnsResourceDataKey.
         /// </summary>
@@ -340,7 +340,7 @@
         NSec = 47,
 
         /// <summary>
-        /// RFCs 3755, 4034.
+        /// RFCs 3755, 4034, 5011.
         /// DNSKEY.
         /// Represents the public key.
         /// Payload type: DnsResourceDataDnsKey.
@@ -483,7 +483,7 @@
         /// A request for all records
         /// Query Type.
         /// </summary>
-        All = 255,
+        Any = 255,
 
         /// <summary>
         /// Faltstrom.
