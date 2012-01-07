@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Http;
@@ -30,7 +31,7 @@ namespace PcapDotNet.Core.Test
         private const bool IsRetry
 //                        = true;
             = false;
-        private const byte RetryNumber = 190;
+        private const byte RetryNumber = 27;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -135,21 +136,33 @@ namespace PcapDotNet.Core.Test
             Gre,
             Udp,
             Tcp,
+            Dns,
             Http,
         }
 
         private static Packet CreateRandomPacket(Random random)
         {
+            PacketType packetType = random.NextEnum<PacketType>();
             // BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
+            Packet packet;
+            do
+            {
+                packet = CreateRandomPacket(random, packetType);
+            } while (packet.Length > 65536);
+            return packet;
+        }
+
+        private static Packet CreateRandomPacket(Random random, PacketType packetType)
+        {
             DateTime packetTimestamp =
                 random.NextDateTime(new DateTime(2010,1,1), new DateTime(2010,12,31)).ToUniversalTime().ToLocalTime();
-                //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+            //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
             
             EthernetLayer ethernetLayer = random.NextEthernetLayer();
             IpV4Layer ipV4Layer = random.NextIpV4Layer();
             PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
-            switch (random.NextEnum<PacketType>())
+            switch (packetType)
 //            switch (PacketType.Icmp)
             {
                 case PacketType.Ethernet:
@@ -201,6 +214,21 @@ namespace PcapDotNet.Core.Test
                         ipV4Layer.Fragmentation = IpV4Fragmentation.None;
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextTcpLayer(), payloadLayer);
 
+                case PacketType.Dns:
+                    ethernetLayer.EtherType = EthernetType.None;
+                    ipV4Layer.Protocol = null;
+                    if (random.NextBool())
+                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
+                    UdpLayer udpLayer = random.NextUdpLayer();
+
+                    DnsLayer dnsLayer = random.NextDnsLayer();
+                    if (dnsLayer.IsQuery)
+                        udpLayer.DestinationPort = 53;
+                    else
+                        udpLayer.SourcePort = 53;
+
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, udpLayer, dnsLayer);
+
                 case PacketType.Http:
                     ethernetLayer.EtherType = EthernetType.None;
                     ipV4Layer.Protocol = null;
@@ -223,7 +251,10 @@ namespace PcapDotNet.Core.Test
         private static IEnumerable<Packet> CreateRandomPackets(Random random, int numPackets)
         {
             for (int i = 0; i != numPackets; ++i)
-                yield return CreateRandomPacket(random);
+            {
+                Packet packet = CreateRandomPacket(random);
+                yield return packet;
+            }
         }
 
         private static void ComparePacketsToWireshark(params Packet[] packets)

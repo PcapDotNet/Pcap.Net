@@ -24,7 +24,7 @@ namespace PcapDotNet.Core.Test
         {
             XAttribute attribute = element.Attribute(attributeName);
             if (attribute == null)
-                throw new ArgumentException("element " + element.Name + " doesn't contain attribute " + attributeName, "attributeName");
+                return string.Empty;
 
             return attribute.Value;
         }
@@ -167,6 +167,16 @@ namespace PcapDotNet.Core.Test
         public static void AssertValue(this XElement element, uint expectedValue)
         {
             element.AssertValue(expectedValue.ToString("x8"));
+        }
+
+        public static void AssertValue(this XElement element, UInt48 expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x12"));
+        }
+
+        public static void AssertValue(this XElement element, SerialNumber32 expectedValue)
+        {
+            element.AssertValue(expectedValue.Value);
         }
     }
 }

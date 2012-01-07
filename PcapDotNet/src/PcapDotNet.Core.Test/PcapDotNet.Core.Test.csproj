@@ -77,6 +77,7 @@
     <Compile Include="MoreTcpOption.cs" />
     <Compile Include="WiresharkDatagramComparer.cs" />
     <Compile Include="WiresharkDatagramComparerArp.cs" />
+    <Compile Include="WiresharkDatagramComparerDns.cs" />
     <Compile Include="WiresharkDatagramComparerEthernet.cs" />
     <Compile Include="WiresharkDatagramComparerGre.cs" />
     <Compile Include="WiresharkDatagramComparerHttp.cs" />

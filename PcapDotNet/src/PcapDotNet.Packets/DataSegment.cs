@@ -57,6 +57,11 @@ namespace PcapDotNet.Packets
 
         public byte Last { get { return this[Length - 1]; } }
 
+        public DataSegment SubSegment(int offset, int length)
+        {
+            return SubSegment(ref offset, length);
+        }
+
         /// <summary>
         /// Returns the Segment's bytes as a read only MemoryStream with a non-public buffer.
         /// </summary>
@@ -175,11 +180,6 @@ namespace PcapDotNet.Packets
             DataSegment subSegemnt = new DataSegment(Buffer, StartOffset + offset, length);
             offset += length;
             return subSegemnt;
-        }
-
-        internal DataSegment SubSegment(int offset, int length)
-        {
-            return SubSegment(ref offset, length);
         }
 
         internal bool ReadBool(int offset, byte mask)

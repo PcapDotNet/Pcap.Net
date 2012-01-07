@@ -89,7 +89,7 @@ namespace PcapDotNet.Packets.Dns
         internal static bool TryParseBase(DnsDatagram dns, int offsetInDns,
                                           out DnsDomainName domainName, out DnsType type, out DnsClass dnsClass, out int numBytesRead)
         {
-            type = DnsType.All;
+            type = DnsType.Any;
             dnsClass = DnsClass.Any;
             if (!DnsDomainName.TryParse(dns, offsetInDns, dns.Length - offsetInDns, out domainName, out numBytesRead))
                 return false;

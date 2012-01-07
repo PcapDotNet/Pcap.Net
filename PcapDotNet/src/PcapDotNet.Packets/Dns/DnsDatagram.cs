@@ -6,33 +6,33 @@ using System.Linq;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
-    /// RFC 1035.
+    /// RFC 1035, 4035.
     /// All communications inside of the domain protocol are carried in a single format called a message. 
     /// The top level format of message is divided into 5 sections (some of which are empty in certain cases) shown below:
     /// <pre>
-    /// +-----+----+--------+----+----+----+----+------+--------+
-    /// | bit | 0  | 1-4    | 5  | 6  | 7  | 8  | 9-10 | 11-15  |
-    /// +-----+----+--------+----+----+----+----+------+--------+
-    /// | 0   | ID                                              |
-    /// +-----+----+--------+----+----+----+----+------+--------+
-    /// | 16  | QR | Opcode | AA | TC | RD | RA | Z    | RCODE  |
-    /// +-----+----+--------+----+----+----+----+------+--------+
-    /// | 32  | QDCOUNT                                         |
-    /// +-----+-------------------------------------------------+
-    /// | 48  | ANCOUNT                                         |
-    /// +-----+-------------------------------------------------+
-    /// | 64  | NSCOUNT                                         |
-    /// +-----+-------------------------------------------------+
-    /// | 80  | ARCOUNT                                         |
-    /// +-----+-------------------------------------------------+
-    /// | 96  | Question - the question for the name server     |
-    /// +-----+-------------------------------------------------+
-    /// |     | Answer - RRs answering the question             |
-    /// +-----+-------------------------------------------------+
-    /// |     | Authority - RRs pointing toward an authority    |
-    /// +-----+-------------------------------------------------+
-    /// |     | Additional - RRs holding additional information |
-    /// +-----+-------------------------------------------------+
+    /// +-----+----+--------+----+----+----+----+---+----+----+-------+
+    /// | bit | 0  | 1-4    | 5  | 6  | 7  | 8  | 9 | 10 | 11 | 12-15 |
+    /// +-----+----+--------+----+----+----+----+---+----+----+-------+
+    /// | 0   | ID                                                    |
+    /// +-----+----+--------+----+----+----+----+---+----+----+-------+
+    /// | 16  | QR | Opcode | AA | TC | RD | RA | Z | AD | CD | RCODE |
+    /// +-----+----+--------+----+----+----+----+---+----+----+-------+
+    /// | 32  | QDCOUNT                                               |
+    /// +-----+-------------------------------------------------------+
+    /// | 48  | ANCOUNT                                               |
+    /// +-----+-------------------------------------------------------+
+    /// | 64  | NSCOUNT                                               |
+    /// +-----+-------------------------------------------------------+
+    /// | 80  | ARCOUNT                                               |
+    /// +-----+-------------------------------------------------------+
+    /// | 96  | Question - the question for the name server           |
+    /// +-----+-------------------------------------------------------+
+    /// |     | Answer - RRs answering the question                   |
+    /// +-----+-------------------------------------------------------+
+    /// |     | Authority - RRs pointing toward an authority          |
+    /// +-----+-------------------------------------------------------+
+    /// |     | Additional - RRs holding additional information       |
+    /// +-----+-------------------------------------------------------+
     /// </pre>
     /// The header section is always present.  
     /// The header includes fields that specify which of the remaining sections are present, 
@@ -56,6 +56,8 @@ namespace PcapDotNet.Packets.Dns
             public const int IsRecusionDesired = 2;
             public const int IsRecusionAvailable = 3;
             public const int FutureUse = 3;
+            public const int IsAuthenticData = 3;
+            public const int IsCheckingDisabled = 3;
             public const int ResponseCode = 3;
             public const int QueryCount = 4;
             public const int AnswerCount = 6;
@@ -72,22 +74,21 @@ namespace PcapDotNet.Packets.Dns
             public const byte IsTruncated = 0x02;
             public const byte IsRecusionDesired = 0x01;
             public const byte IsRecusionAvailable = 0x80;
-            public const byte FutureUse = 0x60;
-            public const ushort ResponseCode = 0x1F;
+            public const byte FutureUse = 0x40;
+            public const byte IsAuthenticData = 0x20;
+            public const byte IsCheckingDisabled = 0x10;
+            public const ushort ResponseCode = 0x000F;
         }
 
         private static class Shift
         {
             public const int Opcode = 3;
-            public const int FutureUse = 5;
         }
 
         /// <summary>
         /// The number of bytes the DNS header takes.
         /// </summary>
         public const int HeaderLength = 12;
-
-        public const byte MaxFutureUse = 3;
 
         /// <summary>
         /// A 16 bit identifier assigned by the program that generates any kind of query.  
@@ -161,11 +162,60 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// Reserved for future use.  
-        /// Must be zero in all queries and responses.
+        /// Must be false in all queries and responses.
         /// </summary>
-        public byte FutureUse
+        public bool FutureUse
         {
-            get { return (byte)((this[Offset.FutureUse] & Mask.FutureUse) >> Shift.FutureUse); }
+            get { return ReadBool(Offset.FutureUse, Mask.FutureUse); }
+        }
+
+        /// <summary>
+        /// The name server side of a security-aware recursive name server must not set the AD bit in a response
+        /// unless the name server considers all RRsets in the Answer and Authority sections of the response to be authentic.
+        /// The name server side should set the AD bit if and only if the resolver side considers all RRsets in the Answer section
+        /// and any relevant negative response RRs in the Authority section to be authentic.
+        /// The resolver side must follow the Authenticating DNS Responses procedure to determine whether the RRs in question are authentic.
+        /// However, for backward compatibility, a recursive name server may set the AD bit when a response includes unsigned CNAME RRs
+        /// if those CNAME RRs demonstrably could have been synthesized from an authentic DNAME RR that is also included in the response
+        /// according to the synthesis rules described in RFC 2672.
+        /// </summary>
+        public bool IsAuthenticData
+        {
+            get { return ReadBool(Offset.IsAuthenticData, Mask.IsAuthenticData); }
+        }
+
+        /// <summary>
+        /// Exists in order to allow a security-aware resolver to disable signature validation
+        /// in a security-aware name server's processing of a particular query.
+        /// 
+        /// The name server side must copy the setting of the CD bit from a query to the corresponding response.
+        /// 
+        /// The name server side of a security-aware recursive name server must pass the state of the CD bit to the resolver side
+        /// along with the rest of an initiating query,
+        /// so that the resolver side will know whether it is required to verify the response data it returns to the name server side.
+        /// If the CD bit is set, it indicates that the originating resolver is willing to perform whatever authentication its local policy requires.
+        /// Thus, the resolver side of the recursive name server need not perform authentication on the RRsets in the response.
+        /// When the CD bit is set, the recursive name server should, if possible, return the requested data to the originating resolver, 
+        /// even if the recursive name server's local authentication policy would reject the records in question.
+        /// That is, by setting the CD bit, the originating resolver has indicated that it takes responsibility for performing its own authentication,
+        /// and the recursive name server should not interfere.
+        /// 
+        /// If the resolver side implements a BAD cache and the name server side receives a query that matches an entry in the resolver side's BAD cache,
+        /// the name server side's response depends on the state of the CD bit in the original query.
+        /// If the CD bit is set, the name server side should return the data from the BAD cache;
+        /// if the CD bit is not set, the name server side must return RCODE 2 (server failure).
+        /// 
+        /// The intent of the above rule is to provide the raw data to clients that are capable of performing their own signature verification checks
+        /// while protecting clients that depend on the resolver side of a security-aware recursive name server to perform such checks.
+        /// Several of the possible reasons why signature validation might fail involve conditions
+        /// that may not apply equally to the recursive name server and the client that invoked it.
+        /// For example, the recursive name server's clock may be set incorrectly, or the client may have knowledge of a relevant island of security
+        /// that the recursive name server does not share.
+        /// In such cases, "protecting" a client that is capable of performing its own signature validation from ever seeing the "bad" data does not help the client.
+        /// </summary>
+        public bool IsCheckingDisabled
+        {
+            get { return ReadBool(Offset.IsCheckingDisabled, Mask.IsCheckingDisabled); }
         }
 
         public DnsResponseCode ResponseCode
@@ -256,21 +306,23 @@ namespace PcapDotNet.Packets.Dns
         public override ILayer ExtractLayer()
         {
             return new DnsLayer
-            {
-                Id = Id,
-                IsQuery = IsQuery,
-                Opcode = Opcode,
-                IsAuthoritiveAnswer = IsAuthoritiveAnswer,
-                IsTruncated = IsTruncated,
-                IsRecusionDesired = IsRecusionDesired,
-                IsRecusionAvailable = IsRecusionAvailable,
-                FutureUse = FutureUse,
-                ResponseCode = ResponseCode,
-                Queries = Queries.ToList(),
-                Answers = Answers.ToList(),
-                Authorities = Authorities.ToList(),
-                Additionals = Additionals.ToList(),
-            };
+                   {
+                       Id = Id,
+                       IsQuery = IsQuery,
+                       Opcode = Opcode,
+                       IsAuthoritiveAnswer = IsAuthoritiveAnswer,
+                       IsTruncated = IsTruncated,
+                       IsRecusionDesired = IsRecusionDesired,
+                       IsRecusionAvailable = IsRecusionAvailable,
+                       FutureUse = FutureUse,
+                       IsAuthenticData = IsAuthenticData,
+                       IsCheckingDisabled = IsCheckingDisabled,
+                       ResponseCode = ResponseCode,
+                       Queries = Queries.ToList(),
+                       Answers = Answers.ToList(),
+                       Authorities = Authorities.ToList(),
+                       Additionals = Additionals.ToList(),
+                   };
         }
 
         protected override bool CalculateIsValid()
@@ -306,8 +358,8 @@ namespace PcapDotNet.Packets.Dns
 
         internal static void Write(byte[] buffer, int offset,
                                    ushort id, bool isResponse, DnsOpcode opcode, bool isAuthoritiveAnswer, bool isTruncated,
-                                   bool isRecursionDesired, bool isRecursionAvailable, byte futureUse, DnsResponseCode responseCode,
-                                   List<DnsQueryResourceRecord> queries, List<DnsDataResourceRecord> answers, 
+                                   bool isRecursionDesired, bool isRecursionAvailable, bool futureUse, bool isAuthenticData, bool isCheckingDisabled,
+                                   DnsResponseCode responseCode, List<DnsQueryResourceRecord> queries, List<DnsDataResourceRecord> answers,
                                    List<DnsDataResourceRecord> authorities, List<DnsDataResourceRecord> additionals,
                                    DnsDomainNameCompressionMode domainNameCompressionMode)
         {
@@ -326,7 +378,12 @@ namespace PcapDotNet.Packets.Dns
             byte flags1 = 0;
             if (isRecursionAvailable)
                 flags1 |= Mask.IsRecusionAvailable;
-            flags1 |= (byte)((futureUse << Shift.FutureUse) & Mask.FutureUse);
+            if (futureUse)
+                flags1 |= Mask.FutureUse;
+            if (isAuthenticData)
+                flags1 |= Mask.IsAuthenticData;
+            if (isCheckingDisabled)
+                flags1 |= Mask.IsCheckingDisabled;
             flags1 |= (byte)((ushort)responseCode & Mask.ResponseCode);
             buffer.Write(offset + Offset.IsRecusionAvailable, flags1);
             DnsDomainNameCompressionData compressionData = new DnsDomainNameCompressionData(domainNameCompressionMode);

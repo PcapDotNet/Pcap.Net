@@ -67,6 +67,9 @@ namespace PcapDotNet.Core.Test
                 case "tcp":
                     return new WiresharkDatagramComparerTcp();
 
+                case "dns":
+                    return new WiresharkDatagramComparerDns();
+
                 case "http":
                     return new WiresharkDatagramComparerHttp();
 

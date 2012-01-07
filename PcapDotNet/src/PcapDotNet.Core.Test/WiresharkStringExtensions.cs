@@ -5,39 +5,41 @@ namespace PcapDotNet.Core.Test
 {
     public static class WiresharkStringExtensions
     {
-        public static string ToWiresharkLiteral(this string value)
+        public static string ToWiresharkLiteral(this string value, bool putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters = true)
         {
             StringBuilder result = new StringBuilder();
             for (int i = 0; i != value.Length; ++i)
             {
                 char currentChar = value[i];
-                switch (currentChar)
+                if (currentChar == '\0')
+                    return result.ToString();
+                if (putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters)
                 {
-                    case '\\':
-                    case '"':
-                        result.Append('\\');
-                        result.Append(currentChar);
-                        break;
+                    switch (currentChar)
+                    {
+                        case '\\':
+                        case '"':
+                            result.Append('\\');
+                            result.Append(currentChar);
+                            continue;
 
-                    case '\r':
-                        result.Append(@"\r");
-                        break;
+                        case '\r':
+                            result.Append(@"\r");
+                            continue;
 
-                    case '\n':
-                        result.Append(@"\n");
-                        break;
-
-                    default:
-                        if (currentChar >= 0x7F || currentChar < 0x20)
-                        {
-                            result.Append(@"\x");
-                            result.Append(((int)currentChar).ToString("x2"));
-                            break;
-                        }
-
-                        result.Append(currentChar);
-                        break;
+                        case '\n':
+                            result.Append(@"\n");
+                            continue;
+                    }
                 }
+ 
+                if (currentChar >= 0x7F || currentChar < 0x20)
+                {
+                    result.Append(@"\x");
+                    result.Append(((int)currentChar).ToString("x" + (putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters ? "2" : "")));
+                }
+                else
+                    result.Append(currentChar);
             }
 
             return result.ToString();
