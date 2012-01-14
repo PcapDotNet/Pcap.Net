@@ -39,6 +39,5 @@
         /// Query class.
         /// </summary>
         Any = 255,
-
     }
 }
