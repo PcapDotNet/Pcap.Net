@@ -170,52 +170,34 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void SimpleDnsTest()
+        public void DnsResourceDataNextDomainTest()
         {
-            DnsLayer dnsLayer = new DnsLayer
-                                {
-                                    //Queries = new[] {new DnsQueryResourceRecord(new DnsDomainName("abc.def."), DnsType.A, DnsClass.In)}.ToList(),
-                                    Answers =
-                                        new[]
-                                        {
-                                    //        new DnsDataResourceRecord(new DnsDomainName("abc.def."), DnsType.A, DnsClass.In, 100,
-                                      //                                new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("abcd")))),
-                                        //    new DnsDataResourceRecord(new DnsDomainName("abc.def."), DnsType.A, DnsClass.In, 100,
-                                          //                            new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("abce")))),
-                                          new DnsDataResourceRecord(new DnsDomainName(""), DnsType.A, DnsClass.Any, 1, new DnsResourceDataIpV4(new IpV4Address("1.2.3.4")))
-                                        }.ToList(),
-//                                    Authorities =
-//                                        new[]
-//                                        {
-//                                            new DnsDataResourceRecord(new DnsDomainName("def"), DnsType.Ns, DnsClass.In, 2222,
-//                                                                      new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("123"))))
-//                                        }.ToList(),
-//                                    Additionals =
-//                                        new[]
-//                                        {
-//                                            new DnsDataResourceRecord(new DnsDomainName(""), DnsType.A, DnsClass.In, 2222,
-//                                                                      new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("444")))),
-//                                            new DnsDataResourceRecord(new DnsDomainName("123"), DnsType.A, DnsClass.In, 2222,
-//                                                                      new DnsResourceDataUnknown(new DataSegment(Encoding.ASCII.GetBytes("444")))),
-//                                        }.ToList(),
-//                                    DomainNameCompressionMode = DnsDomainNameCompressionMode.All,
-//                                    FutureUse = 6,
-//                                    Id = 16365,
-//                                    IsAuthoritiveAnswer = false,
-//                                    IsQuery = false,
-//                                    IsRecusionAvailable = true,
-//                                    IsRecusionDesired = true,
-//                                    Opcode = DnsOpcode.Query,
-//                                    ResponseCode = DnsResponseCode.ServerFailure,
-                                };
+            DataSegment bitMap = DnsResourceDataNextDomain.CreateTypeBitMap(new[] {DnsType.A, DnsType.Aaaa});
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            Assert.IsFalse(resourceData.Equals(null));
+            Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.A));
+            Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.Aaaa));
+            Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.Ns));
+        }
 
-            Packet packet = PacketBuilder.Build(DateTime.Now,
-                                                new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
-                                                dnsLayer);
-                Assert.IsTrue(packet.IsValid, "IsValid");
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNextDomainTooLongBitmapTest()
+        {
+            DataSegment bitMap = new DataSegment(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17});
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
 
-                // DNS
-                Assert.AreEqual(dnsLayer, packet.Ethernet.IpV4.Udp.Dns.ExtractLayer(), "DNS Layer");
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNextDomainZeroEndedBitmapTest()
+        {
+            DataSegment bitMap = new DataSegment(new byte[] { 1, 0 });
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
