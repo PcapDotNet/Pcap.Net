@@ -63,7 +63,8 @@ namespace PcapDotNet.Packets.Test
                 {
                     Assert.AreNotEqual(datagram, Datagram.Empty);
                     Assert.AreNotEqual(datagram, random.NextDatagram(datagram.Length));
-                    Assert.AreNotEqual(datagram.GetHashCode(), random.NextDatagram(datagram.Length).GetHashCode());
+                    if (datagram.Length > 2)
+                        Assert.AreNotEqual(datagram.GetHashCode(), random.NextDatagram(datagram.Length).GetHashCode());
                 }
                 else
                     Assert.AreEqual(datagram, Datagram.Empty);
