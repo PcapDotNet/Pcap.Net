@@ -106,7 +106,7 @@
     <Compile Include="Dns\DnsOptResourceRecord.cs" />
     <Compile Include="Dns\DnsOptVersion.cs" />
     <Compile Include="Dns\DnsQueryResourceRecord.cs" />
-    <Compile Include="Dns\ResourceData\AddressFamily.cs" />
+    <Compile Include="AddressFamily.cs" />
     <Compile Include="Dns\ResourceData\DnsAddressPrefix.cs" />
     <Compile Include="Dns\ResourceData\DnsAlgorithm.cs" />
     <Compile Include="Dns\ResourceData\DnsAtmAddressFormat.cs" />
