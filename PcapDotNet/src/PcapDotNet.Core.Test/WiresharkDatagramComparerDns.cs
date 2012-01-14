@@ -280,6 +280,8 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Bits":
+                            while (wksData.BitMap[_wksBitMapIndex] == 0x00)
+                                ++_wksBitMapIndex;
                             dataField.AssertValue(wksData.BitMap[_wksBitMapIndex++]);
                             break;
 
