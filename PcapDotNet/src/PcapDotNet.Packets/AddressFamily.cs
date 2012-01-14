@@ -1,4 +1,4 @@
-﻿namespace PcapDotNet.Packets.Dns
+﻿namespace PcapDotNet.Packets
 {
     /// <summary>
     ///  RFCs 2453, 2858, 4761, 6074.
