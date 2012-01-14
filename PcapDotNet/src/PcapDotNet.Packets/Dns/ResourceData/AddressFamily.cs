@@ -1,7 +1,7 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
-    ///  RFCs 2453, 2858.
+    ///  RFCs 2453, 2858, 4761, 6074.
     /// </summary>
     public enum AddressFamily : ushort
     {
