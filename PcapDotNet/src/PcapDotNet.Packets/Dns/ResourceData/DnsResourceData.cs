@@ -10,6 +10,8 @@ namespace PcapDotNet.Packets.Dns
 {
     public abstract class DnsResourceData : IEquatable<DnsResourceData>
     {
+        internal const int StringMinimumLength = sizeof(byte); 
+
         public static Type GetDnsResourceDataType(DnsType dnsType)
         {
             DnsResourceData prototype = TryGetPrototype(dnsType);

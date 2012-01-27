@@ -88,15 +88,17 @@ namespace PcapDotNet.Packets.Test
 
                 foreach (var record in packet.Ethernet.IpV4.Udp.Dns.ResourceRecords)
                 {
-                    Assert.AreEqual<object>(record, record);
-                    Assert.AreEqual<object>(record.DomainName, record.DomainName);
+                    Assert.IsTrue(record.Equals(record));
+                    Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
+                    Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
                 }
 
                 foreach (var record in packet.Ethernet.IpV4.Udp.Dns.DataResourceRecords)
                 {
                     MoreAssert.IsBiggerOrEqual(9, record.ToString().Length);
-                    Assert.AreEqual<object>(record, record);
+                    Assert.IsTrue(record.Equals((object)record));
                     Assert.IsInstanceOfType(record.Data, DnsResourceData.GetDnsResourceDataType(record.Type) ?? typeof(DnsResourceDataAnything));
+                    Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
                 }
             }
         }
@@ -161,6 +163,27 @@ namespace PcapDotNet.Packets.Test
 
             dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
             TestDomainNameCompression(6, dnsLayer);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DnsCompressionInvalidModeTest()
+        {
+            DnsLayer dnsLayer = new DnsLayer
+                                {
+                                    DomainNameCompressionMode = (DnsDomainNameCompressionMode)int.MaxValue,
+                                    Answers =
+                                        new List<DnsDataResourceRecord>(new[]
+                                                                        {
+                                                                            new DnsDataResourceRecord(new DnsDomainName("a"), DnsType.A, DnsClass.In, 10,
+                                                                                                      new DnsResourceDataIpV4(IpV4Address.Zero))
+                                                                        }),
+                                };
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
+                                                dnsLayer);
+            Assert.IsNull(packet);
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -249,10 +272,47 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void DnsResourceDataNamingAuthorityPointerTest()
+        {
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, DataSegment.Empty, DataSegment.Empty,
+                                                                                                  DataSegment.Empty, DnsDomainName.Root),
+                                                        -1);
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, new DataSegment(Encoding.ASCII.GetBytes("abcd")),
+                                                                                                  DataSegment.Empty,
+                                                                                                  DataSegment.Empty, DnsDomainName.Root),
+                                                        -4);
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, DataSegment.Empty,
+                                                                                                  new DataSegment(Encoding.ASCII.GetBytes("abc")),
+                                                                                                  DataSegment.Empty, DnsDomainName.Root),
+                                                        -3);
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, DataSegment.Empty, DataSegment.Empty,
+                                                                                                  new DataSegment(Encoding.ASCII.GetBytes("ab")),
+                                                                                                  DnsDomainName.Root),
+                                                        -2);
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, DataSegment.Empty, DataSegment.Empty,
+                                                                                                  DataSegment.Empty, new DnsDomainName("a")),
+                                                        -1);
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NaPtr,
+                                                        new DnsResourceDataNamingAuthorityPointer(0, 0, DataSegment.Empty, DataSegment.Empty,
+                                                                                                  DataSegment.Empty, DnsDomainName.Root),
+                                                        1);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void DnsResourceDataNamingAuthorityPointerIllegalFlagsTest()
         {
-            var resourceData = new DnsResourceDataNamingAuthorityPointer(0, 0, new DataSegment(new byte[] {(byte)'%'}),
+            var resourceData = new DnsResourceDataNamingAuthorityPointer(0, 0, new DataSegment(new[] {(byte)'%'}),
                                                                          DataSegment.Empty, DataSegment.Empty,
                                                                          DnsDomainName.Root);
             Assert.IsNull(resourceData);
@@ -386,7 +446,7 @@ namespace PcapDotNet.Packets.Test
         public void DnsAddressPrefixAddressFamilyDependentPartTest()
         {
             var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[127]));
-            Assert.AreEqual<object>(dnsAddressPrefix, dnsAddressPrefix);
+            Assert.IsTrue(dnsAddressPrefix.Equals((object)dnsAddressPrefix));
         }
 
         [TestMethod]
@@ -413,24 +473,24 @@ namespace PcapDotNet.Packets.Test
         public void DnsGatewayTest()
         {
             DnsGateway gateway = new DnsGatewayIpV6(IpV6Address.Zero);
-            Assert.AreEqual<object>(gateway, gateway);
-            Assert.AreNotEqual<object>(gateway, null);
+            Assert.IsTrue(gateway.Equals((object)gateway));
+            Assert.IsFalse(gateway.Equals(null as object));
         }
 
         [TestMethod]
         public void DnsOptionTest()
         {
             DnsOption option = new DnsOptionAnything(DnsOptionCode.UpdateLease, DataSegment.Empty);
-            Assert.AreEqual<object>(option, option);
-            Assert.AreNotEqual<object>(option, null);
+            Assert.IsTrue(option.Equals((object)option));
+            Assert.IsFalse(option.Equals(null as object));
         }
 
         [TestMethod]
         public void DnsOptionsTest()
         {
             DnsOptions options = new DnsOptions();
-            Assert.AreEqual<object>(options, options);
-            Assert.AreNotEqual<object>(options, null);
+            Assert.IsTrue(options.Equals((object)options));
+            Assert.IsFalse(options.Equals(null as object));
         }
 
         [TestMethod]
@@ -464,6 +524,37 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(compressedPacketLayer, uncompressedPacketLayer);
 
             Assert.AreEqual(uncompressedPacket.Length, compressedPacket.Length + expectedCompressionBenefit, expectedCompressionBenefit.ToString());
+        }
+
+        private static void TestResourceRecordIsNotCreatedWithNewLength(DnsType dnsType, DnsResourceData resourceData, int dataLengthDiff)
+        {
+            var resourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, dnsType, DnsClass.In, 0, resourceData);
+            var paddingResourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, DnsType.Null, DnsClass.In, 0,
+                                                                  new DnsResourceDataAnything(new DataSegment(new byte[100])));
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
+                                                new DnsLayer
+                                                {
+                                                    Answers = new List<DnsDataResourceRecord>(new[]
+                                                                                              {
+                                                                                                  resourceRecord,
+                                                                                                  paddingResourceRecord
+                                                                                              }),
+                                                });
+
+            Assert.AreEqual(2, packet.Ethernet.IpV4.Udp.Dns.Answers.Count);
+            Assert.AreEqual(resourceRecord, packet.Ethernet.IpV4.Udp.Dns.Answers[0]);
+            Assert.AreEqual(paddingResourceRecord, packet.Ethernet.IpV4.Udp.Dns.Answers[1]);
+
+            byte[] buffer = new byte[packet.Length];
+            buffer.Write(0, packet.Ethernet);
+            const int dataLengthOffset =
+                EthernetDatagram.HeaderLength + IpV4Datagram.HeaderMinimumLength + UdpDatagram.HeaderLength + DnsDatagram.HeaderLength + 5 + 4;
+            ushort oldDataLength = buffer.ReadUShort(dataLengthOffset, Endianity.Big);
+            ushort newDataLength = (ushort)(oldDataLength + dataLengthDiff);
+            buffer.Write(dataLengthOffset, newDataLength, Endianity.Big);
+            packet = new Packet(buffer, DateTime.Now, DataLinkKind.Ethernet);
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Udp.Dns.Answers.Any());
         }
     }
 }
