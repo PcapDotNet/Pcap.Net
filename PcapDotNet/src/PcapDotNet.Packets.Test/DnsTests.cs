@@ -8,6 +8,7 @@ using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
@@ -80,6 +81,23 @@ namespace PcapDotNet.Packets.Test
                 // DNS
                 DnsLayer actualLayer = (DnsLayer)packet.Ethernet.IpV4.Udp.Dns.ExtractLayer();
                 Assert.AreEqual(dnsLayer, actualLayer, "DNS Layer");
+                Assert.IsTrue(packet.Ethernet.IpV4.Udp.Dns.IsValid);
+
+                DnsDataResourceRecord opt = packet.Ethernet.IpV4.Udp.Dns.Additionals.FirstOrDefault(additional => additional.Type == DnsType.Opt);
+                Assert.AreEqual(opt, packet.Ethernet.IpV4.Udp.Dns.OptionsRecord);
+
+                foreach (var record in packet.Ethernet.IpV4.Udp.Dns.ResourceRecords)
+                {
+                    Assert.AreEqual<object>(record, record);
+                    Assert.AreEqual<object>(record.DomainName, record.DomainName);
+                }
+
+                foreach (var record in packet.Ethernet.IpV4.Udp.Dns.DataResourceRecords)
+                {
+                    MoreAssert.IsBiggerOrEqual(9, record.ToString().Length);
+                    Assert.AreEqual<object>(record, record);
+                    Assert.IsInstanceOfType(record.Data, DnsResourceData.GetDnsResourceDataType(record.Type) ?? typeof(DnsResourceDataAnything));
+                }
             }
         }
 
@@ -170,6 +188,24 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DnsQueryResourceRecordTtlGetTest()
+        {
+            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.In);
+            Assert.IsNull(query.Ttl);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DnsQueryResourceRecordDataGetTest()
+        {
+            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.In);
+            Assert.IsNull(query.Data);
+            Assert.Fail();
+        }
+
+        [TestMethod]
         public void DnsResourceDataNextDomainTest()
         {
             DataSegment bitMap = DnsResourceDataNextDomain.CreateTypeBitMap(new[] {DnsType.A, DnsType.Aaaa});
@@ -178,6 +214,18 @@ namespace PcapDotNet.Packets.Test
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.A));
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.Aaaa));
             Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.Ns));
+
+            bitMap = DnsResourceDataNextDomain.CreateTypeBitMap(new DnsType[] { 0 });
+            Assert.AreEqual(DataSegment.Empty, bitMap);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNextDomainTooBigDnsType()
+        {
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), DataSegment.Empty);
+            Assert.IsNull(resourceData.IsTypePresentForOwner((DnsType)(8 * 16 + 1)));
+            Assert.Fail();
         }
 
         [TestMethod]
@@ -196,6 +244,201 @@ namespace PcapDotNet.Packets.Test
         {
             DataSegment bitMap = new DataSegment(new byte[] { 1, 0 });
             DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DnsResourceDataNamingAuthorityPointerIllegalFlagsTest()
+        {
+            var resourceData = new DnsResourceDataNamingAuthorityPointer(0, 0, new DataSegment(new byte[] {(byte)'%'}),
+                                                                         DataSegment.Empty, DataSegment.Empty,
+                                                                         DnsDomainName.Root);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataTransactionKeyTooBigKeyTest()
+        {
+            var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
+                                                                 new DataSegment(new byte[ushort.MaxValue + 1]), DataSegment.Empty);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataTransactionKeyTooBigOtherTest()
+        {
+            var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
+                                                                 DataSegment.Empty, new DataSegment(new byte[ushort.MaxValue + 1]));
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataTransactionSignatureTooBigMessageAuthenticationCodeTest()
+        {
+            var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, new DataSegment(new byte[ushort.MaxValue + 1]), 0,
+                                                                       DnsResponseCode.NoError, DataSegment.Empty);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataTransactionSignatureTooBigOtherTest()
+        {
+            var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, DataSegment.Empty, 0,
+                                                                       DnsResponseCode.NoError, new DataSegment(new byte[ushort.MaxValue + 1]));
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataHostIdentityProtocolTooBigHostIdentityTagTest()
+        {
+            var resourceData = new DnsResourceDataHostIdentityProtocol(new DataSegment(new byte[byte.MaxValue + 1]), DnsPublicKeyAlgorithm.None,
+                                                                       DataSegment.Empty, new DnsDomainName[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataHostIdentityProtocolTooBigPublicKeyTest()
+        {
+            var resourceData = new DnsResourceDataHostIdentityProtocol(DataSegment.Empty, DnsPublicKeyAlgorithm.None,
+                                                                       new DataSegment(new byte[ushort.MaxValue + 1]), new DnsDomainName[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataLocationInformationInvalidSizeTest()
+        {
+            var resourceData = new DnsResourceDataLocationInformation(0, 9000000001L, 0, 0, 0, 0, 0);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataLocationInformationInvalidHorizontalPrecisionTest()
+        {
+            var resourceData = new DnsResourceDataLocationInformation(0, 0, 9000000001L, 0, 0, 0, 0);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataLocationInformationInvalidVerticalPrecisionTest()
+        {
+            var resourceData = new DnsResourceDataLocationInformation(0, 0, 0, 9000000001L, 0, 0, 0);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNextDomainSecureTest()
+        {
+            var types = new[] {DnsType.A, DnsType.Aaaa, DnsType.A6, DnsType.Any, DnsType.NaPtr};
+            var resourceData = new DnsResourceDataNextDomainSecure(DnsDomainName.Root, types);
+            foreach (var type in Enum.GetValues(typeof(DnsType)))
+            {
+                Assert.AreEqual(types.Contains((DnsType)type), resourceData.IsTypePresentForOwner((DnsType)type));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNetworkServiceAccessPointAreaAddressTooSmallTest()
+        {
+            var resourceData = new DnsResourceDataNetworkServiceAccessPoint(DataSegment.Empty, 0, 0);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNetworkServiceAccessPointTest()
+        {
+            var resourceData = new DnsResourceDataNetworkServiceAccessPoint(new DataSegment(new byte[]{1,2,3,4,5}), 0, 0);
+            Assert.AreEqual(1, resourceData.AuthorityAndFormatIdentifier);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsAddressPrefixAddressFamilyDependentPartTooBigTest()
+        {
+            var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[128]));
+            Assert.IsNull(dnsAddressPrefix);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsAddressPrefixAddressFamilyDependentPartTest()
+        {
+            var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[127]));
+            Assert.AreEqual<object>(dnsAddressPrefix, dnsAddressPrefix);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNextDomainSecure3NextHashedOwnerNameTooBigTest()
+        {
+            var resourceData = new DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0, DataSegment.Empty,
+                                                                    new DataSegment(new byte[byte.MaxValue + 1]), new DnsType[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNextDomainSecure3SaltTooBigTest()
+        {
+            var resourceData = new DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0,
+                                                                    new DataSegment(new byte[byte.MaxValue + 1]), DataSegment.Empty, new DnsType[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsGatewayTest()
+        {
+            DnsGateway gateway = new DnsGatewayIpV6(IpV6Address.Zero);
+            Assert.AreEqual<object>(gateway, gateway);
+            Assert.AreNotEqual<object>(gateway, null);
+        }
+
+        [TestMethod]
+        public void DnsOptionTest()
+        {
+            DnsOption option = new DnsOptionAnything(DnsOptionCode.UpdateLease, DataSegment.Empty);
+            Assert.AreEqual<object>(option, option);
+            Assert.AreNotEqual<object>(option, null);
+        }
+
+        [TestMethod]
+        public void DnsOptionsTest()
+        {
+            DnsOptions options = new DnsOptions();
+            Assert.AreEqual<object>(options, options);
+            Assert.AreNotEqual<object>(options, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataCertificationAuthorityAuthorizationTagTooBigTest()
+        {
+            var resourceData = new DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags.Critical,
+                                                                                      new DataSegment(new byte[byte.MaxValue + 1]), DataSegment.Empty);
             Assert.IsNull(resourceData);
             Assert.Fail();
         }

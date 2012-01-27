@@ -291,6 +291,16 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        public IEnumerable<DnsResourceRecord> ResourceRecords
+        {
+            get { return Queries.Cast<DnsResourceRecord>().Concat(DataResourceRecords); }
+        }
+
+        public IEnumerable<DnsDataResourceRecord> DataResourceRecords
+        {
+            get { return Answers.Concat(Authorities).Concat(Additionals); }
+        }
+
         public DnsOptResourceRecord OptionsRecord
         {
             get
