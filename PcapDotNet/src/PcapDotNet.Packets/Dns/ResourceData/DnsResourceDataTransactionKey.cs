@@ -127,7 +127,7 @@ namespace PcapDotNet.Packets.Dns
                    Other.Equals(other.Other);
         }
 
-        public override bool  Equals(DnsResourceData other)
+        public override bool Equals(DnsResourceData other)
         {
             return Equals(other as DnsResourceDataTransactionKey);
         }

@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.Dns
                    TypesExist.SequenceEqual(other.TypesExist);
         }
 
-        public override bool  Equals(object obj)
+        public override bool Equals(object obj)
         {
             return Equals(obj as DnsTypeBitmaps);
         }

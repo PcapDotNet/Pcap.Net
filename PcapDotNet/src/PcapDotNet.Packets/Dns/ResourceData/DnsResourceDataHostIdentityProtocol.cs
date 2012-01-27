@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Dns
         {
             if (hostIdentityTag.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException("hostIdentityTag", hostIdentityTag.Length, string.Format("Cannot be bigger than {0}.", byte.MaxValue));
-            if (hostIdentityTag.Length > ushort.MaxValue)
+            if (publicKey.Length > ushort.MaxValue)
                 throw new ArgumentOutOfRangeException("publicKey", publicKey.Length, string.Format("Cannot be bigger than {0}.", ushort.MaxValue));
             HostIdentityTag = hostIdentityTag;
             PublicKeyAlgorithm = publicKeyAlgorithm;
