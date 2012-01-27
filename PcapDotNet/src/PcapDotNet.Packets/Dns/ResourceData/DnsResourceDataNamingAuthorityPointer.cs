@@ -38,6 +38,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         private const int ConstantPartLength = Offset.Flags;
+        private const int MinimumLength = ConstantPartLength + StringMinimumLength + StringMinimumLength + StringMinimumLength + DnsDomainName.RootLength;
 
         public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regexp, DnsDomainName replacement)
         {
@@ -160,7 +161,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
-            if (length < ConstantPartLength)
+            if (length < MinimumLength)
                 return null;
 
             ushort order = dns.ReadUShort(offsetInDns + Offset.Order, Endianity.Big);
