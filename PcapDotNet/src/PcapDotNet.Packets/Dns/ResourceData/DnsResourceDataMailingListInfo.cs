@@ -1,6 +1,7 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 1035.
     /// <pre>
     /// +---------+
     /// | RMAILBX |

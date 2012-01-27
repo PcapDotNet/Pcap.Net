@@ -1,6 +1,7 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 1183.
     /// <pre>
     /// +------------+
     /// | mbox-dname |

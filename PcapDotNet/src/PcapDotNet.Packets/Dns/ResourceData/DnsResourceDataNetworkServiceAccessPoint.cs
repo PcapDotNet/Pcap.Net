@@ -4,6 +4,7 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 1706.
     /// <pre>
     /// +-----+-----+----------------------+----------+-----------+
     /// | bit | 0-7 | 8-7+X                | 8+X-55+X | 56+X-63+X |

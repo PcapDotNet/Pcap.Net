@@ -3,6 +3,7 @@
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 2782.
     /// <pre>
     /// +-----+----------+
     /// | bit | 0-15     |

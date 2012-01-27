@@ -6,6 +6,7 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFCs 2915, 3403.
     /// <pre>
     /// +-----+-------+------------+
     /// | bit | 0-15  | 16-31      |

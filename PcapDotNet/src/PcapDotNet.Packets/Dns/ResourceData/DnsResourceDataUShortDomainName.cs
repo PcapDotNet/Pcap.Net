@@ -3,6 +3,7 @@
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// A base class for any resource data that contains a 16 bit unsigned integer followed by a domain name.
     /// <pre>
     /// +-----+--------+
     /// | bit | 0-15   |

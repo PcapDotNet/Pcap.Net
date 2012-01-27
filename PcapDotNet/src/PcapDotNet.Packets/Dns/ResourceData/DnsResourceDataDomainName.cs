@@ -3,6 +3,7 @@
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// Contains a single DNS domain name.
     /// <pre>
     /// +------+
     /// | NAME |

@@ -4,6 +4,7 @@ using System.Text;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 1712.
     /// <pre>
     /// +-----------+
     /// | LONGITUDE |
