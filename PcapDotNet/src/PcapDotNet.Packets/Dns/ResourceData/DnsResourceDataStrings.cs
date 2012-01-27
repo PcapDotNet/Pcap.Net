@@ -6,6 +6,11 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// Base class for any resource data that contains DNS strings.
+    /// Each DNS string is a segment of up to 255 bytes.
+    /// The format of each DNS string is one byte for the length of the string and then the specified number of bytes.
+    /// </summary>
     public abstract class DnsResourceDataStrings : DnsResourceDataSimple, IEquatable<DnsResourceDataStrings>
     {
         public bool Equals(DnsResourceDataStrings other)

@@ -2,6 +2,11 @@
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// A DNS string.
+    /// Any segment of bytes up to 255 characters is valid.
+    /// The format is one byte for the length of the string and then the specified number of bytes.
+    /// </summary>
     [DnsTypeRegistration(Type = DnsType.X25)]
     public sealed class DnsResourceDataString : DnsResourceDataSimple, IEquatable<DnsResourceDataString>
     {

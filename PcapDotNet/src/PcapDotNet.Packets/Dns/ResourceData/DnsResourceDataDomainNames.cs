@@ -6,6 +6,9 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// A base class for resource records that contain DNS domain names.
+    /// </summary>
     public abstract class DnsResourceDataDomainNames : DnsResourceData, IEquatable<DnsResourceDataDomainNames>
     {
         public bool Equals(DnsResourceDataDomainNames other)

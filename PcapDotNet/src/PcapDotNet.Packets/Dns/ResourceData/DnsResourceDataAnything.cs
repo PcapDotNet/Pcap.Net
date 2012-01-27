@@ -2,6 +2,9 @@
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// A resource data that can hold any data.
+    /// </summary>
     [DnsTypeRegistration(Type = DnsType.Null)]
     [DnsTypeRegistration(Type = DnsType.EId)]
     [DnsTypeRegistration(Type = DnsType.NimLoc)]

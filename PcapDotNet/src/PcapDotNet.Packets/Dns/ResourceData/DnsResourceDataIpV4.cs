@@ -4,6 +4,7 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// RFC 1035.
     /// <pre>
     /// +-----+------+
     /// | bit | 0-31 |

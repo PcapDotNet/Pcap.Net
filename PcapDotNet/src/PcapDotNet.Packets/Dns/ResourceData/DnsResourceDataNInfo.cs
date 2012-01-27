@@ -6,6 +6,7 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
+    /// Reid.
     /// <pre>
     /// +---------------------+
     /// | One ore more strings|
