@@ -25,9 +25,25 @@ namespace PcapDotNet.Packets.Dns
         }
 
         public const int ConstantPartLength = Offset.AddressSuffix;
+        public const int MinimumLength = ConstantPartLength + DnsDomainName.RootLength;
+
+        private static bool IsAddressSuffixTooBig(byte prefixLength, IpV6Address addressSuffix)
+        {
+            return (prefixLength < 128 && (addressSuffix.ToValue() < (UInt128.One << (127 - prefixLength))));
+        }
+
+        private static bool IsAddressSuffixTooSmall(byte prefixLength, IpV6Address addressSuffix)
+        {
+            return (prefixLength > 0 && (addressSuffix.ToValue() >= (UInt128.One << (128 - prefixLength))));
+        }
 
         public DnsResourceDataA6(byte prefixLength, IpV6Address addressSuffix, DnsDomainName prefixName)
         {
+            if (IsAddressSuffixTooBig(prefixLength, addressSuffix))
+                throw new ArgumentOutOfRangeException("addressSuffix", string.Format("Value is too small for prefix length {0}", prefixLength));
+            if (IsAddressSuffixTooSmall(prefixLength, addressSuffix))
+                throw new ArgumentOutOfRangeException("addressSuffix", string.Format("Value is too big for prefix length {0}", prefixLength));
+
             PrefixLength = prefixLength;
             AddressSuffix = addressSuffix;
             PrefixName = prefixName;
@@ -70,7 +86,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataA6()
-            : this(0, IpV6Address.Zero, DnsDomainName.Root)
+            : this(0, IpV6Address.MaxValue, DnsDomainName.Root)
         {
         }
 
@@ -90,7 +106,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
-            if (length < ConstantPartLength)
+            if (length < MinimumLength)
                 return null;
 
             byte prefixLength = dns[offsetInDns + Offset.PrefixLength];
@@ -105,6 +121,9 @@ namespace PcapDotNet.Packets.Dns
             IpV6Address addressSuffix = new IpV6Address((UInt128)dns.ReadUnsignedBigInteger(offsetInDns, addressSuffixLength, Endianity.Big));
             offsetInDns += addressSuffixLength;
             length -= addressSuffixLength;
+
+            if (IsAddressSuffixTooBig(prefixLength, addressSuffix) || IsAddressSuffixTooSmall(prefixLength, addressSuffix))
+                return null;
 
             DnsDomainName prefixName;
             int prefixNameLength;
