@@ -17,12 +17,6 @@ void OfflinePacketCommunicator::Transmit(PacketSendBuffer^, bool)
     throw gcnew InvalidOperationException("Can't transmit queue to an offline device");
 }
 
-OfflinePacketCommunicator::~OfflinePacketCommunicator()
-{
-    if (_file != NULL)
-        CloseFile(_file);
-}
-
 OfflinePacketCommunicator::OfflinePacketCommunicator(String^ filename)
 : PacketCommunicator(OpenFile(filename), nullptr)
 {
@@ -41,19 +35,9 @@ pcap_t* OfflinePacketCommunicator::OpenFile(String^ fileName)
     pcap_t *pcapDescriptor = pcap_fopen_offline(file, errorBuffer);
     if (pcapDescriptor == NULL)
     {
-        CloseFile(file);
+        fclose(file);
         throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed opening file {0}. Error: {1}", fileName, gcnew String(errorBuffer)));
     }
 
-    _file = file;
-
     return pcapDescriptor;
-}
-
-// static
-void OfflinePacketCommunicator::CloseFile(FILE* file)
-{
-    int result = fclose(file);
-    if (result != 0)
-        throw gcnew InvalidOperationException("Failed closing file.");
 }
