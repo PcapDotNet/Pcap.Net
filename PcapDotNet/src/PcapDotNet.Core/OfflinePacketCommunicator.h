@@ -24,16 +24,10 @@ namespace PcapDotNet { namespace Core
         /// <exception cref="System::InvalidOperationException">Thrown always.</exception>
         virtual void Transmit(PacketSendBuffer^ sendBuffer, bool isSync) override;
 
-        ~OfflinePacketCommunicator();
-
     internal:
         OfflinePacketCommunicator(System::String^ fileName);
 
     private:
         pcap_t* OpenFile(System::String^ filename);
-
-        static void CloseFile(FILE* file);
-
-        FILE* _file;
     };
 }}
