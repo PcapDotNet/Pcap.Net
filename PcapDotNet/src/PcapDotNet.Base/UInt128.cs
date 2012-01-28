@@ -31,6 +31,8 @@ namespace PcapDotNet.Base
         /// </summary>
         public static readonly UInt128 Zero = 0;
 
+        public static readonly UInt128 One = 1;
+
         /// <summary>
         /// Creates a value using two 64 bit values.
         /// </summary>
@@ -387,6 +389,16 @@ namespace PcapDotNet.Base
             return !(value1 == value2);
         }
 
+        public static bool operator <(UInt128 value1, UInt128 value2)
+        {
+            return value1.Smaller(value2);
+        }
+
+        public static bool operator >(UInt128 value1, UInt128 value2)
+        {
+            return value2.Smaller(value1);
+        }
+
         public static bool operator <=(UInt128 value1, UInt128 value2)
         {
             return !value2.Smaller(value1);
@@ -427,7 +439,8 @@ namespace PcapDotNet.Base
         /// <returns>The value after it was shifted by the given number of bits.</returns>
         public static UInt128 RightShift(UInt128 value, int numberOfBits)
         {
-            numberOfBits %= 128;
+            if (numberOfBits >= 128)
+                return Zero;
             if (numberOfBits >= 64)
                 return new UInt128(0, value._mostSignificant >> (numberOfBits - 64));
             if (numberOfBits == 0)
@@ -471,6 +484,30 @@ namespace PcapDotNet.Base
         public static UInt128 BitwiseAnd(UInt128 value1, UInt128 value2)
         {
             return new UInt128(value1._mostSignificant & value2._mostSignificant, value1._leastSignificant & value2._leastSignificant);
+        }
+
+        public static UInt128 operator +(UInt128 value1, UInt128 value2)
+        {
+            return Sum(value1, value2);
+        }
+
+        public static UInt128 Sum(UInt128 value1, UInt128 value2)
+        {
+            ulong leastSignificant = value1._leastSignificant + value2._leastSignificant;
+            bool overflow = (leastSignificant < Math.Max(value1._leastSignificant, value2._leastSignificant));
+            return new UInt128(value1._mostSignificant + value2._mostSignificant + (ulong)(overflow ? 1 : 0), leastSignificant);
+        }
+
+        public static UInt128 operator -(UInt128 value1, UInt128 value2)
+        {
+            return Substract(value1, value2);
+        }
+
+        public static UInt128 Substract(UInt128 value1, UInt128 value2)
+        {
+            ulong leastSignificant = value1._leastSignificant - value2._leastSignificant;
+            bool overflow = (leastSignificant > value1._leastSignificant);
+            return new UInt128(value1._mostSignificant - value2._mostSignificant - (ulong)(overflow ? 1 : 0), leastSignificant);
         }
 
         /// <summary>

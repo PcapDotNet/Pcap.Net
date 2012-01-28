@@ -415,6 +415,12 @@ namespace PcapDotNet.Packets.Test
             {
                 Assert.AreEqual(types.Contains((DnsType)type), resourceData.IsTypePresentForOwner((DnsType)type));
             }
+
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec, new DnsResourceDataNextDomainSecure(DnsDomainName.Root, new DnsType[0]), -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec, new DnsResourceDataNextDomainSecure(DnsDomainName.Root, new DnsType[0]), 9000);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec, new DnsResourceDataNextDomainSecure(DnsDomainName.Root, new[] {DnsType.A}), -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec, new DnsResourceDataNextDomainSecure(DnsDomainName.Root, new[] {DnsType.A, DnsType.Any}),
+                                                        -1);
         }
 
         [TestMethod]
@@ -530,7 +536,7 @@ namespace PcapDotNet.Packets.Test
         {
             var resourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, dnsType, DnsClass.In, 0, resourceData);
             var paddingResourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, DnsType.Null, DnsClass.In, 0,
-                                                                  new DnsResourceDataAnything(new DataSegment(new byte[100])));
+                                                                  new DnsResourceDataAnything(new DataSegment(new byte[100 + Math.Abs(dataLengthDiff)])));
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
                                                 new DnsLayer
                                                 {

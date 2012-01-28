@@ -240,9 +240,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.A6:
                     byte prefixLength = random.NextByte(DnsResourceDataA6.MaxPrefixLength + 1);
-                    UInt128 addressSuffixValue = prefixLength == 0
-                                                     ? random.NextUInt128()
-                                                     : random.NextUInt128(((UInt128)1) << (128 - prefixLength));
+                    UInt128 addressSuffixValue = random.NextUInt128() >> prefixLength;
+                    if (prefixLength < DnsResourceDataA6.MaxPrefixLength)
+                        addressSuffixValue = (addressSuffixValue >> 1) + (UInt128.One << (127 - prefixLength));
                     return new DnsResourceDataA6(prefixLength,
                                                  new IpV6Address(addressSuffixValue),
                                                  random.NextDnsDomainName());

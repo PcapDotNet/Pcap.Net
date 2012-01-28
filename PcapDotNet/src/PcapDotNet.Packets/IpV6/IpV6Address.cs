@@ -26,6 +26,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return _zero; }
         }
 
+        public static IpV6Address MaxValue
+        {
+            get { return _maxValue; }
+        }
+
         /// <summary>
         /// Create an address from a 128 bit integer.
         /// 0 -> ::
@@ -149,5 +154,6 @@ namespace PcapDotNet.Packets.IpV6
 
         private readonly UInt128 _value;
         private static readonly IpV6Address _zero = new IpV6Address(0);
+        private static readonly IpV6Address _maxValue = new IpV6Address(UInt128.MaxValue);
     }
 }

@@ -131,6 +131,90 @@ namespace PcapDotNet.Base.Test
                 Assert.AreEqual(expectedValue, value >> (i / 2) >> (i / 2), i.ToString());
                 Assert.AreEqual(expectedValue, value >> (i / 4) >> (i / 4) >> (i / 4) >> (i / 4), i.ToString());
             }
+
+            Assert.AreEqual<UInt128>(value >> 128, 0);
+        }
+
+        [TestMethod]
+        public void SumTest()
+        {
+            UInt128 value1 = 0;
+            UInt128 value2 = 0;
+            Assert.AreEqual<UInt128>(0, value1 + value2);
+
+            value1 = 1;
+            Assert.AreEqual<UInt128>(1, value1 + value2);
+            
+            value2 = 1;
+            Assert.AreEqual<UInt128>(2, value1 + value2);
+
+            value1 = 100;
+            Assert.AreEqual<UInt128>(101, value1 + value2);
+
+            value2 = 1000;
+            Assert.AreEqual<UInt128>(1100, value1 + value2);
+
+            value1 = ulong.MaxValue;
+            value2 = 0;
+            Assert.AreEqual(ulong.MaxValue, value1 + value2);
+
+            value2 = 1;
+            Assert.AreEqual(new UInt128(1,0), value1 + value2);
+
+            value2 = 2;
+            Assert.AreEqual(new UInt128(1, 1), value1 + value2);
+
+            value2 = ulong.MaxValue;
+            Assert.AreEqual(new UInt128(1, ulong.MaxValue - 1), value1 + value2);
+
+            value1 = 2;
+            value2 = new UInt128(1000, ulong.MaxValue);
+            Assert.AreEqual(new UInt128(1001, 1), value1 + value2);
+
+            value1 = new UInt128(100, ulong.MaxValue / 2 + 1);
+            value2 = new UInt128(1000, ulong.MaxValue / 2 + 2);
+            Assert.AreEqual(new UInt128(1101, 1), value1 + value2);
+
+            value1 = new UInt128(ulong.MaxValue / 2, ulong.MaxValue / 2 + 1);
+            value2 = new UInt128(ulong.MaxValue / 2, ulong.MaxValue / 2 + 2);
+            Assert.AreEqual(new UInt128(ulong.MaxValue, 1), value1 + value2);
+
+            value1 = new UInt128(ulong.MaxValue / 2 + 1, ulong.MaxValue / 2 + 1);
+            value2 = new UInt128(ulong.MaxValue / 2, ulong.MaxValue / 2 + 2);
+            Assert.AreEqual(new UInt128(0, 1), value1 + value2);
+        }
+
+        [TestMethod]
+        public void Substract()
+        {
+            UInt128 value1 = 0;
+            UInt128 value2 = 0;
+            Assert.AreEqual<UInt128>(0, value1 - value2);
+
+            value1 = 1;
+            Assert.AreEqual<UInt128>(1, value1 - value2);
+
+            value2 = 1;
+            Assert.AreEqual<UInt128>(0, value1 - value2);
+
+            value1 = 100;
+            Assert.AreEqual<UInt128>(99, value1 - value2);
+
+            value1 = new UInt128(1, 0);
+            value2 = 0;
+            Assert.AreEqual<UInt128>(value1, value1 - value2);
+
+            value2 = 1;
+            Assert.AreEqual<UInt128>(ulong.MaxValue, value1 - value2);
+
+            value2 = 2;
+            Assert.AreEqual<UInt128>(ulong.MaxValue - 1, value1 - value2);
+
+            value1 = new UInt128(100, 1);
+            Assert.AreEqual<UInt128>(new UInt128(99, ulong.MaxValue), value1 - value2);
+
+            value1 = 1;
+            Assert.AreEqual<UInt128>(UInt128.MaxValue, value1 - value2);
         }
 
         [TestMethod]
