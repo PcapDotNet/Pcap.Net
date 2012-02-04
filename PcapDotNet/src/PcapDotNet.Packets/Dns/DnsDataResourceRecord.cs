@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -50,6 +51,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(object obj)
         {
  	        return Equals(obj as DnsDataResourceRecord);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetHashCodeBase() ^ Sequence.GetHashCode(Ttl, Data);
         }
 
         internal static DnsDataResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)

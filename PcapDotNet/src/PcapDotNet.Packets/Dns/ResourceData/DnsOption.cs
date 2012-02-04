@@ -23,12 +23,19 @@ namespace PcapDotNet.Packets.Dns
             return Equals(obj as DnsOption);
         }
 
+        public override int GetHashCode()
+        {
+            return Code.GetHashCode() ^ DataGetHashCode();
+        }
+
         internal DnsOption(DnsOptionCode code)
         {
             Code = code;
         }
 
         internal abstract bool EqualsData(DnsOption other);
+
+        internal abstract int DataGetHashCode();
 
         internal void Write(byte[] buffer, ref int offset)
         {

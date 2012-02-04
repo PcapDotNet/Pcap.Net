@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -60,6 +61,11 @@ namespace PcapDotNet.Packets.Dns
                    Flags.Equals(other.Flags) &&
                    Iterations.Equals(other.Iterations) &&
                    Salt.Equals(other.Salt);
+        }
+
+        internal int GetHashCodeParameters()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(Iterations, (byte)HashAlgorithm, (byte)Flags), Salt);
         }
 
         internal DnsResourceDataNextDomainSecure3Base(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)

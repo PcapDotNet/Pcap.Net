@@ -7,21 +7,21 @@ namespace PcapDotNet.Base
     {
         public InlineEqualityComparer(Func<T, T, bool> equals, Func<T,int> getHashCode)
         {
-            Equals = equals;
-            GetHashCode = getHashCode;
+            EqualsFunc = equals;
+            GetHashCodeFunc = getHashCode;
         }
 
         bool IEqualityComparer<T>.Equals(T x, T y)
         {
-            return Equals(x, y);
+            return EqualsFunc(x, y);
         }
 
         int IEqualityComparer<T>.GetHashCode(T obj)
         {
-            return GetHashCode(obj);
+            return GetHashCodeFunc(obj);
         }
 
-        private Func<T, T, bool> Equals { get; set; }
-        private Func<T, int> GetHashCode { get; set; }
+        private Func<T, T, bool> EqualsFunc { get; set; }
+        private Func<T, int> GetHashCodeFunc { get; set; }
     }
 }

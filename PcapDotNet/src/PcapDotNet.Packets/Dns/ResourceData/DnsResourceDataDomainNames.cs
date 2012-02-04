@@ -18,9 +18,14 @@ namespace PcapDotNet.Packets.Dns
                    DomainNames.SequenceEqual(other.DomainNames);
         }
 
-        public sealed override bool Equals(DnsResourceData other)
+        public sealed override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataDomainNames);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetType().GetHashCode() ^ DomainNames.SequenceGetHashCode();
         }
 
         internal DnsResourceDataDomainNames(ReadOnlyCollection<DnsDomainName> domainNames)

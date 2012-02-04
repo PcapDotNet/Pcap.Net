@@ -32,6 +32,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsGatewayDomainName);
         }
 
+        internal override int DataGetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, int offset)
         {
             Value.WriteUncompressed(buffer, offset);

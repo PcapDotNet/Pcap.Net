@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -73,8 +74,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public override int GetHashCode()
         {
-            return _address.GetHashCode() ^
-                   _timeOfDay.GetHashCode();
+            return Sequence.GetHashCode(_address, _timeOfDay);
         }
 
         private readonly IpV4Address _address;

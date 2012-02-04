@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -172,9 +173,19 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataKey);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(
+                BitSequence.Merge(BitSequence.Merge(AuthenticationProhibited, ConfidentialityProhibited, Experimental, UserAssociated, IpSec, Email),
+                                  (byte)NameType, (byte)Signatory, (byte)Protocol),
+                BitSequence.Merge((byte)Algorithm, (ushort)(FlagsExtension.HasValue ? FlagsExtension.Value : 0)),
+                PublicKey);
+
         }
 
         internal DnsResourceDataKey()

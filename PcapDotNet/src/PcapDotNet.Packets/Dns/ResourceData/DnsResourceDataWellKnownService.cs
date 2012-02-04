@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Dns
@@ -57,9 +58,14 @@ namespace PcapDotNet.Packets.Dns
                    BitMap.Equals(other.BitMap);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataWellKnownService);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Address, Protocol, BitMap);
         }
 
         internal DnsResourceDataWellKnownService()

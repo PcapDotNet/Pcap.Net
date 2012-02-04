@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Http
         /// </summary>
         public override int GetHashCode()
         {
-            return Minor.GetHashCode() ^ Major.GetHashCode();
+            return Sequence.GetHashCode(Minor, Major);
         }
 
         internal void Write(byte[] buffer, ref int offset)

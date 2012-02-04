@@ -44,12 +44,8 @@ namespace PcapDotNet.Packets.Ethernet
             if (hexes.Length != 6)
                 throw new ArgumentException("Failed parsing " + address + " as mac address. Expected 6 hexes and got " + hexes.Length + " hexes", "address");
 
-            _value = (UInt48)(((long)Convert.ToByte(hexes[0], 16) << 40) |
-                              ((long)Convert.ToByte(hexes[1], 16) << 32) |
-                              ((long)Convert.ToByte(hexes[2], 16) << 24) |
-                              ((long)Convert.ToByte(hexes[3], 16) << 16) |
-                              ((long)Convert.ToByte(hexes[4], 16) << 8) |
-                              Convert.ToByte(hexes[5], 16));
+            _value = BitSequence.Merge(Convert.ToByte(hexes[0], 16), Convert.ToByte(hexes[1], 16), Convert.ToByte(hexes[2], 16),
+                                       Convert.ToByte(hexes[3], 16), Convert.ToByte(hexes[4], 16), Convert.ToByte(hexes[5], 16));
         }
 
         /// <summary>

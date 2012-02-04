@@ -63,6 +63,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(obj as DnsDomainName);
         }
 
+        public override int GetHashCode()
+        {
+            return _labels.SequenceGetHashCode();
+        }
+
         internal int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             int length = 0;

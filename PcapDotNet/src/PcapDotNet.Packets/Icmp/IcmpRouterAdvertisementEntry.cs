@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -59,7 +60,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         public override int GetHashCode()
         {
-            return RouterAddress.GetHashCode() ^ RouterAddressPreference.GetHashCode();
+            return Sequence.GetHashCode(RouterAddress, RouterAddressPreference);
         }
 
         private readonly IpV4Address _routerAddress;

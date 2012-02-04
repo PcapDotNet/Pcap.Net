@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -53,9 +54,14 @@ namespace PcapDotNet.Packets.Dns
                    Address.Equals(other.Address);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataAtmAddress);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Format, Address);
         }
 
         internal DnsResourceDataAtmAddress()

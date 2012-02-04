@@ -111,9 +111,14 @@ namespace PcapDotNet.Packets.Dns
                    Other.Equals(other.Other);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataTransactionSignature);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Algorithm, TimeSigned, BitSequence.Merge(Fudge, OriginalId), MessageAuthenticationCode, Error, Other);
         }
 
         internal DnsResourceDataTransactionSignature()

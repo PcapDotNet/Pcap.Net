@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -57,7 +58,7 @@ namespace PcapDotNet.Packets.Dns
         {
             get
             {
-                ushort codingSubcoding = (ushort)(((ushort)Coding << 8) | Subcoding);
+                ushort codingSubcoding = BitSequence.Merge((byte)Coding, Subcoding);
                 return (DnsSinkCodingSubcoding)codingSubcoding;
             }
         }
@@ -75,9 +76,14 @@ namespace PcapDotNet.Packets.Dns
                    Data.Equals(other.Data);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataSink);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(CodingSubcoding, Data);
         }
 
         internal DnsResourceDataSink()

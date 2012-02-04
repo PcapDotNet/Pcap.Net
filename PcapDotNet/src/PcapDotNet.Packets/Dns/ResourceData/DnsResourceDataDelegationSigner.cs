@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -95,9 +96,14 @@ namespace PcapDotNet.Packets.Dns
                    Digest.Equals(other.Digest);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataDelegationSigner);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(KeyTag, (byte)Algorithm, (byte)DigestType), Digest);
         }
 
         internal DnsResourceDataDelegationSigner()

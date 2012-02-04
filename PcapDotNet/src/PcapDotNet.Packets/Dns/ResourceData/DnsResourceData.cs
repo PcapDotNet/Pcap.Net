@@ -8,7 +8,7 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
-    public abstract class DnsResourceData : IEquatable<DnsResourceData>
+    public abstract class DnsResourceData
     {
         internal const int StringMinimumLength = sizeof(byte); 
 
@@ -18,13 +18,6 @@ namespace PcapDotNet.Packets.Dns
             if (prototype == null)
                 return null;
             return prototype.GetType();
-        }
-
-        public abstract bool Equals(DnsResourceData other);
-
-        public sealed override bool Equals(object obj)
-        {
-            return Equals(obj as DnsResourceData);
         }
 
         internal abstract int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns);

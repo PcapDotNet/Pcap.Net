@@ -1,4 +1,6 @@
-﻿namespace PcapDotNet.Packets.Dns
+﻿using PcapDotNet.Base;
+
+namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
     /// http://files.dns-sd.org/draft-sekar-dns-llq.txt.
@@ -64,6 +66,11 @@
                    ErrorCode.Equals(castedOther.ErrorCode) &&
                    Id.Equals(castedOther.Id) &&
                    LeaseLife.Equals(castedOther.LeaseLife);
+        }
+
+        internal override int DataGetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(Version, (ushort)Opcode), ErrorCode, Id, LeaseLife);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

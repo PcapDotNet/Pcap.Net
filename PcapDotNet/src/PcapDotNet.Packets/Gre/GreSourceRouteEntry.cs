@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Gre
@@ -78,7 +79,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public sealed override int GetHashCode()
         {
-            return AddressFamily.GetHashCode() ^ Length.GetHashCode() ^ PayloadOffset.GetHashCode() ^ PayloadHashCode;
+            return Sequence.GetHashCode(AddressFamily, Length, PayloadOffset) ^ PayloadHashCode;
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -33,6 +34,11 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsTypeBitmaps);
+        }
+
+        public override int GetHashCode()
+        {
+            return TypesExist.SequenceGetHashCode();
         }
 
         public int GetLength()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -52,9 +53,14 @@ namespace PcapDotNet.Packets.Dns
                    _typeBitmaps.Equals(other._typeBitmaps);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataNextDomainSecure);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(NextDomainName, _typeBitmaps);
         }
 
         internal DnsResourceDataNextDomainSecure()

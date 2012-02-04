@@ -29,6 +29,11 @@ namespace PcapDotNet.Base
             return new UInt24(value);
         }
 
+        public static explicit operator UInt24(uint value)
+        {
+            return new UInt24((int)value);
+        }
+
         /// <summary>
         /// Converts the 24 bits unsigned integer to a 32 bits signed integer.
         /// </summary>

@@ -33,6 +33,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsGatewayIpV4);
         }
 
+        internal override int DataGetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, int offset)
         {
             buffer.Write(offset, Value, Endianity.Big);

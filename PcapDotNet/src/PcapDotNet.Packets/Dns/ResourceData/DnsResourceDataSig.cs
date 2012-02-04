@@ -153,7 +153,13 @@ namespace PcapDotNet.Packets.Dns
                    Signature.Equals(other.Signature);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge((ushort)TypeCovered, (byte)Algorithm, Labels), OriginalTtl, SignatureExpiration, SignatureInception,
+                                        KeyTag, SignersName, Signature);
+        }
+
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataSig);
         }

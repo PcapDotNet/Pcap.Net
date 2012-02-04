@@ -36,6 +36,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(obj as DnsOptions);
         }
 
+        public override int GetHashCode()
+        {
+            return Options.SequenceGetHashCode();
+        }
+
         private static readonly DnsOptions _none = new DnsOptions();
 
         internal void Write(byte[] buffer, int offset)

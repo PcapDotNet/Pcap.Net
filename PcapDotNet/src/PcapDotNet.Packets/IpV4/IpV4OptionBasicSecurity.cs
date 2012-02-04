@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -175,7 +176,7 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   ((((byte)ClassificationLevel) << 16) | (((byte)ProtectionAuthorities) << 8) | Length).GetHashCode();
+                   BitSequence.Merge((byte)ClassificationLevel, (byte)ProtectionAuthorities,(byte)Length).GetHashCode();
         }
 
         /// <summary>

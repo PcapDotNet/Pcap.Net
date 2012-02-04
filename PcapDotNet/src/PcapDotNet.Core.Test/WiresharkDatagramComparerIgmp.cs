@@ -109,6 +109,7 @@ namespace PcapDotNet.Core.Test
 
         private static void CompareIgmpGroupRecord(XElement groupRecord, IgmpGroupRecordDatagram groupRecordDatagram)
         {
+            Console.WriteLine(groupRecordDatagram.AuxiliaryData);
             int sourceAddressIndex = 0;
             foreach (var field in groupRecord.Fields())
             {

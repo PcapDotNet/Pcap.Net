@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets
         /// An empty datagram.
         /// Useful for empty payloads.
         /// </summary>
-        public static Datagram Empty
+        public new static Datagram Empty
         {
             get { return _empty; }
         }

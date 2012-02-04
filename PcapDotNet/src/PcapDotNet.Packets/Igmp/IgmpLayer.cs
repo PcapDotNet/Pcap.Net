@@ -63,7 +63,7 @@ namespace PcapDotNet.Packets.Igmp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   MessageType.GetHashCode() ^ QueryVersion.GetHashCode();
+                   Sequence.GetHashCode(MessageType, QueryVersion);
         }
 
         /// <summary>

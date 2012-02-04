@@ -102,7 +102,12 @@ namespace PcapDotNet.Packets.Dns
                    MinimumTtl.Equals(other.MinimumTtl);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(MainNameServer, ResponsibleMailBox, Serial, Refresh, Retry, Expire, MinimumTtl);
+        }
+
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataStartOfAuthority);
         }

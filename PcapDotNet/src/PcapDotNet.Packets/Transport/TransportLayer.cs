@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Transport
@@ -81,8 +82,7 @@ namespace PcapDotNet.Packets.Transport
         public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Checksum.GetHashCode() ^
-                   ((SourcePort << 16) + DestinationPort);
+                   Checksum.GetHashCode() ^ BitSequence.Merge(SourcePort, DestinationPort).GetHashCode();
         }
 
         /// <summary>

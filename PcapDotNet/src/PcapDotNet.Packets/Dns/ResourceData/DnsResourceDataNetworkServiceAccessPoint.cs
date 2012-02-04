@@ -80,9 +80,14 @@ namespace PcapDotNet.Packets.Dns
                    Selector.Equals(other.Selector);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataNetworkServiceAccessPoint);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(AreaAddress, SystemIdentifier, Selector);
         }
 
         internal DnsResourceDataNetworkServiceAccessPoint()

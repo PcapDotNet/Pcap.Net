@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -128,9 +130,14 @@ namespace PcapDotNet.Packets.Dns
                    Altitude.Equals(other.Altitude);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataLocationInformation);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Version, Size, HorizontalPrecision, VerticalPrecision, Latitude, Longitude, Altitude);
         }
 
         internal DnsResourceDataLocationInformation()

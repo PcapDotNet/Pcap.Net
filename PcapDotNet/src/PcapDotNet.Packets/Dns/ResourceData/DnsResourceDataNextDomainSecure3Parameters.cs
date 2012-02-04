@@ -29,9 +29,14 @@ namespace PcapDotNet.Packets.Dns
             return EqualsParameters(other);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataNextDomainSecure3Parameters);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetHashCodeParameters();
         }
 
         internal DnsResourceDataNextDomainSecure3Parameters()

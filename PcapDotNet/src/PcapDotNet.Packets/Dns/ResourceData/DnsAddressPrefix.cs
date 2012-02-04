@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -104,6 +105,12 @@ namespace PcapDotNet.Packets.Dns
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsAddressPrefix);
+        }
+
+        public override int GetHashCode()
+        {
+            return BitSequence.Merge((ushort)AddressFamily, PrefixLength, (byte)(((Negation ? 1 : 0) << 7) | AddressFamilyDependentPart.Length)).GetHashCode() ^
+                   AddressFamilyDependentPart.BytesSequenceGetHashCode();
         }
 
         public static DnsAddressPrefix Read(DataSegment data)
