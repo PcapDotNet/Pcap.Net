@@ -1,4 +1,6 @@
-﻿namespace PcapDotNet.Packets.Dns
+﻿using PcapDotNet.Base;
+
+namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
     /// RFC 2671.
@@ -27,7 +29,7 @@
     public sealed class DnsOptResourceRecord : DnsDataResourceRecord
     {
         public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedRcode, DnsOptVersion version, DnsOptFlags flags, DnsResourceDataOptions data)
-            : this(domainName, (DnsClass)sendersUdpPayloadSize, (extendedRcode << 24) | ((byte)version << 16) | (ushort)flags, data)
+            : this(domainName, (DnsClass)sendersUdpPayloadSize, (int)BitSequence.Merge(extendedRcode, (byte)version, (ushort)flags), data)
         {
         }
 

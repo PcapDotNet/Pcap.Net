@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -67,9 +68,14 @@ namespace PcapDotNet.Packets.Dns
                    Value.SequenceEqual(other.Value);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataCertificationAuthorityAuthorization);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Flags, Tag, Value);
         }
 
         internal DnsResourceDataCertificationAuthorityAuthorization()

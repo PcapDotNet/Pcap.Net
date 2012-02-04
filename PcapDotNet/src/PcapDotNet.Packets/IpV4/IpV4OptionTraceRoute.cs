@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -166,9 +167,7 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Identification.GetHashCode() ^
-                   ((OutboundHopCount << 16) | (ReturnHopCount << 16)).GetHashCode() ^
-                   OriginatorIpAddress.GetHashCode();
+                   Sequence.GetHashCode(Identification, BitSequence.Merge(OutboundHopCount, ReturnHopCount), OriginatorIpAddress);
 
         }
 

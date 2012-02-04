@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 
@@ -80,7 +81,7 @@ namespace PcapDotNet.Packets.Gre
         /// <param name="keyCallId">(Low 2 octets of Key) Contains the Peer's Call ID for the session to which this packet belongs.</param>
         public void SetKey(ushort keyPayloadLength, ushort keyCallId)
         {
-            Key = (uint)((keyPayloadLength << 16) | keyCallId);
+            Key = BitSequence.Merge(keyPayloadLength, keyCallId);
         }
 
         /// <summary>

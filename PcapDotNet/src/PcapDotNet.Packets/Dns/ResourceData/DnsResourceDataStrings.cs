@@ -20,9 +20,14 @@ namespace PcapDotNet.Packets.Dns
                    Strings.SequenceEqual(other.Strings);
         }
 
-        public sealed override bool Equals(DnsResourceData other)
+        public sealed override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataStrings);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetType().GetHashCode() ^ Strings.SequenceGetHashCode();
         }
 
         internal DnsResourceDataStrings(ReadOnlyCollection<DataSegment> strings)

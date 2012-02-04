@@ -22,6 +22,11 @@ namespace PcapDotNet.Packets.Dns
             return Data.Equals(((DnsOptionAnything)other).Data);
         }
 
+        internal override int DataGetHashCode()
+        {
+            return Data.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             Data.Write(buffer, ref offset);

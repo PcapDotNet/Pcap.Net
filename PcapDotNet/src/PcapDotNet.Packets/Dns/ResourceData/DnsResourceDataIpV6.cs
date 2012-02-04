@@ -28,9 +28,14 @@ namespace PcapDotNet.Packets.Dns
             return other != null && Data.Equals(other.Data);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataIpV6);
+        }
+
+        public override int GetHashCode()
+        {
+            return Data.GetHashCode();
         }
 
         internal DnsResourceDataIpV6()

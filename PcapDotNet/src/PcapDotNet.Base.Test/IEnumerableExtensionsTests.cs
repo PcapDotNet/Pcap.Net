@@ -53,7 +53,7 @@ namespace PcapDotNet.Base.Test
         {
             int[] sequence = new[]{1,2,3,4,5};
 
-            Assert.AreEqual(1.GetHashCode() ^ 2.GetHashCode() ^ 3.GetHashCode() ^ 4.GetHashCode() ^ 5.GetHashCode(),sequence.SequenceGetHashCode());
+            Assert.AreEqual(1.GetHashCode() ^ 2.GetHashCode() ^ 3.GetHashCode() ^ 4.GetHashCode() ^ 5.GetHashCode(), sequence.SequenceGetHashCode());
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace PcapDotNet.Base.Test
         {
             byte[] sequence = new byte[] { 1, 2, 3, 4, 5 };
 
-            Assert.AreEqual(1 ^ (2 << 8) ^ (3 << 16) ^ (4 << 24) ^ 5, sequence.BytesSequenceGetHashCode());
+            Assert.AreEqual((int)BitSequence.Merge(4, 3, 2, 1) ^ 5, sequence.BytesSequenceGetHashCode());
         }
 
         [TestMethod]

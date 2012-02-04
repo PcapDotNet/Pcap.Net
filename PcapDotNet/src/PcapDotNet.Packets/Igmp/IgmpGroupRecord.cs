@@ -136,8 +136,7 @@ namespace PcapDotNet.Packets.Igmp
         /// </summary>
         public override int GetHashCode()
         {
-            return RecordType.GetHashCode() ^ MulticastAddress.GetHashCode() ^ SourceAddresses.SequenceGetHashCode() ^
-                   AuxiliaryData.BytesSequenceGetHashCode();
+            return Sequence.GetHashCode(RecordType, MulticastAddress) ^ SourceAddresses.SequenceGetHashCode() ^ AuxiliaryData.BytesSequenceGetHashCode();
         }
     }
 }

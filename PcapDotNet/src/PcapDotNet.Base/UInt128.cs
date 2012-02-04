@@ -519,7 +519,7 @@ namespace PcapDotNet.Base
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
-            return _mostSignificant.GetHashCode() ^ _leastSignificant.GetHashCode();
+            return Sequence.GetHashCode(_mostSignificant, _leastSignificant);
         }
 
         /// <summary>

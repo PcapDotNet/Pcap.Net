@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -40,9 +41,14 @@ namespace PcapDotNet.Packets.Dns
                    Next.Equals(other.Next);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataTrustAnchorLink);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Previous, Next);
         }
 
         internal DnsResourceDataTrustAnchorLink()

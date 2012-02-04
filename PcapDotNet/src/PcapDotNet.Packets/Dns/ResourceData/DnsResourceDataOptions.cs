@@ -34,9 +34,14 @@ namespace PcapDotNet.Packets.Dns
                    Options.Equals(other.Options);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataOptions);
+        }
+
+        public override int GetHashCode()
+        {
+            return Options.GetHashCode();
         }
 
         internal DnsResourceDataOptions()

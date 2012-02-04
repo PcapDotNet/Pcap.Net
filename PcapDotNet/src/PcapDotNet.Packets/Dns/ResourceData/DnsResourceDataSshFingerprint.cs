@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -58,9 +59,14 @@ namespace PcapDotNet.Packets.Dns
                    Fingerprint.Equals(other.Fingerprint);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataSshFingerprint);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge((byte)Algorithm, (byte)FingerprintType), Fingerprint);
         }
 
         internal DnsResourceDataSshFingerprint()

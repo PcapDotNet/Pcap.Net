@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -27,7 +28,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         public IcmpMessageTypeAndCode MessageTypeAndCode
         {
-            get { return (IcmpMessageTypeAndCode)(((ushort)MessageType << 8) | CodeValue); }
+            get { return (IcmpMessageTypeAndCode)BitSequence.Merge((byte)MessageType, CodeValue); }
         }
 
         /// <summary>
@@ -133,7 +134,7 @@ namespace PcapDotNet.Packets.Icmp
         public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   MessageTypeAndCode.GetHashCode() ^ Checksum.GetHashCode() ^ Variable.GetHashCode();
+                   Sequence.GetHashCode(MessageTypeAndCode, Variable) ^ Checksum.GetHashCode();
         }
 
         /// <summary>

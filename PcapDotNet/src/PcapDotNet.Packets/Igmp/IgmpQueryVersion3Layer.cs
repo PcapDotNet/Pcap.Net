@@ -114,8 +114,7 @@ namespace PcapDotNet.Packets.Igmp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   GroupAddress.GetHashCode() ^
-                   ((IsSuppressRouterSideProcessing ? 0 : (1 << 8)) + QueryRobustnessVariable) ^
+                   Sequence.GetHashCode(GroupAddress, BitSequence.Merge(IsSuppressRouterSideProcessing.ToByte(), QueryRobustnessVariable)) ^
                    SourceAddresses.SequenceGetHashCode();
         }
 

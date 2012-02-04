@@ -19,6 +19,13 @@ namespace PcapDotNet.Packets.Dns
             return Equals(obj as DnsGateway);
         }
 
+        public override int GetHashCode()
+        {
+            return Type.GetHashCode() ^ DataGetHashCode();
+        }
+
+        internal abstract int DataGetHashCode();
+
         internal abstract void Write(byte[] buffer, int offset);
 
         internal static DnsGateway CreateInstance(DnsGatewayType gatewayType, DnsDatagram dns, int offsetInDns, int length)

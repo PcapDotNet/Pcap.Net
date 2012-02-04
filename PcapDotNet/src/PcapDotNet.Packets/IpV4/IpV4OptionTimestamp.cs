@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -205,8 +206,7 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   (((byte)TimestampType << 16) | (Overflow << 8)).GetHashCode() ^
-                   PointedIndex.GetHashCode();
+                   Sequence.GetHashCode(BitSequence.Merge((byte)TimestampType, Overflow), PointedIndex);
         }
 
         internal sealed override void Write(byte[] buffer, ref int offset)

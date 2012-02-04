@@ -24,6 +24,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(other as DnsGatewayNone);
         }
 
+        internal override int DataGetHashCode()
+        {
+            return 0;
+        }
+
         internal DnsGatewayNone()
         {
         }

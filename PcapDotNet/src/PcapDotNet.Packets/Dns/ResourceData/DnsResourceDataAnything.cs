@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -28,9 +29,14 @@ namespace PcapDotNet.Packets.Dns
             return other != null && Data.Equals(other.Data);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataAnything);
+        }
+
+        public override int GetHashCode()
+        {
+            return Data.GetHashCode();
         }
 
         internal override int GetLength()

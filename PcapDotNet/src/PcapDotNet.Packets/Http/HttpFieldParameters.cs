@@ -91,7 +91,7 @@ namespace PcapDotNet.Packets.Http
         {
             return
                 _parameters.Select(pair => new KeyValuePair<string, string>(pair.Key.ToUpperInvariant(), pair.Value))
-                    .Xor(pair => pair.Key.GetHashCode() ^ pair.Value.GetHashCode());
+                    .Xor(pair => Sequence.GetHashCode(pair.Key, pair.Value));
         }
 
         /// <summary>

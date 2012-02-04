@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -33,9 +34,14 @@ namespace PcapDotNet.Packets.Dns
                    DomainName.Equals(other.DomainName);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataUShortDomainName);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(GetType(), Value, DomainName);
         }
 
         internal DnsResourceDataUShortDomainName(ushort value, DnsDomainName domainName)

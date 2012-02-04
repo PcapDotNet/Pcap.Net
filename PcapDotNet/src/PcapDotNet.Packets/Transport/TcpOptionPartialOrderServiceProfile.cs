@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -108,7 +109,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public override int GetHashCode()
         {
-            return base.GetHashCode() ^ ((IsStart ? 1 : 0) << 1) ^ (IsEnd ? 1 : 0);
+            return base.GetHashCode() ^ BitSequence.Merge(IsStart, IsEnd).GetHashCode();
         }
 
         /// <summary>

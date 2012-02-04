@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -61,9 +62,14 @@ namespace PcapDotNet.Packets.Dns
                    MapX400.Equals(other.MapX400);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataX400Pointer);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Preference, Map822, MapX400);
         }
 
         internal DnsResourceDataX400Pointer()

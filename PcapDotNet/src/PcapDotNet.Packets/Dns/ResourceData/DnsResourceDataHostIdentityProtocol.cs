@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 using IListExtensions = PcapDotNet.Base.IListExtensions;
 
 namespace PcapDotNet.Packets.Dns
@@ -85,9 +86,14 @@ namespace PcapDotNet.Packets.Dns
                    RendezvousServers.SequenceEqual(RendezvousServers);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataHostIdentityProtocol);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(HostIdentityTag, PublicKeyAlgorithm, PublicKey) ^ RendezvousServers.SequenceGetHashCode();
         }
 
         internal DnsResourceDataHostIdentityProtocol()

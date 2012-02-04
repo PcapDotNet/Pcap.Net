@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -225,8 +226,7 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   ((((byte)Function | Rate) << 8) | Ttl).GetHashCode() ^
-                   Nonce.GetHashCode();
+                   Sequence.GetHashCode(BitSequence.Merge((byte)((byte)Function | Rate), Ttl), Nonce);
         }
 
         /// <summary>

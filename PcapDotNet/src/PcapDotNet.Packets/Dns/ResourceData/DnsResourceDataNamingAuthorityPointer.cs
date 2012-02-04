@@ -131,9 +131,14 @@ namespace PcapDotNet.Packets.Dns
                    Replacement.Equals(other.Replacement);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataNamingAuthorityPointer);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(Order, Preference), Flags, Services, Regexp, Replacement);
         }
 
         internal DnsResourceDataNamingAuthorityPointer()

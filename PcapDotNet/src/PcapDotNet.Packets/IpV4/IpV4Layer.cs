@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.IpV4
@@ -183,13 +184,8 @@ namespace PcapDotNet.Packets.IpV4
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   ((TypeOfService << 24) + (Identification << 8) + Ttl) ^
-                   Fragmentation.GetHashCode() ^
-                   Protocol.GetHashCode() ^
-                   HeaderChecksum.GetHashCode() ^
-                   Source.GetHashCode() ^ Destination.GetHashCode() ^
-                   Options.GetHashCode();
-
+                   Sequence.GetHashCode(BitSequence.Merge(TypeOfService, Identification, Ttl),
+                                        Fragmentation, Source, Destination, Options) ^ Protocol.GetHashCode() ^ HeaderChecksum.GetHashCode();
         }
 
         /// <summary>

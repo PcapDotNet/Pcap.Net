@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
@@ -20,7 +22,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         protected sealed override uint Variable
         {
-            get { return (uint)((Identifier << 16) | SequenceNumber); }
+            get { return BitSequence.Merge(Identifier, SequenceNumber); }
         }
     }
 }

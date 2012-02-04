@@ -31,6 +31,11 @@ namespace PcapDotNet.Packets.Dns
             return Equals(obj as DnsQueryResourceRecord);
         }
 
+        public override int GetHashCode()
+        {
+            return GetHashCodeBase();
+        }
+
         internal static DnsQueryResourceRecord Parse(DnsDatagram dns, int offsetInDns, out int numBytesRead)
         {
             DnsDomainName domainName;

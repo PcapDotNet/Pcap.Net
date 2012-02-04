@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -52,10 +53,10 @@ namespace PcapDotNet.Packets.IpV4
                 throw new ArgumentNullException("value");
 
             string[] values = value.Split('.');
-            _value = (uint)((byte.Parse(values[0], CultureInfo.InvariantCulture) << 24) +
-                            (byte.Parse(values[1], CultureInfo.InvariantCulture) << 16) +
-                            (byte.Parse(values[2], CultureInfo.InvariantCulture) << 8) +
-                            (byte.Parse(values[3], CultureInfo.InvariantCulture)));
+            _value = BitSequence.Merge(byte.Parse(values[0], CultureInfo.InvariantCulture),
+                                       byte.Parse(values[1], CultureInfo.InvariantCulture),
+                                       byte.Parse(values[2], CultureInfo.InvariantCulture),
+                                       byte.Parse(values[3], CultureInfo.InvariantCulture));
         }
 
         /// <summary>

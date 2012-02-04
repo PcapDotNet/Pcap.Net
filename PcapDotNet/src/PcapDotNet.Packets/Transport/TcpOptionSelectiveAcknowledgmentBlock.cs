@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -89,7 +90,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public override int GetHashCode()
         {
-            return LeftEdge.GetHashCode() ^ RightEdge.GetHashCode();
+            return Sequence.GetHashCode(LeftEdge, RightEdge);
         }
     }
 }

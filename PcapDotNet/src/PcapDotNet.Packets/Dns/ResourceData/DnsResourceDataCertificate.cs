@@ -1,4 +1,5 @@
 ﻿using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -75,9 +76,14 @@ namespace PcapDotNet.Packets.Dns
                    Certificate.Equals(other.Certificate);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataCertificate);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge((ushort)CertificateType, KeyTag), Algorithm, Certificate);
         }
 
         internal DnsResourceDataCertificate()

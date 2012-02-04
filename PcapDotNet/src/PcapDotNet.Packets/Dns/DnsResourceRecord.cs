@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -84,6 +85,11 @@ namespace PcapDotNet.Packets.Dns
                    DomainName.Equals(other.DomainName) &&
                    Type.Equals(other.Type) &&
                    DnsClass.Equals(other.DnsClass);
+        }
+
+        internal int GetHashCodeBase()
+        {
+            return Sequence.GetHashCode(DomainName, BitSequence.Merge((ushort)Type, (ushort)DnsClass));
         }
 
         internal static bool TryParseBase(DnsDatagram dns, int offsetInDns,

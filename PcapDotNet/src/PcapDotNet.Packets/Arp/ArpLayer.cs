@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.Arp
@@ -135,7 +136,7 @@ namespace PcapDotNet.Packets.Arp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   (((ushort)ProtocolType << 16) + (ushort)Operation);
+                   BitSequence.Merge((ushort)ProtocolType, (ushort)Operation).GetHashCode();
         }
     }
 }

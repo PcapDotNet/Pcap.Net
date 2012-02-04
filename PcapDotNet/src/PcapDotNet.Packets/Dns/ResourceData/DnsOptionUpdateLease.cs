@@ -42,6 +42,11 @@
             return Lease.Equals(((DnsOptionUpdateLease)other).Lease);
         }
 
+        internal override int DataGetHashCode()
+        {
+            return Lease.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Lease, Endianity.Big);

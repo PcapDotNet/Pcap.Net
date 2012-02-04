@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitSequence.cs" />
     <Compile Include="CharExtensions.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EncodingExtensions.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="MatchExtensions.cs" />
     <Compile Include="MemberInfoExtensions.cs" />
     <Compile Include="PropertyInfoExtensions.cs" />
+    <Compile Include="Sequence.cs" />
     <Compile Include="SerialNumber32.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TypeExtensions.cs" />

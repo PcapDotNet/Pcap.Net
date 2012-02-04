@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
 
 namespace PcapDotNet.Packets.Ethernet
@@ -114,7 +115,7 @@ namespace PcapDotNet.Packets.Ethernet
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Source.GetHashCode() ^ Destination.GetHashCode() ^ EtherType.GetHashCode();
+                   Sequence.GetHashCode(Source, Destination, EtherType);
         }
 
         /// <summary>

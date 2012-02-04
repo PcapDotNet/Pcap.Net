@@ -34,6 +34,11 @@ namespace PcapDotNet.Base
                    Equals((SerialNumber32)obj);
         }
 
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
         public int CompareTo(SerialNumber32 other)
         {
             if (Equals(other))

@@ -45,9 +45,14 @@ namespace PcapDotNet.Packets.Dns
                    Items.SequenceEqual(other.Items);
         }
 
-        public override bool Equals(DnsResourceData other)
+        public override bool Equals(object other)
         {
             return Equals(other as DnsResourceDataAddressPrefixList);
+        }
+
+        public override int GetHashCode()
+        {
+            return Items.SequenceGetHashCode();
         }
 
         internal DnsResourceDataAddressPrefixList()
