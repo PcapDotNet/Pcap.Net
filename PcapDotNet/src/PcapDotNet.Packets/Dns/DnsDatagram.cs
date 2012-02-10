@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.Dns
         {
             public const int Id = 0;
             public const int IsResponse = 2;
-            public const int Opcode = 2;
+            public const int OpCode = 2;
             public const int IsAuthoritiveAnswer = 2;
             public const int IsTruncated = 2;
             public const int IsRecusionDesired = 2;
@@ -69,11 +69,11 @@ namespace PcapDotNet.Packets.Dns
         private static class Mask
         {
             public const byte IsResponse = 0x80;
-            public const byte Opcode = 0x78;
+            public const byte OpCode = 0x78;
             public const byte IsAuthoritiveAnswer = 0x04;
             public const byte IsTruncated = 0x02;
             public const byte IsRecusionDesired = 0x01;
-            public const byte IsRecusionAvailable = 0x80;
+            public const byte IsRecursionAvailable = 0x80;
             public const byte FutureUse = 0x40;
             public const byte IsAuthenticData = 0x20;
             public const byte IsCheckingDisabled = 0x10;
@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Dns
 
         private static class Shift
         {
-            public const int Opcode = 3;
+            public const int OpCode = 3;
         }
 
         /// <summary>
@@ -119,9 +119,9 @@ namespace PcapDotNet.Packets.Dns
         /// Specifies kind of query in this message.  
         /// This value is set by the originator of a query and copied into the response.
         /// </summary>
-        public DnsOpcode Opcode
+        public DnsOpCode OpCode
         {
-            get { return (DnsOpcode)((this[Offset.Opcode] & Mask.Opcode) >> Shift.Opcode); }
+            get { return (DnsOpCode)((this[Offset.OpCode] & Mask.OpCode) >> Shift.OpCode); }
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Dns
         /// Note that the contents of the answer section may have multiple owner names because of aliases.  
         /// The AA bit corresponds to the name which matches the query name, or the first owner name in the answer section.
         /// </summary>
-        public bool IsAuthoritiveAnswer
+        public bool IsAuthoritativeAnswer
         {
             get { return ReadBool(Offset.IsAuthoritiveAnswer, Mask.IsAuthoritiveAnswer); }
         }
@@ -155,9 +155,9 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// This be is set or cleared in a response, and denotes whether recursive query support is available in the name server.
         /// </summary>
-        public bool IsRecusionAvailable
+        public bool IsRecursionAvailable
         {
-            get { return ReadBool(Offset.IsRecusionAvailable, Mask.IsRecusionAvailable); }
+            get { return ReadBool(Offset.IsRecusionAvailable, Mask.IsRecursionAvailable); }
         }
 
         /// <summary>
@@ -319,11 +319,11 @@ namespace PcapDotNet.Packets.Dns
                    {
                        Id = Id,
                        IsQuery = IsQuery,
-                       Opcode = Opcode,
-                       IsAuthoritiveAnswer = IsAuthoritiveAnswer,
+                       OpCode = OpCode,
+                       IsAuthoritativeAnswer = IsAuthoritativeAnswer,
                        IsTruncated = IsTruncated,
-                       IsRecusionDesired = IsRecusionDesired,
-                       IsRecusionAvailable = IsRecusionAvailable,
+                       IsRecursionDesired = IsRecusionDesired,
+                       IsRecursionAvailable = IsRecursionAvailable,
                        FutureUse = FutureUse,
                        IsAuthenticData = IsAuthenticData,
                        IsCheckingDisabled = IsCheckingDisabled,
@@ -367,17 +367,17 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal static void Write(byte[] buffer, int offset,
-                                   ushort id, bool isResponse, DnsOpcode opcode, bool isAuthoritiveAnswer, bool isTruncated,
+                                   ushort id, bool isResponse, DnsOpCode opCode, bool isAuthoritiveAnswer, bool isTruncated,
                                    bool isRecursionDesired, bool isRecursionAvailable, bool futureUse, bool isAuthenticData, bool isCheckingDisabled,
-                                   DnsResponseCode responseCode, List<DnsQueryResourceRecord> queries, List<DnsDataResourceRecord> answers,
-                                   List<DnsDataResourceRecord> authorities, List<DnsDataResourceRecord> additionals,
+                                   DnsResponseCode responseCode, IList<DnsQueryResourceRecord> queries, IList<DnsDataResourceRecord> answers,
+                                   IList<DnsDataResourceRecord> authorities, IList<DnsDataResourceRecord> additionals,
                                    DnsDomainNameCompressionMode domainNameCompressionMode)
         {
             buffer.Write(offset + Offset.Id, id, Endianity.Big);
             byte flags0 = 0;
             if (isResponse)
                 flags0 |= Mask.IsResponse;
-            flags0 |= (byte)((((byte)opcode) << Shift.Opcode) & Mask.Opcode);
+            flags0 |= (byte)((((byte)opCode) << Shift.OpCode) & Mask.OpCode);
             if (isAuthoritiveAnswer)
                 flags0 |= Mask.IsAuthoritiveAnswer;
             if (isTruncated)
@@ -387,7 +387,7 @@ namespace PcapDotNet.Packets.Dns
             buffer.Write(offset + Offset.IsResponse, flags0);
             byte flags1 = 0;
             if (isRecursionAvailable)
-                flags1 |= Mask.IsRecusionAvailable;
+                flags1 |= Mask.IsRecursionAvailable;
             if (futureUse)
                 flags1 |= Mask.FutureUse;
             if (isAuthenticData)

@@ -556,7 +556,12 @@ namespace PcapDotNet.Base
 
         public string ToString(string format)
         {
-            return ((long)this).ToString(format);
+            return ToString(format, CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(string format, IFormatProvider provider)
+        {
+            return ((long)this).ToString(format, provider);
         }
 
         private UInt48(long value)

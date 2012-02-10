@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Srv)]
+    [DnsTypeRegistration(Type = DnsType.ServerSelection)]
     public sealed class DnsResourceDataServerSelection : DnsResourceDataNoCompression, IEquatable<DnsResourceDataServerSelection>
     {
         private static class Offset

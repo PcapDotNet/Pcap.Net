@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -49,6 +50,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public ReadOnlyCollection<DnsType> TypesExist { get { return _typeBitmaps.TypesExist.AsReadOnly(); } }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public bool Equals(DnsResourceDataNextDomainSecure3 other)
         {
             return EqualsParameters(other) &&
@@ -100,7 +102,7 @@ namespace PcapDotNet.Packets.Dns
             int nextHashedOwnerNameLength = data[nextHashedOwnerNameLengthOffset];
             if (data.Length - nextHashedOwnerNameOffset < nextHashedOwnerNameLength)
                 return null;
-            DataSegment nextHashedOwnerName = data.SubSegment(nextHashedOwnerNameOffset, nextHashedOwnerNameLength);
+            DataSegment nextHashedOwnerName = data.Subsegment(nextHashedOwnerNameOffset, nextHashedOwnerNameLength);
 
             int typeBitmapsOffset = nextHashedOwnerNameOffset + nextHashedOwnerNameLength;
             DnsTypeBitmaps typeBitmaps = DnsTypeBitmaps.CreateInstance(data.Buffer, data.StartOffset + typeBitmapsOffset, data.Length - typeBitmapsOffset);
@@ -115,7 +117,8 @@ namespace PcapDotNet.Packets.Dns
             : base(hashAlgorithm, flags, iterations, salt)
         {
             if (nextHashedOwnerName.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("nextHashedOwnerName", nextHashedOwnerName.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("nextHashedOwnerName", nextHashedOwnerName.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot bigger than {0}.", byte.MaxValue));
 
             NextHashedOwnerName = nextHashedOwnerName;
             _typeBitmaps = typeBitmaps;

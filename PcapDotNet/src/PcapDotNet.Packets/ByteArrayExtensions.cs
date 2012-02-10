@@ -350,6 +350,9 @@ namespace PcapDotNet.Packets
 
         public static BigInteger ReadUnsignedBigInteger(this byte[] buffer, int offset, int length, Endianity endianity)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             BigInteger value = BigInteger.Zero;
             for (int i = 0; i != length; ++i)
             {
@@ -662,6 +665,9 @@ namespace PcapDotNet.Packets
 
         public static void WriteUnsigned(this byte[] buffer, int offset, BigInteger value, int length, Endianity endianity)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+            
             if (value.Sign < 0)
                 throw new ArgumentOutOfRangeException("value", value, "Must be non-negative.");
             for (int i = 0; i != length && value != BigInteger.Zero; ++i, value >>= 8)

@@ -3,19 +3,21 @@
     /// <summary>
     /// Eastlake.
     /// </summary>
-    public enum DnsSinkCodingSubcoding : ushort
+    public enum DnsSinkCodingSubCoding : ushort
     {
+        None = 0x0000,
+
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Basic Encoding Rules.
         /// </summary>
-        Asn1SnmpBer = 0x0101,
+        Asn1SnmpBasicEncodingRules = 0x0101,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Distinguished Encoding Rules.
         /// </summary>
-        Asn1SnmpDer = 0x0102,
+        Asn1SnmpDistinguishedEncodingRules = 0x0102,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
@@ -33,7 +35,7 @@
         /// The SNMP subset of ASN.1.
         /// Canonical Encoding Rules.
         /// </summary>
-        Asn1SnmpCer = 0x0105,
+        Asn1SnmpCanonicalEncodingRules = 0x0105,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
@@ -45,13 +47,13 @@
         /// OSI ASN.1 1990 [ASN.1].
         /// Basic Encoding Rules.
         /// </summary>
-        Asn1Osi1990Ber = 0x0201,
+        Asn1Osi1990BasicEncodingRules = 0x0201,
 
         /// <summary>
         /// OSI ASN.1 1990 [ASN.1].
         /// Distinguished Encoding Rules.
         /// </summary>
-        Asn1Osi1990Der = 0x0202,
+        Asn1Osi1990DistinguishedEncodingRules = 0x0202,
 
         /// <summary>
         /// OSI ASN.1 1990 [ASN.1].
@@ -69,7 +71,7 @@
         /// OSI ASN.1 1990 [ASN.1].
         /// Canonical Encoding Rules.
         /// </summary>
-        Asn1Osi1990Cer = 0x0205,
+        Asn1Osi1990CanonicalEncodingRules = 0x0205,
 
         /// <summary>
         /// OSI ASN.1 1990 [ASN.1].
@@ -81,13 +83,13 @@
         /// OSI ASN.1 1994.
         /// Basic Encoding Rules.
         /// </summary>
-        Asn1Osi1994Ber = 0x0301,
+        Asn1Osi1994BasicEncodingRules = 0x0301,
 
         /// <summary>
         /// OSI ASN.1 1994.
         /// Distinguished Encoding Rules.
         /// </summary>
-        Asn1Osi1994Der = 0x0302,
+        Asn1Osi1994DistinguishedEncodingRules = 0x0302,
 
         /// <summary>
         /// OSI ASN.1 1994.
@@ -105,7 +107,7 @@
         /// OSI ASN.1 1994.
         /// Canonical Encoding Rules.
         /// </summary>
-        Asn1Osi1994Cer = 0x0305,
+        Asn1Osi1994CanonicalEncodingRules = 0x0305,
 
         /// <summary>
         /// OSI ASN.1 1994.
@@ -119,7 +121,7 @@
         /// An OSI Object Identifier (OID) preceded by a one byte unsigned length appears at the beginning of the data area to indicate which private abstract syntax is being used.
         /// Basic Encoding Rules.
         /// </summary>
-        AsnPrivateBer = 0x3F01,
+        AsnPrivateBasicEncodingRules = 0x3F01,
 
         /// <summary>
         /// Private abstract syntax notations.
@@ -127,7 +129,7 @@
         /// An OSI Object Identifier (OID) preceded by a one byte unsigned length appears at the beginning of the data area to indicate which private abstract syntax is being used.
         /// Distinguished Encoding Rules.
         /// </summary>
-        AsnPrivateDer = 0x3F02,
+        AsnPrivateDistinguishedEncodingRules = 0x3F02,
 
         /// <summary>
         /// Private abstract syntax notations.
@@ -151,7 +153,7 @@
         /// An OSI Object Identifier (OID) preceded by a one byte unsigned length appears at the beginning of the data area to indicate which private abstract syntax is being used.
         /// Canonical Encoding Rules.
         /// </summary>
-        AsnPrivateCer = 0x3F05,
+        AsnPrivateCanonicalEncodingRules = 0x3F05,
 
         /// <summary>
         /// Private abstract syntax notations.

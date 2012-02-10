@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -24,9 +25,8 @@ namespace PcapDotNet.Packets.Dns
     /// | ...  |                                    |
     /// +------+------------------------------------+
     /// </pre>
-    /// // 
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.TSig)]
+    [DnsTypeRegistration(Type = DnsType.TransactionSignature)]
     public sealed class DnsResourceDataTransactionSignature : DnsResourceData, IEquatable<DnsResourceDataTransactionSignature>
     {
         private static class OffsetAfterAlgorithm
@@ -50,10 +50,17 @@ namespace PcapDotNet.Packets.Dns
         public DnsResourceDataTransactionSignature(DnsDomainName algorithm, UInt48 timeSigned, ushort fudge, DataSegment messageAuthenticationCode,
                                                    ushort originalId, DnsResponseCode error, DataSegment other)
         {
+            if (messageAuthenticationCode == null)
+                throw new ArgumentNullException("messageAuthenticationCode");
+            if (other == null)
+                throw new ArgumentNullException("other");
+
             if (messageAuthenticationCode.Length > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("messageAuthenticationCode", messageAuthenticationCode.Length, string.Format("Cannot be longer than {0}", ushort.MaxValue));
+                throw new ArgumentOutOfRangeException("messageAuthenticationCode", messageAuthenticationCode.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0}", ushort.MaxValue));
             if (other.Length > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("other", other.Length, string.Format("Cannot be longer than {0}", ushort.MaxValue));
+                throw new ArgumentOutOfRangeException("other", other.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0}", ushort.MaxValue));
 
             Algorithm = algorithm;
             TimeSigned = timeSigned;
@@ -169,7 +176,7 @@ namespace PcapDotNet.Packets.Dns
             int messageAuthenticationCodeLength = dns.ReadUShort(offsetInDns + OffsetAfterAlgorithm.MessageAuthenticationCodeSize, Endianity.Big);
             if (length < ConstantPartLength + messageAuthenticationCodeLength)
                 return null;
-            DataSegment messageAuthenticationCode = dns.SubSegment(offsetInDns + OffsetAfterAlgorithm.MessageAuthenticationCode, messageAuthenticationCodeLength);
+            DataSegment messageAuthenticationCode = dns.Subsegment(offsetInDns + OffsetAfterAlgorithm.MessageAuthenticationCode, messageAuthenticationCodeLength);
             int totalReadAfterAlgorithm = OffsetAfterAlgorithm.MessageAuthenticationCode + messageAuthenticationCodeLength;
             offsetInDns += totalReadAfterAlgorithm;
             length -= totalReadAfterAlgorithm;
@@ -179,7 +186,7 @@ namespace PcapDotNet.Packets.Dns
             int otherLength = dns.ReadUShort(offsetInDns + OffsetAfterMessageAuthenticationCode.OtherLength, Endianity.Big);
             if (length != OffsetAfterMessageAuthenticationCode.OtherData + otherLength)
                 return null;
-            DataSegment other = dns.SubSegment(offsetInDns + OffsetAfterMessageAuthenticationCode.OtherData, otherLength);
+            DataSegment other = dns.Subsegment(offsetInDns + OffsetAfterMessageAuthenticationCode.OtherData, otherLength);
 
             return new DnsResourceDataTransactionSignature(algorithm, timeSigned, fudge, messageAuthenticationCode, originalId, error, other);
         }

@@ -150,7 +150,7 @@ namespace PcapDotNet.Packets.Dns
             bool secureEntryPoint = data.ReadBool(Offset.SecureEntryPoint, Mask.SecureEntryPoint);
             byte protocol = data[Offset.Protocol];
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
-            DataSegment publicKey = data.SubSegment(Offset.PublicKey, data.Length - ConstantPartLength);
+            DataSegment publicKey = data.Subsegment(Offset.PublicKey, data.Length - ConstantPartLength);
 
             return new DnsResourceDataDnsKey(zoneKey, revoke, secureEntryPoint, protocol, algorithm, publicKey);
         }

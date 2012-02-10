@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength()
         {
-            return Options.NumBytes;
+            return Options.BytesLength;
         }
 
         internal override void WriteDataSimple(byte[] buffer, int offset)

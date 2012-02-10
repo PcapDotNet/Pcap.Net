@@ -23,16 +23,16 @@ namespace PcapDotNet.Packets.Dns
         {
             public const int Address = 0;
             public const int Protocol = Address + IpV4Address.SizeOf;
-            public const int BitMap = Protocol + sizeof(byte);
+            public const int Bitmap = Protocol + sizeof(byte);
         }
 
-        private const int ConstantPartLength = Offset.BitMap;
+        private const int ConstantPartLength = Offset.Bitmap;
 
-        public DnsResourceDataWellKnownService(IpV4Address address, IpV4Protocol protocol, DataSegment bitMap)
+        public DnsResourceDataWellKnownService(IpV4Address address, IpV4Protocol protocol, DataSegment bitmap)
         {
             Address = address;
             Protocol = protocol;
-            BitMap = bitMap;
+            Bitmap = bitmap;
         }
 
         /// <summary>
@@ -48,14 +48,14 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Has one bit per port of the specified protocol.
         /// </summary>
-        public DataSegment BitMap { get; private set; }
+        public DataSegment Bitmap { get; private set; }
 
         public bool Equals(DnsResourceDataWellKnownService other)
         {
             return other != null &&
                    Address.Equals(other.Address) &&
                    Protocol.Equals(other.Protocol) &&
-                   BitMap.Equals(other.BitMap);
+                   Bitmap.Equals(other.Bitmap);
         }
 
         public override bool Equals(object other)
@@ -65,7 +65,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Sequence.GetHashCode(Address, Protocol, BitMap);
+            return Sequence.GetHashCode(Address, Protocol, Bitmap);
         }
 
         internal DnsResourceDataWellKnownService()
@@ -75,14 +75,14 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength()
         {
-            return ConstantPartLength + BitMap.Length;
+            return ConstantPartLength + Bitmap.Length;
         }
 
         internal override void WriteDataSimple(byte[] buffer, int offset)
         {
             buffer.Write(offset + Offset.Address, Address, Endianity.Big);
             buffer.Write(offset + Offset.Protocol, (byte)Protocol);
-            BitMap.Write(buffer, offset + Offset.BitMap);
+            Bitmap.Write(buffer, offset + Offset.Bitmap);
         }
 
         internal override DnsResourceData CreateInstance(DataSegment data)
@@ -92,9 +92,9 @@ namespace PcapDotNet.Packets.Dns
 
             IpV4Address address = data.ReadIpV4Address(Offset.Address, Endianity.Big);
             IpV4Protocol protocol = (IpV4Protocol)data[Offset.Protocol];
-            DataSegment bitMap = data.SubSegment(Offset.BitMap, data.Length - Offset.BitMap);
+            DataSegment bitmap = data.Subsegment(Offset.Bitmap, data.Length - Offset.Bitmap);
 
-            return new DnsResourceDataWellKnownService(address, protocol, bitMap);
+            return new DnsResourceDataWellKnownService(address, protocol, bitmap);
         }
     }
 }

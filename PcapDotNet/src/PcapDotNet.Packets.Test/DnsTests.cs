@@ -115,31 +115,31 @@ namespace PcapDotNet.Packets.Test
             dnsLayer.Additionals = new List<DnsDataResourceRecord>();
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Queries.Add(new DnsQueryResourceRecord(new DnsDomainName(""), DnsType.Any, DnsClass.In));
+            dnsLayer.Queries.Add(new DnsQueryResourceRecord(new DnsDomainName(""), DnsType.Any, DnsClass.Internet));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName(""), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName(""), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(3, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("def.abc"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("def.abc"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(6, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(6, dnsLayer);
 
-            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abc.def"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(13, dnsLayer);
 
-            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abd.def"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Authorities.Add(new DnsDataResourceRecord(new DnsDomainName("abd.def"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(16, dnsLayer);
 
-            dnsLayer.Additionals.Add(new DnsDataResourceRecord(new DnsDomainName("hello.abd.def"), DnsType.Any, DnsClass.In, 100, new DnsResourceDataAnything(DataSegment.Empty)));
+            dnsLayer.Additionals.Add(new DnsDataResourceRecord(new DnsDomainName("hello.abd.def"), DnsType.Any, DnsClass.Internet, 100, new DnsResourceDataAnything(DataSegment.Empty)));
             TestDomainNameCompression(23, dnsLayer);
         }
 
@@ -155,13 +155,13 @@ namespace PcapDotNet.Packets.Test
             dnsLayer.Additionals = new List<DnsDataResourceRecord>();
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[20000]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("aaa"), DnsType.Null, DnsClass.Internet, 100, new DnsResourceDataAnything(new DataSegment(new byte[20000]))));
             TestDomainNameCompression(0, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.Internet, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
             TestDomainNameCompression(3, dnsLayer);
 
-            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.In, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
+            dnsLayer.Answers.Add(new DnsDataResourceRecord(new DnsDomainName("bbb.aaa"), DnsType.Null, DnsClass.Internet, 100, new DnsResourceDataAnything(new DataSegment(new byte[1]))));
             TestDomainNameCompression(6, dnsLayer);
         }
 
@@ -175,7 +175,7 @@ namespace PcapDotNet.Packets.Test
                                     Answers =
                                         new List<DnsDataResourceRecord>(new[]
                                                                         {
-                                                                            new DnsDataResourceRecord(new DnsDomainName("a"), DnsType.A, DnsClass.In, 10,
+                                                                            new DnsDataResourceRecord(new DnsDomainName("a"), DnsType.A, DnsClass.Internet, 10,
                                                                                                       new DnsResourceDataIpV4(IpV4Address.Zero))
                                                                         }),
                                 };
@@ -203,7 +203,7 @@ namespace PcapDotNet.Packets.Test
                 
                 Assert.AreEqual(domainName, record.DomainName);
                 Assert.AreEqual(sendersUdpPayloadSize, record.SendersUdpPayloadSize);
-                Assert.AreEqual(extendedRcode, record.ExtendedRcode);
+                Assert.AreEqual(extendedRcode, record.ExtendedReturnCode);
                 Assert.AreEqual(version, record.Version);
                 Assert.AreEqual(flags, record.Flags);
                 Assert.AreEqual(data, record.Data);
@@ -214,7 +214,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void DnsQueryResourceRecordTtlGetTest()
         {
-            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.In);
+            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.Internet);
             Assert.IsNull(query.Ttl);
             Assert.Fail();
         }
@@ -223,7 +223,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void DnsQueryResourceRecordDataGetTest()
         {
-            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.In);
+            var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.Internet);
             Assert.IsNull(query.Data);
             Assert.Fail();
         }
@@ -231,15 +231,15 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void DnsResourceDataNextDomainTest()
         {
-            DataSegment bitMap = DnsResourceDataNextDomain.CreateTypeBitMap(new[] {DnsType.A, DnsType.Aaaa});
-            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            DataSegment bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(new[] {DnsType.A, DnsType.Aaaa});
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitmap);
             Assert.IsFalse(resourceData.Equals(null));
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.A));
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.Aaaa));
             Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.Ns));
 
-            bitMap = DnsResourceDataNextDomain.CreateTypeBitMap(new DnsType[] { 0 });
-            Assert.AreEqual(DataSegment.Empty, bitMap);
+            bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(new DnsType[] { 0 });
+            Assert.AreEqual(DataSegment.Empty, bitmap);
         }
 
         [TestMethod]
@@ -255,8 +255,8 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataNextDomainTooLongBitmapTest()
         {
-            DataSegment bitMap = new DataSegment(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17});
-            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            DataSegment bitmap = new DataSegment(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17});
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitmap);
             Assert.IsNull(resourceData);
             Assert.Fail();
         }
@@ -265,8 +265,8 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataNextDomainZeroEndedBitmapTest()
         {
-            DataSegment bitMap = new DataSegment(new byte[] { 1, 0 });
-            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitMap);
+            DataSegment bitmap = new DataSegment(new byte[] { 1, 0 });
+            DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitmap);
             Assert.IsNull(resourceData);
             Assert.Fail();
         }
@@ -534,8 +534,8 @@ namespace PcapDotNet.Packets.Test
 
         private static void TestResourceRecordIsNotCreatedWithNewLength(DnsType dnsType, DnsResourceData resourceData, int dataLengthDiff)
         {
-            var resourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, dnsType, DnsClass.In, 0, resourceData);
-            var paddingResourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, DnsType.Null, DnsClass.In, 0,
+            var resourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, dnsType, DnsClass.Internet, 0, resourceData);
+            var paddingResourceRecord = new DnsDataResourceRecord(DnsDomainName.Root, DnsType.Null, DnsClass.Internet, 0,
                                                                   new DnsResourceDataAnything(new DataSegment(new byte[100 + Math.Abs(dataLengthDiff)])));
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
                                                 new DnsLayer

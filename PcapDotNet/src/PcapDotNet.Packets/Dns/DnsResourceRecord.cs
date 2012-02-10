@@ -38,13 +38,6 @@ namespace PcapDotNet.Packets.Dns
 
         private const int MinimumLengthAfterDomainName = 4;
 
-        public DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
-        {
-            DomainName = domainName;
-            Type = type;
-            DnsClass = dnsClass;
-        }
-
         /// <summary>
         /// An owner name, i.e., the name of the node to which this resource record pertains.
         /// </summary>
@@ -77,6 +70,13 @@ namespace PcapDotNet.Packets.Dns
         public override string ToString()
         {
             return DomainName + " " + Type + " " + DnsClass;
+        }
+
+        protected DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
+        {
+            DomainName = domainName;
+            Type = type;
+            DnsClass = dnsClass;
         }
 
         internal bool EqualsBase(DnsResourceRecord other)

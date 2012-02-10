@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -71,7 +72,7 @@ namespace PcapDotNet.Packets.Dns
         internal DnsResourceDataNextDomainSecure3Base(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)
         {
             if (salt.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("salt", salt.Length, string.Format("Cannot bigger than {0}.", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("salt", salt.Length, string.Format(CultureInfo.InvariantCulture, "Cannot bigger than {0}.", byte.MaxValue));
 
             HashAlgorithm = hashAlgorithm;
             Flags = flags;
@@ -116,7 +117,7 @@ namespace PcapDotNet.Packets.Dns
                 salt = null;
                 return false;
             }
-            salt = data.SubSegment(Offset.Salt, saltLength);
+            salt = data.Subsegment(Offset.Salt, saltLength);
             return true;
         }
     }

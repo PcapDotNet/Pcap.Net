@@ -16,12 +16,4 @@ namespace PcapDotNet.Base
             return (IEnumerable<T>)Enum.GetValues(type);
         }
     }
-
-    public static class ObjectExtensions
-    {
-        public static bool IsDefinedEnumValue<T>(this Object enumValue)
-        {
-            return Enum.IsDefined(typeof(T), enumValue);
-        }
-    }
 }

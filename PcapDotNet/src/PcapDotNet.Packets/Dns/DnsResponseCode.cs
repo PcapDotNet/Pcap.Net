@@ -46,7 +46,7 @@
 
         /// <summary>
         /// RFC 2136.
-        /// YXDomain. Name Exists when it should not
+        /// YXDomain. Name Exists when it should not.
         /// </summary>
         YxDomain = 6,
 
@@ -58,9 +58,9 @@
 
         /// <summary>
         /// RFC 2136.
-        /// RR Set that should exist does not.
+        /// RR Set that should exist does not (NX).
         /// </summary>
-        NxRrSet = 8,
+        NotExistRrSet = 8,
 
         /// <summary>
         /// RFC 2136.
@@ -78,7 +78,7 @@
         /// RFCs 2671, 2845.
         /// Bad OPT Version or TSIG Signature Failure.
         /// </summary>
-        BadVersOrBadSig = 16,
+        BadVersionOrBadSignature = 16,
 
         /// <summary>
         /// RFC 2845.
@@ -108,12 +108,12 @@
         /// RFC 2930.
         /// Algorithm not supported.
         /// </summary>
-        BadAlg = 21,
+        BadAlgorithm = 21,
 
         /// <summary>
         /// RFC 4635.
-        /// Bad Truncation.
+        /// BADTRUNC - Bad Truncation.
         /// </summary>
-        BadTrunc = 22,
+        BadTruncaction = 22,
     }
 }

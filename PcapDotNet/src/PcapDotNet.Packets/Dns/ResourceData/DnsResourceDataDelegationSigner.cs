@@ -17,13 +17,13 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+-----------------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Ds)]
+    [DnsTypeRegistration(Type = DnsType.DelegationSigner)]
     [DnsTypeRegistration(Type = DnsType.Cds)]
     [DnsTypeRegistration(Type = DnsType.Ta)]
-    [DnsTypeRegistration(Type = DnsType.Dlv)]
+    [DnsTypeRegistration(Type = DnsType.DnsSecLookasideValidation)]
     public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>
     {
-        public static class Offset
+        private static class Offset
         {
             public const int KeyTag = 0;
             public const int Algorithm = KeyTag + sizeof(ushort);
@@ -35,6 +35,9 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsResourceDataDelegationSigner(ushort keyTag, DnsAlgorithm algorithm, DnsDigestType digestType, DataSegment digest)
         {
+            if (digest == null)
+                throw new ArgumentNullException("digest");
+
             KeyTag = keyTag;
             Algorithm = algorithm;
             DigestType = digestType;
@@ -53,8 +56,8 @@ namespace PcapDotNet.Packets.Dns
                     maxDigestLength = int.MaxValue;
                     break;
             }
-            Digest = digest.SubSegment(0, Math.Min(digest.Length, maxDigestLength));
-            ExtraDigest = digest.SubSegment(Digest.Length, digest.Length - Digest.Length);
+            Digest = digest.Subsegment(0, Math.Min(digest.Length, maxDigestLength));
+            ExtraDigest = digest.Subsegment(Digest.Length, digest.Length - Digest.Length);
         }
 
         /// <summary>
@@ -129,7 +132,7 @@ namespace PcapDotNet.Packets.Dns
             ushort keyTag = data.ReadUShort(Offset.KeyTag, Endianity.Big);
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
             DnsDigestType digestType = (DnsDigestType)data[Offset.DigestType];
-            DataSegment digest = data.SubSegment(Offset.Digest, data.Length - ConstPartLength);
+            DataSegment digest = data.Subsegment(Offset.Digest, data.Length - ConstPartLength);
 
             return new DnsResourceDataDelegationSigner(keyTag, algorithm, digestType, digest);
         }

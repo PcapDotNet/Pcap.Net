@@ -250,7 +250,7 @@ namespace PcapDotNet.Packets.Dns
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
             ushort? flagsExtension = (isFlagsExtension ? ((ushort?)data.ReadUShort(Offset.FlagsExtension, Endianity.Big)) : null);
             int publicKeyOffset = Offset.FlagsExtension + (isFlagsExtension ? sizeof(ushort) : 0);
-            DataSegment publicKey = data.SubSegment(publicKeyOffset, data.Length - publicKeyOffset);
+            DataSegment publicKey = data.Subsegment(publicKeyOffset, data.Length - publicKeyOffset);
 
             return new DnsResourceDataKey(authenticationProhibited, confidentialityProhibited, experimental, userAssociated, ipSec, email, nameType, signatory,
                                           protocol, algorithm, flagsExtension, publicKey);

@@ -19,13 +19,16 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsDomainName(string domainName)
         {
-            string[] labels = domainName.ToLowerInvariant().Split(Colon, StringSplitOptions.RemoveEmptyEntries);
+            if (domainName == null) 
+                throw new ArgumentNullException("domainName");
+
+            string[] labels = domainName.ToUpperInvariant().Split(Colon, StringSplitOptions.RemoveEmptyEntries);
             _labels = labels.Select(label => new DataSegment(Encoding.UTF8.GetBytes(label))).ToList();
         }
 
         public static DnsDomainName Root { get { return _root; } }
 
-        public int NumLabels
+        public int LabelsCount
         {
             get
             {
@@ -35,7 +38,7 @@ namespace PcapDotNet.Packets.Dns
 
         public bool IsRoot
         {
-            get { return NumLabels == 0; }
+            get { return LabelsCount == 0; }
         }
 
         public int NonCompressedLength
@@ -55,7 +58,8 @@ namespace PcapDotNet.Packets.Dns
 
         public bool Equals(DnsDomainName other)
         {
-            return _labels.SequenceEqual(other._labels);
+            return other != null &&
+                   _labels.SequenceEqual(other._labels);
         }
 
         public override bool Equals(object obj)
@@ -71,7 +75,7 @@ namespace PcapDotNet.Packets.Dns
         internal int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             int length = 0;
-            for (int i = 0; i != NumLabels; ++i)
+            for (int i = 0; i != LabelsCount; ++i)
             {
                 ListSegment<DataSegment> labels = new ListSegment<DataSegment>(_labels, i);
                 if (compressionData.IsAvailable(labels))
@@ -106,7 +110,7 @@ namespace PcapDotNet.Packets.Dns
         internal int Write(byte[] buffer, int dnsOffset, DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             int length = 0;
-            for (int i = 0; i != NumLabels; ++i)
+            for (int i = 0; i != LabelsCount; ++i)
             {
                 ListSegment<DataSegment> labels = new ListSegment<DataSegment>(_labels, i);
                 int pointerOffset;
@@ -158,7 +162,7 @@ namespace PcapDotNet.Packets.Dns
                     ++offsetInDns;
                     if (offsetInDns + labelLength >= dns.Length)
                         return false;  // Can't read label.
-                    labels.Add(dns.SubSegment(offsetInDns, labelLength));
+                    labels.Add(dns.Subsegment(offsetInDns, labelLength));
                     numBytesRead += labelLength;
                     offsetInDns += labelLength;
                 }

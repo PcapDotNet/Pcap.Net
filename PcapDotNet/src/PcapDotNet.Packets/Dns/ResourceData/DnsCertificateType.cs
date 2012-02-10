@@ -2,6 +2,8 @@
 {
     public enum DnsCertificateType : ushort
     {
+        None = 0,
+
         /// <summary>
         /// RFC 4398.
         /// Indicates an X.509 certificate conforming to the profile defined by the IETF PKIX working group. 
@@ -14,11 +16,11 @@
         /// RFC 4398.
         /// SPKI certificate.
         /// </summary>
-        Spki = 2,
+        SimplePublicKeyInfrastructure = 2,
 
         /// <summary>
         /// RFC 4398.
-        /// Indicates an OpenPGP packet.
+        /// PGP - Indicates an OpenPGP packet.
         /// This is used to transfer public key material and revocation signatures.
         /// The data is binary and must not be encoded into an ASCII armor.
         /// An implementation should process transferable public keys, but it may handle additional OpenPGP packets.
@@ -35,11 +37,11 @@
 
         /// <summary>
         /// RFC 4398.
-        /// The URL of an SPKI certificate.
+        /// ISPKI - The URL of an SPKI certificate.
         /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
         /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
         /// </summary>
-        ISpki = 5,
+        IndirectSimplePublicKeyInfrastructure = 5,
 
         /// <summary>
         /// RFC 4398.
@@ -55,17 +57,17 @@
 
         /// <summary>
         /// RFC 4398.
-        /// Attribute Certificate.
+        /// ACPKIX - Attribute Certificate.
         /// </summary>
-        AcPkix = 7,
+        AttributeCertificatePkix = 7,
 
         /// <summary>
         /// RFC 4398.
-        /// The URL of an Attribute Certificate.
+        /// IAcPkix - The URL of an Attribute Certificate.
         /// Must be used when the content is too large to fit in the CERT RR and may be used at the implementer's discretion.
         /// Should not be used where the DNS message is 512 octets or smaller and could thus be expected to fit a UDP packet.
         /// </summary>
-        IAcPkix = 8,
+        IndirectAttributeCertificatePkix = 8,
 
         /// <summary>
         /// RFC 4398.
@@ -84,6 +86,6 @@
         /// X.509 certificates that conform to the IETF PKIX profile should be indicated by the PKIX type, not the OID private type.
         /// Recognition of private certificate types need not be based on OID equality but can use various forms of pattern matching such as OID prefix.
         /// </summary>
-        Oid = 254,
+        ObjectIdentifier = 254,
     }
 }

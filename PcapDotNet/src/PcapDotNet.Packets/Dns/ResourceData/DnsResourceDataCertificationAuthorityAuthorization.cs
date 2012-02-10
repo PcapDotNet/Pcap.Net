@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -19,7 +20,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Caa)]
+    [DnsTypeRegistration(Type = DnsType.CertificationAuthorityAuthorization)]
     public sealed class DnsResourceDataCertificationAuthorityAuthorization : DnsResourceDataSimple, IEquatable<DnsResourceDataCertificationAuthorityAuthorization>
     {
         private static class Offset
@@ -33,8 +34,11 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags flags, DataSegment tag, DataSegment value)
         {
+            if (tag == null) 
+                throw new ArgumentNullException("tag");
+
             if (tag.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("tag", tag.Length, string.Format("Cannot be longer than {0}", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("tag", tag.Length, string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0}", byte.MaxValue));
 
             Flags = flags;
             Tag = tag;
@@ -106,8 +110,8 @@ namespace PcapDotNet.Packets.Dns
             int valueOffset = ConstantPartLength + tagLength;
             if (data.Length < valueOffset)
                 return null;
-            DataSegment tag = data.SubSegment(Offset.Tag, tagLength);
-            DataSegment value = data.SubSegment(valueOffset, data.Length - valueOffset);
+            DataSegment tag = data.Subsegment(Offset.Tag, tagLength);
+            DataSegment value = data.Subsegment(valueOffset, data.Length - valueOffset);
 
             return new DnsResourceDataCertificationAuthorityAuthorization(flags, tag, value);
         }

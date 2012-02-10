@@ -16,9 +16,9 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.CName)]
     [DnsTypeRegistration(Type = DnsType.Mb)]
     [DnsTypeRegistration(Type = DnsType.Mg)]
-    [DnsTypeRegistration(Type = DnsType.Mr)]
+    [DnsTypeRegistration(Type = DnsType.MailRename)]
     [DnsTypeRegistration(Type = DnsType.Ptr)]
-    [DnsTypeRegistration(Type = DnsType.NsapPtr)]
+    [DnsTypeRegistration(Type = DnsType.NetworkServiceAccessPointPointer)]
     [DnsTypeRegistration(Type = DnsType.DName)]
     public sealed class DnsResourceDataDomainName : DnsResourceData, IEquatable<DnsResourceDataDomainName>
     {

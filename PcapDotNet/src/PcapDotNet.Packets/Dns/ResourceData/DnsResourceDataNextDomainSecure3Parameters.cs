@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------------------------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.NSec3Param)]
+    [DnsTypeRegistration(Type = DnsType.NSec3Parameters)]
     public sealed class DnsResourceDataNextDomainSecure3Parameters : DnsResourceDataNextDomainSecure3Base, IEquatable<DnsResourceDataNextDomainSecure3Parameters>
     {
         public DnsResourceDataNextDomainSecure3Parameters(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)

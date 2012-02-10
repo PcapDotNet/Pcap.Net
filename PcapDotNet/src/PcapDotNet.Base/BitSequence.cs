@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Base
 {
     public static class BitSequence
@@ -17,26 +19,31 @@ namespace PcapDotNet.Base
             return (byte)((Merge(value1, value2) << 1) | value3.ToByte());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static byte Merge(bool value1, bool value2, bool value3, bool value4)
         {
             return (byte)((Merge(value1, value2, value3) << 1) | value4.ToByte());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static byte Merge(bool value1, bool value2, bool value3, bool value4, bool value5)
         {
             return (byte)((Merge(value1, value2, value3, value4) << 1) | value5.ToByte());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static byte Merge(bool value1, bool value2, bool value3, bool value4, bool value5, bool value6)
         {
             return (byte)((Merge(value1, value2, value3, value4, value5) << 1) | value6.ToByte());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static byte Merge(bool value1, bool value2, bool value3, bool value4, bool value5, bool value6, bool value7)
         {
             return (byte)((Merge(value1, value2, value3, value4, value5, value6) << 1) | value7.ToByte());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static byte Merge(bool value1, bool value2, bool value3, bool value4, bool value5, bool value6, bool value7, bool value8)
         {
             return (byte)((Merge(value1, value2, value3, value4, value5, value6, value7) << 1) | value8.ToByte());
@@ -52,16 +59,19 @@ namespace PcapDotNet.Base
             return (UInt24)Merge(0, value1, value2, value3);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static uint Merge(byte value1, byte value2, byte value3, byte value4)
         {
             return Merge(Merge(value1, value2), Merge(value3, value4));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static UInt48 Merge(byte value1, byte value2, byte value3, byte value4, byte value5, byte value6)
         {
             return (UInt48)Merge(0, 0, value1, value2, value3, value4, value5, value6);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static ulong Merge(byte value1, byte value2, byte value3, byte value4, byte value5, byte value6, byte value7, byte value8)
         {
             return Merge(Merge(value1, value2, value3, value4), Merge(value5, value6, value7, value8));

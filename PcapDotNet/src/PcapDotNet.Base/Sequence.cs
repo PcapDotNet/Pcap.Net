@@ -1,35 +1,37 @@
+using System;
+
 namespace PcapDotNet.Base
 {
     public static class Sequence
     {
         public static int GetHashCode(object value1, object value2)
         {
+            if (value1 == null) 
+                throw new ArgumentNullException("value1");
+            if (value2 == null)
+                throw new ArgumentNullException("value2");
+
             return value1.GetHashCode() ^ value2.GetHashCode();
         }
 
         public static int GetHashCode(object value1, object value2, object value3)
         {
+            if (value3 == null)
+                throw new ArgumentNullException("value3");
+
             return GetHashCode(value1, value2) ^ value3.GetHashCode();
         }
 
-        public static int GetHashCode(object value1, object value2, object value3, object value4)
+        public static int GetHashCode(params object[] values)
         {
-            return GetHashCode(value1, value2, value3) ^ value4.GetHashCode();
-        }
+            if (values == null)
+                throw new ArgumentNullException("values");
 
-        public static int GetHashCode(object value1, object value2, object value3, object value4, object value5)
-        {
-            return GetHashCode(value1, value2, value3, value4) ^ value5.GetHashCode();
-        }
+            int result = 0;
+            for (int i = 0; i != values.Length; ++i)
+                result ^= values[i].GetHashCode();
 
-        public static int GetHashCode(object value1, object value2, object value3, object value4, object value5, object value6)
-        {
-            return GetHashCode(value1, value2, value3, value4, value5) ^ value6.GetHashCode();
-        }
-
-        public static int GetHashCode(object value1, object value2, object value3, object value4, object value5, object value6, object value7)
-        {
-            return GetHashCode(value1, value2, value3, value4, value5, value6) ^ value7.GetHashCode();
+            return result;
         }
     }
 }

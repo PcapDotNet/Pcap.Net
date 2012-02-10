@@ -28,8 +28,8 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public sealed class DnsOptResourceRecord : DnsDataResourceRecord
     {
-        public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedRcode, DnsOptVersion version, DnsOptFlags flags, DnsResourceDataOptions data)
-            : this(domainName, (DnsClass)sendersUdpPayloadSize, (int)BitSequence.Merge(extendedRcode, (byte)version, (ushort)flags), data)
+        public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedReturnCode, DnsOptVersion version, DnsOptFlags flags, DnsResourceDataOptions data)
+            : this(domainName, (DnsClass)sendersUdpPayloadSize, (int)BitSequence.Merge(extendedReturnCode, (byte)version, (ushort)flags), data)
         {
         }
 
@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Dns
         /// Forms upper 8 bits of extended 12-bit RCODE.
         /// Note that EXTENDED-RCODE value "0" indicates that an unextended RCODE is in use (values "0" through "15").
         /// </summary>
-        public byte ExtendedRcode { get { return (byte)(Ttl >> 24); } }
+        public byte ExtendedReturnCode { get { return (byte)(Ttl >> 24); } }
 
         /// <summary>
         /// Indicates the implementation level of whoever sets it.

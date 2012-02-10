@@ -7,23 +7,25 @@
     /// </summary>
     public enum DnsClass : ushort
     {
+        None = 0,
+
         /// <summary>
         /// RFC 1035.
-        /// Internet.
+        /// IN - Internet.
         /// </summary>
-        In = 1,
+        Internet = 1,
 
         /// <summary>
         /// Moon 1981 1035.
         /// The CHAOS class.
         /// </summary>
-        Ch = 3,
+        Chaos = 3,
 
         /// <summary>
         /// Dyer 87.
-        /// Hesiod.
+        /// HS - Hesiod.
         /// </summary>
-        Hs = 4,
+        Hesiod = 4,
 
         /// <summary>
         /// RFC 2136.

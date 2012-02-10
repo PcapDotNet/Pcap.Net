@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 using IListExtensions = PcapDotNet.Base.IListExtensions;
@@ -42,10 +43,17 @@ namespace PcapDotNet.Packets.Dns
         public DnsResourceDataHostIdentityProtocol(DataSegment hostIdentityTag, DnsPublicKeyAlgorithm publicKeyAlgorithm, DataSegment publicKey,
                                                    IEnumerable<DnsDomainName> rendezvousServers)
         {
+            if (hostIdentityTag == null)
+                throw new ArgumentNullException("hostIdentityTag");
+            if (publicKey == null)
+                throw new ArgumentNullException("publicKey");
+
             if (hostIdentityTag.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("hostIdentityTag", hostIdentityTag.Length, string.Format("Cannot be bigger than {0}.", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("hostIdentityTag", hostIdentityTag.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be bigger than {0}.", byte.MaxValue));
             if (publicKey.Length > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("publicKey", publicKey.Length, string.Format("Cannot be bigger than {0}.", ushort.MaxValue));
+                throw new ArgumentOutOfRangeException("publicKey", publicKey.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be bigger than {0}.", ushort.MaxValue));
             HostIdentityTag = hostIdentityTag;
             PublicKeyAlgorithm = publicKeyAlgorithm;
             PublicKey = publicKey;
@@ -134,9 +142,9 @@ namespace PcapDotNet.Packets.Dns
             
             if (length < ConstantPartLength + hostIdentityTagLength + publicKeyLength)
                 return null;
-            DataSegment hostIdentityTag = dns.SubSegment(offsetInDns + Offset.HostIdentityTag, hostIdentityTagLength);
+            DataSegment hostIdentityTag = dns.Subsegment(offsetInDns + Offset.HostIdentityTag, hostIdentityTagLength);
             int publicKeyOffset = offsetInDns + ConstantPartLength + hostIdentityTagLength;
-            DataSegment publicKey = dns.SubSegment(publicKeyOffset, publicKeyLength);
+            DataSegment publicKey = dns.Subsegment(publicKeyOffset, publicKeyLength);
 
             offsetInDns += ConstantPartLength + hostIdentityTagLength + publicKeyLength;
             length -= ConstantPartLength + hostIdentityTagLength + publicKeyLength;

@@ -13,7 +13,7 @@
     /// +-----+-------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Kx)]
+    [DnsTypeRegistration(Type = DnsType.KeyExchanger)]
     public sealed class DnsResourceDataKeyExchanger : DnsResourceDataUShortDomainName
     {
         public DnsResourceDataKeyExchanger(ushort preference, DnsDomainName keyExchanger)

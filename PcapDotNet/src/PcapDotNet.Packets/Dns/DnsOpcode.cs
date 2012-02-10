@@ -5,7 +5,7 @@
     /// Specifies kind of query in this message.  
     /// This value is set by the originator of a query and copied into the response.
     /// </summary>
-    public enum DnsOpcode : byte
+    public enum DnsOpCode : byte
     {
         /// <summary>
         /// RFC 1035.

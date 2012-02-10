@@ -19,14 +19,14 @@ namespace PcapDotNet.Packets.TestUtils
             DnsLayer dnsLayer = new DnsLayer();
             dnsLayer.Id = random.NextUShort();
             dnsLayer.IsQuery = random.NextBool();
-            dnsLayer.Opcode = random.NextEnum<DnsOpcode>();
-            dnsLayer.IsAuthoritiveAnswer = random.NextBool();
+            dnsLayer.OpCode = random.NextEnum<DnsOpCode>();
+            dnsLayer.IsAuthoritativeAnswer = random.NextBool();
             dnsLayer.IsTruncated = random.NextBool();
-            dnsLayer.IsRecusionDesired = random.NextBool();
-            dnsLayer.IsRecusionAvailable = random.NextBool();
+            dnsLayer.IsRecursionDesired = random.NextBool();
+            dnsLayer.IsRecursionAvailable = random.NextBool();
             dnsLayer.FutureUse = random.NextBool();
-            dnsLayer.ResponseCode = random.NextEnum(DnsResponseCode.BadVersOrBadSig, DnsResponseCode.BadKey, DnsResponseCode.BadTime, DnsResponseCode.BadMode,
-                                                    DnsResponseCode.BadName, DnsResponseCode.BadAlg, DnsResponseCode.BadTrunc);
+            dnsLayer.ResponseCode = random.NextEnum(DnsResponseCode.BadVersionOrBadSignature, DnsResponseCode.BadKey, DnsResponseCode.BadTime, DnsResponseCode.BadMode,
+                                                    DnsResponseCode.BadName, DnsResponseCode.BadAlgorithm, DnsResponseCode.BadTruncaction);
             dnsLayer.DomainNameCompressionMode = random.NextEnum<DnsDomainNameCompressionMode>();
             int numQueries = random.Next(MaxRecordsPerSection + 1);
             List<DnsQueryResourceRecord> queries = new List<DnsQueryResourceRecord>();
@@ -80,10 +80,10 @@ namespace PcapDotNet.Packets.TestUtils
                 return new DnsOptionAnything((DnsOptionCode)random.NextUShort(4, ushort.MaxValue + 1), random.NextDataSegment(random.Next(20)));
             }
 
-            switch (random.NextEnum<DnsOptionCode>())
+            switch (random.NextEnum<DnsOptionCode>(DnsOptionCode.None))
             {
                 case DnsOptionCode.LongLivedQuery:
-                    return new DnsOptionLongLivedQuery(random.NextUShort(), random.NextEnum<DnsLongLivedQueryOpcode>(),
+                    return new DnsOptionLongLivedQuery(random.NextUShort(), random.NextEnum<DnsLongLivedQueryOpCode>(),
                                                        random.NextEnum<DnsLongLivedQueryErrorCode>(), random.NextULong(), random.NextUInt());
 
                 case DnsOptionCode.UpdateLease:
@@ -125,13 +125,13 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.CName:
                 case DnsType.Mb:
                 case DnsType.Mg:
-                case DnsType.Mr:
+                case DnsType.MailRename:
                 case DnsType.Ptr:
-                case DnsType.NsapPtr:
+                case DnsType.NetworkServiceAccessPointPointer:
                 case DnsType.DName:
                     return new DnsResourceDataDomainName(random.NextDnsDomainName());
 
-                case DnsType.Soa:
+                case DnsType.StartOfAuthority:
                     return new DnsResourceDataStartOfAuthority(random.NextDnsDomainName(), random.NextDnsDomainName(),
                                                                random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt());
 
@@ -148,7 +148,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.MInfo:
                     return new DnsResourceDataMailingListInfo(random.NextDnsDomainName(), random.NextDnsDomainName());
 
-                case DnsType.Mx:
+                case DnsType.MailExchange:
                     return new DnsResourceDataMailExchange(random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.Txt:
@@ -158,8 +158,8 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Rp:
                     return new DnsResourceDataResponsiblePerson(random.NextDnsDomainName(), random.NextDnsDomainName());
 
-                case DnsType.AfsDb:
-                    return new DnsResourceDataAfsDb(random.NextUShort(), random.NextDnsDomainName());
+                case DnsType.AfsDatabase:
+                    return new DnsResourceDataAfsDatabase(random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.X25:
                     return new DnsResourceDataString(random.NextDataSegment(random.Next(10)));
@@ -169,15 +169,15 @@ namespace PcapDotNet.Packets.TestUtils
                                ? new DnsResourceDataIsdn(random.NextDataSegment(random.Next(10)))
                                : new DnsResourceDataIsdn(random.NextDataSegment(random.Next(10)), random.NextDataSegment(random.Next(10)));
 
-                case DnsType.Rt:
+                case DnsType.RouteThrough:
                     return new DnsResourceDataRouteThrough(random.NextUShort(), random.NextDnsDomainName());
 
-                case DnsType.Nsap:
+                case DnsType.NetworkServiceAccessPoint:
                     return new DnsResourceDataNetworkServiceAccessPoint(random.NextDataSegment(1 + random.Next(10)), random.NextUInt48(), random.NextByte());
 
-                case DnsType.Sig:
-                case DnsType.RrSig:
-                    return new DnsResourceDataSig(random.NextEnum<DnsType>(), random.NextEnum<DnsAlgorithm>(), random.NextByte(), random.NextUInt(),
+                case DnsType.Signature:
+                case DnsType.RrSignature:
+                    return new DnsResourceDataSignature(random.NextEnum<DnsType>(), random.NextEnum<DnsAlgorithm>(), random.NextByte(), random.NextUInt(),
                                                   random.NextUInt(), random.NextUInt(), random.NextUShort(), random.NextDnsDomainName(),
                                                   random.NextDataSegment(random.Next(100)));
 
@@ -187,7 +187,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                   random.NextEnum<DnsKeyProtocol>(), random.NextEnum<DnsAlgorithm>(),
                                                   random.NextBool() ? (ushort?)random.NextUShort() : null, random.NextDataSegment(random.Next(100)));
 
-                case DnsType.Px:
+                case DnsType.PointerX400:
                     return new DnsResourceDataX400Pointer(random.NextUShort(), random.NextDnsDomainName(), random.NextDnsDomainName());
 
                 case DnsType.GPos:
@@ -206,17 +206,17 @@ namespace PcapDotNet.Packets.TestUtils
                                                                   random.NextUInt(), random.NextUInt(), random.NextUInt());
 
                 case DnsType.Nxt:
-                    byte[] typeBitMap = random.NextBytes(random.Next(DnsResourceDataNextDomain.MaxTypeBitMapLength + 1));
-                    if (typeBitMap.Length > 0 && typeBitMap[typeBitMap.Length - 1] == 0)
-                        typeBitMap[typeBitMap.Length - 1] = random.NextByte(1, 256);
-                    return new DnsResourceDataNextDomain(random.NextDnsDomainName(), new DataSegment(typeBitMap));
+                    byte[] typeBitmap = random.NextBytes(random.Next(DnsResourceDataNextDomain.MaxTypeBitmapLength + 1));
+                    if (typeBitmap.Length > 0 && typeBitmap[typeBitmap.Length - 1] == 0)
+                        typeBitmap[typeBitmap.Length - 1] = random.NextByte(1, 256);
+                    return new DnsResourceDataNextDomain(random.NextDnsDomainName(), new DataSegment(typeBitmap));
 
                 case DnsType.EId:
-                case DnsType.NimLoc:
-                case DnsType.Dhcid:
+                case DnsType.NimrodLocator:
+                case DnsType.DynamicHostConfigurationId:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(32)));
 
-                case DnsType.Srv:
+                case DnsType.ServerSelection:
                     return new DnsResourceDataServerSelection(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.AtmA:
@@ -231,7 +231,7 @@ namespace PcapDotNet.Packets.TestUtils
                         random.NextDataSegment(random.Next(100)), random.NextDataSegment(random.Next(100)),
                         random.NextDnsDomainName());
 
-                case DnsType.Kx:
+                case DnsType.KeyExchanger:
                     return new DnsResourceDataKeyExchanger(random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.Cert:
@@ -260,14 +260,14 @@ namespace PcapDotNet.Packets.TestUtils
                           new DnsAddressPrefix(random.NextEnum<AddressFamily>(), random.NextByte(), random.NextBool(),
                                                random.NextDataSegment(random.Next(0, 128))))).GenerateArray(random.Next(10)));
 
-                case DnsType.Ds:
+                case DnsType.DelegationSigner:
                 case DnsType.Cds:
                 case DnsType.Ta:
-                case DnsType.Dlv:
+                case DnsType.DnsSecLookasideValidation:
                     return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),
                                                                random.NextDataSegment(random.Next(50)));
 
-                case DnsType.SshFp:
+                case DnsType.SshFingerprint:
                     return new DnsResourceDataSshFingerprint(random.NextEnum<DnsFingerprintPublicKeyAlgorithm>(), random.NextEnum<DnsFingerprintType>(),
                                                              random.NextDataSegment(random.Next(20)));
 
@@ -287,7 +287,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                                 random.NextUShort(), random.NextDataSegment(random.Next(10)), random.NextDataSegment(10),
                                                                 random.NextDnsTypeArray(random.Next(100)));
 
-                case DnsType.NSec3Param:
+                case DnsType.NSec3Parameters:
                     return new DnsResourceDataNextDomainSecure3Parameters(random.NextEnum<DnsSecNSec3HashAlgorithm>(), random.NextFlags<DnsSecNSec3Flags>(),
                                                                           random.NextUShort(), random.NextDataSegment(random.Next(10)));
 
@@ -310,7 +310,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                              random.NextEnum<DnsTransactionKeyMode>(), random.NextEnum<DnsResponseCode>(),
                                                              random.NextDataSegment(random.NextInt(0, 100)), random.NextDataSegment(random.NextInt(0, 100)));
 
-                case DnsType.TSig:
+                case DnsType.TransactionSignature:
                     return new DnsResourceDataTransactionSignature(random.NextDnsDomainName(), random.NextUInt48(), random.NextUShort(),
                                                                    random.NextDataSegment(random.NextInt(0, 100)), random.NextUShort(),
                                                                    random.NextEnum<DnsResponseCode>(), random.NextDataSegment(random.NextInt(0, 100)));
@@ -319,7 +319,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataUri(random.NextUShort(), random.NextUShort(),
                                                   ((Func<DataSegment>)(() => random.NextDataSegment(random.NextInt(0, 100)))).GenerateArray(random.NextInt(0, 10)));
 
-                case DnsType.Caa:
+                case DnsType.CertificationAuthorityAuthorization:
                     return new DnsResourceDataCertificationAuthorityAuthorization(random.NextFlags<DnsCertificationAuthorityAuthorizationFlags>(),
                                                                                   random.NextDataSegment(random.NextInt(0, 16)),
                                                                                   random.NextDataSegment(random.NextInt(0, 100)));

@@ -2,6 +2,8 @@
 {
     public enum DnsDigestType : byte
     {
+        None = 0,
+
         /// <summary>
         /// RFC 3658.
         /// SHA-1.

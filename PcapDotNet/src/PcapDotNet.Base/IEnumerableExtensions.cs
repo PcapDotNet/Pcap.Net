@@ -235,6 +235,9 @@ namespace PcapDotNet.Base
 
         public static bool IsStrictOrdered<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> keySelector, IComparer<TKey> comparer)
         {
+            if (comparer == null)
+                throw new ArgumentNullException("comparer");
+
             if (!sequence.Any())
                 return true;
 

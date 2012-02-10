@@ -13,8 +13,8 @@
     [DnsTypeRegistration(Type = DnsType.MInfo)]
     public sealed class DnsResourceDataMailingListInfo : DnsResourceData2DomainNames
     {
-        public DnsResourceDataMailingListInfo(DnsDomainName mailingList, DnsDomainName errorMailBox)
-            : base(mailingList, errorMailBox)
+        public DnsResourceDataMailingListInfo(DnsDomainName mailingList, DnsDomainName errorMailbox)
+            : base(mailingList, errorMailbox)
         {
         }
 
@@ -31,7 +31,7 @@
         /// (similar to the ERRORS-TO: field which has been proposed).
         /// If this domain name names the root, errors should be returned to the sender of the message.
         /// </summary>
-        public DnsDomainName ErrorMailBox { get { return Second; } }
+        public DnsDomainName ErrorMailbox { get { return Second; } }
 
         internal DnsResourceDataMailingListInfo()
             : this(DnsDomainName.Root, DnsDomainName.Root)
@@ -41,11 +41,11 @@
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
             DnsDomainName mailingList;
-            DnsDomainName errorMailBox;
-            if (!TryRead(out mailingList, out errorMailBox, dns, offsetInDns, length))
+            DnsDomainName errorMailbox;
+            if (!TryRead(out mailingList, out errorMailbox, dns, offsetInDns, length))
                 return null;
 
-            return new DnsResourceDataMailingListInfo(mailingList, errorMailBox);
+            return new DnsResourceDataMailingListInfo(mailingList, errorMailbox);
         }
     }
 }

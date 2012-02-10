@@ -13,31 +13,31 @@
     /// +-----+----------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.AfsDb)]
-    public sealed class DnsResourceDataAfsDb : DnsResourceDataUShortDomainName
+    [DnsTypeRegistration(Type = DnsType.AfsDatabase)]
+    public sealed class DnsResourceDataAfsDatabase : DnsResourceDataUShortDomainName
     {
-        public DnsResourceDataAfsDb(ushort subType, DnsDomainName hostname)
-            : base(subType, hostname)
+        public DnsResourceDataAfsDatabase(ushort subtype, DnsDomainName hostName)
+            : base(subtype, hostName)
         {
         }
 
-        public ushort SubType { get { return Value; } }
+        public ushort Subtype { get { return Value; } }
 
-        public DnsDomainName Hostname { get { return DomainName; } }
+        public DnsDomainName HostName { get { return DomainName; } }
 
-        internal DnsResourceDataAfsDb()
+        internal DnsResourceDataAfsDatabase()
             : this(0, DnsDomainName.Root)
         {
         }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
-            ushort subType;
+            ushort subtype;
             DnsDomainName hostName;
-            if (!TryRead(out subType, out hostName, dns, offsetInDns, length))
+            if (!TryRead(out subtype, out hostName, dns, offsetInDns, length))
                 return null;
 
-            return new DnsResourceDataAfsDb(subType, hostName);
+            return new DnsResourceDataAfsDatabase(subtype, hostName);
         }
     }
 }

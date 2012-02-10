@@ -12,7 +12,7 @@
 
         internal sealed override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
-            return CreateInstance(dns.SubSegment(offsetInDns, length));
+            return CreateInstance(dns.Subsegment(offsetInDns, length));
         }
 
         internal abstract DnsResourceData CreateInstance(DataSegment data);

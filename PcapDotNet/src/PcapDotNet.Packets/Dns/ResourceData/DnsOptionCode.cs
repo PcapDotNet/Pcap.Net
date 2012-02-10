@@ -2,6 +2,8 @@
 {
     public enum DnsOptionCode : ushort
     {
+        None = 0,
+
         /// <summary>
         /// http://files.dns-sd.org/draft-sekar-dns-llq.txt.
         /// LLQ.

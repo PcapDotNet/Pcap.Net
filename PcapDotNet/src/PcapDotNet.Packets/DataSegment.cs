@@ -57,9 +57,9 @@ namespace PcapDotNet.Packets
 
         public byte Last { get { return this[Length - 1]; } }
 
-        public DataSegment SubSegment(int offset, int length)
+        public DataSegment Subsegment(int offset, int length)
         {
-            return SubSegment(ref offset, length);
+            return Subsegment(ref offset, length);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace PcapDotNet.Packets
             return Buffer.ReadBytes(StartOffset + offset, length);
         }
 
-        internal DataSegment SubSegment(ref int offset, int length)
+        internal DataSegment Subsegment(ref int offset, int length)
         {
             DataSegment subSegemnt = new DataSegment(Buffer, StartOffset + offset, length);
             offset += length;

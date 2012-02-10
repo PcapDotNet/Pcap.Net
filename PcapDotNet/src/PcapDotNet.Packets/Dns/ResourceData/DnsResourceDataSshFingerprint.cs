@@ -16,10 +16,10 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+-----------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.SshFp)]
+    [DnsTypeRegistration(Type = DnsType.SshFingerprint)]
     public sealed class DnsResourceDataSshFingerprint : DnsResourceDataSimple, IEquatable<DnsResourceDataSshFingerprint>
     {
-        public static class Offset
+        private static class Offset
         {
             public const int Algorithm = 0;
             public const int FingerprintType = Algorithm + sizeof(byte);
@@ -90,7 +90,7 @@ namespace PcapDotNet.Packets.Dns
         {
             DnsFingerprintPublicKeyAlgorithm algorithm = (DnsFingerprintPublicKeyAlgorithm)data[Offset.Algorithm];
             DnsFingerprintType fingerprintType = (DnsFingerprintType)data[Offset.FingerprintType];
-            DataSegment fingerprint = data.SubSegment(Offset.Fingerprint, data.Length - ConstPartLength);
+            DataSegment fingerprint = data.Subsegment(Offset.Fingerprint, data.Length - ConstPartLength);
 
             return new DnsResourceDataSshFingerprint(algorithm, fingerprintType, fingerprint);
         }

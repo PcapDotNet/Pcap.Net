@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.Dns
             DnsResourceData prototype = TryGetPrototype(type);
             if (prototype != null)
                 return prototype.CreateInstance(dns, offsetInDns, length);
-            return new DnsResourceDataAnything(dns.SubSegment(offsetInDns, length));
+            return new DnsResourceDataAnything(dns.Subsegment(offsetInDns, length));
         }
 
         internal abstract DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length);
@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.Dns
             int stringLength = data[offset++];
             if (data.Length < offset + stringLength)
                 return null;
-            DataSegment str = data.SubSegment(ref offset, stringLength);
+            DataSegment str = data.Subsegment(ref offset, stringLength);
 
             return str;
         }

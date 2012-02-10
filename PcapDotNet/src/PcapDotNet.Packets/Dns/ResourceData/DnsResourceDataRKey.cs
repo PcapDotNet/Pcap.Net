@@ -102,7 +102,7 @@ namespace PcapDotNet.Packets.Dns
             ushort flags = data.ReadUShort(Offset.Flags, Endianity.Big);
             byte protocol = data[Offset.Protocol];
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
-            DataSegment publicKey = data.SubSegment(Offset.PublicKey, data.Length - ConstantPartLength);
+            DataSegment publicKey = data.Subsegment(Offset.PublicKey, data.Length - ConstantPartLength);
 
             return new DnsResourceDataRKey(flags, protocol, algorithm, publicKey);
         }
