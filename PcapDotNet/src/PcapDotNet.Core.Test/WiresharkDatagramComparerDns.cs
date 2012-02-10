@@ -32,7 +32,7 @@ namespace PcapDotNet.Core.Test
                     break;
                     
                 case "dns.flags":
-                    field.AssertShowHex(dnsDatagram.SubSegment(2, 2).ToArray().ReadUShort(0, Endianity.Big));
+                    field.AssertShowHex(dnsDatagram.Subsegment(2, 2).ToArray().ReadUShort(0, Endianity.Big));
                     foreach (var flagField in field.Fields())
                     {
                         switch (flagField.Name())
@@ -42,11 +42,11 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             case "dns.flags.opcode":
-                                flagField.AssertShowDecimal((byte)dnsDatagram.Opcode);
+                                flagField.AssertShowDecimal((byte)dnsDatagram.OpCode);
                                 break;
 
                             case "dns.flags.authoritative":
-                                flagField.AssertShowDecimal(dnsDatagram.IsAuthoritiveAnswer);
+                                flagField.AssertShowDecimal(dnsDatagram.IsAuthoritativeAnswer);
                                 break;
 
                             case "dns.flags.truncated":
@@ -58,7 +58,7 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             case "dns.flags.recavail":
-                                flagField.AssertShowDecimal(dnsDatagram.IsRecusionAvailable);
+                                flagField.AssertShowDecimal(dnsDatagram.IsRecursionAvailable);
                                 break;
 
                             case "dns.flags.z":
@@ -184,7 +184,7 @@ namespace PcapDotNet.Core.Test
         private void ResetRecordFields()
         {
             _hipRendezvousServersIndex = 0;
-            _wksBitMapIndex = 0;
+            _wksBitmapIndex = 0;
             _nxtTypeIndex = 0;
             _nSecTypeIndex = 0;
             _nSec3TypeIndex = 0;
@@ -216,11 +216,11 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertName("");
                     dataField.AssertShow("Name server: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     break;
-                case DnsType.Md: // 3.
-                case DnsType.Mf: // 4.
-                case DnsType.Mb: // 7.
-                case DnsType.Mg: // 8.
-                case DnsType.Mr: // 9.
+                case DnsType.Md:         // 3.
+                case DnsType.Mf:         // 4.
+                case DnsType.Mb:         // 7.
+                case DnsType.Mg:         // 8.
+                case DnsType.MailRename: // 9.
                     dataField.AssertName("");
                     dataField.AssertShow("Host: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     break;
@@ -228,7 +228,7 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertName("");
                     dataField.AssertShow("Primary name: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     break;
-                case DnsType.Soa:
+                case DnsType.StartOfAuthority:
                     dataField.AssertName("");
                     var soaData = (DnsResourceDataStartOfAuthority)data;
                     switch (dataFieldShowUntilColon)
@@ -238,7 +238,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Responsible authority's mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(soaData.ResponsibleMailBox));
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(soaData.ResponsibleMailbox));
                             break;
 
                         case "Serial number":
@@ -280,9 +280,9 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Bits":
-                            while (wksData.BitMap[_wksBitMapIndex] == 0x00)
-                                ++_wksBitMapIndex;
-                            dataField.AssertValue(wksData.BitMap[_wksBitMapIndex++]);
+                            while (wksData.Bitmap[_wksBitmapIndex] == 0x00)
+                                ++_wksBitmapIndex;
+                            dataField.AssertValue(wksData.Bitmap[_wksBitmapIndex++]);
                             break;
 
                         default:
@@ -321,7 +321,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Error Mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(mInfoData.ErrorMailBox));
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(mInfoData.ErrorMailbox));
                             break;
 
                         default:
@@ -329,7 +329,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Mx:
+                case DnsType.MailExchange:
                     var mxData = (DnsResourceDataMailExchange)data;
                     switch (dataFieldShowUntilColon)
                     {
@@ -358,7 +358,7 @@ namespace PcapDotNet.Core.Test
                     switch (dataFieldShowUntilColon)
                     {
                         case "Mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(rpData.MailBox));
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(rpData.Mailbox));
                             break;
 
                         case "TXT RR":
@@ -370,17 +370,17 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.AfsDb:
+                case DnsType.AfsDatabase:
                     dataField.AssertName("");
-                    var afsDbData = (DnsResourceDataAfsDb)data;
+                    var afsDbData = (DnsResourceDataAfsDatabase)data;
                     switch (dataFieldShowUntilColon)
                     {
                         case "Subtype":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + afsDbData.SubType);
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + afsDbData.Subtype);
                             break;
 
                         case "Hostname":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(afsDbData.Hostname));
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(afsDbData.HostName));
                             break;
 
                         default:
@@ -404,7 +404,7 @@ namespace PcapDotNet.Core.Test
 
                         case "Subaddress":
                             dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                 isdnData.SubAddress.ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false));
+                                                 isdnData.Subaddress.ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false));
                             break;
 
                         default:
@@ -412,7 +412,7 @@ namespace PcapDotNet.Core.Test
                     }
                     
                     break;
-                case DnsType.Rt:
+                case DnsType.RouteThrough:
                     dataField.AssertName("");
                     var rtData = (DnsResourceDataRouteThrough)data;
                     switch (dataFieldShowUntilColon)
@@ -429,7 +429,7 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.Nsap:
+                case DnsType.NetworkServiceAccessPoint:
                     var nsapData = (DnsResourceDataNetworkServiceAccessPoint)data;
 
                     switch (dataFieldName)
@@ -445,7 +445,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.NsapPtr:
+                case DnsType.NetworkServiceAccessPointPointer:
                     dataField.AssertName("");
                     dataField.AssertShow("Owner: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     break;
@@ -545,10 +545,10 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Sig:   // 24.
-                case DnsType.RrSig: // 46.
+                case DnsType.Signature:   // 24.
+                case DnsType.RrSignature: // 46.
                     dataField.AssertName("");
-                    var sigData = (DnsResourceDataSig)data;
+                    var sigData = (DnsResourceDataSignature)data;
                     switch (dataFieldShowUntilColon)
                     {
                         case "Type covered":
@@ -592,7 +592,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Px:
+                case DnsType.PointerX400:
                     dataField.AssertName("");
                     var pxData = (DnsResourceDataX400Pointer)data;
                     switch (dataFieldShowUntilColon)
@@ -695,7 +695,7 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.Srv:
+                case DnsType.ServerSelection:
                     dataField.AssertName("");
                     var srvData = (DnsResourceDataServerSelection)data;
                     switch (dataFieldShowUntilColon)
@@ -751,11 +751,11 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Regex length":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Regexp.Length);
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.RegularExpression.Length);
                             break;
 
                         case "Regex":
-                            dataField.AssertValue(naPtrData.Regexp);
+                            dataField.AssertValue(naPtrData.RegularExpression);
                             break;
 
                         case "Replacement length":
@@ -770,7 +770,7 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.Kx:
+                case DnsType.KeyExchanger:
                     dataField.AssertName("");
                     var kxData = (DnsResourceDataKeyExchanger)data;
                     switch (dataFieldShowUntilColon)
@@ -855,7 +855,7 @@ namespace PcapDotNet.Core.Test
                                     break;
 
                                 case "Higher bits in extended RCODE":
-                                    dataField.AssertValue(optResourceRecord.ExtendedRcode);
+                                    dataField.AssertValue(optResourceRecord.ExtendedReturnCode);
                                     break;
 
                                 case "EDNS0 version":
@@ -909,8 +909,8 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Ds:  // 43.
-                case DnsType.Dlv: // 32769.
+                case DnsType.DelegationSigner:  // 43.
+                case DnsType.DnsSecLookasideValidation: // 32769.
                     dataField.AssertName("");
                     var dsData = (DnsResourceDataDelegationSigner)data;
                     switch (dataFieldShowUntilColon)
@@ -935,7 +935,7 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.SshFp:
+                case DnsType.SshFingerprint:
                     var sshFpData = (DnsResourceDataSshFingerprint)data;
                     switch (dataFieldName)
                     {
@@ -1090,7 +1090,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Dhcid:
+                case DnsType.DynamicHostConfigurationId:
                     switch (dataFieldName)
                     {
                         case "dns.dhcid.rdata":
@@ -1153,14 +1153,17 @@ namespace PcapDotNet.Core.Test
                             if (dataField.Show().EndsWith(string.Format("({0})", (ushort)expectedType)))
                                 dataField.AssertShow(string.Format("RR type in bit map: Unknown ({0})", (ushort)expectedType));
                             else
-                                Assert.IsTrue(dataField.Show().Replace("-","").StartsWith("RR type in bit map: " + expectedType.ToString().ToUpperInvariant()));
+                                Assert.IsTrue(
+                                    dataFieldShow.Replace("-", "").StartsWith("RR type in bit map: " + GetWiresharkDnsType(expectedType).Replace("-", "")),
+                                    GetWiresharkDnsType(expectedType));
                             break;
 
                         default:
                             throw new InvalidOperationException("Invalid DNS resource data field name " + dataFieldName);
                     }
                     break;
-                case DnsType.NSec3Param:
+
+                case DnsType.NSec3Parameters:
                     var nSec3ParamData = (DnsResourceDataNextDomainSecure3Parameters)data;
                     switch (dataFieldName)
                     {
@@ -1275,7 +1278,8 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.TSig:
+
+                case DnsType.TransactionSignature:
                     var tSigData = (DnsResourceDataTransactionSignature)data;
                     switch (dataFieldName)
                     {
@@ -1333,7 +1337,7 @@ namespace PcapDotNet.Core.Test
                     break;
                 case DnsType.Null:   // 10.
                 case DnsType.EId:    // 31.
-                case DnsType.NimLoc: // 32.
+                case DnsType.NimrodLocator: // 32.
                 case DnsType.AtmA:   // 34.
                 case DnsType.Sink:   // 40.
                 case DnsType.NInfo:  // 56.
@@ -1350,7 +1354,7 @@ namespace PcapDotNet.Core.Test
                 case DnsType.MailA:  // 254.
                 case DnsType.Any:    // 255.
                 case DnsType.Uri:    // 256.
-                case DnsType.Caa:    // 257.
+                case DnsType.CertificationAuthorityAuthorization:    // 257.
                 case DnsType.Ta:     // 32768.
                 default:
                     dataField.AssertName("");
@@ -1371,19 +1375,57 @@ namespace PcapDotNet.Core.Test
             return data.ToString().ToLowerInvariant().TrimStart('0').Replace(":0", ":").Replace(":0", ":").Replace(":0", ":");
         }
 
+        private static readonly Dictionary<string, DnsType> _wiresharkDnsTypeToDnsType =
+            new Dictionary<string, DnsType>
+            {
+                {"Unused", DnsType.None}, // 0
+                {"SOA", DnsType.StartOfAuthority}, // 6
+                {"MR", DnsType.MailRename}, // 9
+                {"MX", DnsType.MailExchange}, // 15
+                {"AFSDB", DnsType.AfsDatabase}, // 18
+                {"RT", DnsType.RouteThrough}, // 21
+                {"NSAP", DnsType.NetworkServiceAccessPoint}, // 22
+                {"NSAP-PTR", DnsType.NetworkServiceAccessPointPointer}, // 23
+                {"SIG", DnsType.Signature}, // 24
+                {"PX", DnsType.PointerX400}, // 26
+                {"NIMLOC", DnsType.NimrodLocator}, // 32
+                {"SRV", DnsType.ServerSelection}, // 33
+                {"KX", DnsType.KeyExchanger}, // 36
+                {"DS", DnsType.DelegationSigner}, // 43
+                {"SSHFP", DnsType.SshFingerprint}, // 44
+                {"RRSIG", DnsType.RrSignature}, // 46
+                {"DHCID", DnsType.DynamicHostConfigurationId}, // 49
+                {"NSEC3PARAM", DnsType.NSec3Parameters}, // 51
+                {"TSIG", DnsType.TransactionSignature}, // 250
+                {"DLV", DnsType.DnsSecLookasideValidation}, // 32769
+            };
+
+        private static readonly Dictionary<DnsType, string> _dnsTypeToWiresharkDnsType =
+            _wiresharkDnsTypeToDnsType.ToDictionary(pair => pair.Value, pair => pair.Key);
+
+        private static string GetWiresharkDnsType(DnsType type)
+        {
+            string wiresharkString;
+            if (_dnsTypeToWiresharkDnsType.TryGetValue(type, out wiresharkString))
+                return wiresharkString;
+
+            return type.ToString().ToUpperInvariant();
+        }
+
         private static bool TryGetDnsType(string dataFieldShow, out DnsType type)
         {
             if (Enum.TryParse(dataFieldShow.Split(':')[1].Split(' ')[1].Replace("-", ""), true, out type))
                 return true;
 
             ushort typeValue;
-            if (ushort.TryParse(dataFieldShow.Split('(', ')')[1], out typeValue))
+            if (dataFieldShow.Contains("(") &&
+                ushort.TryParse(dataFieldShow.Split('(', ')')[1], out typeValue))
             {
                 type = (DnsType)typeValue;
                 return true;
             }
 
-            return false;
+            return _wiresharkDnsTypeToDnsType.TryGetValue(dataFieldShow.Split(new[] { ": " }, StringSplitOptions.None)[1].Split(' ')[0], out type);
         }
 
         private static int GetFlagCount(XElement flagField)
@@ -1392,7 +1434,7 @@ namespace PcapDotNet.Core.Test
         }
 
         private int _hipRendezvousServersIndex;
-        private int _wksBitMapIndex;
+        private int _wksBitmapIndex;
         private int _nxtTypeIndex;
         private int _nSecTypeIndex;
         private int _nSec3TypeIndex;

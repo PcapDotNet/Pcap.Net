@@ -6,6 +6,7 @@
     /// </summary>
     public enum DnsFingerprintPublicKeyAlgorithm : byte
     {
+        None = 0,
         Rsa = 1,
         Dss = 2,
     }

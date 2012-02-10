@@ -500,10 +500,10 @@ namespace PcapDotNet.Base
 
         public static UInt128 operator -(UInt128 value1, UInt128 value2)
         {
-            return Substract(value1, value2);
+            return Subtract(value1, value2);
         }
 
-        public static UInt128 Substract(UInt128 value1, UInt128 value2)
+        public static UInt128 Subtract(UInt128 value1, UInt128 value2)
         {
             ulong leastSignificant = value1._leastSignificant - value2._leastSignificant;
             bool overflow = (leastSignificant > value1._leastSignificant);

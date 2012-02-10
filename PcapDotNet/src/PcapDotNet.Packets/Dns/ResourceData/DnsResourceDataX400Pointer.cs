@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Px)]
+    [DnsTypeRegistration(Type = DnsType.PointerX400)]
     public sealed class DnsResourceDataX400Pointer : DnsResourceData, IEquatable<DnsResourceDataX400Pointer>
     {
         private static class Offset

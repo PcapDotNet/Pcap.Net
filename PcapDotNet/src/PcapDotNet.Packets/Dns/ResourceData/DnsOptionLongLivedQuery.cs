@@ -29,26 +29,26 @@ namespace PcapDotNet.Packets.Dns
         private static class Offset
         {
             public const int Version = 0;
-            public const int Opcode = Version + sizeof(ushort);
-            public const int ErrorCode = Opcode + sizeof(ushort);
+            public const int OpCode = Version + sizeof(ushort);
+            public const int ErrorCode = OpCode + sizeof(ushort);
             public const int Id = ErrorCode + sizeof(ushort);
             public const int LeaseLife = Id + sizeof(ulong);
         }
 
         public const int MinimumDataLength = Offset.LeaseLife + sizeof(uint);
 
-        public DnsOptionLongLivedQuery(ushort version, DnsLongLivedQueryOpcode opcode, DnsLongLivedQueryErrorCode errorCode, ulong id, uint leaseLife)
+        public DnsOptionLongLivedQuery(ushort version, DnsLongLivedQueryOpCode opCode, DnsLongLivedQueryErrorCode errorCode, ulong id, uint leaseLife)
             : base(DnsOptionCode.LongLivedQuery)
         {
             Version = version;
-            Opcode = opcode;
+            OpCode = opCode;
             ErrorCode = errorCode;
             Id = id;
             LeaseLife = leaseLife;
         }
 
         public ushort Version { get; private set; }
-        public DnsLongLivedQueryOpcode Opcode { get; private set; }
+        public DnsLongLivedQueryOpCode OpCode { get; private set; }
         public DnsLongLivedQueryErrorCode ErrorCode { get; private set; }
         public ulong Id { get; private set; }
         public uint LeaseLife { get; private set; }
@@ -62,7 +62,7 @@ namespace PcapDotNet.Packets.Dns
         {
             DnsOptionLongLivedQuery castedOther = (DnsOptionLongLivedQuery)other;
             return Version.Equals(castedOther.Version) &&
-                   Opcode.Equals(castedOther.Opcode) &&
+                   OpCode.Equals(castedOther.OpCode) &&
                    ErrorCode.Equals(castedOther.ErrorCode) &&
                    Id.Equals(castedOther.Id) &&
                    LeaseLife.Equals(castedOther.LeaseLife);
@@ -70,13 +70,13 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int DataGetHashCode()
         {
-            return Sequence.GetHashCode(BitSequence.Merge(Version, (ushort)Opcode), ErrorCode, Id, LeaseLife);
+            return Sequence.GetHashCode(BitSequence.Merge(Version, (ushort)OpCode), ErrorCode, Id, LeaseLife);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Version, Version, Endianity.Big);
-            buffer.Write(offset + Offset.Opcode, (ushort)Opcode, Endianity.Big);
+            buffer.Write(offset + Offset.OpCode, (ushort)OpCode, Endianity.Big);
             buffer.Write(offset + Offset.ErrorCode, (ushort)ErrorCode, Endianity.Big);
             buffer.Write(offset + Offset.Id, Id, Endianity.Big);
             buffer.Write(offset + Offset.LeaseLife, LeaseLife, Endianity.Big);
@@ -88,12 +88,12 @@ namespace PcapDotNet.Packets.Dns
             if (data.Length < MinimumDataLength)
                 return null;
             ushort version = data.ReadUShort(Offset.Version, Endianity.Big);
-            DnsLongLivedQueryOpcode opcode = (DnsLongLivedQueryOpcode)data.ReadUShort(Offset.Opcode, Endianity.Big);
+            DnsLongLivedQueryOpCode opCode = (DnsLongLivedQueryOpCode)data.ReadUShort(Offset.OpCode, Endianity.Big);
             DnsLongLivedQueryErrorCode errorCode = (DnsLongLivedQueryErrorCode)data.ReadUShort(Offset.ErrorCode, Endianity.Big);
             ulong id = data.ReadULong(Offset.Id, Endianity.Big);
             uint leaseLife = data.ReadUInt(Offset.LeaseLife, Endianity.Big);
 
-            return new DnsOptionLongLivedQuery(version, opcode, errorCode, id, leaseLife);
+            return new DnsOptionLongLivedQuery(version, opCode, errorCode, id, leaseLife);
         }
     }
 }

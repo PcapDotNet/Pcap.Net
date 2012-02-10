@@ -5,6 +5,8 @@
     /// </summary>
     public enum DnsKeyProtocol : byte
     {
+        None = 0,
+
         /// <summary>
         /// Connection with TLS.
         /// </summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Base
 {
@@ -19,14 +20,14 @@ namespace PcapDotNet.Base
             if (value > MaxValue)
             {
                 throw new ArgumentOutOfRangeException("value", value,
-                                                      string.Format("Value cannot be bigger than {0}", MaxValue));
+                                                      string.Format(CultureInfo.InvariantCulture, "Value cannot be bigger than {0}", MaxValue));
             }
 
             const long MinValue = long.MinValue / TimeSpanExtensions.TicksPerMicrosecond;
             if (value < MinValue)
             {
                 throw new ArgumentOutOfRangeException("value", value,
-                                                      string.Format("Value cannot be smaller than {0}", MinValue));
+                                                      string.Format(CultureInfo.InvariantCulture, "Value cannot be smaller than {0}", MinValue));
             }
 
             long roundedValue = (long)Math.Round(value);

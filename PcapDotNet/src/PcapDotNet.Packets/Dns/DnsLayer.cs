@@ -20,15 +20,15 @@ namespace PcapDotNet.Packets.Dns
             set { IsResponse = !value; }
         }
 
-        public DnsOpcode Opcode{ get; set; }
+        public DnsOpCode OpCode{ get; set; }
 
-        public bool IsAuthoritiveAnswer { get; set; }
+        public bool IsAuthoritativeAnswer { get; set; }
 
         public bool IsTruncated { get; set; }
 
-        public bool IsRecusionDesired { get; set; }
+        public bool IsRecursionDesired { get; set; }
 
-        public bool IsRecusionAvailable { get; set;}
+        public bool IsRecursionAvailable { get; set;}
 
         public bool FutureUse { get; set; }
 
@@ -38,13 +38,13 @@ namespace PcapDotNet.Packets.Dns
         
         public DnsResponseCode ResponseCode { get; set; }
 
-        public List<DnsQueryResourceRecord> Queries { get; set; }
+        public IList<DnsQueryResourceRecord> Queries { get; set; }
 
-        public List<DnsDataResourceRecord> Answers { get; set; }
+        public IList<DnsDataResourceRecord> Answers { get; set; }
 
-        public List<DnsDataResourceRecord> Authorities { get; set; }
+        public IList<DnsDataResourceRecord> Authorities { get; set; }
 
-        public List<DnsDataResourceRecord> Additionals { get; set; }
+        public IList<DnsDataResourceRecord> Additionals { get; set; }
 
         public IEnumerable<DnsResourceRecord> Records
         {
@@ -81,7 +81,7 @@ namespace PcapDotNet.Packets.Dns
         protected override void Write(byte[] buffer, int offset)
         {
             DnsDatagram.Write(buffer, offset,
-                              Id, IsResponse, Opcode, IsAuthoritiveAnswer, IsTruncated, IsRecusionDesired, IsRecusionAvailable, FutureUse, IsAuthenticData,
+                              Id, IsResponse, OpCode, IsAuthoritativeAnswer, IsTruncated, IsRecursionDesired, IsRecursionAvailable, FutureUse, IsAuthenticData,
                               IsCheckingDisabled, ResponseCode, Queries, Answers, Authorities, Additionals, DomainNameCompressionMode);
         }
 
@@ -105,11 +105,11 @@ namespace PcapDotNet.Packets.Dns
             return other != null &&
                    Id.Equals(other.Id) &&
                    IsQuery.Equals(other.IsQuery) &&
-                   Opcode.Equals(other.Opcode) &&
-                   IsAuthoritiveAnswer.Equals(other.IsAuthoritiveAnswer) &&
+                   OpCode.Equals(other.OpCode) &&
+                   IsAuthoritativeAnswer.Equals(other.IsAuthoritativeAnswer) &&
                    IsTruncated.Equals(other.IsTruncated) &&
-                   IsRecusionDesired.Equals(other.IsRecusionDesired) &&
-                   IsRecusionAvailable.Equals(other.IsRecusionAvailable) &&
+                   IsRecursionDesired.Equals(other.IsRecursionDesired) &&
+                   IsRecursionAvailable.Equals(other.IsRecursionAvailable) &&
                    FutureUse.Equals(other.FutureUse) &&
                    IsAuthenticData.Equals(other.IsAuthenticData) &&
                    IsCheckingDisabled.Equals(other.IsCheckingDisabled) &&

@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.Dns
         public DnsOptions(IList<DnsOption> options)
         {
             Options = options.AsReadOnly();
-            NumBytes = options.Sum(option => option.Length);
+            BytesLength = options.Sum(option => option.Length);
         }
 
         public DnsOptions(params DnsOption[] options)
@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dns
 
         public ReadOnlyCollection<DnsOption> Options { get; private set; }
 
-        public int NumBytes { get; private set; }
+        public int BytesLength { get; private set; }
 
         public bool Equals(DnsOptions other)
         {
@@ -62,12 +62,12 @@ namespace PcapDotNet.Packets.Dns
                 int optionLength = DnsOption.MinimumLength + optionDataLength;
                 if (data.Length < optionLength)
                     return null;
-                DnsOption option = DnsOption.CreateInstance(code, data.SubSegment(DnsOption.MinimumLength, optionDataLength));
+                DnsOption option = DnsOption.CreateInstance(code, data.Subsegment(DnsOption.MinimumLength, optionDataLength));
                 if (option == null)
                     return null;
                 options.Add(option);
 
-                data = data.SubSegment(optionLength, data.Length - optionLength);
+                data = data.Subsegment(optionLength, data.Length - optionLength);
             }
 
             return new DnsOptions(options);

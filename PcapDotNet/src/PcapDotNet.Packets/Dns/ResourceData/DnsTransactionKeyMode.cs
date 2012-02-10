@@ -5,6 +5,8 @@
     /// </summary>
     public enum DnsTransactionKeyMode : ushort
     {
+        None = 0,
+
         /// <summary>
         /// RFC 2930.
         /// </summary>

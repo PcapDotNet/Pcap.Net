@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -46,10 +47,17 @@ namespace PcapDotNet.Packets.Dns
         public DnsResourceDataTransactionKey(DnsDomainName algorithm, SerialNumber32 inception, SerialNumber32 expiration, DnsTransactionKeyMode mode,
                                              DnsResponseCode error, DataSegment key, DataSegment other)
         {
+            if (key == null)
+                throw new ArgumentNullException("key");
+            if (other == null) 
+                throw new ArgumentNullException("other");
+
             if (key.Length > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("key", key.Length, string.Format("Cannot be longer than {0}", ushort.MaxValue));
+                throw new ArgumentOutOfRangeException("key", key.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0}", ushort.MaxValue));
             if (other.Length > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("other", other.Length, string.Format("Cannot be longer than {0}", ushort.MaxValue));
+                throw new ArgumentOutOfRangeException("other", other.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0}", ushort.MaxValue));
 
             Algorithm = algorithm;
             Inception = inception;
@@ -188,7 +196,7 @@ namespace PcapDotNet.Packets.Dns
             int keySize = dns.ReadUShort(offsetInDns + OffsetAfterAlgorithm.KeySize, Endianity.Big);
             if (length < ConstantPartLength + keySize)
                 return null;
-            DataSegment key = dns.SubSegment(offsetInDns + OffsetAfterAlgorithm.KeyData, keySize);
+            DataSegment key = dns.Subsegment(offsetInDns + OffsetAfterAlgorithm.KeyData, keySize);
 
             int totalReadAfterAlgorithm = OffsetAfterAlgorithm.KeyData + keySize;
             offsetInDns += totalReadAfterAlgorithm;
@@ -196,7 +204,7 @@ namespace PcapDotNet.Packets.Dns
             int otherSize = dns.ReadUShort(offsetInDns, Endianity.Big);
             if (length != sizeof(ushort) + otherSize)
                 return null;
-            DataSegment other = dns.SubSegment(offsetInDns + sizeof(ushort), otherSize);
+            DataSegment other = dns.Subsegment(offsetInDns + sizeof(ushort), otherSize);
 
             return new DnsResourceDataTransactionKey(algorithm, inception, expiration, mode, error, key, other);
         }

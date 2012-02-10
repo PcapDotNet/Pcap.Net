@@ -86,7 +86,7 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             DnsAtmAddressFormat format = (DnsAtmAddressFormat)data[Offset.Format];
-            DataSegment address = data.SubSegment(Offset.Address, data.Length - ConstantPartLength);
+            DataSegment address = data.Subsegment(Offset.Address, data.Length - ConstantPartLength);
 
             return new DnsResourceDataAtmAddress(format, address);
         }

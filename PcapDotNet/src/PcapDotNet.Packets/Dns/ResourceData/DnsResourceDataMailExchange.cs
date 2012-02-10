@@ -13,7 +13,7 @@
     /// +-----+------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Mx)]
+    [DnsTypeRegistration(Type = DnsType.MailExchange)]
     public sealed class DnsResourceDataMailExchange : DnsResourceDataUShortDomainName
     {
         public DnsResourceDataMailExchange(ushort preference, DnsDomainName mailExchangeHost)

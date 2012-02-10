@@ -136,7 +136,7 @@
     <Compile Include="Dns\ResourceData\DnsResourceData2DomainNames.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataA6.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataAddressPrefixList.cs" />
-    <Compile Include="Dns\ResourceData\DnsResourceDataAfsDb.cs" />
+    <Compile Include="Dns\ResourceData\DnsResourceDataAfsDatabase.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataAnything.cs" />
     <Compile Include="Dns\DnsResourceRecord.cs" />
     <Compile Include="Dns\DnsResponseCode.cs" />
@@ -175,7 +175,7 @@
     <Compile Include="Dns\ResourceData\DnsResourceDataRKey.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataRouteThrough.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataServerSelection.cs" />
-    <Compile Include="Dns\ResourceData\DnsResourceDataSig.cs" />
+    <Compile Include="Dns\ResourceData\DnsResourceDataSignature.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataSimple.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataSink.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataSshFingerprint.cs" />

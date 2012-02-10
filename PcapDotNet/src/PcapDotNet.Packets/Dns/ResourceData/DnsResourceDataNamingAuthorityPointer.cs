@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
@@ -40,12 +41,15 @@ namespace PcapDotNet.Packets.Dns
         private const int ConstantPartLength = Offset.Flags;
         private const int MinimumLength = ConstantPartLength + StringMinimumLength + StringMinimumLength + StringMinimumLength + DnsDomainName.RootLength;
 
-        public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regexp, DnsDomainName replacement)
+        public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regularExpression, DnsDomainName replacement)
         {
+            if (flags == null) 
+                throw new ArgumentNullException("flags");
+
             if (!IsLegalFlags(flags))
             {
                 throw new ArgumentException(
-                    string.Format("Flags ({0}) contain a non [a-zA-Z0-9] character.",
+                    string.Format(CultureInfo.InvariantCulture, "Flags ({0}) contain a non [a-zA-Z0-9] character.",
                                   Encoding.ASCII.GetString(flags.Buffer, flags.StartOffset, flags.Length)),
                     "flags");
             }
@@ -57,7 +61,7 @@ namespace PcapDotNet.Packets.Dns
                         : new DataSegment(flags.Select(flag => flag >= 'a' && flag <= 'z' ? (byte)(flag + 'A' - 'a') : flag)
                                               .Distinct().OrderBy(flag => flag).ToArray());
             Services = services;
-            Regexp = regexp;
+            RegularExpression = regularExpression;
             Replacement = replacement;
         }
 
@@ -105,7 +109,7 @@ namespace PcapDotNet.Packets.Dns
         /// As stated in the DDDS algorithm, The regular expressions must not be used in a cumulative fashion, that is, they should only be applied to the original string held by the client, never to the domain name produced by a previous NAPTR rewrite.
         /// The latter is tempting in some applications but experience has shown such use to be extremely fault sensitive, very error prone, and extremely difficult to debug.
         /// </summary>
-        public DataSegment Regexp { get; private set; }
+        public DataSegment RegularExpression { get; private set; }
 
         /// <summary>
         /// The next domain-name to query for depending on the potential values found in the flags field.
@@ -127,7 +131,7 @@ namespace PcapDotNet.Packets.Dns
                    Preference.Equals(other.Preference) &&
                    Flags.Equals(other.Flags) &&
                    Services.Equals(other.Services) &&
-                   Regexp.Equals(other.Regexp) &&
+                   RegularExpression.Equals(other.RegularExpression) &&
                    Replacement.Equals(other.Replacement);
         }
 
@@ -138,7 +142,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Sequence.GetHashCode(BitSequence.Merge(Order, Preference), Flags, Services, Regexp, Replacement);
+            return Sequence.GetHashCode(BitSequence.Merge(Order, Preference), Flags, Services, RegularExpression, Replacement);
         }
 
         internal DnsResourceDataNamingAuthorityPointer()
@@ -148,7 +152,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength()
         {
-            return ConstantPartLength + GetStringLength(Flags) + GetStringLength(Services) + GetStringLength(Regexp) + Replacement.NonCompressedLength;
+            return ConstantPartLength + GetStringLength(Flags) + GetStringLength(Services) + GetStringLength(RegularExpression) + Replacement.NonCompressedLength;
         }
 
         internal override int WriteData(byte[] buffer, int offset)
@@ -158,7 +162,7 @@ namespace PcapDotNet.Packets.Dns
             offset += Offset.Flags;
             WriteString(buffer, ref offset, Flags);
             WriteString(buffer, ref offset, Services);
-            WriteString(buffer, ref offset, Regexp);
+            WriteString(buffer, ref offset, RegularExpression);
             Replacement.WriteUncompressed(buffer, offset);
 
             return GetLength();
@@ -172,7 +176,7 @@ namespace PcapDotNet.Packets.Dns
             ushort order = dns.ReadUShort(offsetInDns + Offset.Order, Endianity.Big);
             ushort preference = dns.ReadUShort(offsetInDns + Offset.Preference, Endianity.Big);
 
-            DataSegment data = dns.SubSegment(offsetInDns + ConstantPartLength, length - ConstantPartLength);
+            DataSegment data = dns.Subsegment(offsetInDns + ConstantPartLength, length - ConstantPartLength);
             int dataOffset = 0;
 
             DataSegment flags = ReadString(data, ref dataOffset);

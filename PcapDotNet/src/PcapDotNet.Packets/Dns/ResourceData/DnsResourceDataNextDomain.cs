@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -20,18 +21,22 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Nxt)]
     public sealed class DnsResourceDataNextDomain : DnsResourceData, IEquatable<DnsResourceDataNextDomain>
     {
-        public const int MaxTypeBitMapLength = 16;
-        public const DnsType MaxTypeBitMapDnsType = (DnsType)(8 * MaxTypeBitMapLength);
+        public const int MaxTypeBitmapLength = 16;
+        public const DnsType MaxTypeBitmapDnsType = (DnsType)(8 * MaxTypeBitmapLength);
 
-        public DnsResourceDataNextDomain(DnsDomainName nextDomainName, DataSegment typeBitMap)
+        public DnsResourceDataNextDomain(DnsDomainName nextDomainName, DataSegment typeBitmap)
         {
-            if (typeBitMap.Length > MaxTypeBitMapLength)
-                throw new ArgumentOutOfRangeException("typeBitMap", typeBitMap.Length, string.Format("Cannot be longer than {0} bytes.", MaxTypeBitMapLength));
-            if (typeBitMap.Length > 0 && typeBitMap.Last == 0)
-                throw new ArgumentOutOfRangeException("typeBitMap", typeBitMap, "Last byte cannot be 0x00");
+            if (typeBitmap == null)
+                throw new ArgumentNullException("typeBitmap");
+
+            if (typeBitmap.Length > MaxTypeBitmapLength)
+                throw new ArgumentOutOfRangeException("typeBitmap", typeBitmap.Length,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0} bytes.", MaxTypeBitmapLength));
+            if (typeBitmap.Length > 0 && typeBitmap.Last == 0)
+                throw new ArgumentOutOfRangeException("typeBitmap", typeBitmap, "Last byte cannot be 0x00");
 
             NextDomainName = nextDomainName;
-            TypeBitMap = typeBitMap;
+            TypeBitmap = typeBitmap;
         }
 
         /// <summary>
@@ -50,19 +55,19 @@ namespace PcapDotNet.Packets.Dns
         /// This format is not used if there exists an RR with a type number greater than 127.
         /// If the zero bit of the type bit map is a one, it indicates that a different format is being used which will always be the case if a type number greater than 127 is present.
         /// </summary>
-        public DataSegment TypeBitMap { get; private set; }
+        public DataSegment TypeBitmap { get; private set; }
 
         public IEnumerable<DnsType> TypesExist
         {
             get
             {
                 ushort typeValue = 0;
-                for (int byteOffset = 0; byteOffset != TypeBitMap.Length; ++byteOffset)
+                for (int byteOffset = 0; byteOffset != TypeBitmap.Length; ++byteOffset)
                 {
                     byte mask = 0x80;
                     for (int i = 0; i != 8; ++i)
                     {
-                        if (TypeBitMap.ReadBool(byteOffset, mask))
+                        if (TypeBitmap.ReadBool(byteOffset, mask))
                             yield return (DnsType)typeValue;
                         ++typeValue;
                         mask >>= 1;
@@ -73,43 +78,47 @@ namespace PcapDotNet.Packets.Dns
 
         public bool IsTypePresentForOwner(DnsType dnsType)
         {
-            if (dnsType >= MaxTypeBitMapDnsType)
-                throw new ArgumentOutOfRangeException("dnsType", dnsType, string.Format("Cannot be bigger than {0}.", MaxTypeBitMapDnsType));
+            if (dnsType >= MaxTypeBitmapDnsType)
+                throw new ArgumentOutOfRangeException("dnsType", dnsType,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be bigger than {0}.", MaxTypeBitmapDnsType));
 
             int byteOffset;
             byte mask;
             DnsTypeToByteOffsetAndMask(out byteOffset, out mask, dnsType);
-            if (byteOffset > TypeBitMap.Length)
+            if (byteOffset > TypeBitmap.Length)
                 return false;
 
-            return TypeBitMap.ReadBool(byteOffset, mask);
+            return TypeBitmap.ReadBool(byteOffset, mask);
         }
 
-        public static DataSegment CreateTypeBitMap(IEnumerable<DnsType> typesPresentForOwner)
+        public static DataSegment CreateTypeBitmap(IEnumerable<DnsType> typesPresentForOwner)
         {
+            if (typesPresentForOwner == null)
+                throw new ArgumentNullException("typesPresentForOwner");
+
             DnsType maxDnsType = typesPresentForOwner.Max();
             int length = (ushort)(maxDnsType + 7) / 8;
             if (length == 0)
                 return DataSegment.Empty;
 
-            byte[] typeBitMapBuffer = new byte[length];
+            byte[] typeBitmapBuffer = new byte[length];
             foreach (DnsType dnsType in typesPresentForOwner)
             {
                 int byteOffset;
                 byte mask;
                 DnsTypeToByteOffsetAndMask(out byteOffset, out mask, dnsType);
 
-                typeBitMapBuffer[byteOffset] |= mask;
+                typeBitmapBuffer[byteOffset] |= mask;
             }
 
-            return new DataSegment(typeBitMapBuffer);
+            return new DataSegment(typeBitmapBuffer);
         }
 
         public bool Equals(DnsResourceDataNextDomain other)
         {
             return other != null &&
                    NextDomainName.Equals(other.NextDomainName) &&
-                   TypeBitMap.Equals(other.TypeBitMap);
+                   TypeBitmap.Equals(other.TypeBitmap);
         }
 
         public override bool Equals(object other)
@@ -119,7 +128,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Sequence.GetHashCode(NextDomainName, TypeBitMap);
+            return Sequence.GetHashCode(NextDomainName, TypeBitmap);
         }
 
         internal DnsResourceDataNextDomain()
@@ -129,15 +138,15 @@ namespace PcapDotNet.Packets.Dns
 
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
-            return NextDomainName.GetLength(compressionData, offsetInDns) + TypeBitMap.Length;
+            return NextDomainName.GetLength(compressionData, offsetInDns) + TypeBitmap.Length;
         }
 
         internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
         {
             int numBytesWritten = NextDomainName.Write(buffer, dnsOffset, compressionData, offsetInDns);
-            TypeBitMap.Write(buffer, dnsOffset + offsetInDns + numBytesWritten);
+            TypeBitmap.Write(buffer, dnsOffset + offsetInDns + numBytesWritten);
 
-            return numBytesWritten + TypeBitMap.Length;
+            return numBytesWritten + TypeBitmap.Length;
         }
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
@@ -149,14 +158,14 @@ namespace PcapDotNet.Packets.Dns
             offsetInDns += nextDomainNameLength;
             length -= nextDomainNameLength;
 
-            if (length > MaxTypeBitMapLength)
+            if (length > MaxTypeBitmapLength)
                 return null;
 
-            DataSegment typeBitMap = dns.SubSegment(offsetInDns, length);
-            if (length != 0 && typeBitMap.Last == 0)
+            DataSegment typeBitmap = dns.Subsegment(offsetInDns, length);
+            if (length != 0 && typeBitmap.Last == 0)
                 return null;
 
-            return new DnsResourceDataNextDomain(nextDomainName, typeBitMap);
+            return new DnsResourceDataNextDomain(nextDomainName, typeBitmap);
         }
 
         private static void DnsTypeToByteOffsetAndMask(out int byteOffset, out byte mask, DnsType dnsType)

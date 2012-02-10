@@ -13,17 +13,17 @@
     [DnsTypeRegistration(Type = DnsType.Rp)]
     public sealed class DnsResourceDataResponsiblePerson : DnsResourceData2DomainNames
     {
-        public DnsResourceDataResponsiblePerson(DnsDomainName mailBox, DnsDomainName textDomain)
-            : base(mailBox, textDomain)
+        public DnsResourceDataResponsiblePerson(DnsDomainName mailbox, DnsDomainName textDomain)
+            : base(mailbox, textDomain)
         {
         }
 
         /// <summary>
         /// A domain name that specifies the mailbox for the responsible person.
         /// Its format in master files uses the DNS convention for mailbox encoding, identical to that used for the RNAME mailbox field in the SOA RR.
-        /// The root domain name (just ".") may be specified for MailBox to indicate that no mailbox is available.
+        /// The root domain name (just ".") may be specified for Mailbox to indicate that no mailbox is available.
         /// </summary>
-        public DnsDomainName MailBox { get { return First; } }
+        public DnsDomainName Mailbox { get { return First; } }
 
         /// <summary>
         /// A domain name for which TXT RR's exist. 
@@ -40,12 +40,12 @@
 
         internal override DnsResourceData CreateInstance(DnsDatagram dns, int offsetInDns, int length)
         {
-            DnsDomainName mailBox;
+            DnsDomainName mailbox;
             DnsDomainName textDomain;
-            if (!TryRead(out mailBox, out textDomain, dns, offsetInDns, length))
+            if (!TryRead(out mailbox, out textDomain, dns, offsetInDns, length))
                 return null;
 
-            return new DnsResourceDataResponsiblePerson(mailBox, textDomain);
+            return new DnsResourceDataResponsiblePerson(mailbox, textDomain);
         }
     }
 }

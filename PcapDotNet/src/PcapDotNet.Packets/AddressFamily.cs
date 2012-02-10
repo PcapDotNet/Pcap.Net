@@ -5,6 +5,8 @@
     /// </summary>
     public enum AddressFamily : ushort
     {
+        None = 0,
+
         /// <summary>
         /// IP (IP version 4).
         /// </summary>
@@ -16,14 +18,14 @@
         IpV6 = 2,
 
         /// <summary>
-        /// Network Service Access Point.
+        /// NSAP - Network Service Access Point.
         /// </summary>
-        Nsap = 3,
+        NetworkServiceAccessPoint = 3,
 
         /// <summary>
         /// High-Level Data Link (8-bit multidrop).
         /// </summary>
-        Hdlc = 4,
+        HighLevelDataLink = 4,
 
         /// <summary>
         /// BBN Report 1822.
@@ -68,7 +70,7 @@
         /// <summary>
         /// Decnet IV.
         /// </summary>
-        DecnetIv = 13,	
+        DecNetIv = 13,	
 
         /// <summary>
         /// Banyan Vines.
@@ -80,7 +82,7 @@
         /// ATM Forum UNI 3.1. October 1995.
         /// Andy Malis.
         /// </summary>
-        E164WithNsapFormatSubaddresses = 15,
+        E164WithNetworkServiceAccessPointFormatSubaddresses = 15,
 
         /// <summary>
         /// DNS (Domain Name System).
@@ -121,19 +123,19 @@
         /// Fibre Channel World-Wide Port Name.
         /// Mark Bakke.
         /// </summary>
-        FibreChannelWorldWidePortName = 22,
+        FibreChannelWorldwidePortName = 22,
 
         /// <summary>
         /// Fibre Channel World-Wide Node Name.
         /// Mark Bakke.
         /// </summary>
-        FibreChannelWorldWideNodeName = 23,
+        FibreChannelWorldwideNodeName = 23,
 
         /// <summary>
         /// GWID.
         /// Subra Hegde.
         /// </summary>
-        Gwis = 24,
+        Gwid = 24,
 
         /// <summary>
         /// RFCs 4761, 6074.
@@ -145,19 +147,19 @@
         /// EIGRP Common Service Family.
         /// Donnie Savage.
         /// </summary>
-        EigrpCommonServiceFamily = 16384,
+        EnhancedInteriorGatewayRoutingProtocolCommonServiceFamily = 16384,
 
         /// <summary>
         /// EIGRP IPv4 Service Family.
         /// Donnie Savage.
         /// </summary>
-        EigrpIpV4ServiceFamily = 16385,
+        EnhancedInteriorGatewayRoutingProtocolIpV4ServiceFamily = 16385,
 
         /// <summary>
         /// EIGRP IPv6 Service Family.
         /// Donnie Savage.
         /// </summary>
-        EigrpIpV6ServiceFamily = 16386,
+        EnhancedInteriorGatewayRoutingProtocolIpV6ServiceFamily = 16386,
 
         /// <summary>
         /// LISP Canonical Address Format (LCAF).

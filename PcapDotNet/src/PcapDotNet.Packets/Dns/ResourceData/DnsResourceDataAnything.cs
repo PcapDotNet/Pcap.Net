@@ -8,8 +8,8 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Null)]
     [DnsTypeRegistration(Type = DnsType.EId)]
-    [DnsTypeRegistration(Type = DnsType.NimLoc)]
-    [DnsTypeRegistration(Type = DnsType.Dhcid)]
+    [DnsTypeRegistration(Type = DnsType.NimrodLocator)]
+    [DnsTypeRegistration(Type = DnsType.DynamicHostConfigurationId)]
     public sealed class DnsResourceDataAnything : DnsResourceDataSimple, IEquatable<DnsResourceDataAnything>
     {
         public DnsResourceDataAnything()

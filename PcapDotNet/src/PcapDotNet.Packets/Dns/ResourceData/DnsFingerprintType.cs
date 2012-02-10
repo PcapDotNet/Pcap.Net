@@ -5,6 +5,8 @@
     /// </summary>
     public enum DnsFingerprintType : byte
     {
+        None = 0,
+
         /// <summary>
         /// RFC 4255.
         /// </summary>

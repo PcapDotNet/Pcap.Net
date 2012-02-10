@@ -37,7 +37,7 @@
         /// <summary>
         /// Reserved for elliptic curve crypto.
         /// </summary>
-        Ecc = 4,
+        EllipticCurveCrypto = 4,
 
         /// <summary>
         /// RFCs 3110, 3755.
@@ -49,13 +49,13 @@
         /// RFC 5155.
         /// DSA-NSEC3-SHA1.
         /// </summary>
-        DsaNsec3Sha1 = 6,
+        DsaNextSecure3Sha1 = 6,
 
         /// <summary>
         /// RFC 5155.
         /// RSASHA1-NSEC3-SHA1.
         /// </summary>
-        RsaSha1Nsec3Sha1 = 7,
+        RsaSha1NextSecure3Sha1 = 7,
 
         /// <summary>
         /// RFC 5702.
@@ -73,7 +73,7 @@
         /// RFC 5933.
         /// GOST R 34.10-2001.
         /// </summary>
-        EccGost = 12,
+        EllipticCurveCryptoGost = 12,
 
         /// <summary>
         /// RFC 4034.
@@ -91,6 +91,6 @@
         /// RFCs 2535, 3755.
         /// Private algorithms - OID.
         /// </summary>
-        PrivateOid = 254,
+        PrivateObjectIdentifier = 254,
     }
 }

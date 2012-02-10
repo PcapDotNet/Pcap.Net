@@ -26,9 +26,9 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+-----------------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Sig)]
-    [DnsTypeRegistration(Type = DnsType.RrSig)]
-    public sealed class DnsResourceDataSig : DnsResourceData, IEquatable<DnsResourceDataSig>
+    [DnsTypeRegistration(Type = DnsType.Signature)]
+    [DnsTypeRegistration(Type = DnsType.RrSignature)]
+    public sealed class DnsResourceDataSignature : DnsResourceData, IEquatable<DnsResourceDataSignature>
     {
         private static class Offset
         {
@@ -44,8 +44,8 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.SignersName;
 
-        public DnsResourceDataSig(DnsType typeCovered, DnsAlgorithm algorithm, byte labels, uint originalTtl, SerialNumber32 signatureExpiration,
-                                  SerialNumber32 signatureInception, ushort keyTag, DnsDomainName signersName, DataSegment signature)
+        public DnsResourceDataSignature(DnsType typeCovered, DnsAlgorithm algorithm, byte labels, uint originalTtl, SerialNumber32 signatureExpiration,
+                                        SerialNumber32 signatureInception, ushort keyTag, DnsDomainName signersName, DataSegment signature)
         {
             TypeCovered = typeCovered;
             Algorithm = algorithm;
@@ -139,7 +139,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Signature { get; private set; }
 
-        public bool Equals(DnsResourceDataSig other)
+        public bool Equals(DnsResourceDataSignature other)
         {
             return other != null &&
                    TypeCovered.Equals(other.TypeCovered) &&
@@ -161,10 +161,10 @@ namespace PcapDotNet.Packets.Dns
 
         public override bool Equals(object other)
         {
-            return Equals(other as DnsResourceDataSig);
+            return Equals(other as DnsResourceDataSignature);
         }
 
-        internal DnsResourceDataSig()
+        internal DnsResourceDataSignature()
             : this(DnsType.A, DnsAlgorithm.None, 0, 0, 0, 0, 0, DnsDomainName.Root, DataSegment.Empty)
         {
         }
@@ -214,9 +214,9 @@ namespace PcapDotNet.Packets.Dns
             offsetInDns += signersNameLength;
             length -= signersNameLength;
 
-            DataSegment signature = dns.SubSegment(offsetInDns, length);
+            DataSegment signature = dns.Subsegment(offsetInDns, length);
 
-            return new DnsResourceDataSig(typeCovered, algorithm, labels, originalTtl, signatureExpiration, signatureInception, keyTag, signersName, signature);
+            return new DnsResourceDataSignature(typeCovered, algorithm, labels, originalTtl, signatureExpiration, signatureInception, keyTag, signersName, signature);
         }
     }
 }

@@ -42,6 +42,9 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsAddressPrefix(AddressFamily addressFamily, byte prefixLength, bool negation, DataSegment addressFamilyDependentPart)
         {
+            if (addressFamilyDependentPart == null) 
+                throw new ArgumentNullException("addressFamilyDependentPart");
+
             if (addressFamilyDependentPart.Length > AddressFamilyDependentPartMaxLength)
                 throw new ArgumentOutOfRangeException("addressFamilyDependentPart", addressFamilyDependentPart, "Cannot be longer than " + AddressFamilyDependentPartMaxLength);
 
@@ -115,6 +118,9 @@ namespace PcapDotNet.Packets.Dns
 
         public static DnsAddressPrefix Read(DataSegment data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (data.Length < MinimumLength)
                 return null;
             AddressFamily addressFamily = (AddressFamily)data.ReadUShort(Offset.AddressFamily, Endianity.Big);
@@ -124,7 +130,7 @@ namespace PcapDotNet.Packets.Dns
             
             if (data.Length < MinimumLength + addressFamilyDependentPartLength)
                 return null;
-            DataSegment addressFamilyDependentPart = data.SubSegment(Offset.AddressFamilyDependentPart, addressFamilyDependentPartLength);
+            DataSegment addressFamilyDependentPart = data.Subsegment(Offset.AddressFamilyDependentPart, addressFamilyDependentPartLength);
 
             return new DnsAddressPrefix(addressFamily, prefixLength, negation, addressFamilyDependentPart);
         }

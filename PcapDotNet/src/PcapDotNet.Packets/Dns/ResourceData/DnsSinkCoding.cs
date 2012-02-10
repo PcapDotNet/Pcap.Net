@@ -5,6 +5,8 @@
     /// </summary>
     public enum DnsSinkCoding : byte
     {
+        None = 0x00,
+
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// </summary>

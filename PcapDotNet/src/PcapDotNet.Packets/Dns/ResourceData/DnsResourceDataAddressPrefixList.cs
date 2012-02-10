@@ -80,7 +80,7 @@ namespace PcapDotNet.Packets.Dns
                 if (item == null)
                     return null;
                 items.Add(item);
-                data = data.SubSegment(item.Length, data.Length - item.Length);
+                data = data.Subsegment(item.Length, data.Length - item.Length);
             }
 
             return new DnsResourceDataAddressPrefixList(items);

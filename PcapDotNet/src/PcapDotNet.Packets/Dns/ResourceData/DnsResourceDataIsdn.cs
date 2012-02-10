@@ -24,8 +24,8 @@ namespace PcapDotNet.Packets.Dns
 
         }
 
-        public DnsResourceDataIsdn(DataSegment isdnAddress, DataSegment subAddress)
-            : base(isdnAddress, subAddress)
+        public DnsResourceDataIsdn(DataSegment isdnAddress, DataSegment subaddress)
+            : base(isdnAddress, subaddress)
         {
         }
 
@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Specifies the subaddress (SA).
         /// </summary>
-        public DataSegment SubAddress { get { return Strings.Count == MaxNumStrings ? Strings[1] : null; } }
+        public DataSegment Subaddress { get { return Strings.Count == MaxNumStrings ? Strings[1] : null; } }
 
         internal DnsResourceDataIsdn()
             : this(DataSegment.Empty)

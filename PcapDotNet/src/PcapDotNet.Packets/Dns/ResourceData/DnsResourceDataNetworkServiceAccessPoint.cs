@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -22,7 +23,7 @@ namespace PcapDotNet.Packets.Dns
     /// DSP is Domain Specific Part.
     /// HO-DSP may use any format as defined by the authority identified by IDP.
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Nsap)]
+    [DnsTypeRegistration(Type = DnsType.NetworkServiceAccessPoint)]
     public sealed class DnsResourceDataNetworkServiceAccessPoint : DnsResourceDataSimple, IEquatable<DnsResourceDataNetworkServiceAccessPoint>
     {
         private static class Offset
@@ -42,9 +43,13 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsResourceDataNetworkServiceAccessPoint(DataSegment areaAddress, UInt48 systemIdentifier, byte selector)
         {
+            if (areaAddress == null)
+                throw new ArgumentNullException("areaAddress");
+
             if (areaAddress.Length < MinAreaAddressLength)
                 throw new ArgumentOutOfRangeException("areaAddress", areaAddress.Length,
-                                                      string.Format("Area Address length must be at least {0}.", MinAreaAddressLength));
+                                                      string.Format(CultureInfo.InvariantCulture, "Area Address length must be at least {0}.",
+                                                                    MinAreaAddressLength));
             AreaAddress = areaAddress;
             SystemIdentifier = systemIdentifier;
             Selector = selector;
@@ -114,7 +119,7 @@ namespace PcapDotNet.Packets.Dns
             if (data.Length < ConstantPartLength)
                 return null;
 
-            DataSegment areaAddress = data.SubSegment(Offset.AreaAddress, MinAreaAddressLength + data.Length - ConstantPartLength);
+            DataSegment areaAddress = data.Subsegment(Offset.AreaAddress, MinAreaAddressLength + data.Length - ConstantPartLength);
 
             int afterAreaOffset = areaAddress.Length;
             UInt48 systemIdentifier = data.ReadUInt48(afterAreaOffset + OffsetAfterArea.SystemIdentifier, Endianity.Big);

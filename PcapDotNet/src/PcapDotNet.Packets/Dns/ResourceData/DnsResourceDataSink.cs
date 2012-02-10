@@ -28,8 +28,8 @@ namespace PcapDotNet.Packets.Dns
 
         public const int ConstantPartLength = Offset.Data;
 
-        public DnsResourceDataSink(DnsSinkCodingSubcoding codingSubcoding, DataSegment data)
-            : this((DnsSinkCoding)((ushort)codingSubcoding >> 8), (byte)((ushort)codingSubcoding & 0x00FF), data)
+        public DnsResourceDataSink(DnsSinkCodingSubCoding codingSubCoding, DataSegment data)
+            : this((DnsSinkCoding)((ushort)codingSubCoding >> 8), (byte)((ushort)codingSubCoding & 0x00FF), data)
         {
         }
 
@@ -54,12 +54,12 @@ namespace PcapDotNet.Packets.Dns
         /// Returns a combination of coding and subcoding.
         /// Has a valid enum value if the subcoding is defined specifically for the coding.
         /// </summary>
-        public DnsSinkCodingSubcoding CodingSubcoding
+        public DnsSinkCodingSubCoding CodingSubCoding
         {
             get
             {
                 ushort codingSubcoding = BitSequence.Merge((byte)Coding, Subcoding);
-                return (DnsSinkCodingSubcoding)codingSubcoding;
+                return (DnsSinkCodingSubCoding)codingSubcoding;
             }
         }
 
@@ -83,11 +83,11 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Sequence.GetHashCode(CodingSubcoding, Data);
+            return Sequence.GetHashCode(CodingSubCoding, Data);
         }
 
         internal DnsResourceDataSink()
-            : this(DnsSinkCodingSubcoding.Asn1SnmpBer, DataSegment.Empty)
+            : this(DnsSinkCodingSubCoding.Asn1SnmpBasicEncodingRules, DataSegment.Empty)
         {
         }
 
@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.Dns
 
             DnsSinkCoding coding = (DnsSinkCoding)data[Offset.Coding];
             byte subcoding = data[Offset.Subcoding];
-            DataSegment dataValue = data.SubSegment(Offset.Data, data.Length - ConstantPartLength);
+            DataSegment dataValue = data.Subsegment(Offset.Data, data.Length - ConstantPartLength);
 
             return new DnsResourceDataSink(coding, subcoding, dataValue);
         }

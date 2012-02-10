@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV6;
 
@@ -40,9 +41,11 @@ namespace PcapDotNet.Packets.Dns
         public DnsResourceDataA6(byte prefixLength, IpV6Address addressSuffix, DnsDomainName prefixName)
         {
             if (IsAddressSuffixTooBig(prefixLength, addressSuffix))
-                throw new ArgumentOutOfRangeException("addressSuffix", string.Format("Value is too small for prefix length {0}", prefixLength));
+                throw new ArgumentOutOfRangeException("addressSuffix",
+                                                      string.Format(CultureInfo.InvariantCulture, "Value is too small for prefix length {0}", prefixLength));
             if (IsAddressSuffixTooSmall(prefixLength, addressSuffix))
-                throw new ArgumentOutOfRangeException("addressSuffix", string.Format("Value is too big for prefix length {0}", prefixLength));
+                throw new ArgumentOutOfRangeException("addressSuffix",
+                                                      string.Format(CultureInfo.InvariantCulture, "Value is too big for prefix length {0}", prefixLength));
 
             PrefixLength = prefixLength;
             AddressSuffix = addressSuffix;

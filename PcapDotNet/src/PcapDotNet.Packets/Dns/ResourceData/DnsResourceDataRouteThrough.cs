@@ -13,7 +13,7 @@
     /// +-----+-------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Rt)]
+    [DnsTypeRegistration(Type = DnsType.RouteThrough)]
     public sealed class DnsResourceDataRouteThrough : DnsResourceDataUShortDomainName
     {
         public DnsResourceDataRouteThrough(ushort preference, DnsDomainName intermediateHost)

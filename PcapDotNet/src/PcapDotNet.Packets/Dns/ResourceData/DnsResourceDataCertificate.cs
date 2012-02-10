@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets.Dns
             DnsCertificateType type = (DnsCertificateType)data.ReadUShort(Offset.Type, Endianity.Big);
             ushort keyTag = data.ReadUShort(Offset.KeyTag, Endianity.Big);
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
-            DataSegment certificate = data.SubSegment(Offset.Certificate, data.Length - ConstantPartLength);
+            DataSegment certificate = data.Subsegment(Offset.Certificate, data.Length - ConstantPartLength);
 
             return new DnsResourceDataCertificate(type, keyTag, algorithm, certificate);
         }

@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-------+---------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Soa)]
+    [DnsTypeRegistration(Type = DnsType.StartOfAuthority)]
     public sealed class DnsResourceDataStartOfAuthority : DnsResourceData, IEquatable<DnsResourceDataStartOfAuthority>
     {
         private static class Offset
@@ -41,11 +41,11 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.MinimumTtl + sizeof(uint);
 
-        public DnsResourceDataStartOfAuthority(DnsDomainName mainNameServer, DnsDomainName responsibleMailBox,
+        public DnsResourceDataStartOfAuthority(DnsDomainName mainNameServer, DnsDomainName responsibleMailbox,
                                                SerialNumber32 serial, uint refresh, uint retry, uint expire, uint minimumTtl)
         {
             MainNameServer = mainNameServer;
-            ResponsibleMailBox = responsibleMailBox;
+            ResponsibleMailbox = responsibleMailbox;
             Serial = serial;
             Refresh = refresh;
             Retry = retry;
@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// A domain-name which specifies the mailbox of the person responsible for this zone.
         /// </summary>
-        public DnsDomainName ResponsibleMailBox { get; private set; }
+        public DnsDomainName ResponsibleMailbox { get; private set; }
 
         /// <summary>
         /// The unsigned 32 bit version number of the original copy of the zone.
@@ -94,7 +94,7 @@ namespace PcapDotNet.Packets.Dns
         {
             return other != null &&
                    MainNameServer.Equals(other.MainNameServer) &&
-                   ResponsibleMailBox.Equals(other.ResponsibleMailBox) &&
+                   ResponsibleMailbox.Equals(other.ResponsibleMailbox) &&
                    Serial.Equals(other.Serial) &&
                    Refresh.Equals(other.Refresh) &&
                    Retry.Equals(other.Retry) &&
@@ -104,7 +104,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Sequence.GetHashCode(MainNameServer, ResponsibleMailBox, Serial, Refresh, Retry, Expire, MinimumTtl);
+            return Sequence.GetHashCode(MainNameServer, ResponsibleMailbox, Serial, Refresh, Retry, Expire, MinimumTtl);
         }
 
         public override bool Equals(object other)
@@ -120,14 +120,14 @@ namespace PcapDotNet.Packets.Dns
         internal override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
         {
             return MainNameServer.GetLength(compressionData, offsetInDns) +
-                   ResponsibleMailBox.GetLength(compressionData, offsetInDns) +
+                   ResponsibleMailbox.GetLength(compressionData, offsetInDns) +
                    ConstantPartLength;
         }
 
         internal override int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData)
         {
             int numBytesWritten = MainNameServer.Write(buffer, dnsOffset, compressionData, offsetInDns);
-            numBytesWritten += ResponsibleMailBox.Write(buffer, dnsOffset, compressionData, offsetInDns + numBytesWritten);
+            numBytesWritten += ResponsibleMailbox.Write(buffer, dnsOffset, compressionData, offsetInDns + numBytesWritten);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Serial, Serial.Value, Endianity.Big);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Refresh, Refresh, Endianity.Big);
             buffer.Write(dnsOffset + offsetInDns + numBytesWritten + Offset.Retry, Retry, Endianity.Big);
@@ -146,8 +146,8 @@ namespace PcapDotNet.Packets.Dns
             offsetInDns += domainNameLength;
             length -= domainNameLength;
 
-            DnsDomainName responsibleMailBox;
-            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out responsibleMailBox, out domainNameLength))
+            DnsDomainName responsibleMailbox;
+            if (!DnsDomainName.TryParse(dns, offsetInDns, length, out responsibleMailbox, out domainNameLength))
                 return null;
             offsetInDns += domainNameLength;
             length -= domainNameLength;
@@ -161,7 +161,7 @@ namespace PcapDotNet.Packets.Dns
             uint expire = dns.ReadUInt(offsetInDns + Offset.Expire, Endianity.Big); ;
             uint minimumTtl = dns.ReadUInt(offsetInDns + Offset.MinimumTtl, Endianity.Big); ;
 
-            return new DnsResourceDataStartOfAuthority(mainNameServer, responsibleMailBox, serial, refresh, retry, expire, minimumTtl);
+            return new DnsResourceDataStartOfAuthority(mainNameServer, responsibleMailbox, serial, refresh, retry, expire, minimumTtl);
         }
     }
 }

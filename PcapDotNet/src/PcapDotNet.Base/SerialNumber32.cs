@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Base
 {
@@ -18,7 +19,8 @@ namespace PcapDotNet.Base
         public SerialNumber32 Add(uint value)
         {
             if (value > MaxAdditiveNumber)
-                throw new ArgumentOutOfRangeException("value", value, string.Format("Cannot add a number bigger than {0}", MaxAdditiveNumber));
+                throw new ArgumentOutOfRangeException("value", value,
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot add a number bigger than {0}", MaxAdditiveNumber));
 
             return _value + value;
         }
@@ -51,12 +53,37 @@ namespace PcapDotNet.Base
 
         public override string ToString()
         {
-            return Value.ToString();
+            return ToString(CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            return Value.ToString(provider);
         }
 
         public static implicit operator SerialNumber32(uint value)
         {
             return new SerialNumber32(value);
+        }
+
+        public static bool operator ==(SerialNumber32 value1, SerialNumber32 value2)
+        {
+            return value1.Equals(value2);
+        }
+
+        public static bool operator !=(SerialNumber32 value1, SerialNumber32 value2)
+        {
+            return !(value1 == value2);
+        }
+
+        public static bool operator <(SerialNumber32 value1, SerialNumber32 value2)
+        {
+            return value1.CompareTo(value2) < 0;
+        }
+
+        public static bool operator >(SerialNumber32 value1, SerialNumber32 value2)
+        {
+            return value1.CompareTo(value2) > 0;
         }
 
         private readonly uint _value;

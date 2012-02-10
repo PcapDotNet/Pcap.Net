@@ -8,11 +8,14 @@
     /// </summary>
     public enum DnsType : ushort
     {
+        None = 0,
+
         /// <summary>
         /// RFC 1035.
         /// A host address.
         /// Payload type: DnsResourceDataIpV4.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "A")]
         A = 1,
 
         /// <summary>
@@ -45,10 +48,10 @@
         
         /// <summary>
         /// RFC 1035.
-        /// Marks the start of a zone of authority.
+        /// SOA - Marks the start of a zone of authority.
         /// Payload type: DnsResourceDataStartOfAuthority.
         /// </summary>
-        Soa = 6,
+        StartOfAuthority = 6,
 
         /// <summary>
         /// RFC 1035.
@@ -66,10 +69,10 @@
 
         /// <summary>
         /// RFC 1035.
-        /// A mail rename domain name (EXPERIMENTAL).
+        /// MR - A mail rename domain name (EXPERIMENTAL).
         /// Payload type: DnsResourceDataDomainName.
         /// </summary>
-        Mr = 9,
+        MailRename = 9,
 
         /// <summary>
         /// RFC 1035.
@@ -108,10 +111,10 @@
 
         /// <summary>
         /// RFC 1035.
-        /// Mail exchange.
+        /// MX - Mail exchange.
         /// Payload type: DnsResourceDataMailExchange.
         /// </summary>
-        Mx = 15,
+        MailExchange = 15,
 
         /// <summary>
         /// RFC 1035.
@@ -129,10 +132,10 @@
 
         /// <summary>
         /// RFCs 1183, 5864.
-        /// For AFS Data Base location.
+        /// AFSDB - For AFS Data Base location.
         /// Payload type: DnsResourceDataAfsDb.
         /// </summary>
-        AfsDb = 18,
+        AfsDatabase = 18,
 
         /// <summary>
         /// RFC 1183.
@@ -150,32 +153,32 @@
 
         /// <summary>
         /// RFC 1183.
-        /// For Route Through.
+        /// RT - For Route Through.
         /// Payload type: DnsResourceDataRouteThrough.
         /// </summary>
-        Rt = 21,
+        RouteThrough = 21,
 
         /// <summary>
         /// RFC 1706.
-        /// Network Service Access Point.
+        /// NSAP - Network Service Access Point.
         /// For NSAP address, NSAP style A record.
         /// Payload type: DnsResourceDataNetworkServiceAccessPoint.
         /// </summary>
-        Nsap = 22,
+        NetworkServiceAccessPoint = 22,
 
         /// <summary>
         /// RFC 1348.
-        /// For domain name pointer, NSAP style.
+        /// NSAPPTR - For domain name pointer, NSAP style.
         /// Payload type: DnsResourceDataDomainName.
         /// </summary>
-        NsapPtr = 23,
+        NetworkServiceAccessPointPointer = 23,
 
         /// <summary>
         /// RFCs 2535, 3755, 4034.
-        /// For security signature.
-        /// Payload type: DnsResourceDataSig.
+        /// SIG - For security signature.
+        /// Payload type: DnsResourceDataSignature.
         /// </summary>
-        Sig = 24, 
+        Signature = 24, 
 
         /// <summary>
         /// RFCs 2065, 2535, 3755, 4034.
@@ -186,10 +189,10 @@
 
         /// <summary>
         /// RFC 2163.
-        /// X.400 mail mapping information.
+        /// PX - X.400 mail mapping information.
         /// Payload type: DnsResourceDataX400Pointer.
         /// </summary>
-        Px = 26, 
+        PointerX400 = 26, 
 
         /// <summary>
         /// RFC 1712.
@@ -228,17 +231,17 @@
 
         /// <summary>
         /// Patton.
-        /// Nimrod Locator.
+        /// NimLoc - Nimrod Locator.
         /// Payload type: DnsResourceDataAnything.
         /// </summary>
-        NimLoc = 32,
+        NimrodLocator = 32,
 
         /// <summary>
         /// RFC 2782.
-        /// Server Selection.
+        /// SRV - Server Selection.
         /// Payload type: DnsResourceDataServerSelection.
         /// </summary>
-        Srv = 33,
+        ServerSelection = 33,
 
         /// <summary>
         /// ATMDOC.
@@ -256,10 +259,10 @@
 
         /// <summary>
         /// RFC 2230.
-        /// Key Exchanger.
+        /// KX - Key Exchanger.
         /// Payload type: DnsResourceDataKeyExchanger.
         /// </summary>
-        Kx = 36,
+        KeyExchanger = 36,
 
         /// <summary>
         /// RFC 4398.
@@ -305,18 +308,18 @@
 
         /// <summary>
         /// RFCs 3658, 4034.
-        /// Delegation Signer.
+        /// DS - Delegation Signer.
         /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
-        Ds = 43,
+        DelegationSigner = 43,
 
         /// <summary>
         /// RFC 4255.
-        /// SSH Key Fingerprint.
+        /// SSHFP - SSH Key Fingerprint.
         /// Used to store a fingerprint of an SSH public host key that is associated with a Domain Name System (DNS) name.
         /// Payload type: DnsResourceDataSshFingerprint.
         /// </summary>
-        SshFp = 44,
+        SshFingerprint = 44,
 
         /// <summary>
         /// RFC 4025.
@@ -328,9 +331,9 @@
         /// <summary>
         /// RFCs 3755, 4034.
         /// RRSIG.
-        /// Payload type: DnsResourceDataSig.
+        /// Payload type: DnsResourceDataSignature.
         /// </summary>
-        RrSig = 46,
+        RrSignature = 46,
 
         /// <summary>
         /// RFCs 3755, 4034.
@@ -353,7 +356,7 @@
         /// Dynamic Host Configuration Information.
         /// Payload type: DnsResourceDataAnything.
         /// </summary>
-        Dhcid = 49,
+        DynamicHostConfigurationId = 49,
 
         /// <summary>
         /// RFC 5155.
@@ -367,7 +370,7 @@
         /// NSEC3PARAM.
         /// Payload type: DnsResourceDataNextDomainSecure3Parameters.
         /// </summary>
-        NSec3Param = 51,
+        NSec3Parameters = 51,
 
         /// <summary>
         /// RFC 5205.
@@ -445,10 +448,10 @@
 
         /// <summary>
         /// RFC 2845.
-        /// Transaction Signature.
+        /// TSIG - Transaction Signature.
         /// Payload type: DnsResourceDataTransactionSignature.
         /// </summary>
-        TSig = 250,
+        TransactionSignature = 250,
 
         /// <summary>
         /// RFC 1995.
@@ -494,10 +497,10 @@
 
         /// <summary>
         /// Hallam-Baker.
-        /// Certification Authority Authorization.
+        /// CAA - Certification Authority Authorization.
         /// Payload type: DnsResourceDataCertificationAuthorityAuthorization.
         /// </summary>
-        Caa = 257,
+        CertificationAuthorityAuthorization = 257,
 
         /// <summary>
         /// Weiler. 2005-12-13.
@@ -508,9 +511,9 @@
 
         /// <summary>
         /// RFC 4431.
-        /// DNSSEC Lookaside Validation.
+        /// DLV - DNSSEC Lookaside Validation.
         /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
-        Dlv = 32769,
+        DnsSecLookasideValidation = 32769,
     }
 }

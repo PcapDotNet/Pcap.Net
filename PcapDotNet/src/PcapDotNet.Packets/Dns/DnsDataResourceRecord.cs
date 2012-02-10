@@ -41,6 +41,7 @@ namespace PcapDotNet.Packets.Dns
             return base.ToString() + " " + Ttl + " " + Data;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public bool Equals(DnsDataResourceRecord other)
         {
             return EqualsBase(other) &&

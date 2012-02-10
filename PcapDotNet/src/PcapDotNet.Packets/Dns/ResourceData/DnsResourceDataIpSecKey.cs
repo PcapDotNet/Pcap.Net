@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.IpSecKey)]
     public sealed class DnsResourceDataIpSecKey : DnsResourceDataNoCompression, IEquatable<DnsResourceDataIpSecKey>
     {
-        public static class Offset
+        private static class Offset
         {
             public const int Precedence = 0;
             public const int GatewayType = Precedence + sizeof(byte);
@@ -122,7 +122,7 @@ namespace PcapDotNet.Packets.Dns
             DnsGateway gateway = DnsGateway.CreateInstance(gatewayType, dns, offsetInDns + Offset.Gateway, length - ConstPartLength);
             if (gateway == null)
                 return null;
-            DataSegment publicKey = dns.SubSegment(offsetInDns + ConstPartLength + gateway.Length, length - ConstPartLength - gateway.Length);
+            DataSegment publicKey = dns.Subsegment(offsetInDns + ConstPartLength + gateway.Length, length - ConstPartLength - gateway.Length);
 
             return new DnsResourceDataIpSecKey(precedence, gateway, algorithm, publicKey);
         }

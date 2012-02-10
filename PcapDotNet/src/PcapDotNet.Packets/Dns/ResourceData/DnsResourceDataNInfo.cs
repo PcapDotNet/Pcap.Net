@@ -21,6 +21,9 @@ namespace PcapDotNet.Packets.Dns
         public DnsResourceDataNInfo(ReadOnlyCollection<DataSegment> strings)
             : base(strings)
         {
+            if (strings == null)
+                throw new ArgumentNullException("strings");
+
             if (strings.Count < MinNumStrings)
                 throw new ArgumentOutOfRangeException("strings", strings.Count, "There must be at least one string.");
         }
