@@ -38,25 +38,25 @@ namespace PcapDotNet.Packets.Dns
         
         public DnsResponseCode ResponseCode { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DnsQueryResourceRecord> Queries { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DnsDataResourceRecord> Answers { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DnsDataResourceRecord> Authorities { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DnsDataResourceRecord> Additionals { get; set; }
 
-        public IEnumerable<DnsResourceRecord> Records
+        public IEnumerable<DnsResourceRecord> ResourceRecords
         {
             get
             {
-                IEnumerable<DnsResourceRecord> allRecords = null;
-                foreach (IEnumerable<DnsResourceRecord> records in new IEnumerable<DnsResourceRecord>[] {Queries,Answers,Authorities,Additionals})
-                {
-                    if (records != null)
-                        allRecords = allRecords == null ? records : allRecords.Concat(records);
-                }
-                return allRecords;
+                return new IEnumerable<DnsResourceRecord>[] {Queries, Answers, Authorities, Additionals}
+                    .Where(records => records != null).Aggregate<IEnumerable<DnsResourceRecord>, IEnumerable<DnsResourceRecord>>(
+                        null, (current, records) => current == null ? records : current.Concat(records));
             }
         }
 
@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Dns
         {
             get
             {
-                return DnsDatagram.GetLength(Records, DomainNameCompressionMode);
+                return DnsDatagram.GetLength(ResourceRecords, DomainNameCompressionMode);
             }
         }
 

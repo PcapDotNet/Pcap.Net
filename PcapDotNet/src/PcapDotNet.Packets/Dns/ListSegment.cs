@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +35,6 @@ namespace PcapDotNet.Packets.Dns
         public T this[int index]
         {
             get { return _data[_startIndex + index]; }
-            set { throw new NotSupportedException("ListSegment<T> is read-only"); }
         }
 
         private readonly IList<T> _data;
