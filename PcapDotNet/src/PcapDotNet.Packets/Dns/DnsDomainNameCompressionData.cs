@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.Dns
                     offsetInDns = 0;
                     return false;
                 default:
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid DomainNameCompressionMode {0}",
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid Domain Name Compression Mode {0}",
                                                                       DomainNameCompressionMode));
             }
         }
@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.Dns
                 case DnsDomainNameCompressionMode.Nothing:
                     return;
                 default:
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid DomainNameCompressionMode {0}",
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid Domain Name Compression Mode {0}",
                                                                       DomainNameCompressionMode));
             }
         }

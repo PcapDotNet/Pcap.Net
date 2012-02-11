@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal abstract int WriteData(byte[] buffer, int dnsOffset, int offsetInDns, DnsDomainNameCompressionData compressionData);
 
-        internal static DnsResourceData Read(DnsDatagram dns, DnsType type, DnsClass dnsClass, int offsetInDns, int length)
+        internal static DnsResourceData Read(DnsDatagram dns, DnsType type, int offsetInDns, int length)
         {
             DnsResourceData prototype = TryGetPrototype(type);
             if (prototype != null)

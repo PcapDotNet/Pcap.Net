@@ -24,6 +24,7 @@ OfflinePacketCommunicator::OfflinePacketCommunicator(String^ filename)
 
 // Private
 
+// static
 pcap_t* OfflinePacketCommunicator::OpenFile(String^ fileName)
 {
     std::wstring unamangedFilename = MarshalingServices::ManagedToUnmanagedWideString(fileName);
@@ -35,8 +36,11 @@ pcap_t* OfflinePacketCommunicator::OpenFile(String^ fileName)
     pcap_t *pcapDescriptor = pcap_fopen_offline(file, errorBuffer);
     if (pcapDescriptor == NULL)
     {
-        fclose(file);
-        throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed opening file {0}. Error: {1}", fileName, gcnew String(errorBuffer)));
+        int fcloseResult = fclose(file);
+        String^ errorMessage = String::Format(CultureInfo::InvariantCulture, "Failed opening file {0}. Error: {1}.", fileName, gcnew String(errorBuffer));
+        if (fcloseResult != 0)
+            errorMessage += " Also failed closing the file.";
+        throw gcnew InvalidOperationException(errorMessage);
     }
 
     return pcapDescriptor;

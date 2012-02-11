@@ -9,7 +9,7 @@ namespace PcapDotNet.Base
     /// A 128 bit unsigned integer.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct UInt128 : IEquatable<UInt128>, IFormattable
+    public struct UInt128 : IComparable<UInt128>, IEquatable<UInt128>, IFormattable
     {
         /// <summary>
         /// The number of bytes this type will take.
@@ -361,10 +361,11 @@ namespace PcapDotNet.Base
                    Equals((UInt128)obj);
         }
 
-        public bool Smaller(UInt128 other)
+        public int CompareTo(UInt128 other)
         {
-            return _mostSignificant < other._mostSignificant ||
-                   _mostSignificant == other._mostSignificant && _leastSignificant < other._leastSignificant;
+            if (_mostSignificant != other._mostSignificant)
+                return _mostSignificant.CompareTo(other._mostSignificant);
+            return _leastSignificant.CompareTo(other._leastSignificant);
         }
 
         /// <summary>
@@ -391,22 +392,22 @@ namespace PcapDotNet.Base
 
         public static bool operator <(UInt128 value1, UInt128 value2)
         {
-            return value1.Smaller(value2);
+            return value1.CompareTo(value2) < 0;
         }
 
         public static bool operator >(UInt128 value1, UInt128 value2)
         {
-            return value2.Smaller(value1);
+            return value1.CompareTo(value2) > 0;
         }
 
         public static bool operator <=(UInt128 value1, UInt128 value2)
         {
-            return !value2.Smaller(value1);
+            return value1.CompareTo(value2) <= 0;
         }
 
         public static bool operator >=(UInt128 value1, UInt128 value2)
         {
-            return !value1.Smaller(value2);
+            return value1.CompareTo(value2) >= 0;
         }
 
         /// <summary>
@@ -488,10 +489,10 @@ namespace PcapDotNet.Base
 
         public static UInt128 operator +(UInt128 value1, UInt128 value2)
         {
-            return Sum(value1, value2);
+            return Add(value1, value2);
         }
 
-        public static UInt128 Sum(UInt128 value1, UInt128 value2)
+        public static UInt128 Add(UInt128 value1, UInt128 value2)
         {
             ulong leastSignificant = value1._leastSignificant + value2._leastSignificant;
             bool overflow = (leastSignificant < Math.Max(value1._leastSignificant, value2._leastSignificant));

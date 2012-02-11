@@ -88,7 +88,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// The number of bytes the DNS header takes.
         /// </summary>
-        public const int HeaderLength = 12;
+        public const int HeaderLength = Offset.Query;
 
         /// <summary>
         /// A 16 bit identifier assigned by the program that generates any kind of query.  
@@ -424,11 +424,6 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
-        private int QueriesOffset
-        {
-            get { return HeaderLength; }
-        }
-
         private int AnswersOffset
         {
             get
@@ -458,7 +453,7 @@ namespace PcapDotNet.Packets.Dns
 
         private void ParseQueries()
         {
-            ParseRecords(QueriesOffset, () => QueryCount, DnsQueryResourceRecord.Parse, ref _queries, ref _answersOffset);
+            ParseRecords(Offset.Query, () => QueryCount, DnsQueryResourceRecord.Parse, ref _queries, ref _answersOffset);
         }
 
         private void ParseAnswers()

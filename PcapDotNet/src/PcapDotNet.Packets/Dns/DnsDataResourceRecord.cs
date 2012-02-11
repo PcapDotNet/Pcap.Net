@@ -27,14 +27,14 @@ namespace PcapDotNet.Packets.Dns
         /// For example, SOA records are always distributed with a zero TTL to prohibit caching.  
         /// Zero values can also be used for extremely volatile data.
         /// </summary>
-        public override int Ttl { get; protected set; }
+        public override sealed int Ttl { get; protected set; }
 
         /// <summary>
         /// A variable length string of octets that describes the resource.  
         /// The format of this information varies according to the TYPE and CLASS of the resource record.
         /// For example, the if the TYPE is A and the CLASS is IN, the RDATA field is a 4 octet ARPA Internet address.
         /// </summary>
-        public override DnsResourceData Data { get; protected set; }
+        public override sealed DnsResourceData Data { get; protected set; }
 
         public override string ToString()
         {
@@ -75,7 +75,7 @@ namespace PcapDotNet.Packets.Dns
             numBytesRead += MinimumLengthAfterBase;
             if (offsetInDns + numBytesRead + dataLength > dns.Length)
                 return null;
-            DnsResourceData data = DnsResourceData.Read(dns, type, dnsClass, offsetInDns + numBytesRead, dataLength);
+            DnsResourceData data = DnsResourceData.Read(dns, type, offsetInDns + numBytesRead, dataLength);
             if (data == null)
                 return null;
             numBytesRead += dataLength;
