@@ -18,9 +18,9 @@ namespace PcapDotNet.Packets.Dns
                    DomainNames.SequenceEqual(other.DomainNames);
         }
 
-        public sealed override bool Equals(object other)
+        public sealed override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataDomainNames);
+            return Equals(obj as DnsResourceDataDomainNames);
         }
 
         public override int GetHashCode()

@@ -121,9 +121,9 @@ namespace PcapDotNet.Packets.Dns
                    TypeBitmap.Equals(other.TypeBitmap);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataNextDomain);
+            return Equals(obj as DnsResourceDataNextDomain);
         }
 
         public override int GetHashCode()

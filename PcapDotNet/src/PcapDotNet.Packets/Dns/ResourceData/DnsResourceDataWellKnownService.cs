@@ -58,9 +58,9 @@ namespace PcapDotNet.Packets.Dns
                    Bitmap.Equals(other.Bitmap);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataWellKnownService);
+            return Equals(obj as DnsResourceDataWellKnownService);
         }
 
         public override int GetHashCode()

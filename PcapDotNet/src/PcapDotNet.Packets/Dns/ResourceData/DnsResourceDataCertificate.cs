@@ -76,9 +76,9 @@ namespace PcapDotNet.Packets.Dns
                    Certificate.Equals(other.Certificate);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataCertificate);
+            return Equals(obj as DnsResourceDataCertificate);
         }
 
         public override int GetHashCode()

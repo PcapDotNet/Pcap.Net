@@ -158,7 +158,7 @@ namespace PcapDotNet.Core.Test
 
                         case "dns.qry.type":
                         case "dns.resp.type":
-                            resourceRecordAttributeField.AssertShowHex((ushort)resourceRecord.Type);
+                            resourceRecordAttributeField.AssertShowHex((ushort)resourceRecord.DnsType);
                             break;
 
                         case "dns.qry.class":
@@ -198,7 +198,7 @@ namespace PcapDotNet.Core.Test
             string dataFieldName = dataField.Name();
             string dataFieldShow = dataField.Show();
             string dataFieldShowUntilColon = dataFieldShow.Split(':')[0];
-            switch (resourceRecord.Type)
+            switch (resourceRecord.DnsType)
             {
                 case DnsType.A:
                     switch (dataFieldName)

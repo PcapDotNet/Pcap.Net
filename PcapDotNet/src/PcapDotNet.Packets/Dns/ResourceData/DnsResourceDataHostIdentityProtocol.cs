@@ -94,9 +94,9 @@ namespace PcapDotNet.Packets.Dns
                    RendezvousServers.SequenceEqual(RendezvousServers);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataHostIdentityProtocol);
+            return Equals(obj as DnsResourceDataHostIdentityProtocol);
         }
 
         public override int GetHashCode()

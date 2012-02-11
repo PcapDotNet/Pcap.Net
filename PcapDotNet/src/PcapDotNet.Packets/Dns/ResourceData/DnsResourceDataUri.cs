@@ -66,9 +66,9 @@ namespace PcapDotNet.Packets.Dns
                    Target.SequenceEqual(other.Target);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataUri);
+            return Equals(obj as DnsResourceDataUri);
         }
 
         public override int GetHashCode()

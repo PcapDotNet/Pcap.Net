@@ -83,9 +83,9 @@ namespace PcapDotNet.Packets.Dns
                    PrefixName.Equals(other.PrefixName);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataA6);
+            return Equals(obj as DnsResourceDataA6);
         }
 
         public override int GetHashCode()

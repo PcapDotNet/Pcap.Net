@@ -135,9 +135,9 @@ namespace PcapDotNet.Packets.Dns
                    Other.Equals(other.Other);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataTransactionKey);
+            return Equals(obj as DnsResourceDataTransactionKey);
         }
 
         public override int GetHashCode()

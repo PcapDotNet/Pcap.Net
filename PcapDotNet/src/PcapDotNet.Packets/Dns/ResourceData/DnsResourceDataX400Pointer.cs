@@ -62,9 +62,9 @@ namespace PcapDotNet.Packets.Dns
                    MapX400.Equals(other.MapX400);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataX400Pointer);
+            return Equals(obj as DnsResourceDataX400Pointer);
         }
 
         public override int GetHashCode()

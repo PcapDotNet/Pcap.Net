@@ -32,6 +32,7 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.Tag;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags flags, DataSegment tag, DataSegment value)
         {
             if (tag == null) 
@@ -48,6 +49,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Flags of the record.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DnsCertificationAuthorityAuthorizationFlags Flags { get; private set; }
 
         /// <summary>
@@ -72,9 +74,9 @@ namespace PcapDotNet.Packets.Dns
                    Value.SequenceEqual(other.Value);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataCertificationAuthorityAuthorization);
+            return Equals(obj as DnsResourceDataCertificationAuthorityAuthorization);
         }
 
         public override int GetHashCode()

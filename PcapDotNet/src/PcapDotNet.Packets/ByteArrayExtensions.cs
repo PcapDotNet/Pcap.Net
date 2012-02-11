@@ -320,6 +320,7 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "long")]
         public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
         {
             long value = ReadLong(buffer, offset);
@@ -328,6 +329,7 @@ namespace PcapDotNet.Packets
             return value;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ulong")]
         public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
         {
             return (ulong)buffer.ReadLong(offset, endianity);

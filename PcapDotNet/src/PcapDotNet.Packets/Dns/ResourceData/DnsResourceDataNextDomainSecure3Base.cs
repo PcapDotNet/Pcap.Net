@@ -42,6 +42,7 @@ namespace PcapDotNet.Packets.Dns
         /// Can be used to indicate different processing.
         /// All undefined flags must be zero.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DnsSecNSec3Flags Flags { get; private set; }
 
         /// <summary>

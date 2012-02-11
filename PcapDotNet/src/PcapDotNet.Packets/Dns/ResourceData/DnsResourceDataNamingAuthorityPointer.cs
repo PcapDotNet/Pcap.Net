@@ -41,6 +41,7 @@ namespace PcapDotNet.Packets.Dns
         private const int ConstantPartLength = Offset.Flags;
         private const int MinimumLength = ConstantPartLength + StringMinimumLength + StringMinimumLength + StringMinimumLength + DnsDomainName.RootLength;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataNamingAuthorityPointer(ushort order, ushort preference, DataSegment flags, DataSegment services, DataSegment regularExpression, DnsDomainName replacement)
         {
             if (flags == null) 
@@ -94,6 +95,7 @@ namespace PcapDotNet.Packets.Dns
         /// It is up to the Application specifying how it is using this Database to define the Flags in this field.
         /// It must define which ones are terminal and which ones are not.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DataSegment Flags { get; private set; }
 
         /// <summary>
@@ -135,9 +137,9 @@ namespace PcapDotNet.Packets.Dns
                    Replacement.Equals(other.Replacement);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataNamingAuthorityPointer);
+            return Equals(obj as DnsResourceDataNamingAuthorityPointer);
         }
 
         public override int GetHashCode()

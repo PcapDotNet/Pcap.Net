@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public sealed class DnsOptResourceRecord : DnsDataResourceRecord
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedReturnCode, DnsOptVersion version, DnsOptFlags flags, DnsResourceDataOptions data)
             : this(domainName, (DnsClass)sendersUdpPayloadSize, (int)BitSequence.Merge(extendedReturnCode, (byte)version, (ushort)flags), data)
         {
@@ -54,6 +55,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsOptVersion Version { get { return (DnsOptVersion)(Ttl >> 16); }}
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DnsOptFlags Flags { get { return (DnsOptFlags)Ttl; } }
 
         internal DnsOptResourceRecord(DnsDomainName domainName, DnsClass dnsClass, int ttl, DnsResourceData data)

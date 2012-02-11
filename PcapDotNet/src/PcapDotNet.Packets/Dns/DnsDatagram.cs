@@ -477,7 +477,7 @@ namespace PcapDotNet.Packets.Dns
             if (ParseRecords(AdditionalsOffset, () => AdditionalCount, DnsDataResourceRecord.Parse, ref _additionals, ref nextOffset) &&
                 _additionals != null)
             {
-                _options = (DnsOptResourceRecord)_additionals.FirstOrDefault(additional => additional.Type == DnsType.Opt);
+                _options = (DnsOptResourceRecord)_additionals.FirstOrDefault(additional => additional.DnsType == DnsType.Opt);
             }
         }
 
