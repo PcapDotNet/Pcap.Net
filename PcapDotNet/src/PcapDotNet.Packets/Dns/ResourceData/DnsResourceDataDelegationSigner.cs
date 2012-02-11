@@ -19,8 +19,8 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.DelegationSigner)]
     [DnsTypeRegistration(Type = DnsType.Cds)]
-    [DnsTypeRegistration(Type = DnsType.Ta)]
-    [DnsTypeRegistration(Type = DnsType.DnsSecLookasideValidation)]
+    [DnsTypeRegistration(Type = DnsType.TrustAnchor)]
+    [DnsTypeRegistration(Type = DnsType.DnsSecLookAsideValidation)]
     public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>
     {
         private static class Offset

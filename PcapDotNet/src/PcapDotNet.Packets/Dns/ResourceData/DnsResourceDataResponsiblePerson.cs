@@ -10,7 +10,7 @@
     /// +------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Rp)]
+    [DnsTypeRegistration(Type = DnsType.ResponsiblePerson)]
     public sealed class DnsResourceDataResponsiblePerson : DnsResourceData2DomainNames
     {
         public DnsResourceDataResponsiblePerson(DnsDomainName mailbox, DnsDomainName textDomain)

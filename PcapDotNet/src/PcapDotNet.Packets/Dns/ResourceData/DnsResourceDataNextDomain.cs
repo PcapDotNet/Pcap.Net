@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.Dns
     /// +------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Nxt)]
+    [DnsTypeRegistration(Type = DnsType.NextDomain)]
     public sealed class DnsResourceDataNextDomain : DnsResourceData, IEquatable<DnsResourceDataNextDomain>
     {
         public const int MaxTypeBitmapLength = 16;

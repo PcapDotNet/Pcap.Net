@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.Dns
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Signature)]
-    [DnsTypeRegistration(Type = DnsType.RrSignature)]
+    [DnsTypeRegistration(Type = DnsType.ResourceRecordSignature)]
     public sealed class DnsResourceDataSignature : DnsResourceData, IEquatable<DnsResourceDataSignature>
     {
         private static class Offset
