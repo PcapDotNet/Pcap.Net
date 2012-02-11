@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.Dns
     /// +----------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.TaLink)]
+    [DnsTypeRegistration(Type = DnsType.TrustAnchorLink)]
     public sealed class DnsResourceDataTrustAnchorLink : DnsResourceDataNoCompression, IEquatable<DnsResourceDataTrustAnchorLink>
     {
         private const int MinimumLength = 2 * DnsDomainName.RootLength;

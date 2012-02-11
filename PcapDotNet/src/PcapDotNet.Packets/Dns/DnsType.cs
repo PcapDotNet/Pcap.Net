@@ -34,10 +34,10 @@
 
         /// <summary>
         /// RFC 1035.
-        /// A mail forwarder (Obsolete - use MX).
+        /// MF - A mail forwarder (Obsolete - use MX).
         /// Payload type: DnsResourceDataDomainName.
         /// </summary>
-        Mf = 4,
+        MailForwarder = 4,
 
         /// <summary>
         /// RFC 1035.
@@ -55,17 +55,17 @@
 
         /// <summary>
         /// RFC 1035.
-        /// A mailbox domain name (EXPERIMENTAL).
+        /// MB - A mailbox domain name (EXPERIMENTAL).
         /// Payload type: DnsResourceDataDomainName.
         /// </summary>
-        Mb = 7,
+        Mailbox = 7,
 
         /// <summary>
         /// RFC 1035.
-        /// A mail group member (EXPERIMENTAL).
+        /// MG - A mail group member (EXPERIMENTAL).
         /// Payload type: DnsResourceDataDomainName.
         /// </summary>
-        Mg = 8,
+        MailGroup = 8,
 
         /// <summary>
         /// RFC 1035.
@@ -125,10 +125,10 @@
 
         /// <summary>
         /// RFC 1183.
-        /// For Responsible Person.
+        /// RP - For Responsible Person.
         /// Payload type: DnsResourceDataResponsiblePerson.
         /// </summary>
-        Rp = 17,
+        ResponsiblePerson = 17,
 
         /// <summary>
         /// RFCs 1183, 5864.
@@ -217,10 +217,10 @@
 
         /// <summary>
         /// RFC 2535, 3755.
-        /// Next Domain - OBSOLETE.
+        /// NXT - Next Domain - OBSOLETE.
         /// Payload type: DnsResourceDataNextDomain.
         /// </summary>
-        Nxt = 30,
+        NextDomain = 30,
 
         /// <summary>
         /// Patton.
@@ -333,7 +333,7 @@
         /// RRSIG.
         /// Payload type: DnsResourceDataSignature.
         /// </summary>
-        RrSignature = 46,
+        ResourceRecordSignature = 46,
 
         /// <summary>
         /// RFCs 3755, 4034.
@@ -396,10 +396,10 @@
 
         /// <summary>
         /// Wijngaards.
-        /// DNSSEC Trust Anchor LINK.
+        /// TALINK - DNSSEC Trust Anchor LINK.
         /// Payload type: DnsResourceDataTrustAnchorLink.
         /// </summary>
-        TaLink = 58,
+        TrustAnchorLink = 58,
 
         /// <summary>
         /// Barwood.
@@ -435,9 +435,9 @@
 
         /// <summary>
         /// IANA-Reserved.
-        /// Not documented.
+        /// UNSPEC - Not documented.
         /// </summary>
-        UnSpec = 103,
+        Unspecified = 103,
 
         /// <summary>
         /// RFC 2930.
@@ -504,16 +504,16 @@
 
         /// <summary>
         /// Weiler. 2005-12-13.
-        /// DNSSEC Trust Authorities or Trust Anchor.
+        /// TA - DNSSEC Trust Authorities or Trust Anchor.
         /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
-        Ta = 32768,
+        TrustAnchor = 32768,
 
         /// <summary>
         /// RFC 4431.
         /// DLV - DNSSEC Lookaside Validation.
         /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
-        DnsSecLookasideValidation = 32769,
+        DnsSecLookAsideValidation = 32769,
     }
 }

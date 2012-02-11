@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.TestUtils
             dnsLayer.IsRecursionAvailable = random.NextBool();
             dnsLayer.FutureUse = random.NextBool();
             dnsLayer.ResponseCode = random.NextEnum(DnsResponseCode.BadVersionOrBadSignature, DnsResponseCode.BadKey, DnsResponseCode.BadTime, DnsResponseCode.BadMode,
-                                                    DnsResponseCode.BadName, DnsResponseCode.BadAlgorithm, DnsResponseCode.BadTruncaction);
+                                                    DnsResponseCode.BadName, DnsResponseCode.BadAlgorithm, DnsResponseCode.BadTruncation);
             dnsLayer.DomainNameCompressionMode = random.NextEnum<DnsDomainNameCompressionMode>();
             int numQueries = random.Next(MaxRecordsPerSection + 1);
             List<DnsQueryResourceRecord> queries = new List<DnsQueryResourceRecord>();
@@ -121,10 +121,10 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.Ns:
                 case DnsType.Md:
-                case DnsType.Mf:
+                case DnsType.MailForwarder:
                 case DnsType.CName:
-                case DnsType.Mb:
-                case DnsType.Mg:
+                case DnsType.Mailbox:
+                case DnsType.MailGroup:
                 case DnsType.MailRename:
                 case DnsType.Ptr:
                 case DnsType.NetworkServiceAccessPointPointer:
@@ -155,7 +155,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Spf:
                     return new DnsResourceDataText(((Func<DataSegment>)(() => random.NextDataSegment(random.Next(10)))).GenerateArray(10).AsReadOnly());
 
-                case DnsType.Rp:
+                case DnsType.ResponsiblePerson:
                     return new DnsResourceDataResponsiblePerson(random.NextDnsDomainName(), random.NextDnsDomainName());
 
                 case DnsType.AfsDatabase:
@@ -176,7 +176,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataNetworkServiceAccessPoint(random.NextDataSegment(1 + random.Next(10)), random.NextUInt48(), random.NextByte());
 
                 case DnsType.Signature:
-                case DnsType.RrSignature:
+                case DnsType.ResourceRecordSignature:
                     return new DnsResourceDataSignature(random.NextEnum<DnsType>(), random.NextEnum<DnsAlgorithm>(), random.NextByte(), random.NextUInt(),
                                                   random.NextUInt(), random.NextUInt(), random.NextUShort(), random.NextDnsDomainName(),
                                                   random.NextDataSegment(random.Next(100)));
@@ -205,7 +205,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                                   (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
                                                                   random.NextUInt(), random.NextUInt(), random.NextUInt());
 
-                case DnsType.Nxt:
+                case DnsType.NextDomain:
                     byte[] typeBitmap = random.NextBytes(random.Next(DnsResourceDataNextDomain.MaxTypeBitmapLength + 1));
                     if (typeBitmap.Length > 0 && typeBitmap[typeBitmap.Length - 1] == 0)
                         typeBitmap[typeBitmap.Length - 1] = random.NextByte(1, 256);
@@ -262,8 +262,8 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case DnsType.DelegationSigner:
                 case DnsType.Cds:
-                case DnsType.Ta:
-                case DnsType.DnsSecLookasideValidation:
+                case DnsType.TrustAnchor:
+                case DnsType.DnsSecLookAsideValidation:
                     return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),
                                                                random.NextDataSegment(random.Next(50)));
 
@@ -302,7 +302,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.RKey:
                     return new DnsResourceDataRKey(random.NextUShort(), random.NextByte(), random.NextEnum<DnsAlgorithm>(), random.NextDataSegment(random.NextInt(0, 100)));
 
-                case DnsType.TaLink:
+                case DnsType.TrustAnchorLink:
                     return new DnsResourceDataTrustAnchorLink(random.NextDnsDomainName(), random.NextDnsDomainName());
 
                 case DnsType.TKey:

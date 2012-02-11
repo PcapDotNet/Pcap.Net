@@ -10,9 +10,9 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.X25)]
     public sealed class DnsResourceDataString : DnsResourceDataSimple, IEquatable<DnsResourceDataString>
     {
-        public DnsResourceDataString(DataSegment str)
+        public DnsResourceDataString(DataSegment value)
         {
-            String = str;
+            String = value;
         }
 
         public DataSegment String { get; private set; }

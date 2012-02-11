@@ -12,10 +12,10 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Ns)]
     [DnsTypeRegistration(Type = DnsType.Md)]
-    [DnsTypeRegistration(Type = DnsType.Mf)]
+    [DnsTypeRegistration(Type = DnsType.MailForwarder)]
     [DnsTypeRegistration(Type = DnsType.CName)]
-    [DnsTypeRegistration(Type = DnsType.Mb)]
-    [DnsTypeRegistration(Type = DnsType.Mg)]
+    [DnsTypeRegistration(Type = DnsType.Mailbox)]
+    [DnsTypeRegistration(Type = DnsType.MailGroup)]
     [DnsTypeRegistration(Type = DnsType.MailRename)]
     [DnsTypeRegistration(Type = DnsType.Ptr)]
     [DnsTypeRegistration(Type = DnsType.NetworkServiceAccessPointPointer)]

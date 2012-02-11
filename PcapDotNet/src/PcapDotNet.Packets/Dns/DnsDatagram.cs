@@ -147,7 +147,7 @@ namespace PcapDotNet.Packets.Dns
         /// If RD is set, it directs the name server to pursue the query recursively. 
         /// Recursive query support is optional.
         /// </summary>
-        public bool IsRecusionDesired
+        public bool IsRecursionDesired
         {
             get { return ReadBool(Offset.IsRecusionDesired, Mask.IsRecusionDesired); }
         }
@@ -322,7 +322,7 @@ namespace PcapDotNet.Packets.Dns
                        OpCode = OpCode,
                        IsAuthoritativeAnswer = IsAuthoritativeAnswer,
                        IsTruncated = IsTruncated,
-                       IsRecursionDesired = IsRecusionDesired,
+                       IsRecursionDesired = IsRecursionDesired,
                        IsRecursionAvailable = IsRecursionAvailable,
                        FutureUse = FutureUse,
                        IsAuthenticData = IsAuthenticData,

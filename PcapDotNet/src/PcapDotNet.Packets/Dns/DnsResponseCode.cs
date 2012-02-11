@@ -52,15 +52,15 @@
 
         /// <summary>
         /// RFC 2136.
-        /// RR Set Exists when it should not.
+        /// YXRRSET - RR Set Exists when it should not.
         /// </summary>
-        YxRrSet = 7, 
+        YxResourceRecordSet = 7, 
 
         /// <summary>
         /// RFC 2136.
-        /// RR Set that should exist does not (NX).
+        /// NXRRSET - RR Set that should exist does not (NX).
         /// </summary>
-        NotExistRrSet = 8,
+        NotExistResourceRecordSet = 8,
 
         /// <summary>
         /// RFC 2136.
@@ -114,6 +114,6 @@
         /// RFC 4635.
         /// BADTRUNC - Bad Truncation.
         /// </summary>
-        BadTruncaction = 22,
+        BadTruncation = 22,
     }
 }

@@ -39,6 +39,7 @@
             <Word>gmtp</Word>
             <Word>gost</Word>
             <Word>gss</Word>
+            <Word>gwid</Word>
             <Word>hiparp</Word>
             <Word>iclfxbm</Word>
             <Word>icmp</Word>
@@ -104,6 +105,7 @@
             <Acronym>Ms</Acronym>
             <Acronym>Nd</Acronym>
             <Acronym>Ns</Acronym>
+            <Acronym>Os</Acronym>
             <Acronym>Sm</Acronym>
         </CasingExceptions>
     </Acronyms>

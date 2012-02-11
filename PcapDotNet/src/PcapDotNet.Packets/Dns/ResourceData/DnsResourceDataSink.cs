@@ -33,10 +33,10 @@ namespace PcapDotNet.Packets.Dns
         {
         }
 
-        public DnsResourceDataSink(DnsSinkCoding coding, byte subcoding, DataSegment data)
+        public DnsResourceDataSink(DnsSinkCoding coding, byte subCoding, DataSegment data)
         {
             Coding = coding;
-            Subcoding = subcoding;
+            SubCoding = subCoding;
             Data = data;
         }
 
@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Provides additional information depending on the value of the coding.
         /// </summary>
-        public byte Subcoding { get; private set; }
+        public byte SubCoding { get; private set; }
 
         /// <summary>
         /// Returns a combination of coding and subcoding.
@@ -58,7 +58,7 @@ namespace PcapDotNet.Packets.Dns
         {
             get
             {
-                ushort codingSubcoding = BitSequence.Merge((byte)Coding, Subcoding);
+                ushort codingSubcoding = BitSequence.Merge((byte)Coding, SubCoding);
                 return (DnsSinkCodingSubCoding)codingSubcoding;
             }
         }
@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.Dns
         {
             return other != null &&
                    Coding.Equals(other.Coding) &&
-                   Subcoding.Equals(other.Subcoding) &&
+                   SubCoding.Equals(other.SubCoding) &&
                    Data.Equals(other.Data);
         }
 
@@ -99,7 +99,7 @@ namespace PcapDotNet.Packets.Dns
         internal override void WriteDataSimple(byte[] buffer, int offset)
         {
             buffer.Write(offset + Offset.Coding, (byte)Coding);
-            buffer.Write(offset + Offset.Subcoding, Subcoding);
+            buffer.Write(offset + Offset.Subcoding, SubCoding);
             Data.Write(buffer, offset + Offset.Data);
         }
 

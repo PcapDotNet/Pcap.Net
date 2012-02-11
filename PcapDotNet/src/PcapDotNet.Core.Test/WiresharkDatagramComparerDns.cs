@@ -54,7 +54,7 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             case "dns.flags.recdesired":
-                                flagField.AssertShowDecimal(dnsDatagram.IsRecusionDesired);
+                                flagField.AssertShowDecimal(dnsDatagram.IsRecursionDesired);
                                 break;
 
                             case "dns.flags.recavail":
@@ -217,9 +217,9 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertShow("Name server: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     break;
                 case DnsType.Md:         // 3.
-                case DnsType.Mf:         // 4.
-                case DnsType.Mb:         // 7.
-                case DnsType.Mg:         // 8.
+                case DnsType.MailForwarder:         // 4.
+                case DnsType.Mailbox:         // 7.
+                case DnsType.MailGroup:         // 8.
                 case DnsType.MailRename: // 9.
                     dataField.AssertName("");
                     dataField.AssertShow("Host: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
@@ -352,7 +352,7 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertShow("Text: " + txtData.Text[_txtIndex++].ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false));
                     break;
 
-                case DnsType.Rp:
+                case DnsType.ResponsiblePerson:
                     dataField.AssertName("");
                     var rpData = (DnsResourceDataResponsiblePerson)data;
                     switch (dataFieldShowUntilColon)
@@ -546,7 +546,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case DnsType.Signature:   // 24.
-                case DnsType.RrSignature: // 46.
+                case DnsType.ResourceRecordSignature: // 46.
                     dataField.AssertName("");
                     var sigData = (DnsResourceDataSignature)data;
                     switch (dataFieldShowUntilColon)
@@ -657,7 +657,7 @@ namespace PcapDotNet.Core.Test
                             throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
                     }
                     break;
-                case DnsType.Nxt:
+                case DnsType.NextDomain:
                     dataField.AssertName("");
                     var nxtData = (DnsResourceDataNextDomain)data;
                     switch (dataFieldShowUntilColon)
@@ -670,25 +670,9 @@ namespace PcapDotNet.Core.Test
                             DnsType actualType = nxtData.TypesExist.Skip(_nxtTypeIndex++).First();
                             DnsType expectedType;
                             if (!TryGetDnsType(dataFieldShow, out expectedType))
-                            {
-                                if (dataFieldShow == "RR type in bit map: Unused (unused)")
-                                {
-                                    switch (actualType)
-                                    {
-                                        case 0:
-                                            break;
-
-                                        default:
-                                            throw new InvalidOperationException(actualType + " can't be unused");
-                                    }
-                                }
-                                else
-                                    throw new InvalidOperationException("Can't parse DNS field " + dataFieldShow);
-                            }
+                                throw new InvalidOperationException(string.Format("Can't parse DNS field {0} : {1}", dataFieldShow, actualType));
                             else
-                            {
                                 Assert.AreEqual(expectedType, actualType);
-                            }
                             break;
 
                         default:
@@ -910,7 +894,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case DnsType.DelegationSigner:  // 43.
-                case DnsType.DnsSecLookasideValidation: // 32769.
+                case DnsType.DnsSecLookAsideValidation: // 32769.
                     dataField.AssertName("");
                     var dsData = (DnsResourceDataDelegationSigner)data;
                     switch (dataFieldShowUntilColon)
@@ -1023,7 +1007,7 @@ namespace PcapDotNet.Core.Test
                             DnsType actualType = nSecData.TypesExist[_nSecTypeIndex++];
                             DnsType expectedType;
                             if (!TryGetDnsType(dataFieldShow, out expectedType))
-                                throw new InvalidOperationException("Failed parsing type from " + dataFieldShow);
+                                throw new InvalidOperationException(string.Format("Failed parsing type from {0} : {1}", dataFieldShow, actualType));
 
                             Assert.AreEqual(expectedType, actualType);
                             break;
@@ -1155,7 +1139,7 @@ namespace PcapDotNet.Core.Test
                             else
                                 Assert.IsTrue(
                                     dataFieldShow.Replace("-", "").StartsWith("RR type in bit map: " + GetWiresharkDnsType(expectedType).Replace("-", "")),
-                                    GetWiresharkDnsType(expectedType));
+                                    string.Format("{0} : {1}", dataFieldShow, GetWiresharkDnsType(expectedType)));
                             break;
 
                         default:
@@ -1342,12 +1326,12 @@ namespace PcapDotNet.Core.Test
                 case DnsType.Sink:   // 40.
                 case DnsType.NInfo:  // 56.
                 case DnsType.RKey:   // 57.
-                case DnsType.TaLink: // 58.
+                case DnsType.TrustAnchorLink: // 58.
                 case DnsType.Cds:    // 59.
                 case DnsType.UInfo:  // 100.
                 case DnsType.Uid:    // 101.
                 case DnsType.Gid:    // 102.
-                case DnsType.UnSpec: // 103.
+                case DnsType.Unspecified: // 103.
                 case DnsType.Ixfr:   // 251.
                 case DnsType.Axfr:   // 252.
                 case DnsType.MailB:  // 253.
@@ -1355,7 +1339,7 @@ namespace PcapDotNet.Core.Test
                 case DnsType.Any:    // 255.
                 case DnsType.Uri:    // 256.
                 case DnsType.CertificationAuthorityAuthorization:    // 257.
-                case DnsType.Ta:     // 32768.
+                case DnsType.TrustAnchor:     // 32768.
                 default:
                     dataField.AssertName("");
                     dataField.AssertShow("Data");
@@ -1378,26 +1362,32 @@ namespace PcapDotNet.Core.Test
         private static readonly Dictionary<string, DnsType> _wiresharkDnsTypeToDnsType =
             new Dictionary<string, DnsType>
             {
-                {"Unused", DnsType.None}, // 0
-                {"SOA", DnsType.StartOfAuthority}, // 6
-                {"MR", DnsType.MailRename}, // 9
-                {"MX", DnsType.MailExchange}, // 15
-                {"AFSDB", DnsType.AfsDatabase}, // 18
-                {"RT", DnsType.RouteThrough}, // 21
-                {"NSAP", DnsType.NetworkServiceAccessPoint}, // 22
+                {"Unused", DnsType.None},                               // 0
+                {"MF", DnsType.MailForwarder},                          // 4
+                {"SOA", DnsType.StartOfAuthority},                      // 6
+                {"MB", DnsType.Mailbox},                                // 7
+                {"MG", DnsType.MailGroup},                              // 8
+                {"MR", DnsType.MailRename},                             // 9
+                {"MX", DnsType.MailExchange},                           // 15
+                {"RP", DnsType.ResponsiblePerson},                      // 17
+                {"AFSDB", DnsType.AfsDatabase},                         // 18
+                {"RT", DnsType.RouteThrough},                           // 21
+                {"NSAP", DnsType.NetworkServiceAccessPoint},            // 22
                 {"NSAP-PTR", DnsType.NetworkServiceAccessPointPointer}, // 23
-                {"SIG", DnsType.Signature}, // 24
-                {"PX", DnsType.PointerX400}, // 26
-                {"NIMLOC", DnsType.NimrodLocator}, // 32
-                {"SRV", DnsType.ServerSelection}, // 33
-                {"KX", DnsType.KeyExchanger}, // 36
-                {"DS", DnsType.DelegationSigner}, // 43
-                {"SSHFP", DnsType.SshFingerprint}, // 44
-                {"RRSIG", DnsType.RrSignature}, // 46
-                {"DHCID", DnsType.DynamicHostConfigurationId}, // 49
-                {"NSEC3PARAM", DnsType.NSec3Parameters}, // 51
-                {"TSIG", DnsType.TransactionSignature}, // 250
-                {"DLV", DnsType.DnsSecLookasideValidation}, // 32769
+                {"SIG", DnsType.Signature},                             // 24
+                {"PX", DnsType.PointerX400},                            // 26
+                {"NXT", DnsType.NextDomain},                            // 30
+                {"NIMLOC", DnsType.NimrodLocator},                      // 32
+                {"SRV", DnsType.ServerSelection},                       // 33
+                {"KX", DnsType.KeyExchanger},                           // 36
+                {"DS", DnsType.DelegationSigner},                       // 43
+                {"SSHFP", DnsType.SshFingerprint},                      // 44
+                {"RRSIG", DnsType.ResourceRecordSignature},             // 46
+                {"DHCID", DnsType.DynamicHostConfigurationId},          // 49
+                {"NSEC3PARAM", DnsType.NSec3Parameters},                // 51
+                {"UNSPEC", DnsType.Unspecified},                        // 103
+                {"TSIG", DnsType.TransactionSignature},                 // 250
+                {"DLV", DnsType.DnsSecLookAsideValidation},             // 32769
             };
 
         private static readonly Dictionary<DnsType, string> _dnsTypeToWiresharkDnsType =
