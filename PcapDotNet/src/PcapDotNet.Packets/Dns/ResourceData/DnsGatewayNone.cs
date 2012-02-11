@@ -4,7 +4,7 @@ namespace PcapDotNet.Packets.Dns
 {
     public class DnsGatewayNone : DnsGateway, IEquatable<DnsGatewayNone>
     {
-        public override DnsGatewayType Type
+        public override DnsGatewayType GatewayType
         {
             get { return DnsGatewayType.None; }
         }

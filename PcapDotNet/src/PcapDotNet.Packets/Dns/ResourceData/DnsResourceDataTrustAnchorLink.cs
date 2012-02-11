@@ -41,9 +41,9 @@ namespace PcapDotNet.Packets.Dns
                    Next.Equals(other.Next);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataTrustAnchorLink);
+            return Equals(obj as DnsResourceDataTrustAnchorLink);
         }
 
         public override int GetHashCode()

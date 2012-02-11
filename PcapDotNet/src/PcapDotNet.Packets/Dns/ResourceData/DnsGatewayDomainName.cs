@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Dns
 
         public DnsDomainName Value { get; private set; }
 
-        public override DnsGatewayType Type
+        public override DnsGatewayType GatewayType
         {
             get { return DnsGatewayType.DomainName; }
         }

@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.Dns
 
         public IpV4Address Value { get; private set; }
 
-        public override DnsGatewayType Type
+        public override DnsGatewayType GatewayType
         {
             get { return DnsGatewayType.IpV4; }
         }

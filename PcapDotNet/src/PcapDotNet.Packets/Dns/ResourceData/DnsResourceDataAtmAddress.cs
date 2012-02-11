@@ -54,9 +54,9 @@ namespace PcapDotNet.Packets.Dns
                    Address.Equals(other.Address);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataAtmAddress);
+            return Equals(obj as DnsResourceDataAtmAddress);
         }
 
         public override int GetHashCode()

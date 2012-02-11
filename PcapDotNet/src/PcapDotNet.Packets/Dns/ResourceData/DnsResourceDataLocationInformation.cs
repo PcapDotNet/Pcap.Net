@@ -130,9 +130,9 @@ namespace PcapDotNet.Packets.Dns
                    Altitude.Equals(other.Altitude);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataLocationInformation);
+            return Equals(obj as DnsResourceDataLocationInformation);
         }
 
         public override int GetHashCode()

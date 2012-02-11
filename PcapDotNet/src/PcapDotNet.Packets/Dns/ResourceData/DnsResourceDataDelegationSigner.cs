@@ -99,9 +99,9 @@ namespace PcapDotNet.Packets.Dns
                    Digest.Equals(other.Digest);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataDelegationSigner);
+            return Equals(obj as DnsResourceDataDelegationSigner);
         }
 
         public override int GetHashCode()

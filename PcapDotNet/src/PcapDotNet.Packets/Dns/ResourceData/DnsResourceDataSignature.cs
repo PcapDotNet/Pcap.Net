@@ -159,9 +159,9 @@ namespace PcapDotNet.Packets.Dns
                                         KeyTag, SignersName, Signature);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataSignature);
+            return Equals(obj as DnsResourceDataSignature);
         }
 
         internal DnsResourceDataSignature()

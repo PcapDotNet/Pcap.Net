@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets.Dns
     /// RFC 2137.
     /// </summary>
     [Flags]
-    public enum DnsKeySignatory : byte
+    public enum DnsKeySignatoryAttributes : byte
     {
         /// <summary>
         /// The general update signatory field bit has no special meaning.

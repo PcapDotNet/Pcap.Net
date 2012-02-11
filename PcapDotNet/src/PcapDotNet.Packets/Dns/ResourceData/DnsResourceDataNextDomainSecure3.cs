@@ -30,6 +30,7 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.NSec3)]
     public sealed class DnsResourceDataNextDomainSecure3 : DnsResourceDataNextDomainSecure3Base, IEquatable<DnsResourceDataNextDomainSecure3>
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt,
                                                 DataSegment nextHashedOwnerName, IEnumerable<DnsType> existTypes)
             : this(hashAlgorithm, flags, iterations, salt, nextHashedOwnerName, new DnsTypeBitmaps(existTypes))
@@ -58,9 +59,9 @@ namespace PcapDotNet.Packets.Dns
                    _typeBitmaps.Equals(other._typeBitmaps);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataNextDomainSecure3);
+            return Equals(obj as DnsResourceDataNextDomainSecure3);
         }
 
         public override int GetHashCode()

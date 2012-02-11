@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(dnsLayer, actualLayer, "DNS Layer");
                 Assert.IsTrue(packet.Ethernet.IpV4.Udp.Dns.IsValid);
 
-                DnsDataResourceRecord opt = packet.Ethernet.IpV4.Udp.Dns.Additionals.FirstOrDefault(additional => additional.Type == DnsType.Opt);
+                DnsDataResourceRecord opt = packet.Ethernet.IpV4.Udp.Dns.Additionals.FirstOrDefault(additional => additional.DnsType == DnsType.Opt);
                 Assert.AreEqual(opt, packet.Ethernet.IpV4.Udp.Dns.OptionsRecord);
 
                 foreach (var record in packet.Ethernet.IpV4.Udp.Dns.ResourceRecords)
@@ -97,7 +97,7 @@ namespace PcapDotNet.Packets.Test
                 {
                     MoreAssert.IsBiggerOrEqual(9, record.ToString().Length);
                     Assert.IsTrue(record.Equals((object)record));
-                    Assert.IsInstanceOfType(record.Data, DnsResourceData.GetDnsResourceDataType(record.Type) ?? typeof(DnsResourceDataAnything));
+                    Assert.IsInstanceOfType(record.Data, DnsResourceData.GetDnsResourceDataType(record.DnsType) ?? typeof(DnsResourceDataAnything));
                     Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
                 }
             }

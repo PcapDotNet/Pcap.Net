@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two octets containing one of the RR TYPE codes.
         /// </summary>
-        public DnsType Type { get; private set; }
+        public DnsType DnsType { get; private set; }
 
         public DnsClass DnsClass { get; private set; }
 
@@ -69,13 +69,13 @@ namespace PcapDotNet.Packets.Dns
 
         public override string ToString()
         {
-            return DomainName + " " + Type + " " + DnsClass;
+            return DomainName + " " + DnsType + " " + DnsClass;
         }
 
         protected DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
         {
             DomainName = domainName;
-            Type = type;
+            DnsType = type;
             DnsClass = dnsClass;
         }
 
@@ -83,13 +83,13 @@ namespace PcapDotNet.Packets.Dns
         {
             return other != null &&
                    DomainName.Equals(other.DomainName) &&
-                   Type.Equals(other.Type) &&
+                   DnsType.Equals(other.DnsType) &&
                    DnsClass.Equals(other.DnsClass);
         }
 
         internal int GetHashCodeBase()
         {
-            return Sequence.GetHashCode(DomainName, BitSequence.Merge((ushort)Type, (ushort)DnsClass));
+            return Sequence.GetHashCode(DomainName, BitSequence.Merge((ushort)DnsType, (ushort)DnsClass));
         }
 
         internal static bool TryParseBase(DnsDatagram dns, int offsetInDns,
@@ -120,7 +120,7 @@ namespace PcapDotNet.Packets.Dns
         {
             int length = 0;
             length += DomainName.Write(buffer, dnsOffset, compressionData, offsetInDns + length);
-            buffer.Write(dnsOffset + offsetInDns + length, (ushort)Type, Endianity.Big);
+            buffer.Write(dnsOffset + offsetInDns + length, (ushort)DnsType, Endianity.Big);
             length += sizeof(ushort);
             buffer.Write(dnsOffset + offsetInDns + length, (ushort)DnsClass, Endianity.Big);
             length += sizeof(ushort);

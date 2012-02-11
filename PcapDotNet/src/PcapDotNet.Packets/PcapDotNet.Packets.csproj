@@ -123,7 +123,7 @@
     <Compile Include="Dns\ResourceData\DnsGatewayType.cs" />
     <Compile Include="Dns\ResourceData\DnsKeyNameType.cs" />
     <Compile Include="Dns\ResourceData\DnsKeyProtocol.cs" />
-    <Compile Include="Dns\ResourceData\DnsKeySignatory.cs" />
+    <Compile Include="Dns\ResourceData\DnsKeySignatoryAttributes.cs" />
     <Compile Include="Dns\ResourceData\DnsLongLivedQueryErrorCode.cs" />
     <Compile Include="Dns\ResourceData\DnsLongLivedQueryOpcode.cs" />
     <Compile Include="Dns\ResourceData\DnsOption.cs" />

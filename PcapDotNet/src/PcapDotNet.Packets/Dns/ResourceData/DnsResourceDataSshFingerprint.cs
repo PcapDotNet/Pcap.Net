@@ -59,9 +59,9 @@ namespace PcapDotNet.Packets.Dns
                    Fingerprint.Equals(other.Fingerprint);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataSshFingerprint);
+            return Equals(obj as DnsResourceDataSshFingerprint);
         }
 
         public override int GetHashCode()

@@ -56,8 +56,9 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.FlagsExtension;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, bool experimental, bool userAssociated, bool ipSec, bool email,
-                                  DnsKeyNameType nameType, DnsKeySignatory signatory, DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension,
+                                  DnsKeyNameType nameType, DnsKeySignatoryAttributes signatory, DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension,
                                   DataSegment publicKey)
         {
             AuthenticationProhibited = authenticationProhibited;
@@ -130,7 +131,7 @@ namespace PcapDotNet.Packets.Dns
         /// If non-zero, indicates that the key can validly sign things as specified in DNS dynamic update.
         /// Note that zone keys always have authority to sign any RRs in the zone regardless of the value of the signatory field.
         /// </summary>
-        public DnsKeySignatory Signatory { get; private set; }
+        public DnsKeySignatoryAttributes Signatory { get; private set; }
 
         /// <summary>
         /// It is anticipated that keys stored in DNS will be used in conjunction with a variety of Internet protocols.
@@ -147,6 +148,7 @@ namespace PcapDotNet.Packets.Dns
         /// Optional second 16 bit flag field after the algorithm octet and before the key data.
         /// Must not be non-null unless one or more such additional bits have been defined and are non-zero.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public ushort? FlagsExtension { get; private set; }
 
         /// <summary>
@@ -173,9 +175,9 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataKey);
+            return Equals(obj as DnsResourceDataKey);
         }
 
         public override int GetHashCode()
@@ -189,7 +191,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataKey()
-            : this(false, false, false, false, false, false, DnsKeyNameType.ZoneKey, DnsKeySignatory.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null,
+            : this(false, false, false, false, false, false, DnsKeyNameType.ZoneKey, DnsKeySignatoryAttributes.Zone, DnsKeyProtocol.All, DnsAlgorithm.None, null,
                    DataSegment.Empty)
         {
         }
@@ -245,7 +247,7 @@ namespace PcapDotNet.Packets.Dns
             bool ipSec = data.ReadBool(Offset.IpSec, Mask.IpSec);
             bool email = data.ReadBool(Offset.Email, Mask.Email);
             DnsKeyNameType nameType = (DnsKeyNameType)(data[Offset.NameType] & Mask.NameType);
-            DnsKeySignatory signatory = (DnsKeySignatory)(data[Offset.Signatory] & Mask.Signatory);
+            DnsKeySignatoryAttributes signatory = (DnsKeySignatoryAttributes)(data[Offset.Signatory] & Mask.Signatory);
             DnsKeyProtocol protocol = (DnsKeyProtocol)data[Offset.Protocol];
             DnsAlgorithm algorithm = (DnsAlgorithm)data[Offset.Algorithm];
             ushort? flagsExtension = (isFlagsExtension ? ((ushort?)data.ReadUShort(Offset.FlagsExtension, Endianity.Big)) : null);

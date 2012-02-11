@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Dns
     {
         public static DnsGatewayNone None { get { return _none; } }
 
-        public abstract DnsGatewayType Type { get; }
+        public abstract DnsGatewayType GatewayType { get; }
 
         public abstract int Length { get; }
 
@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int GetHashCode()
         {
-            return Type.GetHashCode() ^ DataGetHashCode();
+            return GatewayType.GetHashCode() ^ DataGetHashCode();
         }
 
         internal abstract int DataGetHashCode();

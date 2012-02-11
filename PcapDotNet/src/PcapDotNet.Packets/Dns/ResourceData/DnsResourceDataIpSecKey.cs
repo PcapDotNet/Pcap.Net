@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Indicates the format of the information that is stored in the gateway field.
         /// </summary>
-        public DnsGatewayType GatewayType { get { return Gateway.Type; } }
+        public DnsGatewayType GatewayType { get { return Gateway.GatewayType; } }
 
         /// <summary>
         /// Indicates a gateway to which an IPsec tunnel may be created in order to reach the entity named by this resource record.
@@ -80,9 +80,9 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataIpSecKey);
+            return Equals(obj as DnsResourceDataIpSecKey);
         }
 
         public override int GetHashCode()

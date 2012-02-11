@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.PublicKey;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataRKey(ushort flags, byte protocol, DnsAlgorithm algorithm, DataSegment publicKey)
         {
             Flags = flags;
@@ -40,6 +41,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Reserved and must be zero.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public ushort Flags { get; private set; }
 
         /// <summary>
@@ -66,9 +68,9 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataRKey);
+            return Equals(obj as DnsResourceDataRKey);
         }
 
         public override int GetHashCode()

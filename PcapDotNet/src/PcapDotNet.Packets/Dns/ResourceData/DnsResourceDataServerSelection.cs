@@ -98,9 +98,9 @@ namespace PcapDotNet.Packets.Dns
             return Sequence.GetHashCode(BitSequence.Merge(Priority, Weight), Port, Target);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataServerSelection);
+            return Equals(obj as DnsResourceDataServerSelection);
         }
 
         internal DnsResourceDataServerSelection()

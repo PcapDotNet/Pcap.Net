@@ -56,9 +56,9 @@ namespace PcapDotNet.Packets.Dns
 
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataGeographicalPosition);
+            return Equals(obj as DnsResourceDataGeographicalPosition);
         }
 
         public override int GetHashCode()

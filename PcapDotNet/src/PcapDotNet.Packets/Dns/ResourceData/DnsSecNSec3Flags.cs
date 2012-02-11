@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// RFC 5155.
     /// </summary>
-    [Flags]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
     public enum DnsSecNSec3Flags : byte
     {
         None = 0x00,

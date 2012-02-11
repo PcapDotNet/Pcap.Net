@@ -107,9 +107,9 @@ namespace PcapDotNet.Packets.Dns
             return Sequence.GetHashCode(MainNameServer, ResponsibleMailbox, Serial, Refresh, Retry, Expire, MinimumTtl);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataStartOfAuthority);
+            return Equals(obj as DnsResourceDataStartOfAuthority);
         }
 
         internal DnsResourceDataStartOfAuthority()

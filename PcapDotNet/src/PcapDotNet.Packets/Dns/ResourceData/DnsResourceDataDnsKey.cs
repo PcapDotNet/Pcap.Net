@@ -101,9 +101,9 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataDnsKey);
+            return Equals(obj as DnsResourceDataDnsKey);
         }
 
         public override int GetHashCode()

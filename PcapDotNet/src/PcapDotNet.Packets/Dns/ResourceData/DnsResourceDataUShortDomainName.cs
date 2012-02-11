@@ -34,9 +34,9 @@ namespace PcapDotNet.Packets.Dns
                    DomainName.Equals(other.DomainName);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return Equals(other as DnsResourceDataUShortDomainName);
+            return Equals(obj as DnsResourceDataUShortDomainName);
         }
 
         public override int GetHashCode()
