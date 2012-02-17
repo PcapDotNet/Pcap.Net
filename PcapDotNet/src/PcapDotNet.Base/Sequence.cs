@@ -2,6 +2,9 @@ using System;
 
 namespace PcapDotNet.Base
 {
+    /// <summary>
+    /// Useful functions for a sequence of objects.
+    /// </summary>
     public static class Sequence
     {
         public static int GetHashCode(object value1, object value2)
