@@ -29,6 +29,11 @@ namespace PcapDotNet.Base
             return new UInt24(value);
         }
 
+        /// <summary>
+        /// Converts a 32 bit unsigned integer to a 24 bit unsigned integer by taking the 24 least significant bits.
+        /// </summary>
+        /// <param name="value">The 32 bit value to convert.</param>
+        /// <returns>The 24 bit value created by taking the 24 least significant bits of the 32 bit value.</returns>
         public static explicit operator UInt24(uint value)
         {
             return new UInt24((int)value);
