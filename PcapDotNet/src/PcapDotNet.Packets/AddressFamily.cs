@@ -5,6 +5,9 @@
     /// </summary>
     public enum AddressFamily : ushort
     {
+        /// <summary>
+        /// No address family defined.
+        /// </summary>
         None = 0,
 
         /// <summary>

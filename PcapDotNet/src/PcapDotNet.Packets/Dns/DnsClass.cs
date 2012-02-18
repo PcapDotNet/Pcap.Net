@@ -7,6 +7,9 @@
     /// </summary>
     public enum DnsClass : ushort
     {
+        /// <summary>
+        /// Represents no class.
+        /// </summary>
         None = 0,
 
         /// <summary>

@@ -320,6 +320,13 @@ namespace PcapDotNet.Packets
             return result;
         }
 
+        /// <summary>
+        /// Reads 8 bytes from a specific offset as a long with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "long")]
         public static long ReadLong(this byte[] buffer, int offset, Endianity endianity)
         {
@@ -329,6 +336,13 @@ namespace PcapDotNet.Packets
             return value;
         }
 
+        /// <summary>
+        /// Reads 8 bytes from a specific offset as a ulong with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "ulong")]
         public static ulong ReadULong(this byte[] buffer, int offset, Endianity endianity)
         {
@@ -350,6 +364,14 @@ namespace PcapDotNet.Packets
             return value;
         }
 
+        /// <summary>
+        /// Reads a given amount of bytes from a specific offset as an unsigned BigInteger with a given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to read the bytes from.</param>
+        /// <param name="offset">The offset in the buffer to start reading.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
         public static BigInteger ReadUnsignedBigInteger(this byte[] buffer, int offset, int length, Endianity endianity)
         {
             if (buffer == null) 
@@ -639,6 +661,13 @@ namespace PcapDotNet.Packets
             offset += UInt48.SizeOf;
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer using the given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
         public static void Write(this byte[] buffer, int offset, long value, Endianity endianity)
         {
             if (IsWrongEndianity(endianity))
@@ -646,6 +675,13 @@ namespace PcapDotNet.Packets
             Write(buffer, offset, value);
         }
 
+        /// <summary>
+        /// Writes the given value to the buffer using the given endianity.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
         public static void Write(this byte[] buffer, int offset, ulong value, Endianity endianity)
         {
             buffer.Write(offset, (long)value, endianity);
@@ -665,6 +701,15 @@ namespace PcapDotNet.Packets
             Write(buffer, offset, value);
         }
 
+        /// <summary>
+        /// Writes the given amount of least significant bytes of the value to the buffer using the given endianity.
+        /// Doesn't write leading zero bytes.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="length">The maximum amount of bytes to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
         public static void WriteUnsigned(this byte[] buffer, int offset, BigInteger value, int length, Endianity endianity)
         {
             if (buffer == null) 

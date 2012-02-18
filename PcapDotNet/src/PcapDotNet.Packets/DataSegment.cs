@@ -12,6 +12,10 @@ using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets
 {
+    /// <summary>
+    /// Represents segement of a byte array.
+    /// Never copies the given buffer.
+    /// </summary>
     public class DataSegment : IEquatable<DataSegment>, IEnumerable<byte>
     {
         /// <summary>
@@ -55,8 +59,17 @@ namespace PcapDotNet.Packets
             get { return Buffer[StartOffset + offset]; }
         }
 
+        /// <summary>
+        /// Returns the last byte of the segment.
+        /// </summary>
         public byte Last { get { return this[Length - 1]; } }
 
+        /// <summary>
+        /// Creates a subsegment starting from a given offset in the segment taking a given number of bytes.
+        /// </summary>
+        /// <param name="offset">The offset in the segment to start taking.</param>
+        /// <param name="length">The number of bytes to take from the segment.</param>
+        /// <returns>A new DataSegment that is part of the given DataSegment.</returns>
         public DataSegment Subsegment(int offset, int length)
         {
             return Subsegment(ref offset, length);
@@ -140,6 +153,9 @@ namespace PcapDotNet.Packets
             return encoding.GetString(Buffer, StartOffset, Length);
         }
 
+        /// <summary>
+        /// An empty DataSegment.
+        /// </summary>
         public static DataSegment Empty { get { return _empty; } }
 
         internal void Write(byte[] buffer, ref int offset)
