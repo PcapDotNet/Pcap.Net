@@ -153,7 +153,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         /// <summary>
-        /// This be is set or cleared in a response, and denotes whether recursive query support is available in the name server.
+        /// This bit is set or cleared in a response, and denotes whether recursive query support is available in the name server.
         /// </summary>
         public bool IsRecursionAvailable
         {
