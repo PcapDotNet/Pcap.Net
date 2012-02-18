@@ -536,29 +536,30 @@ namespace PcapDotNet.Base
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
             return ((long)this).GetHashCode();
         }
 
         /// <summary>
-        /// Returns the fully qualified type name of this instance.
+        /// Returns a string representing the value using a default format and an invariant culture format provider.
         /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> containing a fully qualified type name.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return ((long)this).ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Returns a string representing the value using the given string format and an invariant culture format provider.
+        /// </summary>
         public string ToString(string format)
         {
             return ToString(format, CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Returns a string representing the value using the given string format and the given format provider.
+        /// </summary>
         public string ToString(string format, IFormatProvider provider)
         {
             return ((long)this).ToString(format, provider);

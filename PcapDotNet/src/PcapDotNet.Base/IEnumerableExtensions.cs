@@ -13,6 +13,9 @@ namespace PcapDotNet.Base
     public static class IEnumerableExtensions
 // ReSharper restore InconsistentNaming
     {
+        /// <summary>
+        /// Returns true if the given enumerable is null or empty.
+        /// </summary>
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> sequence)
         {
             return sequence == null || !sequence.Any();
@@ -223,16 +226,45 @@ namespace PcapDotNet.Base
             return sequence.Count(element => element.Equals(value));
         }
 
+        /// <summary>
+        /// Returns true iff the given sequence is strictly ordered using the elements as keys and a default comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the objects in the sequence that will be used as keys for comparison using a default comparer.</typeparam>
+        /// <param name="sequence">The sequence of elements to check for strict order.</param>
+        /// <returns>True iff the sequence is strictly ordered.</returns>
         public static bool IsStrictOrdered<T>(this IEnumerable<T> sequence)
         {
             return IsStrictOrdered(sequence, element => element);
         }
 
+        /// <summary>
+        /// Returns true iff the given sequence is strictly ordered using the by keys computed using a given function and a default comparer.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the objects in the sequence that will that will be operated with the given key selector function to get the keys
+        /// to compare using a default comparer.
+        /// </typeparam>
+        /// <typeparam name="TKey">The type of the keys to compare using a default comparer.</typeparam>
+        /// <param name="sequence">The sequence of elements to check for strict order.</param>
+        /// <param name="keySelector">The function to operate on the sequence elements to get the keys to compare.</param>
+        /// <returns>True iff the sequence is strictly ordered.</returns>
         public static bool IsStrictOrdered<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> keySelector)
         {
             return IsStrictOrdered(sequence, keySelector, Comparer<TKey>.Default);
         }
 
+        /// <summary>
+        /// Returns true iff the given sequence is strictly ordered using the by keys computed using a given function and a given comparer.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the objects in the sequence that will that will be operated with the given key selector function to get the keys
+        /// to compare using a given comparer.
+        /// </typeparam>
+        /// <typeparam name="TKey">The type of the keys to compare using a given comparer.</typeparam>
+        /// <param name="sequence">The sequence of elements to check for strict order.</param>
+        /// <param name="keySelector">The function to operate on the sequence elements to get the keys to compare.</param>
+        /// <param name="comparer">The comparer to use to compare the computed keys.</param>
+        /// <returns>True iff the sequence is strictly ordered.</returns>
         public static bool IsStrictOrdered<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> keySelector, IComparer<TKey> comparer)
         {
             if (comparer == null)

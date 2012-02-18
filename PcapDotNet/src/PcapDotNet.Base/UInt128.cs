@@ -31,6 +31,9 @@ namespace PcapDotNet.Base
         /// </summary>
         public static readonly UInt128 Zero = 0;
 
+        /// <summary>
+        /// A One UInt128 value.
+        /// </summary>
         public static readonly UInt128 One = 1;
 
         /// <summary>
@@ -361,6 +364,17 @@ namespace PcapDotNet.Base
                    Equals((UInt128)obj);
         }
 
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared.
+        /// The return value has the following meanings:
+        /// Less than zero - This object is less than the <paramref name="other"/>.
+        /// parameter.Zero - This object is equal to <paramref name="other"/>.
+        /// Greater than zero - This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(UInt128 other)
         {
             if (_mostSignificant != other._mostSignificant)
@@ -390,21 +404,45 @@ namespace PcapDotNet.Base
             return !(value1 == value2);
         }
 
+        /// <summary>
+        /// Returns true iff the first value is smaller than the second value.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True iff the first value is smaller than the second value.</returns>
         public static bool operator <(UInt128 value1, UInt128 value2)
         {
             return value1.CompareTo(value2) < 0;
         }
 
+        /// <summary>
+        /// Returns true iff the first value is greater than the second value.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True iff the first value is greater than the second value.</returns>
         public static bool operator >(UInt128 value1, UInt128 value2)
         {
             return value1.CompareTo(value2) > 0;
         }
 
+        /// <summary>
+        /// Returns true iff the first value is smaller than or equal to the second value.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True iff the first value is smaller than  or equal to the second value.</returns>
         public static bool operator <=(UInt128 value1, UInt128 value2)
         {
             return value1.CompareTo(value2) <= 0;
         }
 
+        /// <summary>
+        /// Returns true iff the first value is greater than or equal to the second value.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True iff the first value is greater than  or equal to the second value.</returns>
         public static bool operator >=(UInt128 value1, UInt128 value2)
         {
             return value1.CompareTo(value2) >= 0;
@@ -487,11 +525,23 @@ namespace PcapDotNet.Base
             return new UInt128(value1._mostSignificant & value2._mostSignificant, value1._leastSignificant & value2._leastSignificant);
         }
 
+        /// <summary>
+        /// Sums the given values and returns the sum.
+        /// </summary>
+        /// <param name="value1">The first value to sum.</param>
+        /// <param name="value2">The second value to sum.</param>
+        /// <returns>The sum of the given values.</returns>
         public static UInt128 operator +(UInt128 value1, UInt128 value2)
         {
             return Add(value1, value2);
         }
 
+        /// <summary>
+        /// Sums the given values and returns the sum.
+        /// </summary>
+        /// <param name="value1">The first value to sum.</param>
+        /// <param name="value2">The second value to sum.</param>
+        /// <returns>The sum of the given values.</returns>
         public static UInt128 Add(UInt128 value1, UInt128 value2)
         {
             ulong leastSignificant = value1._leastSignificant + value2._leastSignificant;
@@ -499,11 +549,23 @@ namespace PcapDotNet.Base
             return new UInt128(value1._mostSignificant + value2._mostSignificant + (ulong)(overflow ? 1 : 0), leastSignificant);
         }
 
+        /// <summary>
+        /// Substract the second value from the first value and returns the result of the substraction.
+        /// </summary>
+        /// <param name="value1">The first value to sum.</param>
+        /// <param name="value2">The second value to sum.</param>
+        /// <returns>The result of substracting the second value from the first value.</returns>
         public static UInt128 operator -(UInt128 value1, UInt128 value2)
         {
             return Subtract(value1, value2);
         }
 
+        /// <summary>
+        /// Substract the second value from the first value and returns the result of the substraction.
+        /// </summary>
+        /// <param name="value1">The first value to sum.</param>
+        /// <param name="value2">The second value to sum.</param>
+        /// <returns>The result of substracting the second value from the first value.</returns>
         public static UInt128 Subtract(UInt128 value1, UInt128 value2)
         {
             ulong leastSignificant = value1._leastSignificant - value2._leastSignificant;
