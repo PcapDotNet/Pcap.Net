@@ -218,6 +218,9 @@ namespace PcapDotNet.Packets.Dns
             get { return ReadBool(Offset.IsCheckingDisabled, Mask.IsCheckingDisabled); }
         }
 
+        /// <summary>
+        /// A response of the server that can sign errors or other messages.
+        /// </summary>
         public DnsResponseCode ResponseCode
         {
             get { return (DnsResponseCode)(this[Offset.ResponseCode] & Mask.ResponseCode); }
@@ -255,6 +258,11 @@ namespace PcapDotNet.Packets.Dns
             get { return ReadUShort(Offset.AdditionalCount, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The queries resource records.
+        /// The amount of records here should be equal to <see cref="QueryCount"/>.
+        /// Typically exactly one query will exist.
+        /// </summary>
         public ReadOnlyCollection<DnsQueryResourceRecord> Queries
         {
             get
@@ -264,6 +272,10 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// The answers resource records.
+        /// The amount of records here should be equal to <see cref="AnswerCount"/>.
+        /// </summary>
         public ReadOnlyCollection<DnsDataResourceRecord> Answers
         {
             get
@@ -273,6 +285,10 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// The authorities resource records.
+        /// The amount of records here should be equal to <see cref="AuthorityCount"/>.
+        /// </summary>
         public ReadOnlyCollection<DnsDataResourceRecord> Authorities
         {
             get
@@ -282,6 +298,10 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// The additionals resource records.
+        /// The amount of records here should be equal to <see cref="AdditionalCount"/>.
+        /// </summary>
         public ReadOnlyCollection<DnsDataResourceRecord> Additionals
         {
             get
@@ -291,16 +311,26 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// All the resource records in the datagram by order of appearance.
+        /// </summary>
         public IEnumerable<DnsResourceRecord> ResourceRecords
         {
             get { return Queries.Cast<DnsResourceRecord>().Concat(DataResourceRecords); }
         }
 
+        /// <summary>
+        /// All the data resource records (all resource records but the queries) in the datagram by order of appearance.
+        /// </summary>
         public IEnumerable<DnsDataResourceRecord> DataResourceRecords
         {
             get { return Answers.Concat(Authorities).Concat(Additionals); }
         }
 
+        /// <summary>
+        /// The special OPT resource record.
+        /// This takes the first OPT resource record in additional section.
+        /// </summary>
         public DnsOptResourceRecord OptionsRecord
         {
             get
@@ -335,6 +365,9 @@ namespace PcapDotNet.Packets.Dns
                    };
         }
 
+        /// <summary>
+        /// A DNS datagram is valid if parsing of all sections was successful.
+        /// </summary>
         protected override bool CalculateIsValid()
         {
             if (_isValid == null)
