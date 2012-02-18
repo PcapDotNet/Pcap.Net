@@ -1,5 +1,8 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// A DNS resource record type that any domain name that it contains should not be compressed when written.
+    /// </summary>
     public abstract class DnsResourceDataNoCompression : DnsResourceData
     {
         internal sealed override int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
