@@ -11,23 +11,36 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public sealed class DnsDomainName : IEquatable<DnsDomainName>
     {
+        /// <summary>
+        /// The number of bytes a root ('.') domain name takes.
+        /// </summary>
         public const int RootLength = sizeof(byte);
         private const byte MaxLabelLength = 63;
         private const ushort CompressionMarker = 0xC000;
         internal const ushort OffsetMask = 0x3FFF;
         private static readonly char[] Colon = new[] {'.'};
 
+        /// <summary>
+        /// Creates a domain name out of a string.
+        /// </summary>
         public DnsDomainName(string domainName)
         {
             if (domainName == null) 
                 throw new ArgumentNullException("domainName");
 
-            string[] labels = domainName.ToUpperInvariant().Split(Colon, StringSplitOptions.RemoveEmptyEntries);
+            string[] labels = domainName.Split(Colon, StringSplitOptions.RemoveEmptyEntries);
             _labels = labels.Select(label => new DataSegment(Encoding.UTF8.GetBytes(label))).ToList();
         }
 
+        /// <summary>
+        /// The root ('.') domain name.
+        /// </summary>
         public static DnsDomainName Root { get { return _root; } }
 
+        /// <summary>
+        /// The number of labels the domain name has.
+        /// For example, root ('.') has 0 labels.
+        /// </summary>
         public int LabelsCount
         {
             get
@@ -36,11 +49,17 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// Returns true iff the domain name is the root ('.') domain name.
+        /// </summary>
         public bool IsRoot
         {
             get { return LabelsCount == 0; }
         }
 
+        /// <summary>
+        /// The number of bytes the domain name takes assuming it won't be compressed.
+        /// </summary>
         public int NonCompressedLength
         {
             get
@@ -49,6 +68,9 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
+        /// <summary>
+        /// Returns a string representation of the domain name.
+        /// </summary>
         public override string ToString()
         {
             if (_utf8 == null)
@@ -56,20 +78,29 @@ namespace PcapDotNet.Packets.Dns
             return _utf8;
         }
 
+        /// <summary>
+        /// Two domain names are equal if their labels are equal ignoring any casing.
+        /// </summary>
         public bool Equals(DnsDomainName other)
         {
             return other != null &&
-                   _labels.SequenceEqual(other._labels);
+                   string.Equals(ToString(), other.ToString(), StringComparison.InvariantCultureIgnoreCase);
         }
 
+        /// <summary>
+        /// Two domain names are equal if their labels are equal ignoring any casing.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsDomainName);
         }
 
+        /// <summary>
+        /// Returns the hash code of the domain name.
+        /// </summary>
         public override int GetHashCode()
         {
-            return _labels.SequenceGetHashCode();
+            return ToString().GetHashCode();
         }
 
         internal int GetLength(DnsDomainNameCompressionData compressionData, int offsetInDns)
