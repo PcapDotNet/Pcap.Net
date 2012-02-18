@@ -1,7 +1,14 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// The option code for a DNS option.
+    /// </summary>
     public enum DnsOptionCode : ushort
     {
+        /// <summary>
+        /// No code defined.
+        /// Should not be used.
+        /// </summary>
         None = 0,
 
         /// <summary>

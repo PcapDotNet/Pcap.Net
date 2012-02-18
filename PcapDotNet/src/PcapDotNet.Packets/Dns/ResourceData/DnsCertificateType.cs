@@ -1,7 +1,14 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// The certificate type for cetificate DNS resource records.
+    /// </summary>
     public enum DnsCertificateType : ushort
     {
+        /// <summary>
+        /// No certificate type defined.
+        /// Should not be used.
+        /// </summary>
         None = 0,
 
         /// <summary>

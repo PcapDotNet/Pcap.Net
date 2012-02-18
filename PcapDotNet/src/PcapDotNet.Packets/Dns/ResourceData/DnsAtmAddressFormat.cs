@@ -1,5 +1,8 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// The ATM address format values.
+    /// </summary>
     public enum DnsAtmAddressFormat : byte
     {
         /// <summary>

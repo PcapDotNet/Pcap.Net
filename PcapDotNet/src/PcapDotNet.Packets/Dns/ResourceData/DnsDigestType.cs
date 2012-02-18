@@ -1,7 +1,14 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// The type of digest that is used to create a digest value.
+    /// </summary>
     public enum DnsDigestType : byte
     {
+        /// <summary>
+        /// No definition for digest type.
+        /// Should not be used.
+        /// </summary>
         None = 0,
 
         /// <summary>

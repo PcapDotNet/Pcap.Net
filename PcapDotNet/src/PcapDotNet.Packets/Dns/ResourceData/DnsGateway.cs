@@ -4,21 +4,43 @@ using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// Represents a gateway to which an IPsec tunnel may be created in order to reach the entity named by an IPsec resource record.
+    /// </summary>
     public abstract class DnsGateway : IEquatable<DnsGateway>
     {
+        /// <summary>
+        /// An instance that represents that no gateway exists.
+        /// </summary>
         public static DnsGatewayNone None { get { return _none; } }
-
+        
+        /// <summary>
+        /// The gateway represnetation type.
+        /// </summary>
         public abstract DnsGatewayType GatewayType { get; }
 
+        /// <summary>
+        /// The number of bytes the gateway represnetation takes.
+        /// </summary>
         public abstract int Length { get; }
 
+        /// <summary>
+        /// Two gateway representations are equal if they are of the same type and the value is the same.
+        /// </summary>
         public abstract bool Equals(DnsGateway other);
 
+        /// <summary>
+        /// Two gateway representations are equal if they are of the same type and the value is the same.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsGateway);
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. 
+        /// </summary>
+        /// <returns>A hash code for the current gateway represnetation.</returns>
         public override int GetHashCode()
         {
             return GatewayType.GetHashCode() ^ DataGetHashCode();

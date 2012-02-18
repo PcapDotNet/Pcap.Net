@@ -1,5 +1,8 @@
 ﻿namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// The DNS LLQ Error code values.
+    /// </summary>
     public enum DnsLongLivedQueryErrorCode : ushort
     {
         /// <summary>
