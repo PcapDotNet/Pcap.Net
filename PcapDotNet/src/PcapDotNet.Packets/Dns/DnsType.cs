@@ -8,6 +8,9 @@
     /// </summary>
     public enum DnsType : ushort
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0,
 
         /// <summary>

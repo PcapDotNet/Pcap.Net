@@ -13,6 +13,9 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public abstract class DnsResourceDataStrings : DnsResourceDataSimple, IEquatable<DnsResourceDataStrings>
     {
+        /// <summary>
+        /// Two strings resources datas are equal if they are of the same concrete type and their strings are equal and in the same order.
+        /// </summary>
         public bool Equals(DnsResourceDataStrings other)
         {
             return other != null &&
@@ -20,11 +23,17 @@ namespace PcapDotNet.Packets.Dns
                    Strings.SequenceEqual(other.Strings);
         }
 
+        /// <summary>
+        /// Two strings resources datas are equal if they are of the same concrete type and their strings are equal and in the same order.
+        /// </summary>
         public sealed override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataStrings);
         }
 
+        /// <summary>
+        /// A hash code based on the concrete type and the strings.
+        /// </summary>
         public override int GetHashCode()
         {
             return GetType().GetHashCode() ^ Strings.SequenceGetHashCode();

@@ -5,6 +5,9 @@
     /// </summary>
     public enum DnsTransactionKeyMode : ushort
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0,
 
         /// <summary>

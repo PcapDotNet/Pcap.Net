@@ -8,6 +8,9 @@ namespace PcapDotNet.Packets.Dns
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
     public enum DnsSecNSec3Flags : byte
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0x00,
 
         /// <summary>

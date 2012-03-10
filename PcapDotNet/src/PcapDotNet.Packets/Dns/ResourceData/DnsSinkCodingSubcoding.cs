@@ -5,6 +5,9 @@
     /// </summary>
     public enum DnsSinkCodingSubCoding : ushort
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0x0000,
 
         /// <summary>

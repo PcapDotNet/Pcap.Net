@@ -10,24 +10,39 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.X25)]
     public sealed class DnsResourceDataString : DnsResourceDataSimple, IEquatable<DnsResourceDataString>
     {
+        /// <summary>
+        /// Creates the resource data from the given string.
+        /// </summary>
         public DnsResourceDataString(DataSegment value)
         {
             String = value;
         }
 
+        /// <summary>
+        /// The value of the data.
+        /// </summary>
         public DataSegment String { get; private set; }
 
+        /// <summary>
+        /// Two string resource datas are equals if they have the same string.
+        /// </summary>
         public bool Equals(DnsResourceDataString other)
         {
             return other != null &&
                    String.Equals(other.String);
         }
 
+        /// <summary>
+        /// Two string resource datas are equals if they have the same string.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataString);
         }
 
+        /// <summary>
+        /// The hash code of the string.
+        /// </summary>
         public override int GetHashCode()
         {
             return String.GetHashCode();

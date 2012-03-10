@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// A gateway representation that represents that no gateway is present.
     /// </summary>
-    public class DnsGatewayNone : DnsGateway, IEquatable<DnsGatewayNone>
+    public sealed class DnsGatewayNone : DnsGateway, IEquatable<DnsGatewayNone>
     {
         /// <summary>
         /// The gateway represnetation type.

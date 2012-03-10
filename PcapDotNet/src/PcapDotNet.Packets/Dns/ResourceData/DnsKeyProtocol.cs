@@ -5,6 +5,9 @@
     /// </summary>
     public enum DnsKeyProtocol : byte
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0,
 
         /// <summary>

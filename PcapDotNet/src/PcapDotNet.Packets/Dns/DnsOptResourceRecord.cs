@@ -55,8 +55,19 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsOptVersion Version { get { return (DnsOptVersion)(Ttl >> 16); }}
 
+        /// <summary>
+        /// OPT flags.
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DnsOptFlags Flags { get { return (DnsOptFlags)Ttl; } }
+
+        /// <summary>
+        /// A string representing the resource record by concatenating its different parts.
+        /// </summary>
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2} {3} {4} {5} {6}", DomainName, DnsType, SendersUdpPayloadSize, ExtendedReturnCode, Version, Flags, Data);
+        }
 
         internal DnsOptResourceRecord(DnsDomainName domainName, DnsClass dnsClass, int ttl, DnsResourceData data)
             : base(domainName, DnsType.Opt, dnsClass, ttl, data)

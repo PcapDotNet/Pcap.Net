@@ -7,10 +7,13 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
-    /// A base class for resource records that contain DNS domain names.
+    /// A base class for resource record datas that contain DNS domain names.
     /// </summary>
     public abstract class DnsResourceDataDomainNames : DnsResourceData, IEquatable<DnsResourceDataDomainNames>
     {
+        /// <summary>
+        /// Two domain names resource data are equal if they are of the same type and contain the same domain names in the same order.
+        /// </summary>
         public bool Equals(DnsResourceDataDomainNames other)
         {
             return other != null &&
@@ -18,12 +21,18 @@ namespace PcapDotNet.Packets.Dns
                    DomainNames.SequenceEqual(other.DomainNames);
         }
 
-        public sealed override bool Equals(object obj)
+        /// <summary>
+        /// Two domain names resource data are equal if they are of the same type and contain the same domain names in the same order.
+        /// </summary>
+        public override sealed bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataDomainNames);
         }
 
-        public override int GetHashCode()
+        /// <summary>
+        /// The hash code of the resource data is based on the concrete type and domain names.
+        /// </summary>
+        public override sealed int GetHashCode()
         {
             return GetType().GetHashCode() ^ DomainNames.SequenceGetHashCode();
         }

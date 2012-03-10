@@ -16,23 +16,38 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Aaaa)]
     public sealed class DnsResourceDataIpV6 : DnsResourceDataSimple, IEquatable<DnsResourceDataIpV6>
     {
+        /// <summary>
+        /// Constructs an IPv6 resource data from the given IP.
+        /// </summary>
         public DnsResourceDataIpV6(IpV6Address data)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// The IPv6 value.
+        /// </summary>
         public IpV6Address Data { get; private set; }
 
+        /// <summary>
+        /// Two IPv6 resource datas are equal if their IP is equal.
+        /// </summary>
         public bool Equals(DnsResourceDataIpV6 other)
         {
             return other != null && Data.Equals(other.Data);
         }
 
+        /// <summary>
+        /// Two IPv6 resource datas are equal if their IP is equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataIpV6);
         }
 
+        /// <summary>
+        /// Returns the hash code of the IPv6 value.
+        /// </summary>
         public override int GetHashCode()
         {
             return Data.GetHashCode();

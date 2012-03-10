@@ -16,6 +16,16 @@
     [DnsTypeRegistration(Type = DnsType.KeyExchanger)]
     public sealed class DnsResourceDataKeyExchanger : DnsResourceDataUShortDomainName
     {
+        /// <summary>
+        /// Constructs a key exchanger resource data from the given preference and key exchanger domain.
+        /// </summary>
+        /// <param name="preference">
+        /// Specifies the preference given to this RR among other KX records at the same owner.
+        /// Lower values are preferred.
+        /// </param>
+        /// <param name="keyExchanger">
+        /// Specifies a host willing to act as a key exchange for the owner name.
+        /// </param>
         public DnsResourceDataKeyExchanger(ushort preference, DnsDomainName keyExchanger)
             : base(preference, keyExchanger)
         {

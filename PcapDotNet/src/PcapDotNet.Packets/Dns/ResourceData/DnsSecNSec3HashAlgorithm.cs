@@ -5,6 +5,9 @@
     /// </summary>
     public enum DnsSecNSec3HashAlgorithm : byte
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0x00,
 
         /// <summary>

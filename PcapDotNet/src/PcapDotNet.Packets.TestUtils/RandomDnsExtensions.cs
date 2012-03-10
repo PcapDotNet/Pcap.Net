@@ -159,7 +159,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataResponsiblePerson(random.NextDnsDomainName(), random.NextDnsDomainName());
 
                 case DnsType.AfsDatabase:
-                    return new DnsResourceDataAfsDatabase(random.NextUShort(), random.NextDnsDomainName());
+                    return new DnsResourceDataAfsDatabase(random.NextEnum<DnsAfsDatabaseSubtype>(), random.NextDnsDomainName());
 
                 case DnsType.X25:
                     return new DnsResourceDataString(random.NextDataSegment(random.Next(10)));

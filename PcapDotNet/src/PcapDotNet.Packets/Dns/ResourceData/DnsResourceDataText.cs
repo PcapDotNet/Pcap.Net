@@ -12,11 +12,17 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Spf)]
     public sealed class DnsResourceDataText : DnsResourceDataStrings
     {
+        /// <summary>
+        /// Constructs the resource data from the given list of strings, each up to 255 bytes.
+        /// </summary>
         public DnsResourceDataText(ReadOnlyCollection<DataSegment> strings)
             : base(strings)
         {
         }
 
+        /// <summary>
+        /// The list of strings, each up to 255 bytes.
+        /// </summary>
         public ReadOnlyCollection<DataSegment> Text { get { return Strings; } }
 
         internal DnsResourceDataText()
