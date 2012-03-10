@@ -16,6 +16,17 @@
     [DnsTypeRegistration(Type = DnsType.RouteThrough)]
     public sealed class DnsResourceDataRouteThrough : DnsResourceDataUShortDomainName
     {
+        /// <summary>
+        /// Constructs a route through resource data from the given preference and intermediate host.
+        /// </summary>
+        /// <param name="preference">
+        /// Representing the preference of the route.
+        /// Smaller numbers indicate more preferred routes.
+        /// </param>
+        /// <param name="intermediateHost">
+        /// The domain name of a host which will serve as an intermediate in reaching the host specified by the owner.
+        /// The DNS RRs associated with IntermediateHost are expected to include at least one A, X25, or ISDN record.
+        /// </param>
         public DnsResourceDataRouteThrough(ushort preference, DnsDomainName intermediateHost)
             : base(preference, intermediateHost)
         {

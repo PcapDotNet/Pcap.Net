@@ -10,10 +10,17 @@
     /// +-----+-------+
     /// </pre>
     /// </summary>
-    public class DnsOptionUpdateLease : DnsOption
+    public sealed class DnsOptionUpdateLease : DnsOption
     {
-        public const int MinimumDataLength = sizeof(int);
+        /// <summary>
+        /// The number of bytes this option data can take.
+        /// </summary>
+        public const int ConstDataLength = sizeof(int);
 
+        /// <summary>
+        /// Builds 
+        /// </summary>
+        /// <param name="lease"></param>
         public DnsOptionUpdateLease(int lease)
             : base(DnsOptionCode.UpdateLease)
         {
@@ -34,7 +41,7 @@
 
         public override int DataLength
         {
-            get { return MinimumDataLength; }
+            get { return ConstDataLength; }
         }
 
         internal override bool EqualsData(DnsOption other)
@@ -54,7 +61,7 @@
 
         internal static DnsOptionUpdateLease Read(DataSegment data)
         {
-            if (data.Length < MinimumDataLength)
+            if (data.Length < ConstDataLength)
                 return null;
 
             int lease = data.ReadInt(0, Endianity.Big);

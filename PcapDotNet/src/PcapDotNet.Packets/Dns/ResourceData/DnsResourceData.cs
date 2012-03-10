@@ -8,10 +8,17 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// RFC 1035.
+    /// Represents a resource record data.
+    /// </summary>
     public abstract class DnsResourceData
     {
         internal const int StringMinimumLength = sizeof(byte); 
 
+        /// <summary>
+        /// Returns the DnsResourceData concrete type that should be created for the given DnsType.
+        /// </summary>
         public static Type GetDnsResourceDataType(DnsType dnsType)
         {
             DnsResourceData prototype = TryGetPrototype(dnsType);
@@ -87,7 +94,6 @@ namespace PcapDotNet.Packets.Dns
 
             return prototypes.ToDictionary(prototype => prototype.Type, prototype => prototype.Prototype);
         }
-
 
         private static readonly Dictionary<DnsType, DnsResourceData> _prototypes = InitializePrototypes();
     }

@@ -48,6 +48,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsType DnsType { get; private set; }
 
+        /// <summary>
+        /// Two octets containing one of the RR CLASS codes.
+        /// </summary>
         public DnsClass DnsClass { get; private set; }
 
         /// <summary>
@@ -67,9 +70,12 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public abstract DnsResourceData Data { get; protected set; }
 
+        /// <summary>
+        /// A string representing the resource record by concatenating its different parts.
+        /// </summary>
         public override string ToString()
         {
-            return DomainName + " " + DnsType + " " + DnsClass;
+            return string.Format("{0} {1} {2}", DomainName, DnsType, DnsClass);
         }
 
         protected DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)

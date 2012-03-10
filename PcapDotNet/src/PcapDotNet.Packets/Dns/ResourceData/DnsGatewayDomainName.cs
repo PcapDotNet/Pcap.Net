@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// A gateway that is represented using a domain name.
     /// </summary>
-    public class DnsGatewayDomainName : DnsGateway, IEquatable<DnsGatewayDomainName>
+    public sealed class DnsGatewayDomainName : DnsGateway, IEquatable<DnsGatewayDomainName>
     {
         /// <summary>
         /// Creates the gateway using the given domain name.

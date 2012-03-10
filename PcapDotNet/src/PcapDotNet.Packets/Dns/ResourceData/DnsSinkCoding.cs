@@ -5,6 +5,9 @@
     /// </summary>
     public enum DnsSinkCoding : byte
     {
+        /// <summary>
+        /// Undefined value.
+        /// </summary>
         None = 0x00,
 
         /// <summary>

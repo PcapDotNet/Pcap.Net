@@ -108,6 +108,7 @@
     <Compile Include="Dns\DnsQueryResourceRecord.cs" />
     <Compile Include="AddressFamily.cs" />
     <Compile Include="Dns\ResourceData\DnsAddressPrefix.cs" />
+    <Compile Include="Dns\ResourceData\DnsAfsDatabaseSubtype.cs" />
     <Compile Include="Dns\ResourceData\DnsAlgorithm.cs" />
     <Compile Include="Dns\ResourceData\DnsAtmAddressFormat.cs" />
     <Compile Include="Dns\ResourceData\DnsCertificateType.cs" />

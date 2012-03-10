@@ -376,7 +376,7 @@ namespace PcapDotNet.Core.Test
                     switch (dataFieldShowUntilColon)
                     {
                         case "Subtype":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + afsDbData.Subtype);
+                            dataField.AssertShow(dataFieldShowUntilColon + ": " + (ushort)afsDbData.Subtype);
                             break;
 
                         case "Hostname":

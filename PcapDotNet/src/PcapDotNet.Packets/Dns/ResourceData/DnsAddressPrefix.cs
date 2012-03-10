@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+------------------------+
     /// </pre>
     /// </summary>
-    public class DnsAddressPrefix : IEquatable<DnsAddressPrefix>
+    public sealed class DnsAddressPrefix : IEquatable<DnsAddressPrefix>
     {
         private static class Offset
         {

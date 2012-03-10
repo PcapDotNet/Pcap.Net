@@ -2,14 +2,25 @@
 
 namespace PcapDotNet.Packets.Dns
 {
-    public class DnsOptionAnything : DnsOption
+    /// <summary>
+    /// An option that can hold any data.
+    /// </summary>
+    public sealed class DnsOptionAnything : DnsOption
     {
+        /// <summary>
+        /// Constructs the option from a code and data.
+        /// </summary>
+        /// <param name="code">The option code.</param>
+        /// <param name="data">The option data.</param>
         public DnsOptionAnything(DnsOptionCode code, DataSegment data)
             : base(code)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// The option data.
+        /// </summary>
         public DataSegment Data { get; private set; }
 
         public override int DataLength

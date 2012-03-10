@@ -24,7 +24,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+------------+
     /// </pre>
     /// </summary>
-    public class DnsOptionLongLivedQuery : DnsOption
+    public sealed class DnsOptionLongLivedQuery : DnsOption
     {
         private static class Offset
         {
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dns
             public const int LeaseLife = Id + sizeof(ulong);
         }
 
-        public const int MinimumDataLength = Offset.LeaseLife + sizeof(uint);
+        public const int ConstDataLength = Offset.LeaseLife + sizeof(uint);
 
         public DnsOptionLongLivedQuery(ushort version, DnsLongLivedQueryOpCode opCode, DnsLongLivedQueryErrorCode errorCode, ulong id, uint leaseLife)
             : base(DnsOptionCode.LongLivedQuery)
@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.Dns
 
         public override int DataLength
         {
-            get { return MinimumDataLength; }
+            get { return ConstDataLength; }
         }
 
         internal override bool EqualsData(DnsOption other)
@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal static DnsOptionLongLivedQuery Read(DataSegment data)
         {
-            if (data.Length < MinimumDataLength)
+            if (data.Length != ConstDataLength)
                 return null;
             ushort version = data.ReadUShort(Offset.Version, Endianity.Big);
             DnsLongLivedQueryOpCode opCode = (DnsLongLivedQueryOpCode)data.ReadUShort(Offset.OpCode, Endianity.Big);

@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two gateway representations are equal if they are of the same type and the value is the same.
         /// </summary>
-        public override bool Equals(object obj)
+        public override sealed bool Equals(object obj)
         {
             return Equals(obj as DnsGateway);
         }
@@ -41,7 +41,7 @@ namespace PcapDotNet.Packets.Dns
         /// Serves as a hash function for a particular type. 
         /// </summary>
         /// <returns>A hash code for the current gateway represnetation.</returns>
-        public override int GetHashCode()
+        public override sealed int GetHashCode()
         {
             return GatewayType.GetHashCode() ^ DataGetHashCode();
         }

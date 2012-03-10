@@ -16,6 +16,16 @@
     [DnsTypeRegistration(Type = DnsType.MailExchange)]
     public sealed class DnsResourceDataMailExchange : DnsResourceDataUShortDomainName
     {
+        /// <summary>
+        /// Constructs mail exchange resource data from preference and host.
+        /// </summary>
+        /// <param name="preference">
+        /// Specifies the preference given to this RR among others at the same owner.
+        /// Lower values are preferred.
+        /// </param>
+        /// <param name="mailExchangeHost">
+        /// Specifies a host willing to act as a mail exchange for the owner name.
+        /// </param>
         public DnsResourceDataMailExchange(ushort preference, DnsDomainName mailExchangeHost)
             : base(preference, mailExchangeHost)
         {

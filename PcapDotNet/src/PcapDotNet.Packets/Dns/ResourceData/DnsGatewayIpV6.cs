@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets.Dns
     /// <summary>
     /// Represents an IPv6 gateway to which an IPsec tunnel may be created in order to reach the entity named by an IPsec resource record.
     /// </summary>
-    public class DnsGatewayIpV6 : DnsGateway, IEquatable<DnsGatewayIpV6>
+    public sealed class DnsGatewayIpV6 : DnsGateway, IEquatable<DnsGatewayIpV6>
     {
         /// <summary>
         /// Creates a gateway using the given IPv6 address.

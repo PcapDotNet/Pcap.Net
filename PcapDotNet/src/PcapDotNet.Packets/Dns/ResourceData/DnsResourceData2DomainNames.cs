@@ -2,6 +2,9 @@
 
 namespace PcapDotNet.Packets.Dns
 {
+    /// <summary>
+    /// A resource record data that contains exactly 2 domain names.
+    /// </summary>
     public abstract class DnsResourceData2DomainNames : DnsResourceDataDomainNames
     {
         private const int NumDomains = 2;
