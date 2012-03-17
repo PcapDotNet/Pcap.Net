@@ -26,8 +26,17 @@ namespace PcapDotNet.Packets.Dns
             public const int Fingerprint = FingerprintType + sizeof(byte);
         }
 
-        public const int ConstPartLength = Offset.Fingerprint;
+        private const int ConstPartLength = Offset.Fingerprint;
 
+        /// <summary>
+        /// Constructs an instance out of the algorithm, fingerprint type and fingerprint fields.
+        /// </summary>
+        /// <param name="algorithm">Describes the algorithm of the public key.</param>
+        /// <param name="fingerprintType">Describes the message-digest algorithm used to calculate the fingerprint of the public key.</param>
+        /// <param name="fingerprint">
+        /// The fingerprint is calculated over the public key blob.
+        /// The message-digest algorithm is presumed to produce an opaque octet string output, which is placed as-is in the RDATA fingerprint field.
+        /// </param>
         public DnsResourceDataSshFingerprint(DnsFingerprintPublicKeyAlgorithm algorithm, DnsFingerprintType fingerprintType, DataSegment fingerprint)
         {
             Algorithm = algorithm;
@@ -51,6 +60,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Fingerprint { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataSshFingerprint are equal iff the algorithm, fingerprint type and fingerprint fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataSshFingerprint other)
         {
             return other != null &&
@@ -59,11 +71,17 @@ namespace PcapDotNet.Packets.Dns
                    Fingerprint.Equals(other.Fingerprint);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataSshFingerprint are equal iff the algorithm, fingerprint type and fingerprint fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataSshFingerprint);
         }
 
+        /// <summary>
+        /// A hash code based on the algorithm, fingerprint type and fingerprint fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(BitSequence.Merge((byte)Algorithm, (byte)FingerprintType), Fingerprint);

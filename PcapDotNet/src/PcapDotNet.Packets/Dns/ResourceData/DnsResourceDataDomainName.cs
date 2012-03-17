@@ -22,23 +22,38 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.DName)]
     public sealed class DnsResourceDataDomainName : DnsResourceData, IEquatable<DnsResourceDataDomainName>
     {
+        /// <summary>
+        /// Constructs an instance from the domain name data.
+        /// </summary>
         public DnsResourceDataDomainName(DnsDomainName data)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// The domain name value.
+        /// </summary>
         public DnsDomainName Data { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataDomainName are equal iff their domain name values are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataDomainName other)
         {
             return other != null && Data.Equals(other.Data);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataDomainName are equal iff their domain name values are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataDomainName);
         }
 
+        /// <summary>
+        /// The hash code of the domain name value.
+        /// </summary>
         public override int GetHashCode()
         {
             return Data.GetHashCode();

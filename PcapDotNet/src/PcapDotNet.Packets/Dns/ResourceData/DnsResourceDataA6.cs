@@ -17,6 +17,9 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.A6)]
     public sealed class DnsResourceDataA6 : DnsResourceDataNoCompression, IEquatable<DnsResourceDataA6>
     {
+        /// <summary>
+        /// The maximum value for the prefix length.
+        /// </summary>
         public const byte MaxPrefixLength = 8 * IpV6Address.SizeOf;
 
         private static class Offset
@@ -25,19 +28,20 @@ namespace PcapDotNet.Packets.Dns
             public const int AddressSuffix = PrefixLength + sizeof(byte);
         }
 
-        public const int ConstantPartLength = Offset.AddressSuffix;
-        public const int MinimumLength = ConstantPartLength + DnsDomainName.RootLength;
+        private const int ConstantPartLength = Offset.AddressSuffix;
+        private const int MinimumLength = ConstantPartLength + DnsDomainName.RootLength;
 
-        private static bool IsAddressSuffixTooBig(byte prefixLength, IpV6Address addressSuffix)
-        {
-            return (prefixLength < 128 && (addressSuffix.ToValue() < (UInt128.One << (127 - prefixLength))));
-        }
-
-        private static bool IsAddressSuffixTooSmall(byte prefixLength, IpV6Address addressSuffix)
-        {
-            return (prefixLength > 0 && (addressSuffix.ToValue() >= (UInt128.One << (128 - prefixLength))));
-        }
-
+        /// <summary>
+        /// Constructs the resource data from the prefix length, address suffix and prefix name fields.
+        /// </summary>
+        /// <param name="prefixLength">Encoded as an eight-bit unsigned integer with value between 0 and 128 inclusive.</param>
+        /// <param name="addressSuffix">
+        /// An IPv6 address suffix, encoded in network order (high-order octet first).
+        /// There must be exactly enough octets in this field to contain a number of bits equal to 128 minus prefix length, 
+        /// with 0 to 7 leading pad bits to make this field an integral number of octets.
+        /// Pad bits, if present, must be set to zero when loading a zone file and ignored (other than for SIG verification) on reception.
+        /// </param>
+        /// <param name="prefixName">The name of the prefix, encoded as a domain name. This name must not be compressed. </param>
         public DnsResourceDataA6(byte prefixLength, IpV6Address addressSuffix, DnsDomainName prefixName)
         {
             if (IsAddressSuffixTooBig(prefixLength, addressSuffix))
@@ -59,7 +63,8 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// An IPv6 address suffix, encoded in network order (high-order octet first).
-        /// There must be exactly enough octets in this field to contain a number of bits equal to 128 minus prefix length, with 0 to 7 leading pad bits to make this field an integral number of octets.
+        /// There must be exactly enough octets in this field to contain a number of bits equal to 128 minus prefix length, 
+        /// with 0 to 7 leading pad bits to make this field an integral number of octets.
         /// Pad bits, if present, must be set to zero when loading a zone file and ignored (other than for SIG verification) on reception.
         /// </summary>
         public IpV6Address AddressSuffix { get; private set; }
@@ -75,6 +80,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsDomainName PrefixName { get; private set; }
 
+        /// <summary>
+        /// Two A6 resource datas are equal iff their prefix length, address suffix and prefix name fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataA6 other)
         {
             return other != null &&
@@ -83,11 +91,17 @@ namespace PcapDotNet.Packets.Dns
                    PrefixName.Equals(other.PrefixName);
         }
 
+        /// <summary>
+        /// Two A6 resource datas are equal iff their prefix length, address suffix and prefix name fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataA6);
         }
 
+        /// <summary>
+        /// The combined hash code of the prefix length, address suffix and prefix name fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(PrefixLength, AddressSuffix, PrefixName);
@@ -141,6 +155,16 @@ namespace PcapDotNet.Packets.Dns
                 return null;
 
             return new DnsResourceDataA6(prefixLength, addressSuffix, prefixName);
+        }
+
+        private static bool IsAddressSuffixTooBig(byte prefixLength, IpV6Address addressSuffix)
+        {
+            return (prefixLength < 128 && (addressSuffix.ToValue() < (UInt128.One << (127 - prefixLength))));
+        }
+
+        private static bool IsAddressSuffixTooSmall(byte prefixLength, IpV6Address addressSuffix)
+        {
+            return (prefixLength > 0 && (addressSuffix.ToValue() >= (UInt128.One << (128 - prefixLength))));
         }
 
         private static int CalculateAddressSuffixLength(byte prefixLength)

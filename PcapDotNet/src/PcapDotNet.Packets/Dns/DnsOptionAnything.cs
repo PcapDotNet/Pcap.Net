@@ -23,6 +23,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Data { get; private set; }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public override int DataLength
         {
             get { return Data.Length; }

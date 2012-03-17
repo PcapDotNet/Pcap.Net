@@ -18,12 +18,29 @@ namespace PcapDotNet.Packets.Dns
         private const int MinNumStrings = 1;
         private const int MaxNumStrings = 2;
 
+        /// <summary>
+        /// Constructs an ISDN resource data without a subaddress from the ISDN address.
+        /// </summary>
+        /// <param name="isdnAddress">
+        /// Identifies the ISDN number of the owner and DDI (Direct Dial In) if any, as defined by E.164 and E.163, 
+        /// the ISDN and PSTN (Public Switched Telephone Network) numbering plan.
+        /// E.163 defines the country codes, and E.164 the form of the addresses.
+        /// </param>
         public DnsResourceDataIsdn(DataSegment isdnAddress)
             : base(isdnAddress)
         {
 
         }
 
+        /// <summary>
+        /// Constructs an ISDN resource data from the ISDN address and subaddress.
+        /// </summary>
+        /// <param name="isdnAddress">
+        /// Identifies the ISDN number of the owner and DDI (Direct Dial In) if any, as defined by E.164 and E.163, 
+        /// the ISDN and PSTN (Public Switched Telephone Network) numbering plan.
+        /// E.163 defines the country codes, and E.164 the form of the addresses.
+        /// </param>
+        /// <param name="subaddress">Specifies the subaddress (SA).</param>
         public DnsResourceDataIsdn(DataSegment isdnAddress, DataSegment subaddress)
             : base(isdnAddress, subaddress)
         {

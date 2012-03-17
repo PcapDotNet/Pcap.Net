@@ -17,13 +17,24 @@ namespace PcapDotNet.Packets.Dns
     {
         private const int NumStrings = 2;
 
+        /// <summary>
+        /// Constructs the resource data from the CPU and OS parameters.
+        /// </summary>
+        /// <param name="cpu">A string which specifies the CPU type.</param>
+        /// <param name="os">A string which specifies the operating system type.</param>
         public DnsResourceDataHostInformation(DataSegment cpu, DataSegment os)
             : base(cpu, os)
         {
         }
 
+        /// <summary>
+        /// A string which specifies the CPU type.
+        /// </summary>
         public DataSegment Cpu { get { return Strings[0]; } }
 
+        /// <summary>
+        /// A string which specifies the operating system type.
+        /// </summary>
         public DataSegment Os { get { return Strings[1]; } }
 
         internal DnsResourceDataHostInformation()

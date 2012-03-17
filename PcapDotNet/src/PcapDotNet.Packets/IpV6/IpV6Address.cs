@@ -26,6 +26,9 @@ namespace PcapDotNet.Packets.IpV6
             get { return _zero; }
         }
 
+        /// <summary>
+        /// The maximum address value.
+        /// </summary>
         public static IpV6Address MaxValue
         {
             get { return _maxValue; }

@@ -4,7 +4,7 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.Dns
 {
     /// <summary>
-    /// RFC 4034, 5011.
+    /// RFCs 3757, 4034, 5011.
     /// <pre>
     /// +-----+----------+----------+--------+----------+--------------------+
     /// | bit | 0-6      | 7        | 8      | 9-14     | 15                 |
@@ -21,6 +21,9 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.DnsKey)]
     public sealed class DnsResourceDataDnsKey : DnsResourceDataSimple, IEquatable<DnsResourceDataDnsKey>
     {
+        /// <summary>
+        /// The expected value for the protocol field.
+        /// </summary>
         public const byte ProtocolValue = 3;
 
         private static class Offset
@@ -42,6 +45,30 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.PublicKey;
 
+        /// <summary>
+        /// Constructs an instance from the zone key, revoke, secure entry point, protocol, algorithm and public key fields.
+        /// </summary>
+        /// <param name="zoneKey">
+        /// If true, the DNSKEY record holds a DNS zone key, and the DNSKEY RR's owner name must be the name of a zone.
+        /// If false, then the DNSKEY record holds some other type of DNS public key and must not be used to verify RRSIGs that cover RRsets.
+        /// </param>
+        /// <param name="revoke">
+        /// If true, and the resolver sees an RRSIG(DNSKEY) signed by the associated key,
+        /// then the resolver must consider this key permanently invalid for all purposes except for validating the revocation.
+        /// </param>
+        /// <param name="secureEntryPoint">
+        /// RFC 3757.
+        /// If true, then the DNSKEY record holds a key intended for use as a secure entry point.
+        /// This flag is only intended to be a hint to zone signing or debugging software as to the intended use of this DNSKEY record;
+        /// validators must not alter their behavior during the signature validation process in any way based on the setting of this bit.
+        /// This also means that a DNSKEY RR with the SEP bit set would also need the Zone Key flag set in order to be able to generate signatures legally.
+        /// A DNSKEY RR with the SEP set and the Zone Key flag not set MUST NOT be used to verify RRSIGs that cover RRsets.
+        /// </param>
+        /// <param name="protocol">
+        /// Must have value 3, and the DNSKEY RR MUST be treated as invalid during signature verification if it is found to be some value other than 3.
+        /// </param>
+        /// <param name="algorithm">Identifies the public key's cryptographic algorithm and determines the format of the Public Key field.</param>
+        /// <param name="publicKey">The public key material. The format depends on the algorithm of the key being stored.</param>
         public DnsResourceDataDnsKey(bool zoneKey, bool revoke, bool secureEntryPoint, byte protocol,  DnsAlgorithm algorithm, DataSegment publicKey)
         {
             ZoneKey = zoneKey;
@@ -75,7 +102,7 @@ namespace PcapDotNet.Packets.Dns
         public bool SecureEntryPoint { get; private set; }
 
         /// <summary>
-        ///  Musthave value 3, and the DNSKEY RR MUST be treated as invalid during signature verification if it is found to be some value other than 3.
+        /// Must have value 3, and the DNSKEY RR MUST be treated as invalid during signature verification if it is found to be some value other than 3.
         /// </summary>
         public byte Protocol { get; private set; }
 
@@ -90,6 +117,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataDnsKey are equal iff their zone key, revoke, secure entry point, protocol, algorithm and public key fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataDnsKey other)
         {
             return other != null &&
@@ -101,11 +131,17 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataDnsKey are equal iff their zone key, revoke, secure entry point, protocol, algorithm and public key fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataDnsKey);
         }
 
+        /// <summary>
+        /// The hash code based on the zone key, revoke, secure entry point, protocol, algorithm and public key fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return BitSequence.Merge(BitSequence.Merge(ZoneKey, Revoke, SecureEntryPoint), Protocol, (byte)Algorithm).GetHashCode();

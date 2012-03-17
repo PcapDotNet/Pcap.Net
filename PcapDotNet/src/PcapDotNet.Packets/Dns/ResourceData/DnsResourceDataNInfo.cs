@@ -18,6 +18,10 @@ namespace PcapDotNet.Packets.Dns
     {
         private const int MinNumStrings = 1;
 
+        /// <summary>
+        /// Constructs the resource data from strings.
+        /// </summary>
+        /// <param name="strings">A descriptive text in one or more strings.</param>
         public DnsResourceDataNInfo(ReadOnlyCollection<DataSegment> strings)
             : base(strings)
         {
@@ -28,6 +32,10 @@ namespace PcapDotNet.Packets.Dns
                 throw new ArgumentOutOfRangeException("strings", strings.Count, "There must be at least one string.");
         }
 
+        /// <summary>
+        /// Constructs the resource data from strings.
+        /// </summary>
+        /// <param name="strings">A descriptive text in one or more strings.</param>
         public DnsResourceDataNInfo(params DataSegment[] strings)
             : this(strings.AsReadOnly())
         {

@@ -28,6 +28,12 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.Bitmap;
 
+        /// <summary>
+        /// Constructs an instance from the address, protocol and bitmap fields.
+        /// </summary>
+        /// <param name="address">The service address.</param>
+        /// <param name="protocol">Specifies an IP protocol number.</param>
+        /// <param name="bitmap">Has one bit per port of the specified protocol.</param>
         public DnsResourceDataWellKnownService(IpV4Address address, IpV4Protocol protocol, DataSegment bitmap)
         {
             Address = address;
@@ -50,6 +56,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Bitmap { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataWellKnownService are equal iff their address, protocol and bitmap fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataWellKnownService other)
         {
             return other != null &&
@@ -58,11 +67,17 @@ namespace PcapDotNet.Packets.Dns
                    Bitmap.Equals(other.Bitmap);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataWellKnownService are equal iff their address, protocol and bitmap fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataWellKnownService);
         }
-
+        
+        /// <summary>
+        /// A hash code based on the address, protocol and bitmap fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(Address, Protocol, Bitmap);

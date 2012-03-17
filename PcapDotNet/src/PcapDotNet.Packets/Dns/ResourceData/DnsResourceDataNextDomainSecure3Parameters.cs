@@ -19,22 +19,42 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.NSec3Parameters)]
     public sealed class DnsResourceDataNextDomainSecure3Parameters : DnsResourceDataNextDomainSecure3Base, IEquatable<DnsResourceDataNextDomainSecure3Parameters>
     {
+        /// <summary>
+        /// Constructs a next domain secure 3 parameters resource data from the hash algorithm, flags, iterations and salt fields.
+        /// </summary>
+        /// <param name="hashAlgorithm">Identifies the cryptographic hash algorithm used to construct the hash-value.</param>
+        /// <param name="flags">Can be used to indicate different processing. All undefined flags must be zero.</param>
+        /// <param name="iterations">
+        /// Defines the number of additional times the hash function has been performed.
+        /// More iterations result in greater resiliency of the hash value against dictionary attacks, 
+        /// but at a higher computational cost for both the server and resolver.
+        /// </param>
+        /// <param name="salt">Appended to the original owner name before hashing in order to defend against pre-calculated dictionary attacks.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataNextDomainSecure3Parameters(DnsSecNSec3HashAlgorithm hashAlgorithm, DnsSecNSec3Flags flags, ushort iterations, DataSegment salt)
             : base(hashAlgorithm, flags, iterations, salt)
         {
         }
 
+        /// <summary>
+        /// Two DnsResourceDataNextDomainSecure3Parameters are equal if they have the hash algorithm, flags, iterations and salt fields.
+        /// </summary>
         public bool Equals(DnsResourceDataNextDomainSecure3Parameters other)
         {
             return EqualsParameters(other);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataNextDomainSecure3Parameters are equal if they have the hash algorithm, flags, iterations and salt fields.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataNextDomainSecure3Parameters);
         }
 
+        /// <summary>
+        /// A hash code made up from the combination of the hash algorithm, flags, iterations and salt fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return GetHashCodeParameters();

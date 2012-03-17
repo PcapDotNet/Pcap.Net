@@ -25,31 +25,53 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.Apl)]
     public sealed class DnsResourceDataAddressPrefixList: DnsResourceDataSimple, IEquatable<DnsResourceDataAddressPrefixList>
     {
+        /// <summary>
+        /// Constructs an instance from a sequence of DnsAddressPrefix.
+        /// </summary>
         public DnsResourceDataAddressPrefixList(IList<DnsAddressPrefix> items)
         {
             Items = items.AsReadOnly();
         }
 
+        /// <summary>
+        /// Constructs an instance from a sequence of DnsAddressPrefix.
+        /// </summary>
         public DnsResourceDataAddressPrefixList(params DnsAddressPrefix[] items)
             : this((IList<DnsAddressPrefix>)items)
         {
             Length = items.Sum(item => item.Length);
         }
 
+        /// <summary>
+        /// The DnsAddressPrefix items in the list.
+        /// </summary>
         public ReadOnlyCollection<DnsAddressPrefix> Items { get; private set; }
+
+        /// <summary>
+        /// The number of bytes the resource data takes.
+        /// </summary>
         public int Length { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataAddressPrefixList are equal iff their items are equal and in the same order.
+        /// </summary>
         public bool Equals(DnsResourceDataAddressPrefixList other)
         {
             return other != null &&
                    Items.SequenceEqual(other.Items);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataAddressPrefixList are equal iff their items are equal and in the same order.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataAddressPrefixList);
         }
 
+        /// <summary>
+        /// A hash code based on the items.
+        /// </summary>
         public override int GetHashCode()
         {
             return Items.SequenceGetHashCode();
