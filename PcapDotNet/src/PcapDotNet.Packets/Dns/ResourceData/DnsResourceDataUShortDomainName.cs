@@ -26,6 +26,9 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.DomainName;
 
+        /// <summary>
+        /// Two DnsResourceDataUShortDomainName are equal iff their of the same type and their ushort values and domain names are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataUShortDomainName other)
         {
             return other != null &&
@@ -34,12 +37,18 @@ namespace PcapDotNet.Packets.Dns
                    DomainName.Equals(other.DomainName);
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        /// Two DnsResourceDataUShortDomainName are equal iff their of the same type and their ushort values and domain names are equal.
+        /// </summary>
+        public override sealed bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataUShortDomainName);
         }
 
-        public override int GetHashCode()
+        /// <summary>
+        /// A hash code based on the type, ushort value and domain name.
+        /// </summary>
+        public override sealed int GetHashCode()
         {
             return Sequence.GetHashCode(GetType(), Value, DomainName);
         }

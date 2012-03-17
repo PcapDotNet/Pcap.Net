@@ -26,8 +26,16 @@ namespace PcapDotNet.Packets.Dns
             public const int Data = Subcoding + sizeof(byte);
         }
 
-        public const int ConstantPartLength = Offset.Data;
+        private const int ConstantPartLength = Offset.Data;
 
+        /// <summary>
+        /// Construct an instance out of the coding subcoding and data fields.
+        /// </summary>
+        /// <param name="codingSubCoding">
+        /// A combination of coding and subcoding.
+        /// Has a valid enum value if the subcoding is defined specifically for the coding.
+        /// </param>
+        /// <param name="data">Variable length and could be null in some cases.</param>
         public DnsResourceDataSink(DnsSinkCodingSubCoding codingSubCoding, DataSegment data)
             : this((DnsSinkCoding)((ushort)codingSubCoding >> 8), (byte)((ushort)codingSubCoding & 0x00FF), data)
         {
@@ -68,6 +76,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Data { get; private set; }
 
+        /// <summary>
+        /// Two are equal iff their coding, subcoding and data fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataSink other)
         {
             return other != null &&
@@ -76,11 +87,17 @@ namespace PcapDotNet.Packets.Dns
                    Data.Equals(other.Data);
         }
 
+        /// <summary>
+        /// Two are equal iff their coding, subcoding and data fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataSink);
         }
 
+        /// <summary>
+        /// A hash code based on the coding, subcoding and data fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(CodingSubCoding, Data);

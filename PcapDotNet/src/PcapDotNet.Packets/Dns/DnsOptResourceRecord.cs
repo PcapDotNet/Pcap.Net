@@ -28,8 +28,30 @@ namespace PcapDotNet.Packets.Dns
     /// </summary>
     public sealed class DnsOptResourceRecord : DnsDataResourceRecord
     {
+        /// <summary>
+        /// Constructs an instance out of the domain name, senders UDP payload size, extended return code, version, flags and data fields.
+        /// </summary>
+        /// <param name="domainName">An owner name, i.e., the name of the node to which this resource record pertains.</param>
+        /// <param name="sendersUdpPayloadSize">
+        /// The number of octets of the largest UDP payload that can be reassembled and delivered in the sender's network stack.
+        /// Note that path MTU, with or without fragmentation, may be smaller than this.
+        /// </param>
+        /// <param name="extendedReturnCode">
+        /// Forms upper 8 bits of extended 12-bit RCODE.
+        /// Note that EXTENDED-RCODE value "0" indicates that an unextended RCODE is in use (values "0" through "15").
+        /// </param>
+        /// <param name="version">
+        /// Indicates the implementation level of whoever sets it.
+        /// Full conformance with this specification is indicated by version "0".
+        /// Requestors are encouraged to set this to the lowest implemented level capable of expressing a transaction, 
+        /// to minimize the responder and network load of discovering the greatest common implementation level between requestor and responder.
+        /// A requestor's version numbering strategy should ideally be a run time configuration option.
+        /// </param>
+        /// <param name="flags">OPT flags.</param>
+        /// <param name="data">An OPT resource record data</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
-        public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedReturnCode, DnsOptVersion version, DnsOptFlags flags, DnsResourceDataOptions data)
+        public DnsOptResourceRecord(DnsDomainName domainName, ushort sendersUdpPayloadSize, byte extendedReturnCode, DnsOptVersion version, DnsOptFlags flags,
+                                    DnsResourceDataOptions data)
             : this(domainName, (DnsClass)sendersUdpPayloadSize, (int)BitSequence.Merge(extendedReturnCode, (byte)version, (ushort)flags), data)
         {
         }

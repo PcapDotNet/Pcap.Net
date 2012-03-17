@@ -20,6 +20,18 @@ namespace PcapDotNet.Packets.Dns
     [DnsTypeRegistration(Type = DnsType.NSec)]
     public sealed class DnsResourceDataNextDomainSecure : DnsResourceDataNoCompression, IEquatable<DnsResourceDataNextDomainSecure>
     {
+        /// <summary>
+        /// Constructs an instance from the next domain name and types exist fields.
+        /// </summary>
+        /// <param name="nextDomainName">
+        /// Contains the next owner name (in the canonical ordering of the zone) that has authoritative data or contains a delegation point NS RRset;
+        /// The value of the Next Domain Name field in the last NSEC record in the zone is the name of the zone apex (the owner name of the zone's SOA RR).
+        /// This indicates that the owner name of the NSEC RR is the last name in the canonical ordering of the zone.
+        ///
+        /// Owner names of RRsets for which the given zone is not authoritative (such as glue records) must not be listed in the Next Domain Name
+        /// unless at least one authoritative RRset exists at the same owner name.
+        /// </param>
+        /// <param name="typesExist">Identifies the RRset types that exist at the NSEC RR's owner name.</param>
         public DnsResourceDataNextDomainSecure(DnsDomainName nextDomainName, IEnumerable<DnsType> typesExist)
             : this(nextDomainName, new DnsTypeBitmaps(typesExist))
         {
@@ -41,11 +53,17 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public ReadOnlyCollection<DnsType> TypesExist { get { return _typeBitmaps.TypesExist.AsReadOnly(); } }
 
+        /// <summary>
+        /// True iff the given dns type exists.
+        /// </summary>
         public bool IsTypePresentForOwner(DnsType dnsType)
         {
             return _typeBitmaps.Contains(dnsType);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataNextDomainSecure are equal iff their next domain name and types exist fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataNextDomainSecure other)
         {
             return other != null &&
@@ -53,11 +71,17 @@ namespace PcapDotNet.Packets.Dns
                    _typeBitmaps.Equals(other._typeBitmaps);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataNextDomainSecure are equal iff their next domain name and types exist fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataNextDomainSecure);
         }
 
+        /// <summary>
+        /// A hash code of the combined next domain name and types exist fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(NextDomainName, _typeBitmaps);

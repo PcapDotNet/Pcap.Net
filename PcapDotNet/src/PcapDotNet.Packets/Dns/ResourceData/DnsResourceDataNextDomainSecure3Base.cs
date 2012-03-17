@@ -47,7 +47,8 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// Defines the number of additional times the hash function has been performed.
-        /// More iterations result in greater resiliency of the hash value against dictionary attacks, but at a higher computational cost for both the server and resolver.
+        /// More iterations result in greater resiliency of the hash value against dictionary attacks, 
+        /// but at a higher computational cost for both the server and resolver.
         /// </summary>
         public ushort Iterations { get; private set; }
 

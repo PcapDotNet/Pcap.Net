@@ -29,6 +29,13 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.PublicKey;
 
+        /// <summary>
+        /// Constructs an instance out of the flags, protocol, algorithm and public key fields.
+        /// </summary>
+        /// <param name="flags">Reserved and must be zero.</param>
+        /// <param name="protocol">Must be set to 1.</param>
+        /// <param name="algorithm">The key algorithm parallel to the same field for the SIG resource.</param>
+        /// <param name="publicKey">The public key value.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
         public DnsResourceDataRKey(ushort flags, byte protocol, DnsAlgorithm algorithm, DataSegment publicKey)
         {
@@ -59,6 +66,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataRKey are equal iff their flags, protocol, algorithm and public key fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataRKey other)
         {
             return other != null &&
@@ -68,11 +78,17 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataRKey are equal iff their flags, protocol, algorithm and public key fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataRKey);
         }
 
+        /// <summary>
+        /// A hash code based on the flags, protocol, algorithm and public key fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return BitSequence.Merge(Flags, Protocol, (byte)Algorithm).GetHashCode();

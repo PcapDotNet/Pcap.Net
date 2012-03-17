@@ -18,6 +18,11 @@ namespace PcapDotNet.Packets.Dns
     {
         private const int MinimumLength = 2 * DnsDomainName.RootLength;
 
+        /// <summary>
+        /// Constructs the resource data from the previous and next fields.
+        /// </summary>
+        /// <param name="previous">The start, or previous name.</param>
+        /// <param name="next">End or next name in the list.</param>
         public DnsResourceDataTrustAnchorLink(DnsDomainName previous, DnsDomainName next)
         {
             Previous = previous;
@@ -34,6 +39,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsDomainName Next { get; private set; }
 
+        /// <summary>
+        /// Two trust anchor link resource datas are equal iff their previous and next fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataTrustAnchorLink other)
         {
             return other != null &&
@@ -41,11 +49,17 @@ namespace PcapDotNet.Packets.Dns
                    Next.Equals(other.Next);
         }
 
+        /// <summary>
+        /// Two trust anchor link resource datas are equal iff their previous and next fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataTrustAnchorLink);
         }
 
+        /// <summary>
+        /// The combined hash code of the previous and next fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(Previous, Next);
