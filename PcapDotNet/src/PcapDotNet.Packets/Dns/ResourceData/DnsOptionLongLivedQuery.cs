@@ -35,8 +35,16 @@ namespace PcapDotNet.Packets.Dns
             public const int LeaseLife = Id + sizeof(ulong);
         }
 
-        public const int ConstDataLength = Offset.LeaseLife + sizeof(uint);
+        private const int ConstDataLength = Offset.LeaseLife + sizeof(uint);
 
+        /// <summary>
+        /// Constructs an instance out of the version, opcode, error code, id and lease life fields.
+        /// </summary>
+        /// <param name="version">Version of LLQ protocol implemented.</param>
+        /// <param name="opCode">Identifies LLQ operation.</param>
+        /// <param name="errorCode">Identifies LLQ errors.</param>
+        /// <param name="id">Identifier for an LLQ.</param>
+        /// <param name="leaseLife">Requested or granted life of LLQ, in seconds.</param>
         public DnsOptionLongLivedQuery(ushort version, DnsLongLivedQueryOpCode opCode, DnsLongLivedQueryErrorCode errorCode, ulong id, uint leaseLife)
             : base(DnsOptionCode.LongLivedQuery)
         {
@@ -47,12 +55,34 @@ namespace PcapDotNet.Packets.Dns
             LeaseLife = leaseLife;
         }
 
+        /// <summary>
+        /// Version of LLQ protocol implemented.
+        /// </summary>
         public ushort Version { get; private set; }
+
+        /// <summary>
+        /// Identifies LLQ operation.
+        /// </summary>
         public DnsLongLivedQueryOpCode OpCode { get; private set; }
+
+        /// <summary>
+        /// Identifies LLQ errors.
+        /// </summary>
         public DnsLongLivedQueryErrorCode ErrorCode { get; private set; }
+
+        /// <summary>
+        /// Identifier for an LLQ.
+        /// </summary>
         public ulong Id { get; private set; }
+
+        /// <summary>
+        /// Requested or granted life of LLQ, in seconds.
+        /// </summary>
         public uint LeaseLife { get; private set; }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public override int DataLength
         {
             get { return ConstDataLength; }

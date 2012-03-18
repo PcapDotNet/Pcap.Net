@@ -34,8 +34,22 @@ namespace PcapDotNet.Packets.Dns
             public const int Gateway = Algorithm + sizeof(byte);
         }
 
-        public const int ConstPartLength = Offset.Gateway;
+        private const int ConstPartLength = Offset.Gateway;
 
+        /// <summary>
+        /// Constructs an instance out of the precedence, gateway, algorithm and public key fields.
+        /// </summary>
+        /// <param name="precedence">
+        /// Precedence for this record.
+        /// Gateways listed in IPSECKEY records with lower precedence are to be attempted first.
+        /// Where there is a tie in precedence, the order should be non-deterministic.
+        /// </param>
+        /// <param name="gateway">
+        /// Indicates a gateway to which an IPsec tunnel may be created in order to reach the entity named by this 
+        /// resource record.
+        /// </param>
+        /// <param name="algorithm">Identifies the public key's cryptographic algorithm and determines the format of the public key field.</param>
+        /// <param name="publicKey">Contains the algorithm-specific portion of the KEY RR RDATA.</param>
         public DnsResourceDataIpSecKey(byte precedence, DnsGateway gateway, DnsPublicKeyAlgorithm algorithm, DataSegment publicKey)
         {
             Precedence = precedence;
@@ -71,6 +85,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataIpSecKey are equal iff their precedence, gateway, algorithm and public key fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataIpSecKey other)
         {
             return other != null &&
@@ -80,11 +97,17 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataIpSecKey are equal iff their precedence, gateway, algorithm and public key fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataIpSecKey);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the precedence, gateway, algorithm and public key fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(BitSequence.Merge(Precedence, (byte)Algorithm), Gateway, PublicKey);
