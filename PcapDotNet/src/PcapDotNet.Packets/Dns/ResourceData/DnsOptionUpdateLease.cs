@@ -39,6 +39,9 @@
         /// </summary>
         public int Lease { get; private set; }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public override int DataLength
         {
             get { return ConstDataLength; }
