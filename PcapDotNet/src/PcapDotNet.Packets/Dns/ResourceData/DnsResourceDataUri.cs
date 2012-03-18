@@ -31,6 +31,20 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.Target;
 
+        /// <summary>
+        /// Constructs an instance out of the priority, weight and target fields.
+        /// </summary>
+        /// <param name="priority">
+        /// The priority of the target URI in this RR.
+        /// A client must attempt to contact the URI with the lowest-numbered priority it can reach;
+        /// URIs with the same priority should be tried in the order defined by the weight field.
+        /// </param>
+        /// <param name="weight">
+        /// A server selection mechanism.
+        /// The weight field specifies a relative weight for entries with the same priority.
+        /// Larger weights should be given a proportionately higher probability of being selected.
+        /// </param>
+        /// <param name="target">The URI of the target. Resolution of the URI is according to the definitions for the Scheme of the URI.</param>
         public DnsResourceDataUri(ushort priority, ushort weight, IList<DataSegment> target)
         {
             Priority = priority;
@@ -58,6 +72,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public ReadOnlyCollection<DataSegment> Target { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataUri are equal iff their priority, weight and target fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataUri other)
         {
             return other != null &&
@@ -66,11 +83,17 @@ namespace PcapDotNet.Packets.Dns
                    Target.SequenceEqual(other.Target);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataUri are equal iff their priority, weight and target fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataUri);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the priority, weight and target fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return BitSequence.Merge(Priority, Weight).GetHashCode() ^ Target.SequenceGetHashCode();

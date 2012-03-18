@@ -31,8 +31,24 @@ namespace PcapDotNet.Packets.Dns
             public const int Digest = DigestType + sizeof(byte);
         }
 
-        public const int ConstPartLength = Offset.Digest;
+        private const int ConstPartLength = Offset.Digest;
 
+        /// <summary>
+        /// Constructs an instance out of the key tag, algorithm, digest type and digest fields.
+        /// </summary>
+        /// <param name="keyTag">
+        /// Lists the key tag of the DNSKEY RR referred to by the DS record.
+        /// The Key Tag used by the DS RR is identical to the Key Tag used by RRSIG RRs.
+        /// Calculated as specified in RFC 2535.
+        /// </param>
+        /// <param name="algorithm">Algorithm must be allowed to sign DNS data.</param>
+        /// <param name="digestType">An identifier for the digest algorithm used.</param>
+        /// <param name="digest">
+        /// Calculated over the canonical name of the delegated domain name followed by the whole RDATA of the KEY record (all four fields).
+        /// digest = hash(canonical FQDN on KEY RR | KEY_RR_rdata)
+        /// KEY_RR_rdata = Flags | Protocol | Algorithm | Public Key
+        /// The size of the digest may vary depending on the digest type.
+        /// </param>
         public DnsResourceDataDelegationSigner(ushort keyTag, DnsAlgorithm algorithm, DnsDigestType digestType, DataSegment digest)
         {
             if (digest == null)
@@ -90,6 +106,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment ExtraDigest { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataDelegationSigner are equal iff their key tag, algorithm, digest type and digest fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataDelegationSigner other)
         {
             return other != null &&
@@ -99,11 +118,17 @@ namespace PcapDotNet.Packets.Dns
                    Digest.Equals(other.Digest);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataDelegationSigner are equal iff their key tag, algorithm, digest type and digest fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataDelegationSigner);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the key tag, algorithm, digest type and digest fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(BitSequence.Merge(KeyTag, (byte)Algorithm, (byte)DigestType), Digest);
