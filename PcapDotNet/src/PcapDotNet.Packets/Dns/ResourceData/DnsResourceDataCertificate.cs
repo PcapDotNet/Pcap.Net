@@ -29,8 +29,27 @@ namespace PcapDotNet.Packets.Dns
             public const int Certificate = Algorithm + sizeof(byte);
         }
 
-        public const int ConstantPartLength = Offset.Certificate;
+        private const int ConstantPartLength = Offset.Certificate;
 
+        /// <summary>
+        /// Constructs an instance from the certificate type, key tag, algorithm and certificate fields.
+        /// </summary>
+        /// <param name="certificateType">The certificate type.</param>
+        /// <param name="keyTag">
+        /// Value computed for the key embedded in the certificate, using the RRSIG Key Tag algorithm.
+        /// This field is used as an efficiency measure to pick which CERT RRs may be applicable to a particular key.
+        /// The key tag can be calculated for the key in question, and then only CERT RRs with the same key tag need to be examined.
+        /// Note that two different keys can have the same key tag.
+        /// However, the key must be transformed to the format it would have as the public key portion of a DNSKEY RR before the key tag is computed.
+        /// This is only possible if the key is applicable to an algorithm and complies to limits (such as key size) defined for DNS security.
+        /// If it is not, the algorithm field must be zero and the tag field is meaningless and should be zero.
+        /// </param>
+        /// <param name="algorithm">
+        /// Has the same meaning as the algorithm field in DNSKEY and RRSIG RRs,
+        /// except that a zero algorithm field indicates that the algorithm is unknown to a secure DNS, 
+        /// which may simply be the result of the algorithm not having been standardized for DNSSEC.
+        /// </param>
+        /// <param name="certificate">The certificate data according to the type.</param>
         public DnsResourceDataCertificate(DnsCertificateType certificateType, ushort keyTag, DnsAlgorithm algorithm, DataSegment certificate)
         {
             CertificateType = certificateType;
@@ -67,6 +86,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Certificate { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataCertificate are equal iff their certificate type, key tag, algorithm and certificate fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataCertificate other)
         {
             return other != null &&
@@ -76,11 +98,17 @@ namespace PcapDotNet.Packets.Dns
                    Certificate.Equals(other.Certificate);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataCertificate are equal iff their certificate type, key tag, algorithm and certificate fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataCertificate);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the certificate type, key tag, algorithm and certificate fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(BitSequence.Merge((ushort)CertificateType, KeyTag), Algorithm, Certificate);

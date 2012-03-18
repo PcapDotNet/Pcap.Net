@@ -30,6 +30,12 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.Map822;
 
+        /// <summary>
+        /// Constructs an instance out of the preference, map822 and mapX400 fields.
+        /// </summary>
+        /// <param name="preference">The preference given to this RR among others at the same owner. Lower values are preferred.</param>
+        /// <param name="map822">RFC 822 domain. The RFC 822 part of the MCGAM.</param>
+        /// <param name="mapX400">The value of x400-in-domain-syntax derived from the X.400 part of the MCGAM.</param>
         public DnsResourceDataX400Pointer(ushort preference, DnsDomainName map822, DnsDomainName mapX400)
         {
             Preference = preference;
@@ -54,6 +60,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DnsDomainName MapX400 { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataX400Pointer are equal iff their preference, map822 and mapX400 fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataX400Pointer other)
         {
             return other != null &&
@@ -62,11 +71,17 @@ namespace PcapDotNet.Packets.Dns
                    MapX400.Equals(other.MapX400);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataX400Pointer are equal iff their preference, map822 and mapX400 fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataX400Pointer);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the preference, map822 and mapX400 fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(Preference, Map822, MapX400);
