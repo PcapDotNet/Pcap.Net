@@ -40,6 +40,20 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.HostIdentityTag;
 
+        /// <summary>
+        /// Constructs an instance out of the host identity tag, public key algorithm, public key and rendezvous servers fields.
+        /// </summary>
+        /// <param name="hostIdentityTag">Stored as a binary value in network byte order.</param>
+        /// <param name="publicKeyAlgorithm">Identifies the public key's cryptographic algorithm and determines the format of the public key field.</param>
+        /// <param name="publicKey">Contains the algorithm-specific portion of the KEY RR RDATA.</param>
+        /// <param name="rendezvousServers">
+        /// Indicates one or more domain names of rendezvous server(s).
+        /// Must not be compressed.
+        /// The rendezvous server(s) are listed in order of preference (i.e., first rendezvous server(s) are preferred),
+        /// defining an implicit order amongst rendezvous servers of a single RR.
+        /// When multiple HIP RRs are present at the same owner name,
+        /// this implicit order of rendezvous servers within an RR must not be used to infer a preference order between rendezvous servers stored in different RRs.
+        /// </param>
         public DnsResourceDataHostIdentityProtocol(DataSegment hostIdentityTag, DnsPublicKeyAlgorithm publicKeyAlgorithm, DataSegment publicKey,
                                                    IEnumerable<DnsDomainName> rendezvousServers)
         {
@@ -85,6 +99,10 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public ReadOnlyCollection<DnsDomainName> RendezvousServers { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataHostIdentityProtocol are equal iff their host identity tag, public key algorithm, public key and rendezvous servers fields 
+        /// are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataHostIdentityProtocol other)
         {
             return other != null &&
@@ -94,11 +112,18 @@ namespace PcapDotNet.Packets.Dns
                    RendezvousServers.SequenceEqual(RendezvousServers);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataHostIdentityProtocol are equal iff their host identity tag, public key algorithm, public key and rendezvous servers fields 
+        /// are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataHostIdentityProtocol);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the host identity tag, public key algorithm, public key and rendezvous servers fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(HostIdentityTag, PublicKeyAlgorithm, PublicKey) ^ RendezvousServers.SequenceGetHashCode();
