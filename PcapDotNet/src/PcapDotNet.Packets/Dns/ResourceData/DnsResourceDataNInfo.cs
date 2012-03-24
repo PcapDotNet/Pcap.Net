@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Dns
         internal override DnsResourceData CreateInstance(DataSegment data)
         {
             List<DataSegment> strings = ReadStrings(data, MinNumStrings);
-            if (strings == null || strings.Count < 1)
+            if (strings == null || strings.Count < MinNumStrings)
                 return null;
 
             return new DnsResourceDataNInfo(strings.AsReadOnly());

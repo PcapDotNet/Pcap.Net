@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -585,6 +586,15 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsAddressPrefixConstructorNullAddressFamilyDependentPartTtest()
+        {
+            var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, null);
+            Assert.IsNull(dnsAddressPrefix);
+            Assert.Fail();
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataNextDomainSecure3NextHashedOwnerNameTooBigTest()
         {
@@ -639,6 +649,25 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataCertificationAuthorityAuthorizationConstructorNullTagTest()
+        {
+            var resourceData = new DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags.Critical, null,
+                                                                                      DataSegment.Empty);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataCertificationAuthorityAuthorizationParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags.Critical,
+                                                                                      new DataSegment(new byte[5]), new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.CertificationAuthorityAuthorization, resourceData, -6);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.CertificationAuthorityAuthorization, resourceData, -11);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataA6ConstructorAddressSuffixTooSmallTest()
         {
@@ -672,6 +701,42 @@ namespace PcapDotNet.Packets.Test
             var resourceData = new DnsResourceDataAddressPrefixList(new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[5])));
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, 1);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, -1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataNInfoConstructorNullStringsTest()
+        {
+            var resourceData = new DnsResourceDataNInfo(null as ReadOnlyCollection<DataSegment>);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataNInfoConstructorTooFewStringsTest()
+        {
+            var resourceData = new DnsResourceDataNInfo();
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNInfoParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataNInfo(new DataSegment(new byte[5]), new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NInfo, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NInfo, resourceData, -12);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataGeographicalPositionWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataGeographicalPosition("5.03", "-44.4", "22.1");
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -5);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -10);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -14);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
