@@ -665,6 +665,8 @@ namespace PcapDotNet.Packets.Test
             DnsGateway gateway = new DnsGatewayIpV6(IpV6Address.Zero);
             Assert.IsTrue(gateway.Equals((object)gateway));
             Assert.IsFalse(gateway.Equals(null as object));
+            Assert.IsFalse(new DnsGatewayIpV4(IpV4Address.Zero).Equals(null));
+            Assert.IsFalse(new DnsGatewayDomainName(DnsDomainName.Root).Equals(null));
         }
 
         [TestMethod]
@@ -991,6 +993,34 @@ namespace PcapDotNet.Packets.Test
         {
             var resourceData = new DnsResourceDataWellKnownService(IpV4Address.Zero, IpV4Protocol.IpV6Opts, new DataSegment(new byte[5]));
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.Wks, resourceData, -6);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataAfsDatabaseParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataAfsDatabase(DnsAfsDatabaseSubtype.DceNcaCell, new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.AfsDatabase, resourceData, 1);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataKeyExchangerParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataKeyExchanger(1, new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.KeyExchanger, resourceData, 1);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataResponsiblePersonParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataResponsiblePerson(new DnsDomainName("pcapdotnet.codeplex.com"), new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.ResponsiblePerson, resourceData, 1);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataRouteThroughParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataRouteThrough(1, new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.RouteThrough, resourceData, 1);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)

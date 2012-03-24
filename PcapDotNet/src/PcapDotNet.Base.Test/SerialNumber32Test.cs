@@ -56,6 +56,13 @@ namespace PcapDotNet.Base.Test
 
             serialNumber = serialNumber.Add(((uint)1 << 31) - 1);
             Assert.AreEqual<SerialNumber32>(9, serialNumber);
+
+            Assert.IsTrue(new SerialNumber32(1) < new SerialNumber32(2));
+            Assert.IsTrue(new SerialNumber32(2) > new SerialNumber32(1));
+            Assert.IsTrue(new SerialNumber32(2) != new SerialNumber32(1));
+            Assert.IsFalse(new SerialNumber32(1) != new SerialNumber32(0).Add(1));
+            Assert.IsTrue(new SerialNumber32(2) == new SerialNumber32(1).Add(1));
+            Assert.IsFalse(new SerialNumber32(1).Equals(1.0));
         }
 
         [TestMethod]
