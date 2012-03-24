@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
@@ -84,7 +85,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public override string ToString()
         {
-            return string.Format("{0} {1} {2}", base.ToString(), Ttl, Data);
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", base.ToString(), Ttl, Data);
         }
 
         /// <summary>
