@@ -25,6 +25,8 @@ namespace PcapDotNet.Packets.TestUtils
             dnsLayer.IsRecursionDesired = random.NextBool();
             dnsLayer.IsRecursionAvailable = random.NextBool();
             dnsLayer.FutureUse = random.NextBool();
+            dnsLayer.IsAuthenticData = random.NextBool();
+            dnsLayer.IsCheckingDisabled = random.NextBool();
             dnsLayer.ResponseCode = random.NextEnum(DnsResponseCode.BadVersionOrBadSignature, DnsResponseCode.BadKey, DnsResponseCode.BadTime, DnsResponseCode.BadMode,
                                                     DnsResponseCode.BadName, DnsResponseCode.BadAlgorithm, DnsResponseCode.BadTruncation);
             dnsLayer.DomainNameCompressionMode = random.NextEnum<DnsDomainNameCompressionMode>();
