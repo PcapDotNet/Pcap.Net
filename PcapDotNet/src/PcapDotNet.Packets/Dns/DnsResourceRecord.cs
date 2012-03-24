@@ -78,7 +78,7 @@ namespace PcapDotNet.Packets.Dns
             return string.Format("{0} {1} {2}", DomainName, DnsType, DnsClass);
         }
 
-        protected DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
+        internal DnsResourceRecord(DnsDomainName domainName, DnsType type, DnsClass dnsClass)
         {
             DomainName = domainName;
             DnsType = type;
