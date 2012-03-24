@@ -101,6 +101,9 @@ namespace PcapDotNet.Packets.Dns
             if (!DnsDomainName.TryParse(dns, offsetInDns, length, out next, out nextLength))
                 return null;
 
+            if (length != nextLength)
+                return null;
+
             return new DnsResourceDataTrustAnchorLink(previous, next);
         }
     }
