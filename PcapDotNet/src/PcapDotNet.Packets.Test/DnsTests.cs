@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Base;
-using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -91,6 +89,7 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsTrue(record.Equals(record));
                     Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
                     Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
+                    Assert.AreEqual(record.GetHashCode(), record.GetHashCode());
                 }
 
                 foreach (var record in packet.Ethernet.IpV4.Udp.Dns.DataResourceRecords)
@@ -183,6 +182,15 @@ namespace PcapDotNet.Packets.Test
                                                 new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
                                                 dnsLayer);
             Assert.IsNull(packet);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsDomainNameConstructorNullStringTest()
+        {
+            DnsDomainName domainName = new DnsDomainName(null);
+            Assert.IsNotNull(domainName);
             Assert.Fail();
         }
 
@@ -320,6 +328,26 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataTransactionKeyConstructorNullKeyTest()
+        {
+            var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
+                                                                 null, DataSegment.Empty);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataTransactionKeyConstructorNullOtherTest()
+        {
+            var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
+                                                                 DataSegment.Empty, null);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataTransactionKeyTooBigKeyTest()
         {
@@ -335,6 +363,35 @@ namespace PcapDotNet.Packets.Test
         {
             var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
                                                                  DataSegment.Empty, new DataSegment(new byte[ushort.MaxValue + 1]));
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataTransactionKeyParseTooShortTest()
+        {
+            var resourceData = new DnsResourceDataTransactionKey(new DnsDomainName("pcapdot.net"), 0, 0, DnsTransactionKeyMode.KeyDeletion,
+                                                                 DnsResponseCode.NoError, new DataSegment(new byte[5]), new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TKey, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TKey, resourceData, -6);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TKey, resourceData, -11);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TKey, resourceData, -23);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataTransactionSignatureConstructorNullMessageAuthenticationCodeTest()
+        {
+            var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, null, 0, DnsResponseCode.NoError, DataSegment.Empty);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataTransactionSignatureConstructorNullOtherTest()
+        {
+            var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, DataSegment.Empty, 0, DnsResponseCode.NoError, null);
             Assert.IsNull(resourceData);
             Assert.Fail();
         }
@@ -360,6 +417,17 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void DnsResourceDataTransactionSignatureParseWrongSizeTest()
+        {
+            var resourceData = new DnsResourceDataTransactionSignature(new DnsDomainName("pcapdot.net"), 0, 0, new DataSegment(new byte[5]), 0,
+                                                                       DnsResponseCode.NoError, new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TransactionSignature, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TransactionSignature, resourceData, -6);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TransactionSignature, resourceData, -11);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TransactionSignature, resourceData, -23);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsResourceDataHostIdentityProtocolTooBigHostIdentityTagTest()
         {
@@ -377,6 +445,38 @@ namespace PcapDotNet.Packets.Test
                                                                        new DataSegment(new byte[ushort.MaxValue + 1]), new DnsDomainName[0]);
             Assert.IsNull(resourceData);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataHostIdentityProtocolConstructorNullHostIdentityTagTest()
+        {
+            var resourceData = new DnsResourceDataHostIdentityProtocol(null, DnsPublicKeyAlgorithm.None, DataSegment.Empty, new DnsDomainName[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataHostIdentityProtocolConstructorNullPublicKeyTest()
+        {
+            var resourceData = new DnsResourceDataHostIdentityProtocol(DataSegment.Empty, DnsPublicKeyAlgorithm.None, null, new DnsDomainName[0]);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataHostIdentityProtocolParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataHostIdentityProtocol(new DataSegment(new byte[5]), DnsPublicKeyAlgorithm.None, new DataSegment(new byte[5]),
+                                                                       new[]
+                                                                       {
+                                                                           new DnsDomainName("pcapdot.net"),
+                                                                           new DnsDomainName("pcapdotnet.codeplex.com")
+                                                                       });
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Hip, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Hip, resourceData, -39);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Hip, resourceData, -49);
         }
 
         [TestMethod]
@@ -507,6 +607,34 @@ namespace PcapDotNet.Packets.Test
                                                                                       new DataSegment(new byte[byte.MaxValue + 1]), DataSegment.Empty);
             Assert.IsNull(resourceData);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataA6ConstructorAddressSuffixTooSmallTest()
+        {
+            var resourceData = new DnsResourceDataA6(127, IpV6Address.Zero, DnsDomainName.Root);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void DnsResourceDataA6ConstructorAddressSuffixTooBigTest()
+        {
+            var resourceData = new DnsResourceDataA6(1, IpV6Address.MaxValue, DnsDomainName.Root);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataA6ParseToShortTest()
+        {
+            var resourceData = new DnsResourceDataA6(100, new IpV6Address("::F12:3456"), new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -14);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -17);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)

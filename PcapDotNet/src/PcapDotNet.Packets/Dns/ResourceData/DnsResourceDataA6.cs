@@ -44,10 +44,10 @@ namespace PcapDotNet.Packets.Dns
         /// <param name="prefixName">The name of the prefix, encoded as a domain name. This name must not be compressed. </param>
         public DnsResourceDataA6(byte prefixLength, IpV6Address addressSuffix, DnsDomainName prefixName)
         {
-            if (IsAddressSuffixTooBig(prefixLength, addressSuffix))
+            if (IsAddressSuffixTooSmall(prefixLength, addressSuffix))
                 throw new ArgumentOutOfRangeException("addressSuffix",
                                                       string.Format(CultureInfo.InvariantCulture, "Value is too small for prefix length {0}", prefixLength));
-            if (IsAddressSuffixTooSmall(prefixLength, addressSuffix))
+            if (IsAddressSuffixTooBig(prefixLength, addressSuffix))
                 throw new ArgumentOutOfRangeException("addressSuffix",
                                                       string.Format(CultureInfo.InvariantCulture, "Value is too big for prefix length {0}", prefixLength));
 
@@ -144,7 +144,7 @@ namespace PcapDotNet.Packets.Dns
             offsetInDns += addressSuffixLength;
             length -= addressSuffixLength;
 
-            if (IsAddressSuffixTooBig(prefixLength, addressSuffix) || IsAddressSuffixTooSmall(prefixLength, addressSuffix))
+            if (IsAddressSuffixTooSmall(prefixLength, addressSuffix) || IsAddressSuffixTooBig(prefixLength, addressSuffix))
                 return null;
 
             DnsDomainName prefixName;
@@ -157,12 +157,12 @@ namespace PcapDotNet.Packets.Dns
             return new DnsResourceDataA6(prefixLength, addressSuffix, prefixName);
         }
 
-        private static bool IsAddressSuffixTooBig(byte prefixLength, IpV6Address addressSuffix)
+        private static bool IsAddressSuffixTooSmall(byte prefixLength, IpV6Address addressSuffix)
         {
             return (prefixLength < 128 && (addressSuffix.ToValue() < (UInt128.One << (127 - prefixLength))));
         }
 
-        private static bool IsAddressSuffixTooSmall(byte prefixLength, IpV6Address addressSuffix)
+        private static bool IsAddressSuffixTooBig(byte prefixLength, IpV6Address addressSuffix)
         {
             return (prefixLength > 0 && (addressSuffix.ToValue() >= (UInt128.One << (128 - prefixLength))));
         }
