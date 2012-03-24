@@ -79,6 +79,6 @@ namespace PcapDotNet.Packets.Dns
             }
         }
 
-        private static DnsGatewayNone _none = new DnsGatewayNone();
+        private static readonly DnsGatewayNone _none = new DnsGatewayNone();
     }
 }

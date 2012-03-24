@@ -537,6 +537,13 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void DnsResourceDataLocationInformationParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataLocationInformation(0, 1000, 2000, 3000, 100, 200, 300);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Loc, resourceData, 1);
+        }
+
+        [TestMethod]
         public void DnsResourceDataNextDomainSecureTest()
         {
             var types = new[] {DnsType.A, DnsType.Aaaa, DnsType.A6, DnsType.Any, DnsType.NaPtr};
@@ -612,6 +619,18 @@ namespace PcapDotNet.Packets.Test
                                                                     new DataSegment(new byte[byte.MaxValue + 1]), DataSegment.Empty, new DnsType[0]);
             Assert.IsNull(resourceData);
             Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNextDomainSecure3ParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0, new DataSegment(new byte[5]),
+                                                                    new DataSegment(new byte[5]), new[] {DnsType.A, DnsType.A6,});
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec3, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec3, resourceData, -8);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec3, resourceData, -13);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec3, resourceData, -14);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NSec3, resourceData, -19);
         }
 
         [TestMethod]
@@ -730,13 +749,38 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void DnsResourceDataGeographicalPositionWrongLengthTest()
+        public void DnsResourceDataGeographicalPositionParseWrongLengthTest()
         {
             var resourceData = new DnsResourceDataGeographicalPosition("5.03", "-44.4", "22.1");
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, 1);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -5);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -10);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -14);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataX400PointerParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataX400Pointer(0, new DnsDomainName("pcapdot.net"), new DnsDomainName("pcapdotnet.codeplex.com"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.PointerX400, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.PointerX400, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.PointerX400, resourceData, -26);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.PointerX400, resourceData, -39);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataIpSecKeyParseWrongLengthTest()
+        {
+            var resourceDataIpV4 = new DnsResourceDataIpSecKey(1, new DnsGatewayIpV4(IpV4Address.Zero), DnsPublicKeyAlgorithm.Rsa, new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.IpSecKey, resourceDataIpV4, -6);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.IpSecKey, resourceDataIpV4, -10);
+
+            var resourceDataIpV6 = new DnsResourceDataIpSecKey(1, new DnsGatewayIpV6(IpV6Address.Zero), DnsPublicKeyAlgorithm.Rsa, new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.IpSecKey, resourceDataIpV6, -6);
+
+            var resourceDataDomainName = new DnsResourceDataIpSecKey(1, new DnsGatewayDomainName(new DnsDomainName("pcapdot.net")), DnsPublicKeyAlgorithm.Rsa,
+                                                                     new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.IpSecKey, resourceDataDomainName, -6);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
