@@ -153,6 +153,17 @@ namespace PcapDotNet.Core.Test
             using (new OfflinePacketDevice("myinvalidfile").Open())
             {
             }
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void OpenNullFilenameTest()
+        {
+            using (new OfflinePacketDevice(null).Open())
+            {
+            }
+            Assert.Fail();
         }
 
         [TestMethod]
