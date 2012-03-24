@@ -67,7 +67,7 @@ namespace PcapDotNet.Core.Test
                 PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out actualPacket);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 Assert.AreEqual(expectedPacket, actualPacket);
-                MoreAssert.IsInRange(expectedPacket.Timestamp.AddMicroseconds(-1), expectedPacket.Timestamp.AddMicroseconds(1), actualPacket.Timestamp);
+                MoreAssert.IsInRange(expectedPacket.Timestamp.AddMicroseconds(-2), expectedPacket.Timestamp.AddMicroseconds(1), actualPacket.Timestamp);
             }
         }
 

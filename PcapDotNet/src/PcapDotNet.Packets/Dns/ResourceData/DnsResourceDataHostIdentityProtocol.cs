@@ -184,7 +184,6 @@ namespace PcapDotNet.Packets.Dns
                 rendezvousServers.Add(rendezvousServer);
                 offsetInDns += rendezvousServerLength;
                 length -= rendezvousServerLength;
-
             }
 
             return new DnsResourceDataHostIdentityProtocol(hostIdentityTag, publicKeyAlgorithm, publicKey, rendezvousServers);
