@@ -577,6 +577,22 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataNetworkServiceAccessPointConstructorNullAreaAddressTest()
+        {
+            var resourceData = new DnsResourceDataNetworkServiceAccessPoint(null, 0, 0);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNetworkServiceAccessPointParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataNetworkServiceAccessPoint(new DataSegment(new byte[5]), 0, 0);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NetworkServiceAccessPoint, resourceData, -5);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DnsAddressPrefixAddressFamilyDependentPartTooBigTest()
         {
@@ -781,6 +797,43 @@ namespace PcapDotNet.Packets.Test
             var resourceDataDomainName = new DnsResourceDataIpSecKey(1, new DnsGatewayDomainName(new DnsDomainName("pcapdot.net")), DnsPublicKeyAlgorithm.Rsa,
                                                                      new DataSegment(new byte[5]));
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.IpSecKey, resourceDataDomainName, -6);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataServerSelectionParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataServerSelection(0, 0, 0, new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.ServerSelection, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.ServerSelection, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.ServerSelection, resourceData, -14);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataStartOfAuthorityParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataStartOfAuthority(new DnsDomainName("pcapdot.net"), new DnsDomainName("pcapdotnet.codeplex.com"), 1, 2, 3, 4, 5);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.StartOfAuthority, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.StartOfAuthority, resourceData, -21);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.StartOfAuthority, resourceData, -46);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataTrustAnchorLinkParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataTrustAnchorLink(new DnsDomainName("pcapdot.net"), new DnsDomainName("pcapdotnet.codeplex.com"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TrustAnchorLink, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TrustAnchorLink, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TrustAnchorLink, resourceData, -25);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.TrustAnchorLink, resourceData, -37);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataMailExchangeParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataMailExchange(1, new DnsDomainName("pcapdot.net"));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.MailExchange, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.MailExchange, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.MailExchange, resourceData, -14);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
