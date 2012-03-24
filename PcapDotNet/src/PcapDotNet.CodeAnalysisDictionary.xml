@@ -24,6 +24,7 @@
             <Word>codings</Word>
             <Word>datagrams</Word>
             <Word>datakit</Word>
+            <Word>dce</Word>
             <Word>dcn</Word>
             <Word>docsis</Word>
             <Word>dss</Word>
@@ -59,6 +60,7 @@
             <Word>metricom</Word>
             <Word>multimegabit</Word>
             <Word>multiprotocol</Word>
+            <Word>nca</Word>
             <Word>netmask</Word>
             <Word>nsa</Word>
             <Word>osi</Word>

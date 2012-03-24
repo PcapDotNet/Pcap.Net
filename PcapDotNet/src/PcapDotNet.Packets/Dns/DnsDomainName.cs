@@ -84,7 +84,7 @@ namespace PcapDotNet.Packets.Dns
         public bool Equals(DnsDomainName other)
         {
             return other != null &&
-                   string.Equals(ToString(), other.ToString(), StringComparison.InvariantCultureIgnoreCase);
+                   string.Equals(ToString(), other.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

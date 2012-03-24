@@ -1,4 +1,5 @@
-﻿using PcapDotNet.Base;
+﻿using System.Globalization;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dns
 {
@@ -88,7 +89,8 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6}", DomainName, DnsType, SendersUdpPayloadSize, ExtendedReturnCode, Version, Flags, Data);
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6}",
+                                 DomainName, DnsType, SendersUdpPayloadSize, ExtendedReturnCode, Version, Flags, Data);
         }
 
         internal DnsOptResourceRecord(DnsDomainName domainName, DnsClass dnsClass, int ttl, DnsResourceData data)
