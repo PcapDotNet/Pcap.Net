@@ -245,6 +245,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.A));
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.Aaaa));
             Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.Ns));
+            Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.UInfo));
 
             bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(new DnsType[] { 0 });
             Assert.AreEqual(DataSegment.Empty, bitmap);
@@ -276,6 +277,34 @@ namespace PcapDotNet.Packets.Test
             DataSegment bitmap = new DataSegment(new byte[] { 1, 0 });
             DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), bitmap);
             Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void DnsResourceDataNextDomainParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataNextDomain(new DnsDomainName("pcapdot.net"),
+                                                             DnsResourceDataNextDomain.CreateTypeBitmap(new[] {DnsType.A, DnsType.A6}));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NextDomain, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NextDomain, resourceData, 12);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.NextDomain, resourceData, -6);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataNextDomainConstructorNullTypeBitmapTest()
+        {
+            var resourceData = new DnsResourceDataNextDomain(DnsDomainName.Root, null);
+            Assert.IsNull(resourceData);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DnsResourceDataNextDomainCreateTypeBitmapNullInputTest()
+        {
+            var bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(null);
+            Assert.IsNull(bitmap);
             Assert.Fail();
         }
 
@@ -635,6 +664,14 @@ namespace PcapDotNet.Packets.Test
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -1);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -14);
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.A6, resourceData, -17);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataAddressPrefixListParseWrongLengthTest()
+        {
+            var resourceData = new DnsResourceDataAddressPrefixList(new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[5])));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, -1);
         }
 
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
