@@ -87,6 +87,9 @@ namespace PcapDotNet.Packets.Dns
             return string.Format("{0} {1} {2}", base.ToString(), Ttl, Data);
         }
 
+        /// <summary>
+        /// Two DnsDataResourceRecord are equal iff their domain name, dns type, dns class, ttl and data fields are equal.
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public bool Equals(DnsDataResourceRecord other)
         {
@@ -95,11 +98,17 @@ namespace PcapDotNet.Packets.Dns
                    Data.Equals(other.Data);
         }
 
+        /// <summary>
+        /// Two DnsDataResourceRecord are equal iff their domain name, dns type, dns class, ttl and data fields are equal.
+        /// </summary>
         public override sealed bool Equals(object obj)
         {
  	        return Equals(obj as DnsDataResourceRecord);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the domain name, dns type, dns class, ttl and data fields.
+        /// </summary>
         public override sealed int GetHashCode()
         {
             return GetHashCodeBase() ^ Sequence.GetHashCode(Ttl, Data);

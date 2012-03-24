@@ -47,6 +47,16 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = OffsetAfterAlgorithm.MessageAuthenticationCode + OffsetAfterMessageAuthenticationCode.OtherData;
 
+        /// <summary>
+        /// Constructs an instance out of the algorithm time signed, fudge, message authentication code, original ID, error and other fields.
+        /// </summary>
+        /// <param name="algorithm">Name of the algorithm in domain name syntax.</param>
+        /// <param name="timeSigned">Seconds since 1-Jan-70 UTC.</param>
+        /// <param name="fudge">Seconds of error permitted in Time Signed.</param>
+        /// <param name="messageAuthenticationCode">Defined by Algorithm Name.</param>
+        /// <param name="originalId">Original message ID.</param>
+        /// <param name="error">RCODE covering TSIG processing.</param>
+        /// <param name="other">Empty unless Error == BADTIME.</param>
         public DnsResourceDataTransactionSignature(DnsDomainName algorithm, UInt48 timeSigned, ushort fudge, DataSegment messageAuthenticationCode,
                                                    ushort originalId, DnsResponseCode error, DataSegment other)
         {
@@ -106,6 +116,10 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Other { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataTransactionSignature are equal iff their algorithm time signed, fudge, message authentication code, original ID, error
+        /// and other fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataTransactionSignature other)
         {
             return other != null &&
@@ -118,11 +132,18 @@ namespace PcapDotNet.Packets.Dns
                    Other.Equals(other.Other);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataTransactionSignature are equal iff their algorithm time signed, fudge, message authentication code, original ID, error
+        /// and other fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataTransactionSignature);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the algorithm time signed, fudge, message authentication code, original ID, error and other fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(Algorithm, TimeSigned, BitSequence.Merge(Fudge, OriginalId), MessageAuthenticationCode, Error, Other);

@@ -44,6 +44,46 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = OffsetAfterAlgorithm.KeyData + sizeof(ushort);
 
+        /// <summary>
+        /// Constructs an instance out of the algorithm, inception, expiration, mode, error, key and other fields.
+        /// </summary>
+        /// <param name="algorithm">
+        /// Name of the algorithm in domain name syntax.
+        /// The algorithm determines how the secret keying material agreed to using the TKEY RR is actually used to derive the algorithm specific key.
+        /// </param>
+        /// <param name="inception">
+        /// Number of seconds since the beginning of 1 January 1970 GMT ignoring leap seconds treated as modulo 2**32 using ring arithmetic.
+        /// In messages between a DNS resolver and a DNS server where this field is meaningful,
+        /// it is either the requested validity interval start for the keying material asked for or
+        /// specify the validity interval start of keying material provided.
+        /// 
+        /// To avoid different interpretations of the inception time in TKEY RRs,
+        /// resolvers and servers exchanging them must have the same idea of what time it is.
+        /// One way of doing this is with the NTP protocol [RFC 2030] but that or any other time synchronization used for this purpose must be done securely.
+        /// </param>
+        /// <param name="expiration">
+        /// Number of seconds since the beginning of 1 January 1970 GMT ignoring leap seconds treated as modulo 2**32 using ring arithmetic.
+        /// In messages between a DNS resolver and a DNS server where this field is meaningful,
+        /// it is either the requested validity interval end for the keying material asked for or
+        /// specify the validity interval end of keying material provided.
+        /// 
+        /// To avoid different interpretations of the expiration time in TKEY RRs,
+        /// resolvers and servers exchanging them must have the same idea of what time it is.
+        /// One way of doing this is with the NTP protocol [RFC 2030] but that or any other time synchronization used for this purpose must be done securely.
+        /// </param>
+        /// <param name="mode">
+        /// Specifies the general scheme for key agreement or the purpose of the TKEY DNS message.
+        /// Servers and resolvers supporting this specification must implement the Diffie-Hellman key agreement mode and the key deletion mode for queries.
+        /// All other modes are optional.
+        /// A server supporting TKEY that receives a TKEY request with a mode it does not support returns the BADMODE error.
+        /// </param>
+        /// <param name="error">
+        /// When the TKEY Error Field is non-zero in a response to a TKEY query, the DNS header RCODE field indicates no error.
+        /// However, it is possible if a TKEY is spontaneously included in a response the TKEY RR and DNS header error field 
+        /// could have unrelated non-zero error codes.
+        /// </param>
+        /// <param name="key">The key exchange data. The meaning of this data depends on the mode.</param>
+        /// <param name="other">May be used in future extensions.</param>
         public DnsResourceDataTransactionKey(DnsDomainName algorithm, SerialNumber32 inception, SerialNumber32 expiration, DnsTransactionKeyMode mode,
                                              DnsResponseCode error, DataSegment key, DataSegment other)
         {
@@ -108,7 +148,8 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// When the TKEY Error Field is non-zero in a response to a TKEY query, the DNS header RCODE field indicates no error.
-        /// However, it is possible if a TKEY is spontaneously included in a response the TKEY RR and DNS header error field could have unrelated non-zero error codes.
+        /// However, it is possible if a TKEY is spontaneously included in a response the TKEY RR and DNS header error field 
+        /// could have unrelated non-zero error codes.
         /// </summary>
         public DnsResponseCode Error { get; private set; }
 
@@ -123,6 +164,9 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment Other { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataTransactionKey are equal iff their algorithm, inception, expiration, mode, error, key and other fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataTransactionKey other)
         {
             return other != null &&
@@ -135,11 +179,17 @@ namespace PcapDotNet.Packets.Dns
                    Other.Equals(other.Other);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataTransactionKey are equal iff their algorithm, inception, expiration, mode, error, key and other fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataTransactionKey);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the algorithm, inception, expiration, mode, error, key and other fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(Algorithm, Inception, Expiration, BitSequence.Merge((ushort)Mode, (ushort)Error), Key, Other);

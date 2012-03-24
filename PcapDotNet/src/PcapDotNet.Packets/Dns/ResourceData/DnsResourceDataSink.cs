@@ -41,6 +41,12 @@ namespace PcapDotNet.Packets.Dns
         {
         }
 
+        /// <summary>
+        /// Constructs an instance out of the coding, subcoding and data fields.
+        /// </summary>
+        /// <param name="coding">Gives the general structure of the data.</param>
+        /// <param name="subCoding">Provides additional information depending on the value of the coding.</param>
+        /// <param name="data">Variable length and could be null in some cases.</param>
         public DnsResourceDataSink(DnsSinkCoding coding, byte subCoding, DataSegment data)
         {
             Coding = coding;

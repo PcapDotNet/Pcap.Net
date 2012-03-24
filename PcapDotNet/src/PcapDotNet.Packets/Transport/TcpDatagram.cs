@@ -106,6 +106,10 @@ namespace PcapDotNet.Packets.Transport
             get { return Math.Min(HeaderLength, Length); }
         }
 
+        /// <summary>
+        /// Reserved for future use.
+        /// Must be zero.
+        /// </summary>
         public byte Reserved
         {
             get { return (byte)((this[Offset.HeaderLengthAndFlags] & Mask.Reserved) >> Shift.Reserved); }

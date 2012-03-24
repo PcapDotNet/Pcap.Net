@@ -41,6 +41,16 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = MinAreaAddressLength + OffsetAfterArea.Selector + sizeof(byte);
 
+        /// <summary>
+        /// Constructs an instance out of the area address, system identifier and selector fields.
+        /// </summary>
+        /// <param name="areaAddress">
+        /// The combination of [IDP, HO-DSP] identify both the routing domain and the area within the routing domain.
+        /// Hence the combination [IDP, HO-DSP] is called the "Area Address".
+        /// All nodes within the area must have same Area address.
+        /// </param>
+        /// <param name="systemIdentifier">System Identifier.</param>
+        /// <param name="selector">NSAP Selector.</param>
         public DnsResourceDataNetworkServiceAccessPoint(DataSegment areaAddress, UInt48 systemIdentifier, byte selector)
         {
             if (areaAddress == null)
@@ -73,10 +83,13 @@ namespace PcapDotNet.Packets.Dns
         public UInt48 SystemIdentifier { get; private set; }
 
         /// <summary>
-        /// NSAP Selector
+        /// NSAP Selector.
         /// </summary>
         public byte Selector { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataNetworkServiceAccessPoint are iff their area address, system identifier and selector fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataNetworkServiceAccessPoint other)
         {
             return other != null &&
@@ -85,11 +98,17 @@ namespace PcapDotNet.Packets.Dns
                    Selector.Equals(other.Selector);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataNetworkServiceAccessPoint are iff their area address, system identifier and selector fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataNetworkServiceAccessPoint);
         }
 
+        /// <summary>
+        /// A hash code of the combination of the area address, system identifier and selector fields. 
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(AreaAddress, SystemIdentifier, Selector);

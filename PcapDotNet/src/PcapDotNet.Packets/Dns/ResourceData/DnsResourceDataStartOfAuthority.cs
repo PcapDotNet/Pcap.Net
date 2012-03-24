@@ -41,6 +41,22 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.MinimumTtl + sizeof(uint);
 
+        /// <summary>
+        /// Constructs an instance out of the main name server, responsible mailbox, serial, refresh, retry, expire and minimum TTL fields.
+        /// </summary>
+        /// <param name="mainNameServer">The domain-name of the name server that was the original or primary source of data for this zone.</param>
+        /// <param name="responsibleMailbox">A domain-name which specifies the mailbox of the person responsible for this zone.</param>
+        /// <param name="serial">
+        /// The unsigned 32 bit version number of the original copy of the zone.
+        /// Zone transfers preserve this value.
+        /// This value wraps and should be compared using sequence space arithmetic.
+        /// </param>
+        /// <param name="refresh">A 32 bit time interval before the zone should be refreshed.</param>
+        /// <param name="retry">A 32 bit time interval that should elapse before a failed refresh should be retried.</param>
+        /// <param name="expire">
+        /// A 32 bit time value that specifies the upper limit on the time interval that can elapse before the zone is no longer authoritative.
+        /// </param>
+        /// <param name="minimumTtl">The unsigned 32 bit minimum TTL field that should be exported with any RR from this zone.</param>
         public DnsResourceDataStartOfAuthority(DnsDomainName mainNameServer, DnsDomainName responsibleMailbox,
                                                SerialNumber32 serial, uint refresh, uint retry, uint expire, uint minimumTtl)
         {
@@ -90,6 +106,10 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public uint MinimumTtl { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataStartOfAuthority are equal iff their main name server, responsible mailbox, serial, refresh, retry, expire 
+        /// and minimum TTL fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataStartOfAuthority other)
         {
             return other != null &&
@@ -102,14 +122,21 @@ namespace PcapDotNet.Packets.Dns
                    MinimumTtl.Equals(other.MinimumTtl);
         }
 
-        public override int GetHashCode()
-        {
-            return Sequence.GetHashCode(MainNameServer, ResponsibleMailbox, Serial, Refresh, Retry, Expire, MinimumTtl);
-        }
-
+        /// <summary>
+        /// Two DnsResourceDataStartOfAuthority are equal iff their main name server, responsible mailbox, serial, refresh, retry, expire 
+        /// and minimum TTL fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataStartOfAuthority);
+        }
+
+        /// <summary>
+        /// A hash code based on the main name server, responsible mailbox, serial, refresh, retry, expire and minimum TTL fields
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(MainNameServer, ResponsibleMailbox, Serial, Refresh, Retry, Expire, MinimumTtl);
         }
 
         internal DnsResourceDataStartOfAuthority()

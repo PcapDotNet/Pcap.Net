@@ -56,10 +56,61 @@ namespace PcapDotNet.Packets.Dns
 
         private const int ConstantPartLength = Offset.FlagsExtension;
 
+        /// <summary>
+        /// Constructs an instance out of the authentication prohibited, confidentiality prohibited, experimental, user associated, IPSec, email, name type, 
+        /// signatory, protocol, algorithm, flags extension and public key fields.
+        /// </summary>
+        /// <param name="authenticationProhibited">Use of the key is prohibited for authentication.</param>
+        /// <param name="confidentialityProhibited">Use of the key is prohibited for confidentiality.</param>
+        /// <param name="experimental">
+        /// Ignored if the type field indicates "no key" and the following description assumes that type field to be non-zero.
+        /// Keys may be associated with zones, entities, or users for experimental, trial, or optional use, in which case this bit will be one.
+        /// If this bit is a zero, it means that the use or availability of security based on the key is "mandatory". 
+        /// Thus, if this bit is off for a zone key, the zone should be assumed secured by SIG RRs and any responses indicating the zone is not secured should be considered bogus.
+        /// If this bit is a one for a host or end entity, it might sometimes operate in a secure mode and at other times operate without security.
+        /// The experimental bit, like all other aspects of the KEY RR, is only effective if the KEY RR is appropriately signed by a SIG RR.
+        /// The experimental bit must be zero for safe secure operation and should only be a one for a minimal transition period.
+        /// </param>
+        /// <param name="userAssociated">
+        /// Indicates that this is a key associated with a "user" or "account" at an end entity, usually a host.
+        /// The coding of the owner name is that used for the responsible individual mailbox in the SOA and RP RRs:
+        /// The owner name is the user name as the name of a node under the entity name.
+        /// For example, "j.random_user" on host.subdomain.domain could have a public key associated through a KEY RR
+        /// with name j\.random_user.host.subdomain.domain and the user bit a one.
+        /// It could be used in an security protocol where authentication of a user was desired.
+        /// This key might be useful in IP or other security for a user level service such a telnet, ftp, rlogin, etc.
+        /// </param>
+        /// <param name="ipSec">
+        /// Indicates that this key is valid for use in conjunction with that security standard.
+        /// This key could be used in connection with secured communication on behalf of an end entity or user whose name is the owner name of the KEY RR
+        /// if the entity or user bits are on.
+        /// The presence of a KEY resource with the IPSEC and entity bits on and experimental and no-key bits off is an assertion that the host speaks IPSEC.
+        /// </param>
+        /// <param name="email">
+        /// Indicates that this key is valid for use in conjunction with MIME security multiparts.
+        /// This key could be used in connection with secured communication on behalf of an end entity or user
+        /// whose name is the owner name of the KEY RR if the entity or user bits are on.
+        /// </param>
+        /// <param name="nameType">The name type.</param>
+        /// <param name="signatory">
+        /// If non-zero, indicates that the key can validly sign things as specified in DNS dynamic update.
+        /// Note that zone keys always have authority to sign any RRs in the zone regardless of the value of the signatory field.
+        /// </param>
+        /// <param name="protocol">
+        /// It is anticipated that keys stored in DNS will be used in conjunction with a variety of Internet protocols.
+        /// It is intended that the protocol octet and possibly some of the currently unused (must be zero) bits in the KEY RR flags 
+        /// as specified in the future will be used to indicate a key's validity for different protocols.
+        /// </param>
+        /// <param name="algorithm">The key algorithm parallel to the same field for the SIG resource.</param>
+        /// <param name="flagsExtension">
+        /// Optional second 16 bit flag field after the algorithm octet and before the key data.
+        /// Must not be non-null unless one or more such additional bits have been defined and are non-zero.
+        /// </param>
+        /// <param name="publicKey">The public key value.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "flags")]
-        public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, bool experimental, bool userAssociated, bool ipSec, bool email,
-                                  DnsKeyNameType nameType, DnsKeySignatoryAttributes signatory, DnsKeyProtocol protocol, DnsAlgorithm algorithm, ushort? flagsExtension,
-                                  DataSegment publicKey)
+        public DnsResourceDataKey(bool authenticationProhibited, bool confidentialityProhibited, bool experimental, bool userAssociated, bool ipSec,
+                                  bool email, DnsKeyNameType nameType, DnsKeySignatoryAttributes signatory, DnsKeyProtocol protocol, DnsAlgorithm algorithm,
+                                  ushort? flagsExtension, DataSegment publicKey)
         {
             AuthenticationProhibited = authenticationProhibited;
             ConfidentialityProhibited = confidentialityProhibited;
@@ -135,7 +186,8 @@ namespace PcapDotNet.Packets.Dns
 
         /// <summary>
         /// It is anticipated that keys stored in DNS will be used in conjunction with a variety of Internet protocols.
-        /// It is intended that the protocol octet and possibly some of the currently unused (must be zero) bits in the KEY RR flags as specified in the future will be used to indicate a key's validity for different protocols.
+        /// It is intended that the protocol octet and possibly some of the currently unused (must be zero) bits in the KEY RR flags 
+        /// as specified in the future will be used to indicate a key's validity for different protocols.
         /// </summary>
         public DnsKeyProtocol Protocol { get; private set; }
 
@@ -156,6 +208,10 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        /// <summary>
+        /// Two DnsResourceDataKey are equal iff their authentication prohibited, confidentiality prohibited, experimental, user associated, IPSec, email, 
+        /// name type, signatory, protocol, algorithm, flags extension and public key fields are equal.
+        /// </summary>
         public bool Equals(DnsResourceDataKey other)
         {
             return other != null &&
@@ -175,11 +231,19 @@ namespace PcapDotNet.Packets.Dns
                    PublicKey.Equals(other.PublicKey);
         }
 
+        /// <summary>
+        /// Two DnsResourceDataKey are equal iff their authentication prohibited, confidentiality prohibited, experimental, user associated, IPSec, email, 
+        /// name type, signatory, protocol, algorithm, flags extension and public key fields are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataKey);
         }
 
+        /// <summary>
+        /// A hash code out of the combination of the authentication prohibited, confidentiality prohibited, experimental, user associated, IPSec, email, 
+        /// name type, signatory, protocol, algorithm, flags extension and public key fields.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(
