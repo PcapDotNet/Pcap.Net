@@ -316,7 +316,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The payload of the TCP datagram.
         /// </summary>
-        public Datagram Payload
+        public override Datagram Payload
         {
             get
             {
