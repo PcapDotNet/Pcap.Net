@@ -90,7 +90,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The payload of the UDP datagram.
         /// </summary>
-        public Datagram Payload
+        public override Datagram Payload
         {
             get { return new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength); }
         }

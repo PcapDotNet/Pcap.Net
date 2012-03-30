@@ -54,6 +54,11 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public abstract bool IsChecksumOptional { get; }
 
+        /// <summary>
+        /// The payload of the transport datagram.
+        /// </summary>
+        public abstract Datagram Payload { get; }
+
         internal TransportDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
