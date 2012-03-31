@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.Core.Extensions;
 
-namespace PcapDotNet.Core.Test
+namespace PcapDotNet.Base.Test
 {
     /// <summary>
-    /// Summary description for LivePacketDeviceExtensionsTests
+    /// Summary description for MatchExtensionsTest
     /// </summary>
     [TestClass]
-    public class LivePacketDeviceExtensionsTests
+    public class MatchExtensionsTest
     {
         /// <summary>
         /// Gets or sets the test context which provides
@@ -40,26 +40,10 @@ namespace PcapDotNet.Core.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void GetNetworkInterfaceNullTest()
+        public void GroupCapturesValuesNullMatchTest()
         {
-            Assert.IsNotNull(LivePacketDeviceExtensions.GetNetworkInterface(null));
-            Assert.Fail();
-        }
-        
-        [TestMethod]
-        public void GetMacAddressTest()
-        {
-            foreach (LivePacketDevice device in LivePacketDevice.AllLocalMachine)
-            {
-                Assert.IsNotNull(device.GetMacAddress());
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void GetGuidNullDeviceTest()
-        {
-            Assert.IsNotNull((null as LivePacketDevice).GetGuid());
+            Match match = null;
+            Assert.IsNull(match.GroupCapturesValues("someGroup"));
             Assert.Fail();
         }
     }
