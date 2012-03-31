@@ -450,7 +450,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void HttpRequestMethodBadKnownTest()
         {
             Assert.IsNotNull(new HttpRequestMethod(HttpRequestKnownMethod.Unknown));
@@ -532,7 +532,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void HttpCreateFieldNullEncoding()
         {
             HttpField field = HttpField.CreateField("abc", "cde", null);
@@ -541,7 +541,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void HttpCreateFieldNullName()
         {
             HttpField field = HttpField.CreateField(null, "cde");

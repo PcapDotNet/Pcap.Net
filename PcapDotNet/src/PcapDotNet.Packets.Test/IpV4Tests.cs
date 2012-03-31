@@ -158,7 +158,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV4OptionTimestampOverflowErrorTest()
         {
             Random random = new Random();
@@ -168,7 +168,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV4OptionTimestampPointedIndexErrorTest()
         {
             Random random = new Random();
@@ -223,7 +223,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV4OptionRoutePointedAddressIndexErrorTest()
         {
             Random random = new Random();
@@ -336,7 +336,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV4OptionBasicSecurityConstructorBadLengthTest()
         {
             IpV4OptionBasicSecurity option = new IpV4OptionBasicSecurity(IpV4OptionSecurityClassificationLevel.Secret, IpV4OptionSecurityProtectionAuthorities.None, 1);
@@ -429,7 +429,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV4OptionQuickStartBadRateTest()
         {
             IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 100, 1, 32);

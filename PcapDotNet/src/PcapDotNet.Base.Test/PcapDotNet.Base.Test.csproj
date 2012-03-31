@@ -73,6 +73,7 @@
     <Compile Include="MemberInfoExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyInfoExtensionsTests.cs" />
+    <Compile Include="SequenceTest.cs" />
     <Compile Include="SerialNumber32Test.cs" />
     <Compile Include="UInt128Tests.cs" />
     <Compile Include="UInt24Tests.cs" />

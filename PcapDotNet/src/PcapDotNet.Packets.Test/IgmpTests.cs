@@ -133,7 +133,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion3SmallMaxResponseTimeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
@@ -148,7 +148,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion3BigMaxResponseTimeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
@@ -163,7 +163,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion3SmallQueryIntervalTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
@@ -178,7 +178,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion3BigQueryIntervalTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
@@ -193,7 +193,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion2SmallMaxResponseTimeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now,
@@ -208,7 +208,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpQueryVersion2BigMaxResponseTimeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(),
@@ -345,7 +345,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void IgmpIllegalReportVersionTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
@@ -363,7 +363,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void IgmpIllegalQueryVersionTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion1Layer());
@@ -406,7 +406,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void IgmpExtractLayerBadMessageTypeTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
@@ -419,7 +419,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpTooBigQueryRobustnessVariableTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion3Layer

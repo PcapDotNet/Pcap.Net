@@ -333,7 +333,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void GetStatisticsOnCaptureModeErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -344,7 +344,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void GetPacketOnStatisticsModeErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -356,7 +356,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetInvalidModeErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -367,7 +367,7 @@ namespace PcapDotNet.Core.Test
 
         // this test is removed for now since it doens't throw an exception for such big value
 //        [TestMethod]
-//        [ExpectedException(typeof(InvalidOperationException))]
+//        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
 //        public void SetBigKernelBufferSizeErrorTest()
 //        {
 //            using (PacketCommunicator communicator = OpenLiveDevice())
@@ -377,7 +377,7 @@ namespace PcapDotNet.Core.Test
 //        }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetSmallKernelBufferSizeGetPacketErrorTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
@@ -395,7 +395,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetSmallKernelBufferSizeGetSomePacketsErrorTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
@@ -414,7 +414,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetSmallKernelBufferSizeGetPacketsErrorTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
@@ -450,7 +450,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetSmallKernelBufferSizeGetNextStatisticsErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -465,7 +465,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetSmallKernelBufferSizeGetStatisticsErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -602,7 +602,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void SetSamplingMethodOneEveryNErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -612,7 +612,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void SetSamplingMethodFirstAfterIntervalNegativeMsErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -622,7 +622,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void SetSamplingMethodFirstAfterIntervalNegativeTimespanErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -632,7 +632,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void SetSamplingMethodFirstAfterIntervalBigTimespanErrorTest()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())
@@ -642,7 +642,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetInvalidDataLink()
         {
             using (PacketCommunicator communicator = OpenLiveDevice())

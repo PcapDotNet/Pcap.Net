@@ -7,8 +7,8 @@ namespace PcapDotNet.Core.Test
 {
     internal class PacketHandler
     {
-        public PacketHandler(Packet expectedPacket, DateTime expectedMinTimestamp, DateTime expectedMaxTimestamp, 
-            PacketCommunicator communicator, int numPacketsToBreakLoop)
+        public PacketHandler(Packet expectedPacket, DateTime expectedMinTimestamp, DateTime expectedMaxTimestamp,
+                             PacketCommunicator communicator, int numPacketsToBreakLoop)
         {
             _expectedPacket = expectedPacket;
             _expectedMinTimestamp = expectedMinTimestamp;

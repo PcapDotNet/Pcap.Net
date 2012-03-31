@@ -114,7 +114,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void StatisticsModeErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -137,7 +137,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void GetTotalStatisticsErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -147,7 +147,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void OpenInvalidFileTest()
         {
             using (new OfflinePacketDevice("myinvalidfile").Open())
@@ -157,7 +157,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void OpenNullFilenameTest()
         {
             using (new OfflinePacketDevice(null).Open())
@@ -167,7 +167,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SendPacketErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -177,7 +177,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetKernelBufferSizeErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -187,7 +187,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void SetlKernelMinimumBytesToCopyErrorTest()
         {
             using (PacketCommunicator communicator = OpenOfflineDevice())
@@ -244,14 +244,14 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void DumpToBadFileTest()
         {
             OpenOfflineDevice(10, _random.NextEthernetPacket(100), TimeSpan.Zero, "??");
         }
         
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void EmptyNameTest()
         {
             OpenOfflineDevice(10, _random.NextEthernetPacket(100), TimeSpan.Zero, string.Empty);

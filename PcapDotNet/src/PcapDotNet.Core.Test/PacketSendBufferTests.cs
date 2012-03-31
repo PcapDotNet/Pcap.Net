@@ -52,7 +52,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void TransmitQueueToOfflineTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
