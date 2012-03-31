@@ -59,6 +59,10 @@ namespace PcapDotNet.Base.Test
 
             Assert.IsTrue(new SerialNumber32(1) < new SerialNumber32(2));
             Assert.IsTrue(new SerialNumber32(2) > new SerialNumber32(1));
+            // ReSharper disable EqualExpressionComparison
+            Assert.IsFalse(new SerialNumber32(1) < new SerialNumber32(1));
+            Assert.IsFalse(new SerialNumber32(1) > new SerialNumber32(1));
+            // ReSharper restore EqualExpressionComparison
             Assert.IsTrue(new SerialNumber32(2) != new SerialNumber32(1));
             Assert.IsFalse(new SerialNumber32(1) != new SerialNumber32(0).Add(1));
             Assert.IsTrue(new SerialNumber32(2) == new SerialNumber32(1).Add(1));
