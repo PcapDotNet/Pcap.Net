@@ -71,7 +71,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [ExpectedException(typeof(NotSupportedException), AllowDerivedTypes = false)]
         public void UnsupportedKindErrorTest()
         {
             PcapDataLink dataLink = new PcapDataLink();
@@ -79,7 +79,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void NoDescriptionErrorTest()
         {
             PcapDataLink dataLink = GetInvalidDataLink();

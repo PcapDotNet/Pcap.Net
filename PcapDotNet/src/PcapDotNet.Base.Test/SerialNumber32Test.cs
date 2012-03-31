@@ -66,7 +66,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void OverflowAddTest()
         {
             SerialNumber32 serialNumber = 1;

@@ -174,7 +174,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void TcpOptionMoodBadEmotionStringTest()
         {
             Assert.IsNotNull(new TcpOptionMood((TcpOptionMoodEmotion)202).EmotionString);

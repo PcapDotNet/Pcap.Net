@@ -62,7 +62,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [ExpectedException(typeof(OverflowException), AllowDerivedTypes = false)]
         public void ParseTooBigTest()
         {
             UInt48 value = UInt48.Parse(ulong.MaxValue.ToString());
@@ -70,7 +70,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [ExpectedException(typeof(OverflowException), AllowDerivedTypes = false)]
         public void ParseTooBigTestEvenForUInt64()
         {
             UInt48 value = UInt48.Parse(ulong.MaxValue + "0");

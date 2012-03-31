@@ -91,7 +91,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArrayCompareFirstNullTest()
         {
             Assert.IsNotNull(ByteArrayExtensions.Compare(null, 1, new byte[1], 0, 1));
@@ -99,7 +99,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArrayCompareSecondNullTest()
         {
             Assert.IsNotNull(new byte[1].Compare(1, null, 0, 1));
@@ -107,7 +107,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArrayFindNullArrayTest()
         {
             Assert.IsNotNull(ByteArrayExtensions.Find(null, 1, 1, new byte[1]));
@@ -115,7 +115,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArrayFindNullOtherTest()
         {
             Assert.IsNotNull(new byte[5].Find(1, 1, null));
@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArraySequenceEqualNullArrayTest()
         {
             Assert.IsNotNull(ByteArrayExtensions.SequenceEqual(null, 1, new byte[1], 0, 1));
@@ -137,7 +137,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ByteArrayWriteNullEncodingTest()
         {
             int offset = 0;

@@ -77,7 +77,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DictionaryEqualsNullTest()
         {
             Assert.IsFalse(new Dictionary<int, int>().DictionaryEquals(new Dictionary<int, int>(), null));

@@ -167,7 +167,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void DnsCompressionInvalidModeTest()
         {
             DnsLayer dnsLayer = new DnsLayer
@@ -188,7 +188,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsDomainNameConstructorNullStringTest()
         {
             DnsDomainName domainName = new DnsDomainName(null);
@@ -230,7 +230,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void DnsQueryResourceRecordTtlGetTest()
         {
             var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.Internet);
@@ -239,7 +239,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void DnsQueryResourceRecordDataGetTest()
         {
             var query = new DnsQueryResourceRecord(DnsDomainName.Root, DnsType.A, DnsClass.Internet);
@@ -263,7 +263,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainTooBigDnsType()
         {
             DnsResourceDataNextDomain resourceData = new DnsResourceDataNextDomain(new DnsDomainName("a.b.c"), DataSegment.Empty);
@@ -272,7 +272,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainTooLongBitmapTest()
         {
             DataSegment bitmap = new DataSegment(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17});
@@ -282,7 +282,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainZeroEndedBitmapTest()
         {
             DataSegment bitmap = new DataSegment(new byte[] { 1, 0 });
@@ -302,7 +302,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainConstructorNullTypeBitmapTest()
         {
             var resourceData = new DnsResourceDataNextDomain(DnsDomainName.Root, null);
@@ -311,7 +311,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainCreateTypeBitmapNullInputTest()
         {
             var bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(null);
@@ -357,7 +357,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void DnsResourceDataNamingAuthorityPointerIllegalFlagsTest()
         {
             var resourceData = new DnsResourceDataNamingAuthorityPointer(0, 0, new DataSegment(new[] {(byte)'%'}),
@@ -368,7 +368,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionKeyConstructorNullKeyTest()
         {
             var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
@@ -378,7 +378,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionKeyConstructorNullOtherTest()
         {
             var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
@@ -388,7 +388,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionKeyTooBigKeyTest()
         {
             var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
@@ -398,7 +398,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionKeyTooBigOtherTest()
         {
             var resourceData = new DnsResourceDataTransactionKey(DnsDomainName.Root, 0, 0, DnsTransactionKeyMode.KeyDeletion, DnsResponseCode.NoError,
@@ -419,7 +419,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionSignatureConstructorNullMessageAuthenticationCodeTest()
         {
             var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, null, 0, DnsResponseCode.NoError, DataSegment.Empty);
@@ -428,7 +428,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionSignatureConstructorNullOtherTest()
         {
             var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, DataSegment.Empty, 0, DnsResponseCode.NoError, null);
@@ -437,7 +437,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionSignatureTooBigMessageAuthenticationCodeTest()
         {
             var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, new DataSegment(new byte[ushort.MaxValue + 1]), 0,
@@ -447,7 +447,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataTransactionSignatureTooBigOtherTest()
         {
             var resourceData = new DnsResourceDataTransactionSignature(DnsDomainName.Root, 0, 0, DataSegment.Empty, 0,
@@ -468,7 +468,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataHostIdentityProtocolTooBigHostIdentityTagTest()
         {
             var resourceData = new DnsResourceDataHostIdentityProtocol(new DataSegment(new byte[byte.MaxValue + 1]), DnsPublicKeyAlgorithm.None,
@@ -478,7 +478,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataHostIdentityProtocolTooBigPublicKeyTest()
         {
             var resourceData = new DnsResourceDataHostIdentityProtocol(DataSegment.Empty, DnsPublicKeyAlgorithm.None,
@@ -488,7 +488,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataHostIdentityProtocolConstructorNullHostIdentityTagTest()
         {
             var resourceData = new DnsResourceDataHostIdentityProtocol(null, DnsPublicKeyAlgorithm.None, DataSegment.Empty, new DnsDomainName[0]);
@@ -497,7 +497,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataHostIdentityProtocolConstructorNullPublicKeyTest()
         {
             var resourceData = new DnsResourceDataHostIdentityProtocol(DataSegment.Empty, DnsPublicKeyAlgorithm.None, null, new DnsDomainName[0]);
@@ -520,7 +520,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataLocationInformationInvalidSizeTest()
         {
             var resourceData = new DnsResourceDataLocationInformation(0, 9000000001L, 0, 0, 0, 0, 0);
@@ -529,7 +529,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataLocationInformationInvalidHorizontalPrecisionTest()
         {
             var resourceData = new DnsResourceDataLocationInformation(0, 0, 9000000001L, 0, 0, 0, 0);
@@ -538,7 +538,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataLocationInformationInvalidVerticalPrecisionTest()
         {
             var resourceData = new DnsResourceDataLocationInformation(0, 0, 0, 9000000001L, 0, 0, 0);
@@ -571,7 +571,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNetworkServiceAccessPointAreaAddressTooSmallTest()
         {
             var resourceData = new DnsResourceDataNetworkServiceAccessPoint(DataSegment.Empty, 0, 0);
@@ -587,7 +587,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataNetworkServiceAccessPointConstructorNullAreaAddressTest()
         {
             var resourceData = new DnsResourceDataNetworkServiceAccessPoint(null, 0, 0);
@@ -603,7 +603,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsAddressPrefixAddressFamilyDependentPartTooBigTest()
         {
             var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[128]));
@@ -619,7 +619,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsAddressPrefixConstructorNullAddressFamilyDependentPartTtest()
         {
             var dnsAddressPrefix = new DnsAddressPrefix(AddressFamily.IpV4, 0, false, null);
@@ -628,7 +628,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainSecure3NextHashedOwnerNameTooBigTest()
         {
             var resourceData = new DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0, DataSegment.Empty,
@@ -638,7 +638,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNextDomainSecure3SaltTooBigTest()
         {
             var resourceData = new DnsResourceDataNextDomainSecure3(DnsSecNSec3HashAlgorithm.Sha1, DnsSecNSec3Flags.None, 0,
@@ -686,7 +686,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataCertificationAuthorityAuthorizationTagTooBigTest()
         {
             var resourceData = new DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags.Critical,
@@ -696,7 +696,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataCertificationAuthorityAuthorizationConstructorNullTagTest()
         {
             var resourceData = new DnsResourceDataCertificationAuthorityAuthorization(DnsCertificationAuthorityAuthorizationFlags.Critical, null,
@@ -715,7 +715,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataA6ConstructorAddressSuffixTooSmallTest()
         {
             var resourceData = new DnsResourceDataA6(127, IpV6Address.Zero, DnsDomainName.Root);
@@ -724,7 +724,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataA6ConstructorAddressSuffixTooBigTest()
         {
             var resourceData = new DnsResourceDataA6(1, IpV6Address.MaxValue, DnsDomainName.Root);
@@ -751,7 +751,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataNInfoConstructorNullStringsTest()
         {
             var resourceData = new DnsResourceDataNInfo(null as ReadOnlyCollection<DataSegment>);
@@ -760,7 +760,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void DnsResourceDataNInfoConstructorTooFewStringsTest()
         {
             var resourceData = new DnsResourceDataNInfo();
@@ -849,7 +849,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataDelegationSignerConstructorNullDigestTest()
         {
             var resourceData = new DnsResourceDataDelegationSigner(1, DnsAlgorithm.PrivateDns, DnsDigestType.Sha1, null);
@@ -882,7 +882,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void DnsResourceDataNamingAuthorityPointerConstructorNullFlagsTest()
         {
             var resourceData = new DnsResourceDataNamingAuthorityPointer(1, 2, null, DataSegment.Empty, DataSegment.Empty, DnsDomainName.Root);

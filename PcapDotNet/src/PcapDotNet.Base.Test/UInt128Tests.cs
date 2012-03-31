@@ -80,7 +80,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [ExpectedException(typeof(OverflowException), AllowDerivedTypes = false)]
         public void CastToULongOverflow()
         {
             Random random = new Random();
@@ -99,7 +99,7 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [ExpectedException(typeof(OverflowException), AllowDerivedTypes = false)]
         public void ParseOverflow()
         {
             Assert.AreEqual(0, UInt128.Parse("-1"));
