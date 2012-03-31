@@ -48,7 +48,7 @@ namespace PcapDotNet.Base.Test
             {
                 UInt128 value = random.NextUInt128();
 
-                // Test equality
+                // Test comparisons.
                 Assert.AreEqual(value, value);
                 Assert.AreNotEqual(value, string.Empty);
                 Assert.AreNotEqual(value, UInt128.MaxValue);
@@ -56,7 +56,16 @@ namespace PcapDotNet.Base.Test
                 // ReSharper disable EqualExpressionComparison
                 Assert.IsTrue(value == value);
                 Assert.IsFalse(value != value);
+                Assert.IsTrue(value <= value);
+                Assert.IsTrue(value >= value);
                 // ReSharper restore EqualExpressionComparison
+                if (value != UInt128.MaxValue)
+                {
+                    Assert.IsTrue(value < value + 1);
+                    Assert.IsTrue(value <= value + 1);
+                    Assert.IsTrue(value + 1 > value);
+                    Assert.IsTrue(value + 1 >= value);
+                }
 
                 // Test GetHashCode
                 Assert.IsNotNull(value.GetHashCode());
