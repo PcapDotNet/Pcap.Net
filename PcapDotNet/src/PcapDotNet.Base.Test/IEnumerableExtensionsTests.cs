@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -92,6 +93,22 @@ namespace PcapDotNet.Base.Test
                                     0x00050000L, 0x00600000L, 0x07000000L, 0x80000000L
                                 };
             Assert.AreEqual(0x87654321L, longValues.Xor());
+        }
+
+        [TestMethod]
+        public void IsStrictOrderedTest()
+        {
+            Assert.IsTrue(new[] {1, 2, 3, 4, 5}.IsStrictOrdered(value => value, Comparer<int>.Default));
+            Assert.IsFalse(new[] { 1, 2, 3, 3, 5 }.IsStrictOrdered(value => value, Comparer<int>.Default));
+            Assert.IsFalse(new[] { 1, 2, 3, 4, 3 }.IsStrictOrdered(value => value, Comparer<int>.Default));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IsStrictOrderedNullComparerTest()
+        {
+            Assert.IsFalse(new[] { 1, 2, 3, 4, 5 }.IsStrictOrdered(value => value, null));
+            Assert.Fail();
         }
     }
 }
