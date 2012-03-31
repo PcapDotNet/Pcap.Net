@@ -11,9 +11,6 @@ namespace SendingPacketsUsingSendBuffer
     {
         static void Main(string[] args)
         {
-            // Send anonymous statistics about the usage of Pcap.Net
-            PcapDotNet.Analysis.PcapDotNetAnalysis.OptIn = true;
-
             // Check the validity of the command line
             if (args.Length == 0 || args.Length > 2)
             {
