@@ -9,9 +9,6 @@ namespace ObtainingAdvancedInformationAboutInstalledDevices
     {
         static void Main(string[] args)
         {
-            // Send anonymous statistics about the usage of Pcap.Net
-            PcapDotNet.Analysis.PcapDotNetAnalysis.OptIn = true;
-
             // Retrieve the interfaces list
             IList<LivePacketDevice> allDevices = LivePacketDevice.AllLocalMachine;
 

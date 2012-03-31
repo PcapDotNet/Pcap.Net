@@ -8,9 +8,6 @@ namespace ReadingPacketsFromADumpFile
     {
         static void Main(string[] args)
         {
-            // Send anonymous statistics about the usage of Pcap.Net
-            PcapDotNet.Analysis.PcapDotNetAnalysis.OptIn = true;
-
             // Check command line
             if (args.Length != 1)
             {
