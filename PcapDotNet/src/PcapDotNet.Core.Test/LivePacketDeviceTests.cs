@@ -851,7 +851,7 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreNotEqual(MacAddress.Zero, device.GetMacAddress());
             Assert.AreNotEqual(string.Empty, device.GetPnpDeviceId());
-            MoreAssert.IsInRange(1, 2, device.Addresses.Count);
+            MoreAssert.IsBiggerOrEqual(1, device.Addresses.Count);
             foreach (DeviceAddress address in device.Addresses)
             {
                 if (address.Address.Family == SocketAddressFamily.Internet)
