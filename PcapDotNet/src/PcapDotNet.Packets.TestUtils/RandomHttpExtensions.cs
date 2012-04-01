@@ -129,7 +129,7 @@ namespace PcapDotNet.Packets.TestUtils
             int uriLength = random.Next(100);
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i != uriLength; ++i)
-                stringBuilder.Append(random.NextChar((char)33, (char)127));
+                stringBuilder.Append(random.NextChar((char)33, (char)255));
             return stringBuilder.ToString();
         }
 
