@@ -167,8 +167,8 @@ namespace PcapDotNet.Packets.Http
             }
 
             var range = Range;
-            int numChars = range.TakeWhile(value => value > 32 && value < 127).Count();
-            uri = Encoding.ASCII.GetString(_buffer, _offset, numChars);
+            int numChars = range.TakeWhile(value => value > 32).Count();
+            uri = EncodingExtensions.Iso88591.GetString(_buffer, _offset, numChars);
             _offset += numChars;
             return this;
         }
