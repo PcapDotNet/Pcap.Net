@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
 {
@@ -70,7 +71,7 @@ namespace PcapDotNet.Packets.Http
 
             if (Uri == null)
                 return;
-            buffer.Write(ref offset, Uri, Encoding.ASCII);
+            buffer.Write(ref offset, Uri, EncodingExtensions.Iso88591);
             buffer.Write(ref offset, AsciiBytes.Space);
 
             if (Version == null)
