@@ -749,12 +749,9 @@ namespace PcapDotNet.Packets
         /// <param name="buffer">The buffer to write the value to.</param>
         /// <param name="offset">The offset in the buffer to start writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void Write(this byte[] buffer, int offset, Datagram value)
+        public static void Write(this byte[] buffer, int offset, DataSegment value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value");
-
-            value.Write(buffer, offset);
+            buffer.Write(ref offset, value);
         }
 
         /// <summary>
