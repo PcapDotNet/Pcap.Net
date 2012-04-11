@@ -7,17 +7,17 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
 {
-    internal static class MoreIpV4Option
+    internal static class IpV4OptionExtensions
     {
         public static string GetWiresharkString(this IpV4Option option)
         {
             switch (option.OptionType)
             {
                 case IpV4OptionType.EndOfOptionList:
-                    return "EOL";
+                    return "End of Option List (EOL)";
 
                 case IpV4OptionType.NoOperation:
-                    return "NOP";
+                    return "No-Operation (NOP)";
 
                 case IpV4OptionType.BasicSecurity:
                     return "Security";
@@ -151,6 +151,13 @@ namespace PcapDotNet.Core.Test
                         throw new InvalidOperationException("Invalid option type " + option.OptionType);
                     break;
             }
+        }
+
+        public static bool IsBadForWireshark(this IpV4Options options)
+        {
+            // TODO: This shouldn't be a factor once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=7043 is fixed.
+            return options.OptionsCollection.Any(option => option.OptionType == IpV4OptionType.InternetTimestamp && option.Length < 5 ||
+                                                           option.OptionType == IpV4OptionType.BasicSecurity && option.Length != 11);
         }
     }
 }

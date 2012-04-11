@@ -74,7 +74,8 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(arpLayer, packet.Ethernet.Arp.ExtractLayer(), "ARP Layer");
                 Assert.AreNotEqual(arpLayer, random.NextArpLayer(), "ARP Layer");
                 Assert.AreEqual(arpLayer.GetHashCode(), packet.Ethernet.Arp.ExtractLayer().GetHashCode(), "ARP Layer");
-                Assert.AreNotEqual(arpLayer.GetHashCode(), random.NextArpLayer().GetHashCode(), "ARP Layer");
+                ArpLayer differentArpLayer = random.NextArpLayer();
+                Assert.AreNotEqual(arpLayer.GetHashCode(), differentArpLayer.GetHashCode(), "ARP Layer");
             }
         }
 

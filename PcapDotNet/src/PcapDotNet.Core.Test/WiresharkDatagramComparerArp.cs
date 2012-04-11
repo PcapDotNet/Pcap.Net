@@ -18,7 +18,7 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "arp.hw.type":
-                    field.AssertShowHex((ushort)arpDatagram.HardwareType);
+                    field.AssertShowDecimal((ushort)arpDatagram.HardwareType);
                     break;
 
                 case "arp.proto.type":
@@ -34,7 +34,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "arp.opcode":
-                    field.AssertShowHex((ushort)arpDatagram.Operation);
+                    field.AssertShowDecimal((ushort)arpDatagram.Operation);
                     break;
 
                 case "arp.src.hw":

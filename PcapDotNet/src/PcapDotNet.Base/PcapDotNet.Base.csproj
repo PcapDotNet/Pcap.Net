@@ -99,6 +99,7 @@
     <Compile Include="PropertyInfoExtensions.cs" />
     <Compile Include="Sequence.cs" />
     <Compile Include="SerialNumber32.cs" />
+    <Compile Include="ShortExtensions.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="UInt128.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UInt48.cs" />
     <Compile Include="UIntExtensions.cs" />
+    <Compile Include="UShortExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />

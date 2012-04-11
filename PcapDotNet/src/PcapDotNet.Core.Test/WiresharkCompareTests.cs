@@ -28,10 +28,11 @@ namespace PcapDotNet.Core.Test
         private const string WiresharkDiretory = @"C:\Program Files\Wireshark\";
         private const string WiresharkTsharkPath = WiresharkDiretory + @"tshark.exe";
 
-        private const bool IsRetry
-//                        = true;
-            = false;
-        private const byte RetryNumber = 27;
+        private static bool IsRetry
+        {
+            get { return RetryNumber != -1; }
+        }
+        private const int RetryNumber = -1;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -237,10 +238,11 @@ namespace PcapDotNet.Core.Test
                     UdpLayer udpLayer = random.NextUdpLayer();
 
                     DnsLayer dnsLayer = random.NextDnsLayer();
+                    ushort specialPort = (ushort)(random.NextBool() ? 53 : 5355);
                     if (dnsLayer.IsQuery)
-                        udpLayer.DestinationPort = 53;
+                        udpLayer.DestinationPort = specialPort;
                     else
-                        udpLayer.SourcePort = 53;
+                        udpLayer.SourcePort = specialPort;
 
                     return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, udpLayer, dnsLayer);
 
@@ -256,7 +258,11 @@ namespace PcapDotNet.Core.Test
                         tcpLayer.DestinationPort = 80;
                     else
                         tcpLayer.SourcePort = 80;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, random.NextHttpLayer());
+                    if (random.NextBool())
+                        return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, httpLayer);
+
+                    HttpLayer httpLayer2 = httpLayer.IsRequest ? (HttpLayer)random.NextHttpRequestLayer() : random.NextHttpResponseLayer();
+                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, httpLayer, httpLayer2);
 
                 default:
                     throw new InvalidOperationException();
@@ -393,6 +399,8 @@ namespace PcapDotNet.Core.Test
                         if (comparer == null)
                             return;
                         currentDatagram = comparer.Compare(layer, currentDatagram);
+                        if (currentDatagram == null)
+                            return;
                         break;
                 }
             }

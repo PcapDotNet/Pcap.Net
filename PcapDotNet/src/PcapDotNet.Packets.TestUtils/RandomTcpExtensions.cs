@@ -104,6 +104,7 @@ namespace PcapDotNet.Packets.TestUtils
 
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
+            impossibleOptionTypes.Add(TcpOptionType.SelectiveNegativeAcknowledgements); // TODO: Support Selective Negative Acknowledgements.
 
             TcpOptionType optionType = random.NextEnum<TcpOptionType>(impossibleOptionTypes);
             switch (optionType)

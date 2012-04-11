@@ -136,7 +136,11 @@ namespace PcapDotNet.Packets.Arp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   BitSequence.Merge((ushort)ProtocolType, (ushort)Operation).GetHashCode();
+                   BitSequence.Merge((ushort)ProtocolType, (ushort)Operation).GetHashCode() ^
+                   SenderHardwareAddress.BytesSequenceGetHashCode() ^
+                   SenderProtocolAddress.BytesSequenceGetHashCode() ^
+                   TargetHardwareAddress.BytesSequenceGetHashCode() ^
+                   TargetProtocolAddress.BytesSequenceGetHashCode();
         }
     }
 }

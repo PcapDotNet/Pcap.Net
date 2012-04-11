@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Http
@@ -24,7 +25,20 @@ namespace PcapDotNet.Packets.Http
         /// The data of the reason phrase.
         /// Example: OK
         /// </summary>
-        public Datagram ReasonPhrase { get; set; }
+        public DataSegment ReasonPhrase
+        {
+            get { return _reasonPhrase; }
+            set
+            {
+                if (value == null)
+                {
+                    _reasonPhrase = null;
+                    return;
+                }
+                int numSpacesAtStart = value.TakeWhile(byteValue => byteValue == AsciiBytes.Space).Count();
+                _reasonPhrase = value.Subsegment(numSpacesAtStart, value.Length - numSpacesAtStart);
+            }
+        }
 
         /// <summary>
         /// Two HTTP response layers are equal iff they have the same version, header, body, status code and reason phrase.
@@ -83,5 +97,7 @@ namespace PcapDotNet.Packets.Http
 
             buffer.WriteCarriageReturnLinefeed(ref offset);
         }
+
+        private DataSegment _reasonPhrase;
     }
 }

@@ -183,7 +183,12 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public TcpOptions Options
         {
-            get { return _options ?? (_options = new TcpOptions(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength)); }
+            get
+            {
+                if (_options == null && Length >= HeaderMinimumLength && HeaderLength >= HeaderMinimumLength)
+                    _options = new TcpOptions(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
+                return _options;
+            }
         }
 
         /// <summary>
@@ -332,7 +337,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         protected override bool CalculateIsValid()
         {
-            return Length >= HeaderMinimumLength && Length >= HeaderLength && Options.IsValid;
+            return Length >= HeaderMinimumLength && Length >= HeaderLength && HeaderLength >= HeaderMinimumLength && Options.IsValid;
         }
 
         internal TcpDatagram(byte[] buffer, int offset, int length)

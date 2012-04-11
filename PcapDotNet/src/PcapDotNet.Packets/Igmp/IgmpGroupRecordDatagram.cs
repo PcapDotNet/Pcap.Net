@@ -94,9 +94,10 @@ namespace PcapDotNet.Packets.Igmp
             {
                 if (_sourceAddresses == null)
                 {
-                    IpV4Address[] sourceAddresses = new IpV4Address[NumberOfSources];
+                    int actualNumberOfSource = Math.Min(NumberOfSources, (Length - Offset.SourceAddresses) / IpV4Address.SizeOf);
+                    IpV4Address[] sourceAddresses = new IpV4Address[actualNumberOfSource];
                     for (int i = 0; i != sourceAddresses.Length; ++i)
-                        sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + 4 * i, Endianity.Big);
+                        sourceAddresses[i] = ReadIpV4Address(Offset.SourceAddresses + IpV4Address.SizeOf * i, Endianity.Big);
                     _sourceAddresses = new ReadOnlyCollection<IpV4Address>(sourceAddresses);
                 }
 

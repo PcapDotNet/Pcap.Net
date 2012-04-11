@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Xml.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Icmp;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
 {
@@ -20,43 +23,35 @@ namespace PcapDotNet.Core.Test
             {
                 case "icmp.type":
                     field.AssertShowDecimal((byte)icmpDatagram.MessageType);
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.code":
                     field.AssertShowDecimal(icmpDatagram.Code);
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.checksum_bad":
                     field.AssertShowDecimal(!icmpDatagram.IsChecksumCorrect);
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.checksum":
                     field.AssertShowHex(icmpDatagram.Checksum);
+                    field.AssertNoFields();
                     break;
 
                 case "data":
                     var casted1 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
                     if (casted1 != null)
-                        field.AssertValue(casted1.IpV4.Payload);
+                    {
+                        if (casted1.IpV4.Protocol != IpV4Protocol.IpComp) // TODO: Support IpComp.
+                            field.AssertDataField(casted1.IpV4.Payload);
+                    }
                     else
-                        field.AssertValue(icmpDatagram.Payload);
-                    break;
-
-                case "data.data":
-                    var casted2 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
-                    if (casted2 != null)
-                        field.AssertShow(casted2.IpV4.Payload);
-                    else
-                        field.AssertShow(icmpDatagram.Payload);
-                    break;
-
-                case "data.len":
-                    var casted3 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
-                    if (casted3 != null)
-                        field.AssertShowDecimal(casted3.IpV4.Payload.Length);
-                    else
-                        field.AssertShowDecimal(icmpDatagram.Payload.Length);
-
+                    {
+                        field.AssertDataField(icmpDatagram.Payload);
+                    }
                     break;
 
                 case "":
@@ -120,14 +115,18 @@ namespace PcapDotNet.Core.Test
                             }
                             break;
                     }
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.ident":
-                    field.AssertShowHex(((IcmpIdentifiedDatagram)icmpDatagram).Identifier);
+                    ushort identifier = ((IcmpIdentifiedDatagram)icmpDatagram).Identifier;
+                    field.AssertShowDecimal(field.Showname().StartsWith("Identifier (BE): ") ? identifier : identifier.ReverseEndianity());
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.seq":
                     field.AssertShowDecimal(((IcmpIdentifiedDatagram)icmpDatagram).SequenceNumber);
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.seq_le":
@@ -135,14 +134,22 @@ namespace PcapDotNet.Core.Test
                     sequenceNumberBuffer.Write(0, ((IcmpIdentifiedDatagram)icmpDatagram).SequenceNumber, Endianity.Big);
                     ushort lowerEndianSequenceNumber = sequenceNumberBuffer.ReadUShort(0, Endianity.Small);
                     field.AssertShowDecimal(lowerEndianSequenceNumber);
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.redir_gw":
                     field.AssertShow(((IcmpRedirectDatagram)icmpDatagram).GatewayInternetAddress.ToString());
+                    field.AssertNoFields();
                     break;
 
                 case "icmp.mtu":
                     field.AssertShowDecimal(((IcmpDestinationUnreachableDatagram)icmpDatagram).NextHopMaximumTransmissionUnit);
+                    field.AssertNoFields();
+                    break;
+
+                case "l2tp.l2_spec_def":
+                    field.AssertShow("");
+                    field.AssertNoFields();
                     break;
 
                 default:

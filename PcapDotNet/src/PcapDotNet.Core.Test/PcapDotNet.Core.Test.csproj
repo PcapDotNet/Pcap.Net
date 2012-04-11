@@ -73,8 +73,8 @@
     <Compile Include="LivePacketDeviceExtensionsTests.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MarshalingServicesTests.cs" />
-    <Compile Include="MoreIpV4Option.cs" />
-    <Compile Include="MoreTcpOption.cs" />
+    <Compile Include="IpV4OptionExtensions.cs" />
+    <Compile Include="TcpOptionExtensions.cs" />
     <Compile Include="WiresharkDatagramComparer.cs" />
     <Compile Include="WiresharkDatagramComparerArp.cs" />
     <Compile Include="WiresharkDatagramComparerDns.cs" />

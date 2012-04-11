@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV4
             Protocol = null;
             HeaderChecksum = null;
             Source = IpV4Address.Zero;
-            Destination = IpV4Address.Zero;
+            CurrentDestination = IpV4Address.Zero;
             Options = IpV4Options.None;
         }
 
@@ -64,9 +64,19 @@ namespace PcapDotNet.Packets.IpV4
         public IpV4Address Source { get; set; }
 
         /// <summary>
-        /// The destination address.
+        /// The current destination address.
+        /// This might not be the final destination when source routing options exist.
         /// </summary>
-        public IpV4Address Destination { get; set; }
+        public IpV4Address CurrentDestination { get; set; }
+
+        /// <summary>
+        /// The final destination address.
+        /// Takes into account the current destination and source routing options if they exist.
+        /// </summary>
+        public IpV4Address Destination
+        {
+            get { return IpV4Datagram.CalculateDestination(CurrentDestination, Options); }
+        }
 
         /// <summary>
         /// The options field with all the parsed options if any exist.
@@ -132,7 +142,7 @@ namespace PcapDotNet.Packets.IpV4
             IpV4Datagram.WriteHeader(buffer, offset,
                                      TypeOfService, Identification, Fragmentation,
                                      Ttl, protocol, HeaderChecksum,
-                                     Source, Destination,
+                                     Source, CurrentDestination,
                                      Options, payloadLength);
         }
 
@@ -152,7 +162,7 @@ namespace PcapDotNet.Packets.IpV4
 
             IpV4Datagram.WriteTransportChecksum(buffer, offset, Length, (ushort)payloadLength,
                                                 nextTransportLayer.ChecksumOffset, nextTransportLayer.IsChecksumOptional,
-                                                nextTransportLayer.Checksum);
+                                                nextTransportLayer.Checksum, Destination);
         }
 
         /// <summary>
@@ -165,7 +175,7 @@ namespace PcapDotNet.Packets.IpV4
                    Fragmentation == other.Fragmentation && Ttl == other.Ttl &&
                    Protocol == other.Protocol &&
                    HeaderChecksum == other.HeaderChecksum &&
-                   Source == other.Source && Destination == other.Destination &&
+                   Source == other.Source && CurrentDestination == other.CurrentDestination &&
                    Options.Equals(other.Options);
         }
 
@@ -185,7 +195,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             return base.GetHashCode() ^
                    Sequence.GetHashCode(BitSequence.Merge(TypeOfService, Identification, Ttl),
-                                        Fragmentation, Source, Destination, Options) ^ Protocol.GetHashCode() ^ HeaderChecksum.GetHashCode();
+                                        Fragmentation, Source, CurrentDestination, Options) ^ Protocol.GetHashCode() ^ HeaderChecksum.GetHashCode();
         }
 
         /// <summary>

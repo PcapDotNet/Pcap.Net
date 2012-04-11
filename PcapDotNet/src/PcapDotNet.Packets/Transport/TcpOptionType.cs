@@ -92,6 +92,11 @@ namespace PcapDotNet.Packets.Transport
         Md5Signature = 19,
 
         /// <summary>
+        /// Selective Negative Acknowledgements.
+        /// </summary>
+        SelectiveNegativeAcknowledgements = 21,
+
+        /// <summary>
         /// Denote Packet Mood (RFC5841)
         /// </summary>
         Mood = 25,

@@ -5,7 +5,7 @@ namespace PcapDotNet.Core.Test
 {
     public static class WiresharkStringExtensions
     {
-        public static string ToWiresharkLiteral(this string value, bool putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters = true)
+        public static string ToWiresharkLiteral(this string value, bool putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters = true, bool escapeSpecialChars = true)
         {
             StringBuilder result = new StringBuilder();
             for (int i = 0; i != value.Length; ++i)
@@ -13,7 +13,7 @@ namespace PcapDotNet.Core.Test
                 char currentChar = value[i];
                 if (currentChar == '\0')
                     return result.ToString();
-                if (putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters)
+                if (escapeSpecialChars)
                 {
                     switch (currentChar)
                     {

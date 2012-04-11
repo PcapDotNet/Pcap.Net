@@ -179,5 +179,15 @@ namespace PcapDotNet.Packets.Test
         {
             Assert.IsNotNull(new TcpOptionMood((TcpOptionMoodEmotion)202).EmotionString);
         }
+
+        [TestMethod]
+        public void TcpChecksumTest()
+        {
+            Packet packet = Packet.FromHexadecimalString(
+                "72ad58bae3b13638b5e35a3f08004a6c0055fd5400000e0622f341975faa3bfb25ed83130cb2e02103adfc7efbac1c2bb0f402e64800bb641bc8de8fa185e8ff716b60faf864bfe85901040205021ceec26d916419de400347f33fcca9ad44e9ffae8f",
+                DateTime.Now, DataLinkKind.Ethernet);
+
+            Assert.IsFalse(packet.Ethernet.IpV4.IsTransportChecksumCorrect);
+        }
     }
 }

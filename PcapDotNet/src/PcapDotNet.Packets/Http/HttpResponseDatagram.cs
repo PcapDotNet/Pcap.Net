@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Http
             HttpVersion version;
             uint? statusCode;
             Datagram reasonPhrase;
-            parser.Version(out version).Space().DecimalNumber(3, out statusCode).Space().ReasonPhrase(out reasonPhrase).CarriageReturnLineFeed();
+            parser.Version(out version).Space().DecimalNumber(3, out statusCode).Space().SkipSpaces().ReasonPhrase(out reasonPhrase).CarriageReturnLineFeed();
             ParseInfo parseInfo = new ParseInfo
                                   {
                                       Length = length,
@@ -102,8 +102,6 @@ namespace PcapDotNet.Packets.Http
         {
             if (statusCode >= 100 && statusCode <= 199 || statusCode == 204 || statusCode == 205 || statusCode == 304)
                 return false;
-            // if (IsResponseToHeadRequest)
-            //     return false;
             return true;
         }
     }
