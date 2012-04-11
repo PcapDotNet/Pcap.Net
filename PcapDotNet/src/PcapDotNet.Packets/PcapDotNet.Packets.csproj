@@ -243,6 +243,8 @@
     <Compile Include="Icmp\IcmpCodeTimeExceeded.cs" />
     <Compile Include="Icmp\IcmpCodeTraceRoute.cs" />
     <Compile Include="Icmp\IcmpConversionFailedLayer.cs" />
+    <Compile Include="Icmp\IcmpDatagramFactory.cs" />
+    <Compile Include="Icmp\IcmpDatagramRegistrationAttribute.cs" />
     <Compile Include="Icmp\IcmpDestinationUnreachableDatagram.cs" />
     <Compile Include="Icmp\IcmpDestinationUnreachableLayer.cs" />
     <Compile Include="Icmp\IcmpDomainNameRequestDatagram.cs" />
