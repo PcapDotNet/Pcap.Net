@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                               IgmpMessageType.JoinGroupReplyVersion0, IgmpMessageType.LeaveGroupRequestVersion0,
                                                               IgmpMessageType.LeaveGroupReplyVersion0, IgmpMessageType.ConfirmGroupRequestVersion0,
                                                               IgmpMessageType.ConfirmGroupReplyVersion0,
-                                                              IgmpMessageType.MulticastTraceRouteResponse, IgmpMessageType.MulticastTraceroute); // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
+                                                              IgmpMessageType.MulticastTraceRouteResponse, IgmpMessageType.MulticastTraceRoute); // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
             IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
             TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
             IpV4Address igmpGroupAddress = random.NextIpV4Address();
