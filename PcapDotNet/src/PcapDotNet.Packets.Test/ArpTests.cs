@@ -62,7 +62,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // Ethernet
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
+                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
 
                 Assert.AreEqual(ethernetSource, packet.Ethernet.Source, "Ethernet Source");
                 Assert.AreEqual(EthernetDatagram.BroadcastAddress, packet.Ethernet.Destination, "Ethernet Destination");

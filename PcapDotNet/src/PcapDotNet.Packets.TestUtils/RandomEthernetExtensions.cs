@@ -33,8 +33,9 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, MacAddress ethernetSource, MacAddress ethernetDestination)
         {
-            if (packetSize < EthernetDatagram.HeaderLength)
-                throw new ArgumentOutOfRangeException("packetSize", packetSize, "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLength + ")");
+            if (packetSize < EthernetDatagram.HeaderLengthValue)
+                throw new ArgumentOutOfRangeException("packetSize", packetSize,
+                                                      "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLengthValue + ")");
 
             return PacketBuilder.Build(timestamp,
                                        new EthernetLayer
@@ -43,7 +44,7 @@ namespace PcapDotNet.Packets.TestUtils
                                            Destination = ethernetDestination,
                                            EtherType = random.NextEthernetType()
                                        },
-                                       random.NextPayloadLayer(packetSize - EthernetDatagram.HeaderLength));
+                                       random.NextPayloadLayer(packetSize - EthernetDatagram.HeaderLengthValue));
         }
 
         public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)

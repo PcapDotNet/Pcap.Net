@@ -1068,7 +1068,7 @@ namespace PcapDotNet.Packets.Test
             byte[] buffer = new byte[packet.Length];
             buffer.Write(0, packet.Ethernet);
             const int dataLengthOffset =
-                EthernetDatagram.HeaderLength + IpV4Datagram.HeaderMinimumLength + UdpDatagram.HeaderLength + DnsDatagram.HeaderLength + 5 + 4;
+                EthernetDatagram.HeaderLengthValue + IpV4Datagram.HeaderMinimumLength + UdpDatagram.HeaderLength + DnsDatagram.HeaderLength + 5 + 4;
             ushort oldDataLength = buffer.ReadUShort(dataLengthOffset, Endianity.Big);
             ushort newDataLength = (ushort)(oldDataLength + dataLengthDiff);
             buffer.Write(dataLengthOffset, newDataLength, Endianity.Big);

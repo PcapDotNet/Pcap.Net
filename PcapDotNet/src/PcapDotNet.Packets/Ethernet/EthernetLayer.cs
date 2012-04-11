@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public override int Length
         {
-            get { return EthernetDatagram.HeaderLength; }
+            get { return EthernetDatagram.HeaderLengthValue; }
         }
 
         /// <summary>

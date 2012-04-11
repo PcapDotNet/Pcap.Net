@@ -57,14 +57,14 @@ namespace PcapDotNet.Packets.Test
 
             Assert.IsTrue(packet.IsValid);
 
-            Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
+            Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
             Assert.AreEqual(new MacAddress("00:00:01:00:00:00"), packet.Ethernet.Source, "Ethernet Source");
             Assert.AreEqual(new MacAddress("fe:ff:20:00:01:00"), packet.Ethernet.Destination, "Ethernet Destination");
             Assert.AreEqual(EthernetType.IpV4, packet.Ethernet.EtherType, "Ethernet Type");
 
             Assert.AreEqual(IpV4Datagram.HeaderMinimumLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
             Assert.AreEqual(0, packet.Ethernet.IpV4.TypeOfService, "IP TypeOfService");
-            Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
+            Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
             Assert.AreEqual(new IpV4Fragmentation(IpV4FragmentationOptions.DoNotFragment, 0), packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
             Assert.AreEqual(128, packet.Ethernet.IpV4.Ttl, "IP Ttl");
             Assert.AreEqual(IpV4Protocol.Tcp, packet.Ethernet.IpV4.Protocol, "IP Protocol");
@@ -108,7 +108,7 @@ namespace PcapDotNet.Packets.Test
                               packet.IsValid, "IsValid (" + ipV4Layer.Protocol + ")");
 
                 // Ethernet
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
+                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
 
                 // IpV4
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreNotEqual(ipV4Layer, new PayloadLayer());
                 Assert.IsNotNull(ipV4Layer.ToString());
                 Assert.AreEqual(IpV4Datagram.HeaderMinimumLength + ipV4Layer.Options.BytesLength, packet.Ethernet.IpV4.HeaderLength, "IP HeaderLength");
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
+                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.IpV4.TotalLength, "IP TotalLength");
                 Assert.AreNotEqual(2, packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsTrue(ipV4Layer.Fragmentation == packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
                 Assert.IsFalse(ipV4Layer.Fragmentation != packet.Ethernet.IpV4.Fragmentation, "IP Fragmentation");
