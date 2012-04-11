@@ -199,6 +199,7 @@
     <Compile Include="Dns\ResourceData\DnsTypeBitmaps.cs" />
     <Compile Include="Dns\ResourceData\DnsTypeRegistrationAttribute.cs" />
     <Compile Include="Endianity.cs" />
+    <Compile Include="Ethernet\EthernetBaseDatagram.cs" />
     <Compile Include="Ethernet\EthernetLayer.cs" />
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetPayloadDatagrams.cs" />
@@ -393,6 +394,8 @@
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
     <Compile Include="Transport\UdpLayer.cs" />
+    <Compile Include="VLanTaggedFrame\ClassOfService.cs" />
+    <Compile Include="VLanTaggedFrame\VLanTaggedFrameDatagram.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />

@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.Test
                 // Ethernet
                 Assert.IsTrue(new[] {EthernetType.IpV4, EthernetType.Arp}.Contains(packet.Ethernet.EtherType) ||
                               packet.IsValid, "IsValid - EtherType = " + packet.Ethernet.EtherType);
-                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLength, packet.Ethernet.PayloadLength, "PayloadLength");
+                Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
                 Assert.AreEqual(ethernetLayer.GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");
                 Assert.AreNotEqual(random.NextEthernetLayer().GetHashCode(), packet.Ethernet.ExtractLayer().GetHashCode(), "Ethernet Layer Hash Code");

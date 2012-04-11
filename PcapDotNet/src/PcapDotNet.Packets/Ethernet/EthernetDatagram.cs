@@ -1,6 +1,4 @@
 using System;
-using PcapDotNet.Packets.Arp;
-using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Ethernet
 {
@@ -17,19 +15,24 @@ namespace PcapDotNet.Packets.Ethernet
     /// +------+-------------------------------------------------+
     /// </pre>
     /// </summary>
-    public sealed class EthernetDatagram : Datagram
+    public sealed class EthernetDatagram : EthernetBaseDatagram
     {
         private static class Offset
         {
             public const int Destination = 0;
-            public const int Source = 6;
-            public const int EtherTypeLength = 12;
+            public const int Source = Destination + MacAddress.SizeOf;
+            public const int EtherTypeLength = Source + MacAddress.SizeOf;
         }
 
         /// <summary>
         /// Ethernet header length in bytes.
         /// </summary>
-        public const int HeaderLength = 14;
+        public const int HeaderLengthValue = Offset.EtherTypeLength + sizeof(ushort);
+
+        public override int HeaderLength
+        {
+            get { return HeaderLengthValue; }
+        } 
 
         /// <summary>
         /// The broadcast MAC address (FF:FF:FF:FF:FF:FF).
@@ -66,7 +69,7 @@ namespace PcapDotNet.Packets.Ethernet
         /// <summary>
         /// Ethernet type (next protocol).
         /// </summary>
-        public EthernetType EtherType 
+        public override EthernetType EtherType 
         {
             get
             {
@@ -85,70 +88,6 @@ namespace PcapDotNet.Packets.Ethernet
                        Destination = Destination,
                        EtherType = EtherType,
                    };
-        }
-
-        /// <summary>
-        /// The Ethernet payload.
-        /// </summary>
-        public Datagram Payload
-        {
-            get { return PayloadDatagrams.Payload; }
-        }
-
-        /// <summary>
-        /// The bytes padding the Ethernet packet beyond the actual Ethernet payload.
-        /// This assumes we know how to calculate the actual payload length (For example, by using the Total Length of the IPv4 payload).
-        /// If we don't know how to calculate the actual payload length <see langword="null"/> will be returned.
-        /// The trailer doesn't include the <see cref="FrameCheckSequence"/> if it exists.
-        /// </summary>
-        public Datagram Trailer
-        {
-            get
-            {
-                Datagram payloadByEtherType = PayloadByEtherType;
-                if (payloadByEtherType == null)
-                    return null;
-
-                int payloadLength = PayloadByEtherType.Length;
-                Datagram fcs = FrameCheckSequence;
-                return new Datagram(Buffer, HeaderLength + payloadLength, Length - HeaderLength - payloadLength - (fcs == null ? 0 : fcs.Length));
-            }
-        }
-
-        /// <summary>
-        /// The 4 bytes of the France Check Sequence (FCS).
-        /// Usually, these bytes won't be available because the device remvoed them after checking their validity.
-        /// We assume they exist when we see that the Ethernet padding pads to 68 bytes or more.
-        /// If the padding isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
-        /// </summary>
-        public Datagram FrameCheckSequence
-        {
-            get
-            {
-                Datagram payloadByEtherType = PayloadByEtherType;
-                if (payloadByEtherType == null)
-                    return null;
-
-                if (Length - HeaderLength - payloadByEtherType.Length >= 4 && Length >= 68)
-                    return new Datagram(Buffer, Length - 4, 4);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// The Ethernet payload as an IPv4 datagram.
-        /// </summary>
-        public IpV4Datagram IpV4
-        {
-            get { return PayloadDatagrams.IpV4; }
-        }
-
-        /// <summary>
-        /// The Ethernet payload as an ARP datagram.
-        /// </summary>
-        public ArpDatagram Arp
-        {
-            get { return PayloadDatagrams.Arp; }
         }
 
         internal EthernetDatagram(byte[] buffer, int offset, int length)
@@ -175,23 +114,6 @@ namespace PcapDotNet.Packets.Ethernet
             return payloadByEtherType == null ? true : payloadByEtherType.IsValid;
         }
 
-        private EthernetPayloadDatagrams PayloadDatagrams
-        {
-            get
-            {
-                return _payloadDatagrams ?? (_payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
-                                                                                                  ? new Datagram(Buffer, StartOffset + HeaderLength,
-                                                                                                                 Length - HeaderLength)
-                                                                                                  : null));
-            }
-        }
-
-        private Datagram PayloadByEtherType
-        {
-            get { return PayloadDatagrams.Get(EtherType); }
-        }
-
         private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");
-        private EthernetPayloadDatagrams _payloadDatagrams;
     }
 }
