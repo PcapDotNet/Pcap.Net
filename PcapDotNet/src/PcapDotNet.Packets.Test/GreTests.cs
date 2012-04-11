@@ -221,9 +221,9 @@ namespace PcapDotNet.Packets.Test
 
                 PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
                 Packet packet = packetBuilder.Build(DateTime.Now);
-                Assert.IsTrue(packet.IsValid || 
-                    new[]{EthernetType.IpV4, EthernetType.Arp}.Contains(greLayer.ProtocolType), 
-                    "IsValid. ProtoclType=" + greLayer.ProtocolType);
+                Assert.IsTrue(packet.IsValid ||
+                              new[] {EthernetType.IpV4, EthernetType.Arp, EthernetType.VLanTaggedFrame}.Contains(greLayer.ProtocolType),
+                              "IsValid. ProtoclType=" + greLayer.ProtocolType);
 
                 GreDatagram gre = packet.Ethernet.IpV4.Gre;
 

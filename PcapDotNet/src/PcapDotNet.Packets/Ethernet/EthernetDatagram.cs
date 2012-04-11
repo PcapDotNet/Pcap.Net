@@ -114,7 +114,7 @@ namespace PcapDotNet.Packets.Ethernet
                 return false;
 
             Datagram payloadByEtherType = PayloadByEtherType;
-            return payloadByEtherType == null ? true : payloadByEtherType.IsValid;
+            return payloadByEtherType == null || payloadByEtherType.IsValid;
         }
 
         private static readonly MacAddress _broadcastAddress = new MacAddress("FF:FF:FF:FF:FF:FF");

@@ -126,7 +126,16 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
         /// </summary>
         protected override bool CalculateIsValid()
         {
-            return Length >= HeaderLength;
+            if (Length < HeaderLength)
+                return false;
+
+            Datagram payload = PayloadByEtherType;
+            return payload == null || payload.IsValid;
+        }
+
+        internal VLanTaggedFrameDatagram(byte[] buffer, int offset, int length)
+            : base(buffer, offset, length)
+        {
         }
 
         /*
@@ -146,9 +155,5 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
             buffer.Write(ref offset, targetProtocolAddress);
         }
         */
-        private VLanTaggedFrameDatagram(byte[] buffer, int offset, int length)
-            : base(buffer, offset, length)
-        {
-        }
     }
 }
