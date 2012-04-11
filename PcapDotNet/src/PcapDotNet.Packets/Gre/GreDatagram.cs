@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Gre
     /// +-----+---------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public sealed class GreDatagram : Datagram
+    public sealed class GreDatagram : EthernetBaseDatagram
     {
         private static class Offset
         {
@@ -72,12 +72,20 @@ namespace PcapDotNet.Packets.Gre
         /// <summary>
         /// The length of the full GRE header on bytes.
         /// </summary>
-        public int HeaderLength
+        public override int HeaderLength
         {
             get
             {
                 return GetHeaderLength(ChecksumPresent, KeyPresent, SequenceNumberPresent, AcknowledgmentSequenceNumberPresent, Routing);
             }
+        }
+
+        /// <summary>
+        /// Ethernet type (next protocol).
+        /// </summary>
+        public override EthernetType EtherType
+        {
+            get { return ProtocolType; }
         }
 
         /// <summary>
@@ -321,30 +329,6 @@ namespace PcapDotNet.Packets.Gre
         }
 
         /// <summary>
-        /// The Ethernet payload.
-        /// </summary>
-        public Datagram Payload
-        {
-            get { return PayloadDatagrams.Payload; }
-        }
-
-        /// <summary>
-        /// The Ethernet payload as an IPv4 datagram.
-        /// </summary>
-        public IpV4Datagram IpV4
-        {
-            get { return PayloadDatagrams.IpV4; }
-        }
-
-        /// <summary>
-        /// The Ethernet payload as an ARP datagram.
-        /// </summary>
-        public ArpDatagram Arp
-        {
-            get { return PayloadDatagrams.Arp; }
-        }
-
-        /// <summary>
         /// A GRE Datagram is valid if its length is enough for the GRE header, its routing information is valid,
         /// the bits for future use are set to 0, it has acknowledgment sequence number only if it's Enhanced GRE,
         /// if it has checksum the checksum is correct and its payload is correct.
@@ -354,7 +338,7 @@ namespace PcapDotNet.Packets.Gre
         {
             if (Length < HeaderMinimumLength || Length < HeaderLength)
                 return false;
-            Datagram payloadByProtocolType = PayloadDatagrams.Get(ProtocolType);
+            Datagram payloadByProtocolType = PayloadByEtherType;
             return (IsValidRouting && FutureUseBits == 0 &&
                     (Version == GreVersion.EnhancedGre || Version == GreVersion.Gre && !AcknowledgmentSequenceNumberPresent) &&
                     (!ChecksumPresent || IsChecksumCorrect) &&
@@ -512,19 +496,7 @@ namespace PcapDotNet.Packets.Gre
                 return _isValidRouting;
             }
         }
-
-        private EthernetPayloadDatagrams PayloadDatagrams
-        {
-            get
-            {
-                return _payloadDatagrams ?? (_payloadDatagrams = new EthernetPayloadDatagrams(Length >= HeaderLength
-                                                                                                  ? new Datagram(Buffer, StartOffset + HeaderLength,
-                                                                                                                 Length - HeaderLength)
-                                                                                                  : null));
-            }
-        }
         
-        private EthernetPayloadDatagrams _payloadDatagrams;
         private ReadOnlyCollection<GreSourceRouteEntry> _routing;
         private bool _isValidRouting = true;
         private bool? _isChecksumCorrect;

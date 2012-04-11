@@ -6,14 +6,14 @@ namespace PcapDotNet.Packets.Ethernet
     public abstract class EthernetBaseDatagram : Datagram
     {
         /// <summary>
-        /// Ethernet type (next protocol).
-        /// </summary>
-        public abstract EthernetType EtherType { get; }
-
-        /// <summary>
         /// Header length in bytes.
         /// </summary>
         public abstract int HeaderLength { get; }
+
+        /// <summary>
+        /// Ethernet type (next protocol).
+        /// </summary>
+        public abstract EthernetType EtherType { get; }
 
         /// <summary>
         /// The Ethernet payload.

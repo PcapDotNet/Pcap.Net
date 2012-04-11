@@ -29,6 +29,9 @@ namespace PcapDotNet.Packets.Ethernet
         /// </summary>
         public const int HeaderLengthValue = Offset.EtherTypeLength + sizeof(ushort);
 
+        /// <summary>
+        /// Header length in bytes.
+        /// </summary>
         public override int HeaderLength
         {
             get { return HeaderLengthValue; }
