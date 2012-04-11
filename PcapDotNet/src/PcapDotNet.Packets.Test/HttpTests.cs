@@ -270,7 +270,7 @@ namespace PcapDotNet.Packets.Test
             TestHttpResponse("HTTP/1.0 200 OK", HttpVersion.Version10, 200, "OK");
             TestHttpResponse("HTTP/1.1 200 OK", HttpVersion.Version11, 200, "OK");
             TestHttpResponse("HTTP/1.1  200 OK", HttpVersion.Version11);
-            TestHttpResponse("HTTP/1.1 200  OK", HttpVersion.Version11, 200, " OK");
+            TestHttpResponse("HTTP/1.1 200  OK", HttpVersion.Version11, 200, "OK");
 
             // Response Header
 
@@ -562,6 +562,31 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now, DataLinkKind.Ethernet);
 
             Assert.AreEqual("/D%C3%BCrst/?ï¼¡", ((HttpRequestDatagram)packet.Ethernet.IpV4.Tcp.Http).Uri);
+        }
+
+        [TestMethod]
+        public void MultipleHttpLayersTest()
+        {
+            var httpLayer1 = new HttpResponseLayer
+                             {
+                                 Version = HttpVersion.Version11,
+                                 StatusCode = 200,
+                                 ReasonPhrase = new DataSegment(Encoding.ASCII.GetBytes("OK")),
+                                 Header = new HttpHeader(new HttpContentLengthField(10)),
+                                 Body = new Datagram(new byte[10])
+                             };
+            var httpLayer2 = new HttpResponseLayer
+                             {
+                                 Version = HttpVersion.Version11,
+                                 StatusCode = 201,
+                                 ReasonPhrase = new DataSegment(Encoding.ASCII.GetBytes("MOVED")),
+                                 Header = new HttpHeader(new HttpContentLengthField(20)),
+                                 Body = new Datagram(new byte[20])
+                             };
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new TcpLayer(), httpLayer1, httpLayer2);
+            Assert.AreEqual(2, packet.Ethernet.IpV4.Tcp.HttpCollection.Count);
+            Assert.AreEqual(httpLayer1, packet.Ethernet.IpV4.Tcp.Http.ExtractLayer());
+            Assert.AreEqual(httpLayer2, packet.Ethernet.IpV4.Tcp.HttpCollection[1].ExtractLayer());
         }
 
         private static void TestHttpResponse(string httpString, HttpVersion expectedVersion = null, uint? expectedStatusCode = null, string expectedReasonPhrase = null, HttpHeader expectedHeader = null, string expectedBodyString = null)

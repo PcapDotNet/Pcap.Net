@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Igmp;
@@ -61,6 +62,10 @@ namespace PcapDotNet.Core.Test
                             CompareDatagram(field, null, igmpDatagram);
                             break;
 
+                        case IgmpMessageType.MulticastTraceRouteResponse:
+                            // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
+                            break;
+
                         default:
                             if (typeof(IgmpMessageType).GetEnumValues<IgmpMessageType>().Contains(igmpDatagram.MessageType))
                                 throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
@@ -97,7 +102,13 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.mtrace.max_hops":
+                case "igmp.mtrace.saddr":
+                case "igmp.mtrace.raddr":
+                case "igmp.mtrace.rspaddr":
+                case "igmp.mtrace.resp_ttl":
+                case "igmp.mtrace.q_id":
                     // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
+                    Assert.AreEqual(IgmpMessageType.MulticastTraceRouteResponse, igmpDatagram.MessageType);
                     break;
 
                 default:
@@ -109,7 +120,6 @@ namespace PcapDotNet.Core.Test
 
         private static void CompareIgmpGroupRecord(XElement groupRecord, IgmpGroupRecordDatagram groupRecordDatagram)
         {
-            Console.WriteLine(groupRecordDatagram.AuxiliaryData);
             int sourceAddressIndex = 0;
             foreach (var field in groupRecord.Fields())
             {

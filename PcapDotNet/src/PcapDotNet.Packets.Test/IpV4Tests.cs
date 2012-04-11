@@ -471,7 +471,7 @@ namespace PcapDotNet.Packets.Test
                              Ttl = 1,
                              Protocol = IpV4Protocol.WidebandExpak,
                              Source = new IpV4Address(1),
-                             Destination = new IpV4Address(2),
+                             CurrentDestination = new IpV4Address(2),
                          });
 
             Assert.IsTrue(packet.IsValid);

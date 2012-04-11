@@ -72,6 +72,13 @@ namespace PcapDotNet.Packets.Http
             return Bytes(AsciiBytes.Space);
         }
 
+        public HttpParser SkipSpaces()
+        {
+            while (IsNext(AsciiBytes.Space))
+                Skip(1);
+            return this;
+        }
+
         public HttpParser SkipLws()
         {
             while (true)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
@@ -165,11 +167,27 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The destination address.
+        /// The current destination address.
+        /// This might not be the final destination when source routing options exist.
+        /// </summary>
+        public IpV4Address CurrentDestination
+        {
+            get { return ReadIpV4Address(Offset.Destination, Endianity.Big); }
+        }
+
+        /// <summary>
+        /// The final destination address.
+        /// Takes into account the current destination and source routing options if they exist.
         /// </summary>
         public IpV4Address Destination
         {
-            get { return ReadIpV4Address(Offset.Destination, Endianity.Big); }
+            get
+            {
+                if (_destination == null)
+                    _destination = CalculateDestination(CurrentDestination, Options);
+
+                return _destination.Value;
+            }
         }
 
         /// <summary>
@@ -177,7 +195,13 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public IpV4Options Options
         {
-            get { return _options ?? (_options = new IpV4Options(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength)); }
+            get
+            {
+                if (_options == null && RealHeaderLength >= HeaderMinimumLength)
+                    _options = new IpV4Options(Buffer, StartOffset + Offset.Options, RealHeaderLength - HeaderMinimumLength);
+                
+                return _options;
+            }
         }
 
         /// <summary>
@@ -214,7 +238,7 @@ namespace PcapDotNet.Packets.IpV4
                            Protocol = Protocol,
                            HeaderChecksum = HeaderChecksum,
                            Source = Source,
-                           Destination = Destination,
+                           CurrentDestination = CurrentDestination,
                            Options = Options,
                        };
         }
@@ -349,6 +373,24 @@ namespace PcapDotNet.Packets.IpV4
             return totalLength;
         }
 
+        internal static IpV4Address CalculateDestination(IpV4Address currentDestination, IpV4Options options)
+        {
+            if (options == null)
+                return currentDestination;
+
+            IpV4OptionRoute destinationControllerRouteOption =
+                (IpV4OptionRoute)options.OptionsCollection.FirstOrDefault(option => option.OptionType == IpV4OptionType.LooseSourceRouting ||
+                                                                                    option.OptionType == IpV4OptionType.StrictSourceRouting);
+            if (destinationControllerRouteOption != null)
+            {
+                ReadOnlyCollection<IpV4Address> route = destinationControllerRouteOption.Route;
+                if (destinationControllerRouteOption.PointedAddressIndex < route.Count)
+                    return route[route.Count - 1];
+            }
+
+            return currentDestination;
+        }
+
         internal IpV4Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
@@ -382,23 +424,24 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + Offset.HeaderChecksum, headerChecksumValue, Endianity.Big);
         }
 
-        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, ushort? checksum)
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, ushort? checksum, IpV4Address destination)
         {
             ushort checksumValue =
                 checksum == null
-                    ? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional)
+                    ? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional, destination)
                     : checksum.Value;
             buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
         }
 
         private ushort CalculateTransportChecksum()
         {
-            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), Transport.ChecksumOffset, Transport.IsChecksumOptional);
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
         }
 
-        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional)
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV4Address destination)
         {
-            uint sum = Sum16Bits(buffer, offset + Offset.Source, 2 * IpV4Address.SizeOf) +
+            uint sum = Sum16Bits(buffer, offset + Offset.Source, IpV4Address.SizeOf) +
+                       Sum16Bits(destination) +
                        buffer[offset + Offset.Protocol] + transportLength +
                        Sum16Bits(buffer, offset + headerLength, transportChecksumOffset) +
                        Sum16Bits(buffer, offset + headerLength + transportChecksumOffset + 2, transportLength - transportChecksumOffset - 2);
@@ -451,6 +494,7 @@ namespace PcapDotNet.Packets.IpV4
             return Sum16BitsToChecksum(sum);
         }
 
+        private IpV4Address? _destination;
         private bool? _isHeaderChecksumCorrect;
         private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;

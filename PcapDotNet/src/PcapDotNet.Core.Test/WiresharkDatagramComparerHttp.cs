@@ -33,14 +33,10 @@ namespace PcapDotNet.Core.Test
                 if (field.Name() == "data")
                     field.AssertNoShow();
 
-                MoreAssert.AreSequenceEqual(httpDatagram.Take(_data.Length / 2), HexEncoding.Instance.GetBytes(_data.ToString()));
-                //                    string previousData = data.ToString();
-                //                    for (int i = 0; i != previousData.Length / 2; ++i)
-                //                    {
-                //                        byte value = Convert.ToByte(previousData.Substring(i * 2, 2), 16);
-                //                        Assert.AreEqual(httpDatagram[i], value);
-                //                    }
-                field.AssertValue(httpDatagram.Skip(_data.Length / 2));
+                MoreAssert.AreSequenceEqual(httpDatagram.Subsegment(0, _data.Length / 2), HexEncoding.Instance.GetBytes(_data.ToString()));
+                // TODO: Uncomment once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=7065 is fixed.
+//                if (!IsBadHttpResponse(httpDatagram))
+//                    field.AssertValue(httpDatagram.Subsegment(_data.Length / 2, httpDatagram.Length - _data.Length / 2));
                 return false;
             }
 
@@ -84,8 +80,10 @@ namespace PcapDotNet.Core.Test
 
                         if (httpDatagram.Header == null)
                         {
-                            Assert.IsTrue(httpDatagram.IsRequest);
-                            Assert.IsNull(httpDatagram.Version);
+                            if (httpDatagram.IsRequest)
+                                Assert.IsNull(httpDatagram.Version);
+                            else
+                                Assert.IsTrue(IsBadHttp(httpDatagram));
                             break;
                         }
                         httpFieldName = fieldShow.Substring(0, colonIndex);
@@ -131,27 +129,45 @@ namespace PcapDotNet.Core.Test
 
                 case "http.content_length_header":
                     _data.Append(field.Value());
-                    field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
+                    if (!IsBadHttp(httpDatagram))
+                        field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
                     break;
 
                 case "http.content_type":
                     _data.Append(field.Value());
                     string[] mediaType = fieldShow.Split(new[] {';', ' ', '/'}, StringSplitOptions.RemoveEmptyEntries);
-                    Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
-                    Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubtype, mediaType[1]);
-                    int fieldShowParametersStart = fieldShow.IndexOf(';');
-                    if (fieldShowParametersStart == -1)
-                        Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
-                    else
-                        Assert.AreEqual(
-                            httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).SequenceToString(';'),
-                            fieldShow.Substring(fieldShowParametersStart + 1));
+                    if (!IsBadHttp(httpDatagram))
+                    {
+                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
+                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubtype, mediaType[1]);
+                        int fieldShowParametersStart = fieldShow.IndexOf(';');
+                        if (fieldShowParametersStart == -1)
+                            Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
+                        else
+                        {
+                            string expected =
+                                httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).
+                                    SequenceToString(';');
+                            if (expected.Contains(@"\;"))
+                                expected = expected.Split(new[] {@"\;"}, StringSplitOptions.None)[0] + @"\";
+                            if (expected.Contains(@"\r"))
+                                expected = expected.Split(new[] {@"\r"}, StringSplitOptions.None)[0];
+                            Assert.AreEqual(expected, fieldShow.Substring(fieldShowParametersStart + 1));
+                        }
+                    }
                     break;
 
                 case "http.transfer_encoding":
                     _data.Append(field.Value());
-                    Assert.AreEqual(fieldShow.ToWiresharkLowerLiteral(),
-                                    httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral());
+                    if (!IsBadHttp(httpDatagram))
+                    {
+                        Assert.AreEqual(fieldShow.ToWiresharkLowerLiteral(),
+                                        httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral());
+                    }
+                    break;
+
+                case "http.request.full_uri":
+                    Assert.AreEqual(fieldShow, ("http://" + httpDatagram.Header["Host"].ValueString + ((HttpRequestDatagram)httpDatagram).Uri).ToWiresharkLiteral());
                     break;
 
                 default:
@@ -165,6 +181,7 @@ namespace PcapDotNet.Core.Test
         {
             foreach (var field in httpFirstLineElement.Fields())
             {
+                field.AssertNoFields();
                 switch (field.Name())
                 {
                     case "http.request.method":
@@ -179,20 +196,52 @@ namespace PcapDotNet.Core.Test
 
                     case "http.request.version":
                         if (httpDatagram.Version == null)
-                            field.AssertShow(string.Empty);
+                        {
+                            if (field.Show() != string.Empty)
+                                Assert.IsTrue(field.Show().Contains(" "));
+                        }
                         else
                             field.AssertShow(httpDatagram.Version.ToString());
                         break;
 
                     case "http.response.code":
                         Assert.IsTrue(httpDatagram.IsResponse, field.Name() + " IsResponse");
-                        field.AssertShowDecimal(((HttpResponseDatagram)httpDatagram).StatusCode.Value);
+                        field.AssertShowDecimal(IsBadHttp(httpDatagram) ? 0 : ((HttpResponseDatagram)httpDatagram).StatusCode.Value);
+                        break;
+
+                    case "http.response.phrase":
+                        Datagram reasonPhrase = ((HttpResponseDatagram)httpDatagram).ReasonPhrase;
+                        if (reasonPhrase == null)
+                            Assert.IsTrue(IsBadHttp(httpDatagram));
+                        else
+                            field.AssertValue(reasonPhrase);
                         break;
 
                     default:
                         throw new InvalidOperationException("Invalid HTTP first line field " + field.Name());
                 }
             }
+        }
+
+        private static bool IsBadHttp(HttpDatagram httpDatagram)
+        {
+            if (httpDatagram.IsResponse)
+            {
+                HttpResponseDatagram httpResponseDatagram = (HttpResponseDatagram)httpDatagram;
+                if (httpResponseDatagram.StatusCode == null)
+                {
+                    Assert.IsNull(httpResponseDatagram.Header);
+                    return true;
+                }
+            }
+            else
+            {
+                HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
+                if (httpRequestDatagram.Version == null)
+                    return true;
+            }
+
+            return false;
         }
 
         readonly StringBuilder _data = new StringBuilder();

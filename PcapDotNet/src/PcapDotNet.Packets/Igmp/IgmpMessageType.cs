@@ -79,5 +79,10 @@ namespace PcapDotNet.Packets.Igmp
         /// Multicast Traceroute Response.
         /// </summary>
         MulticastTraceRouteResponse = 0x1E,
+
+        /// <summary>
+        /// Multicast Traceroute.
+        /// </summary>
+        MulticastTraceroute = 0x1F,
     }
 }

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Core.Test
 {
@@ -39,6 +41,11 @@ namespace PcapDotNet.Core.Test
             return element.GetAttributeValue("show");
         }
 
+        public static string Showname(this XElement element)
+        {
+            return element.GetAttributeValue("showname");
+        }
+
         public static string Value(this XElement element)
         {
             return element.GetAttributeValue("value");
@@ -47,6 +54,16 @@ namespace PcapDotNet.Core.Test
         public static void AssertName(this XElement element, string expectedName)
         {
             Assert.AreEqual(element.Name(), expectedName);
+        }
+
+        public static void AssertNoFields(this XElement element)
+        {
+            Assert.IsFalse(element.Fields().Any(), string.Format("Element {0} has {1} fields.", element.Name(), element.Fields().Count()));
+        }
+
+        public static void AssertNumFields(this XElement element, int expectedNumFields)
+        {
+            Assert.AreEqual(expectedNumFields, element.Fields().Count());
         }
 
         public static void AssertNoShow(this XElement element)
@@ -146,6 +163,7 @@ namespace PcapDotNet.Core.Test
 
         public static void AssertValue(this XElement element, string expectedValue, string message = null)
         {
+            Assert.AreEqual(expectedValue.Length, element.Value().Length, message ?? element.Name());
             Assert.AreEqual(expectedValue, element.Value(), message ?? element.Name());
         }
 
@@ -177,6 +195,47 @@ namespace PcapDotNet.Core.Test
         public static void AssertValue(this XElement element, SerialNumber32 expectedValue)
         {
             element.AssertValue(expectedValue.Value);
+        }
+
+        public static void AssertValue(this XElement element, IEnumerable<string> expectedValue)
+        {
+            element.AssertValue(expectedValue.SequenceToString());
+        }
+
+        public static void AssertValue(this XElement element, IEnumerable<ushort> expectedValue)
+        {
+            element.AssertValue(expectedValue.Select(value => value.ToString("x4")));
+        }
+
+        public static void AssertValue(this XElement element, IEnumerable<uint> expectedValue)
+        {
+            element.AssertValue(expectedValue.Select(value => value.ToString("x8")));
+        }
+
+        public static void AssertValue(this XElement element, IEnumerable<IpV4Address> expectedValue)
+        {
+            element.AssertValue(expectedValue.Select(ip => ip.ToValue()));
+        }
+
+        public static void AssertDataField(this XElement element, string expectedValue)
+        {
+            element.AssertName("data");
+            element.AssertValue(expectedValue);
+
+            element.AssertNumFields(2);
+
+            var dataData = element.Fields().First();
+            dataData.AssertName("data.data");
+            dataData.AssertValue(expectedValue);
+
+            var dataLen = element.Fields().Last();
+            dataLen.AssertName("data.len");
+            dataLen.AssertShowDecimal(expectedValue.Length / 2);
+        }
+
+        public static void AssertDataField(this XElement element, IEnumerable<byte> expectedValue)
+        {
+            element.AssertDataField(expectedValue.BytesSequenceToHexadecimalString());
         }
     }
 }

@@ -249,7 +249,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         internal static Datagram ParseBody(byte[] buffer, int offset, int length,
-            bool isBodyPossible, HttpHeader header)
+                                           bool isBodyPossible, HttpHeader header)
         {
             if (!isBodyPossible)
                 return Empty;

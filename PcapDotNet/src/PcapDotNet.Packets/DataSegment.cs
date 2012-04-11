@@ -347,6 +347,12 @@ namespace PcapDotNet.Packets
             return sum;
         }
 
+        internal static uint Sum16Bits(IpV4Address address)
+        {
+            uint value = address.ToValue();
+            return (value >> 16) + (value & 0xFFFF);
+        }
+
         private static readonly DataSegment _empty = new DataSegment(new byte[0]);
     }
 }

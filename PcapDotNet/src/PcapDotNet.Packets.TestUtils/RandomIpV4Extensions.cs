@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.TestUtils
                        HeaderChecksum = random.NextBool() ? (ushort?)random.NextUShort() : null,
                        Fragmentation = random.NextBool() ? random.NextIpV4Fragmentation() : IpV4Fragmentation.None,
                        Source = random.NextIpV4Address(),
-                       Destination = random.NextIpV4Address(),
+                       CurrentDestination = random.NextIpV4Address(),
                        Options = random.NextIpV4Options()
                    };
         }

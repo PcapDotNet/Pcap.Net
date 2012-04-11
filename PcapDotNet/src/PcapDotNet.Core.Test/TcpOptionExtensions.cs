@@ -6,17 +6,21 @@ using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Core.Test
 {
-    internal static class MoreTcpOption
+    internal static class TcpOptionExtensions
     {
         public static string GetWiresharkString(this TcpOption option)
         {
             switch (option.OptionType)
             {
                 case TcpOptionType.EndOfOptionList:
-                    return "EOL";
+                    return "End of Option List (EOL)";
 
                 case TcpOptionType.NoOperation:
-                    return "NOP";
+                    return "No-Operation (NOP)";
+
+                case TcpOptionType.WindowScale:
+                    byte scaleFactorLog = ((TcpOptionWindowScale)option).ScaleFactorLog;
+                    return string.Format("Window scale: {0} (multiply by {1})", scaleFactorLog, (1L << (scaleFactorLog % 32)));
 
                 case TcpOptionType.SelectiveAcknowledgmentPermitted:
                     return "SACK permitted";
@@ -37,12 +41,6 @@ namespace PcapDotNet.Core.Test
                     TcpOptionTimestamp timestampOption = (TcpOptionTimestamp)option;
                     return "Timestamps: TSval " + timestampOption.TimestampValue + ", TSecr " + timestampOption.TimestampEchoReply;
 
-                case TcpOptionType.PartialOrderServiceProfile:
-                    return "Unknown (0x0a) (3 bytes)";
-
-                case TcpOptionType.PartialOrderConnectionPermitted:
-                    return "Unknown (0x09) (2 bytes)";
-
                 case TcpOptionType.ConnectionCount:
                     return "CC: " + ((TcpOptionConnectionCount)option).ConnectionCount;
 
@@ -51,12 +49,6 @@ namespace PcapDotNet.Core.Test
 
                 case TcpOptionType.ConnectionCountEcho:
                     return "CC.ECHO: " + ((TcpOptionConnectionCountEcho)option).ConnectionCount;
-
-                case TcpOptionType.AlternateChecksumRequest:
-                    return "Unknown (0x0e) (3 bytes)";
-
-                case TcpOptionType.AlternateChecksumData:
-                    return "Unknown (0x0f) (" + option.Length + " bytes)";
 
                 case TcpOptionType.Md5Signature:
                     return "TCP MD5 signature";
@@ -81,52 +73,17 @@ namespace PcapDotNet.Core.Test
                                                                 ? string.Empty
                                                                 : " (with option length = " + option.Length + " bytes; should be 2)");
 
-                default:
-                    if (typeof(TcpOptionType).GetEnumValues<TcpOptionType>().Contains(option.OptionType))
-                        throw new InvalidOperationException("Invalid option type " + option.OptionType);
-                    return "Unknown (0x" + ((byte)option.OptionType).ToString("x2") + ") (" + option.Length + " bytes)";
-            }
-        }
-
-        public static IEnumerable<string> GetWiresharkSubfieldStrings(this TcpOption option)
-        {
-            switch (option.OptionType)
-            {
-                case TcpOptionType.EndOfOptionList:
-                case TcpOptionType.NoOperation:
-                case TcpOptionType.MaximumSegmentSize:
-                case TcpOptionType.WindowScale:
-                case TcpOptionType.SelectiveAcknowledgmentPermitted:
-                case TcpOptionType.Echo:
-                case TcpOptionType.EchoReply:
-                case TcpOptionType.Timestamp:
-                case TcpOptionType.PartialOrderServiceProfile:
-                case TcpOptionType.PartialOrderConnectionPermitted:
-                case TcpOptionType.ConnectionCount:
-                case TcpOptionType.ConnectionCountNew:
-                case TcpOptionType.ConnectionCountEcho:
-                case TcpOptionType.AlternateChecksumRequest:
-                case TcpOptionType.AlternateChecksumData:
-                case TcpOptionType.Md5Signature:
-                case TcpOptionType.Mood:
-                    break;
-
-                case TcpOptionType.SelectiveAcknowledgment:
-                    var blocks = ((TcpOptionSelectiveAcknowledgment)option).Blocks;
-                    if (blocks.Count() == 0)
-                        break;
-                    yield return "1";
-                    foreach (TcpOptionSelectiveAcknowledgmentBlock block in blocks)
-                    {
-                        yield return block.LeftEdge.ToString();
-                        yield return block.RightEdge.ToString();
-                    }
-                    break;
+                case TcpOptionType.PartialOrderConnectionPermitted: // 9.
+                case TcpOptionType.PartialOrderServiceProfile:      // 10.
+                case TcpOptionType.AlternateChecksumRequest:        // 14.
+                case TcpOptionType.AlternateChecksumData:           // 15.
+                case TcpOptionType.Mood:                            // 25.
+                    return string.Format("Unknown (0x{0}) ({1} bytes)", ((byte)option.OptionType).ToString("x2"), option.Length);
 
                 default:
                     if (typeof(TcpOptionType).GetEnumValues<TcpOptionType>().Contains(option.OptionType))
                         throw new InvalidOperationException("Invalid option type " + option.OptionType);
-                    break;
+                    return string.Format("Unknown (0x{0}) ({1} bytes)", ((byte)option.OptionType).ToString("x2"), option.Length);
             }
         }
     }

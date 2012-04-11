@@ -13,28 +13,34 @@ namespace PcapDotNet.Packets.TestUtils
         public static HttpLayer NextHttpLayer(this Random random)
         {
             if (random.NextBool())
+                return random.NextHttpRequestLayer();
+            return random.NextHttpResponseLayer();
+        }
+
+        public static HttpRequestLayer NextHttpRequestLayer(this Random random)
+        {
+            HttpRequestLayer httpRequestLayer = new HttpRequestLayer();
+            if (random.NextBool(10))
             {
-                HttpRequestLayer httpRequestLayer = new HttpRequestLayer();
-                if (random.NextBool(10))
-                {
-                    httpRequestLayer.Method = random.NextHttpRequestMethod();
-                    httpRequestLayer.Uri = httpRequestLayer.Method == null ? null : random.NextHttpUri();
-                    httpRequestLayer.Version = httpRequestLayer.Uri == null || random.NextBool(10)  ? null : random.NextHttpVersion();
-                    httpRequestLayer.Header = httpRequestLayer.Version == null ? null : random.NextHttpHeader();
-                    httpRequestLayer.Body = httpRequestLayer.Header == null ? null : random.NextHttpBody(true, null, httpRequestLayer.Header);
-                }
-
-                return httpRequestLayer;
+                httpRequestLayer.Method = random.NextHttpRequestMethod();
+                httpRequestLayer.Uri = httpRequestLayer.Method == null ? null : random.NextHttpUri();
+                httpRequestLayer.Version = httpRequestLayer.Uri == null || random.NextBool(10)  ? null : random.NextHttpVersion();
+                httpRequestLayer.Header = httpRequestLayer.Version == null ? null : random.NextHttpHeader();
+                httpRequestLayer.Body = httpRequestLayer.Header == null ? null : random.NextHttpBody(true, null, httpRequestLayer.Header);
             }
+            return httpRequestLayer;
+        }
 
+        public static HttpResponseLayer NextHttpResponseLayer(this Random random)
+        {
             HttpResponseLayer httpResponseLayer = new HttpResponseLayer
-                                                  {
-                                                      Version = random.NextHttpVersion(),
-                                                      StatusCode = random.NextBool(10) ? null : (uint?)random.NextUInt(100, 999),
-                                                  };
+            {
+                Version = random.NextHttpVersion(),
+                StatusCode = random.NextBool(10) ? null : (uint?)random.NextUInt(100, 999),
+            };
             httpResponseLayer.ReasonPhrase = httpResponseLayer.StatusCode == null ? null : random.NextHttpReasonPhrase();
             httpResponseLayer.Header = httpResponseLayer.ReasonPhrase == null ? null : random.NextHttpHeader();
-            httpResponseLayer.Body = httpResponseLayer.Header == null ? null : random.NextHttpBody(false , httpResponseLayer.StatusCode, httpResponseLayer.Header);
+            httpResponseLayer.Body = httpResponseLayer.Header == null ? null : random.NextHttpBody(false, httpResponseLayer.StatusCode, httpResponseLayer.Header);
 
             return httpResponseLayer;
         }
@@ -304,7 +310,6 @@ namespace PcapDotNet.Packets.TestUtils
                 httpHeader.ContentType.MediaType == "multipart" &&
                 httpHeader.ContentType.MediaSubtype == "byteranges" &&
                 httpHeader.ContentType.Parameters["boundary"] != null)
-
             {
                 List<byte> boundedBody = new List<byte>(random.NextDatagram(random.Next(1000)));
                 boundedBody.AddRange(EncodingExtensions.Iso88591.GetBytes("--" + httpHeader.ContentType.Parameters["boundary"] + "--"));

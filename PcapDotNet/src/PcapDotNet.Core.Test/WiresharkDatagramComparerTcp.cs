@@ -70,7 +70,7 @@ namespace PcapDotNet.Core.Test
                         (ushort)((tcpDatagram.Reserved << 9) |
                                  (((tcpDatagram.ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum ? 1 : 0) << 8) |
                                  (byte)tcpDatagram.ControlBits);
-                    field.AssertShow("0x" + flags.ToString("x" + 2 * sizeof(byte)));
+                    field.AssertShow("0x" + flags.ToString("x" + 4 * sizeof(byte)));
                     foreach (var flagField in field.Fields())
                     {
                         switch (flagField.Name())
@@ -116,17 +116,24 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.checksum":
                     field.AssertShowHex(tcpDatagram.Checksum);
-                    foreach (var checksumField in field.Fields())
+                    if (!ipV4Datagram.Options.IsBadForWireshark())
                     {
-                        switch (checksumField.Name())
+                        foreach (var checksumField in field.Fields())
                         {
-                            case "tcp.checksum_good":
-                                checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
-                                break;
+                            switch (checksumField.Name())
+                            {
+                                case "tcp.checksum_good":
+                                    checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
+                                    break;
 
-                            case "tcp.checksum_bad":
-                                checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
-                                break;
+                                case "tcp.checksum_bad":
+                                    checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
+                                    break;
+
+                                default:
+                                    throw new InvalidOperationException("Invalid checksum field name " + checksumField.Name());
+                            }
+                            checksumField.AssertNoFields();
                         }
                     }
                     break;
@@ -141,6 +148,8 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.stream":
                 case "tcp.pdu.size":
+                case "tcp.window_size_value":
+                case "tcp.window_size_scalefactor":
                 case "":
                     break;
 
@@ -161,7 +170,9 @@ namespace PcapDotNet.Core.Test
                     Assert.IsFalse(options.IsValid, "Options IsValid");
                     Assert.IsTrue(
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
-                        field.Show().Contains("bytes says option goes past end of options"), "Options show: " + field.Show());
+                        field.Show().Contains("bytes says option goes past end of options") ||
+                        field.Show().Contains(") (with too-short option length = "),
+                        "Options show: " + field.Show());
                     Assert.AreEqual(options.Count, currentOptionIndex, "Options Count");
                     return;
                 }
@@ -170,88 +181,170 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "":
-                        if (option.OptionType == (TcpOptionType)21)
-                            Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
-                        else
-                            field.AssertShow(option.GetWiresharkString());
+                        switch (option.OptionType)
+                        {
+                            case TcpOptionType.SelectiveNegativeAcknowledgements: // TODO: Support Selective Negative Acknowledgements.
+                                Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
+                                field.AssertNoFields();
+                                break;
+                            
+                            case (TcpOptionType)78: // TODO: Support Riverbed.
+                                break;
+
+                            default:
+                                field.AssertShow(option.GetWiresharkString());
+                                break;
+                        }
+
+                        switch (option.OptionType)
+                        {
+                            case TcpOptionType.WindowScale:
+                                TcpOptionWindowScale windowScale = (TcpOptionWindowScale)option;
+                                foreach (var subField in field.Fields())
+                                {
+                                    switch (subField.Name())
+                                    {
+                                        case "tcp.option_kind":
+                                            subField.AssertShowDecimal((byte)windowScale.OptionType);
+                                            break;
+
+                                        case "tcp.option_len":
+                                            subField.AssertShowDecimal(windowScale.Length);
+                                            break;
+
+                                        case "tcp.options.wscale.shift":
+                                            subField.AssertShowDecimal(windowScale.ScaleFactorLog);
+                                            break;
+
+                                        case "tcp.options.wscale.multiplier":
+                                            subField.AssertShowDecimal(1L << (windowScale.ScaleFactorLog % 32));
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.SelectiveAcknowledgment:
+                                var selectiveAcknowledgmentOption = (TcpOptionSelectiveAcknowledgment)option;
+                                int blockIndex = 0;
+                                foreach (var subField in field.Fields())
+                                {
+                                    switch (subField.Name())
+                                    {
+                                        case "tcp.options.sack":
+                                            subField.AssertShowDecimal(true);
+                                            break;
+
+                                        case "tcp.options.sack_le":
+                                            subField.AssertShowDecimal(selectiveAcknowledgmentOption.Blocks[blockIndex].LeftEdge);
+                                            break;
+
+                                        case "tcp.options.sack_re":
+                                            subField.AssertShowDecimal(selectiveAcknowledgmentOption.Blocks[blockIndex].RightEdge);
+                                            ++blockIndex;
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.Timestamp:
+                                var timestampOption = (TcpOptionTimestamp)option;
+                                foreach (var subField in field.Fields())
+                                {
+                                    switch (subField.Name())
+                                    {
+                                        case "tcp.option_kind":
+                                            subField.AssertShowDecimal((byte)option.OptionType);
+                                            break;
+
+                                        case "tcp.option_len":
+                                            subField.AssertShowDecimal(option.Length);
+                                            break;
+
+                                        case "tcp.options.timestamp.tsval":
+                                            subField.AssertShowDecimal(timestampOption.TimestampValue);
+                                            break;
+
+                                        case "tcp.options.timestamp.tsecr":
+                                            subField.AssertShowDecimal(timestampOption.TimestampEchoReply);
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            default:
+                                field.AssertNoFields();
+                                break;
+                        }
                         ++currentOptionIndex;
                         break;
 
                     case "tcp.options.mss":
-                        field.AssertShowDecimal(option is TcpOptionMaximumSegmentSize);
+                        Assert.AreEqual(TcpOptionType.MaximumSegmentSize, option.OptionType);
+                        field.AssertShowDecimal(true);
+                        field.AssertNoFields();
                         break;
 
                     case "tcp.options.mss_val":
                         field.AssertShowDecimal(((TcpOptionMaximumSegmentSize)option).MaximumSegmentSize);
-                        ++currentOptionIndex;
-                        break;
-
-                    case "tcp.options.wscale":
-                        field.AssertShowDecimal(option is TcpOptionWindowScale);
-                        break;
-
-                    case "tcp.options.wscale_val":
-                        field.AssertShowDecimal(((TcpOptionWindowScale)option).ScaleFactorLog);
+                        field.AssertNoFields();
                         ++currentOptionIndex;
                         break;
 
                     case "tcp.options.echo":
                         Assert.IsTrue(option is TcpOptionEchoReply || option is TcpOptionEcho);
                         field.AssertShowDecimal(1);
-                        break;
-
-                    case "tcp.options.time_stamp":
-                        Assert.IsTrue(option is TcpOptionTimestamp);
-                        field.AssertShowDecimal(1);
+                        field.AssertNoFields();
                         break;
 
                     case "tcp.options.cc":
                         Assert.IsTrue(option is TcpOptionConnectionCountBase);
                         field.AssertShowDecimal(1);
+                        field.AssertNoFields();
                         break;
 
                     case "tcp.options.scps.vector":
                         Assert.AreEqual((TcpOptionType)20, option.OptionType);
                         if (field.Show() == "0")
                             ++currentOptionIndex;
+                        ++currentOptionIndex;
                         break;
 
                     case "tcp.options.scps":
                         Assert.AreEqual((TcpOptionType)20, option.OptionType);
-                        ++currentOptionIndex;
+                        Assert.IsFalse(field.Fields().Any());
                         break;
 
-                    case "tcp.options.snack":
+                    case "tcp.options.snack": // TODO: Support Selective Negative Acknowledgements.
                     case "tcp.options.snack.offset":
                     case "tcp.options.snack.size":
-                        Assert.AreEqual((TcpOptionType)21, option.OptionType);
+                        Assert.AreEqual(TcpOptionType.SelectiveNegativeAcknowledgements, option.OptionType);
+                        field.AssertNoFields();
                         break;
 
                     case "tcp.options.sack_perm":
                         Assert.AreEqual(TcpOptionType.SelectiveAcknowledgmentPermitted, option.OptionType);
+                        field.AssertNoFields();
                         ++currentOptionIndex;
                         break;
 
-                    case "tcp.options.mood":
-                        Assert.AreEqual(TcpOptionType.Mood, option.OptionType);
-                        field.AssertValue(Encoding.ASCII.GetBytes(((TcpOptionMood)option).EmotionString));
-                        break;
-
-                    case "tcp.options.mood_val":
-                        Assert.AreEqual(TcpOptionType.Mood, option.OptionType);
-                        field.AssertShow(((TcpOptionMood)option).EmotionString);
+                    case "tcp.options.rvbd.probe":
+                        Assert.AreEqual((TcpOptionType)76, option.OptionType);
+                        // TODO: Support Riverbed.
                         ++currentOptionIndex;
                         break;
 
                     default:
                         throw new InvalidOperationException("Invalid tcp options field " + field.Name());
                 }
-
-                if ((option is TcpOptionUnknown))
-                    continue;
-                
-                var optionShows = from f in field.Fields() select f.Show();
-                MoreAssert.AreSequenceEqual(optionShows, option.GetWiresharkSubfieldStrings());
             }
         }
     }

@@ -84,13 +84,27 @@ namespace PcapDotNet.Core.Test
 
                 case "ip.dst":
                 case "ip.dst_host":
-                    field.AssertShow(ipV4Datagram.Destination.ToString());
+                    if (field.Show() != ipV4Datagram.Destination.ToString())
+                    {
+                        // TODO: Remove this fallback once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=7043 is fixed.
+                        field.AssertShow(ipV4Datagram.CurrentDestination.ToString());
+                        Assert.IsTrue(ipV4Datagram.Options.IsBadForWireshark(),
+                                      string.Format("Expected destination: {0}. Destination: {1}. Current destination: {2}.", field.Show(),
+                                                    ipV4Datagram.Destination, ipV4Datagram.CurrentDestination));
+                    }
                     break;
 
                 case "ip.addr":
                 case "ip.host":
                     Assert.IsTrue(field.Show() == ipV4Datagram.Source.ToString() ||
-                                  field.Show() == ipV4Datagram.Destination.ToString());
+                                  field.Show() == ipV4Datagram.Destination.ToString() ||
+                                  // TODO: Remove this fallback once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=7043 is fixed.
+                                  field.Show() == ipV4Datagram.CurrentDestination.ToString() && ipV4Datagram.Options.IsBadForWireshark(),
+                                  string.Format("Expected ip: {0}. ", field.Show()) +
+                                  (ipV4Datagram.IsValid
+                                       ? string.Format("Source: {0}. Destination: {1}. Current destination: {2}.", ipV4Datagram.Source,
+                                                       ipV4Datagram.Destination, ipV4Datagram.CurrentDestination)
+                                       : ""));
                     break;
 
                 case "":
