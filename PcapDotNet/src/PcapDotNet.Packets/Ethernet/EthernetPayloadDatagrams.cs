@@ -1,5 +1,6 @@
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Packets.Ethernet
 {
@@ -14,11 +15,14 @@ namespace PcapDotNet.Packets.Ethernet
         {
             switch (ethernetType)
             {
+                case EthernetType.IpV4:
+                    return IpV4;
+
                 case EthernetType.Arp:
                     return Arp;
 
-                case EthernetType.IpV4:
-                    return IpV4;
+                case EthernetType.VLanTaggedFrame:
+                    return VLanTaggedFrame;
 
                 default:
                     return null;
@@ -51,6 +55,16 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        public VLanTaggedFrameDatagram VLanTaggedFrame
+        {
+            get
+            {
+                if (_vLanTaggedFrame == null && _payload != null)
+                    _vLanTaggedFrame = new VLanTaggedFrameDatagram(_payload.Buffer, _payload.StartOffset, _payload.Length);
+                return _vLanTaggedFrame;
+            }
+        }
+
         /// <summary>
         /// The Ethernet payload.
         /// </summary>
@@ -62,5 +76,6 @@ namespace PcapDotNet.Packets.Ethernet
         private readonly Datagram _payload;
         private IpV4Datagram _ipV4;
         private ArpDatagram _arp;
+        private VLanTaggedFrameDatagram _vLanTaggedFrame;
     }
 }
