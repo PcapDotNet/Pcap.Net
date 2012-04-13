@@ -44,7 +44,7 @@ namespace PcapDotNet.Packets.Ethernet
 
                 int payloadLength = PayloadByEtherType.Length;
                 Datagram fcs = FrameCheckSequence;
-                return new Datagram(Buffer, HeaderLength + payloadLength, Length - HeaderLength - payloadLength - (fcs == null ? 0 : fcs.Length));
+                return new Datagram(Buffer, StartOffset + HeaderLength + payloadLength, Length - HeaderLength - payloadLength - (fcs == null ? 0 : fcs.Length));
             }
         }
 
