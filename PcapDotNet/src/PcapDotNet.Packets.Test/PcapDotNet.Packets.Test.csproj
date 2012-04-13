@@ -88,6 +88,7 @@
     <Compile Include="IpV4AddressTests.cs" />
     <Compile Include="TcpTests.cs" />
     <Compile Include="UdpTests.cs" />
+    <Compile Include="VLanTaggedFrameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">

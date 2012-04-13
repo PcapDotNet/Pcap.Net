@@ -1,5 +1,6 @@
 ﻿using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Packets.Ethernet
 {
@@ -61,6 +62,11 @@ namespace PcapDotNet.Packets.Ethernet
                     return new Datagram(Buffer, Length - 4, 4);
                 return null;
             }
+        }
+
+        public VLanTaggedFrameDatagram VLanTaggedFrame
+        {
+            get { return PayloadDatagrams.VLanTaggedFrame; }
         }
 
         /// <summary>

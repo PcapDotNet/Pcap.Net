@@ -1,5 +1,6 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets
 {
@@ -68,6 +69,20 @@ namespace PcapDotNet.Packets
         public override int GetHashCode()
         {
             return Length.GetHashCode() ^ DataLink.GetHashCode();
+        }
+
+        internal static EthernetType GetEthernetType(EthernetType ethernetType, ILayer nextLayer)
+        {
+            if (ethernetType != EthernetType.None)
+                return ethernetType;
+
+            if (nextLayer == null)
+                throw new ArgumentException("Can't determine ether type automatically from next layer because there is not next layer");
+            IEthernetNextLayer ethernetNextLayer = nextLayer as IEthernetNextLayer;
+            if (ethernetNextLayer == null)
+                throw new ArgumentException("Can't determine ether type automatically from next layer (" + nextLayer.GetType() + ")");
+
+            return ethernetNextLayer.PreviousLayerEtherType;
         }
     }
 }
