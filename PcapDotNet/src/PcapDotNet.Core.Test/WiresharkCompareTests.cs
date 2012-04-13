@@ -173,22 +173,24 @@ namespace PcapDotNet.Core.Test
             }
 
             ethernetBaseLayer.EtherType = EthernetType.None;
-            switch (random.NextInt(0, 3))
+            switch (random.NextInt(0, 5))
             {
                 case 0: // VLanTaggedFrame.
+                case 1:
                     VLanTaggedFrameLayer vLanTaggedFrameLayer = random.NextVLanTaggedFrameLayer();
                     layers.Add(vLanTaggedFrameLayer);
                     CreateRandomEthernetPayload(random, vLanTaggedFrameLayer, layers);
                     return;
 
-                case 1: // ARP.
+                case 2: // ARP.
                     EthernetLayer ethernetLayer = (ethernetBaseLayer as EthernetLayer);
                     if (ethernetLayer != null)
                         ethernetLayer.Destination = MacAddress.Zero;
                     layers.Add(random.NextArpLayer());
                     return;
 
-                case 2: // IPv4.
+                case 3: // IPv4.
+                case 4:
                     IpV4Layer ipV4Layer = random.NextIpV4Layer();
                     layers.Add(ipV4Layer);
                     CreateRandomIpV4Payload(random, ipV4Layer, layers);
@@ -201,7 +203,7 @@ namespace PcapDotNet.Core.Test
 
         private static void CreateRandomIpV4Payload(Random random, IpV4Layer ipV4Layer, List<ILayer> layers)
         {
-            if (random.NextBool(15))
+            if (random.NextBool(20))
             {
                 // Finish with payload.
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
@@ -213,33 +215,38 @@ namespace PcapDotNet.Core.Test
             if (random.NextBool())
                 ipV4Layer.Fragmentation = IpV4Fragmentation.None;
 
-            switch (random.Next(0, 6))
+            switch (random.Next(0, 9))
             {
                 case 0: // IpV4.
+                case 1:
                     IpV4Layer innerIpV4Layer = random.NextIpV4Layer();
                     layers.Add(innerIpV4Layer);
                     CreateRandomIpV4Payload(random, innerIpV4Layer, layers);
                     return;
 
-                case 1: // Igmp.
+                case 2: // Igmp.
                     layers.Add(random.NextIgmpLayer());
                     return;
 
-                case 2: // Icmp.
-                    layers.Add(random.NextIcmpLayer());
+                case 3: // Icmp.
+                    IcmpLayer icmpLayer = random.NextIcmpLayer();
+                    layers.Add(icmpLayer);
+                    layers.AddRange(random.NextIcmpPayloadLayers(icmpLayer));
                     return;
 
-                case 3: // Gre.
+                case 4: // Gre.
                     layers.Add(random.NextGreLayer());
                     return;
                     
-                case 4: // Udp.
+                case 5: // Udp.
+                case 6:
                     UdpLayer udpLayer = random.NextUdpLayer();
                     layers.Add(udpLayer);
                     CreateRandomUdpPayload(random, udpLayer, layers);
                     return;
 
-                case 5: // Tcp.
+                case 7: // Tcp.
+                case 8:
                     TcpLayer tcpLayer = random.NextTcpLayer();
                     layers.Add(tcpLayer);
                     CreateRandomTcpPayload(random, tcpLayer, layers);
@@ -252,7 +259,7 @@ namespace PcapDotNet.Core.Test
 
         private static void CreateRandomUdpPayload(Random random, UdpLayer udpLayer, List<ILayer> layers)
         {
-            if (random.NextBool(5))
+            if (random.NextBool(20))
             {
                 // Finish with payload.
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
