@@ -99,6 +99,9 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
             get { return (ushort)(ReadUShort(Offset.VLanIdentifier, Endianity.Big) & Mask.VLanIdentifier); }
         }
 
+        /// <summary>
+        /// A combination of pcp (PriorityCodePoint), cfi (CanonicalFormatIndicator) and vid (VLanIdentifier).
+        /// </summary>
         public ushort TagControlInformation
         {
             get { return CalculateTagControlInformation(PriorityCodePoint, CanonicalFormatIndicator, VLanIdentifier); }

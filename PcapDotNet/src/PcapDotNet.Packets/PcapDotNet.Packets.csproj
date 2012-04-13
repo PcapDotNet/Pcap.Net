@@ -200,6 +200,7 @@
     <Compile Include="Dns\ResourceData\DnsTypeRegistrationAttribute.cs" />
     <Compile Include="Endianity.cs" />
     <Compile Include="Ethernet\EthernetBaseDatagram.cs" />
+    <Compile Include="Ethernet\EthernetBaseLayer.cs" />
     <Compile Include="Ethernet\EthernetLayer.cs" />
     <Compile Include="Ethernet\EthernetDatagram.cs" />
     <Compile Include="Ethernet\EthernetPayloadDatagrams.cs" />

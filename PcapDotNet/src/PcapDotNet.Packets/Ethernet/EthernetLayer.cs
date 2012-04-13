@@ -1,44 +1,7 @@
-using System;
 using PcapDotNet.Base;
-using PcapDotNet.Packets.Arp;
 
 namespace PcapDotNet.Packets.Ethernet
 {
-    public abstract class EthernetBaseLayer : Layer, IArpPreviousLayer
-    {
-        public EthernetBaseLayer()
-        {
-            EtherType = EthernetType.None;
-        }
-
-        /// <summary>
-        /// Ethernet type (next protocol).
-        /// </summary>
-        public EthernetType EtherType { get; set; }
-
-        /// <summary>
-        /// The ARP Hardware Type of the layer before the ARP layer.
-        /// </summary>
-        public ArpHardwareType PreviousLayerHardwareType
-        {
-            get { return ArpHardwareType.Ethernet; }
-        }
-
-        internal static EthernetType GetEthernetType(EthernetType ethernetType, ILayer nextLayer)
-        {
-            if (ethernetType != EthernetType.None)
-                return ethernetType;
-
-            if (nextLayer == null)
-                throw new ArgumentException("Can't determine ether type automatically from next layer because there is not next layer");
-            IEthernetNextLayer ethernetNextLayer = nextLayer as IEthernetNextLayer;
-            if (ethernetNextLayer == null)
-                throw new ArgumentException("Can't determine ether type automatically from next layer (" + nextLayer.GetType() + ")");
-
-            return ethernetNextLayer.PreviousLayerEtherType;
-        }
-    }
-
     /// <summary>
     /// Represents an Ethernet layer.
     /// <seealso cref="EthernetDatagram"/>

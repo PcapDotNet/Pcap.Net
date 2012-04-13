@@ -4,6 +4,10 @@ using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Packets.Ethernet
 {
+    /// <summary>
+    /// Base class for all datagrams that behave like Ethernet.
+    /// Contains a header with an Ethernet type and a payload that should be according to this Ethernet type.
+    /// </summary>
     public abstract class EthernetBaseDatagram : Datagram
     {
         /// <summary>
@@ -64,6 +68,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// The Ethernet payload as a VLAN Tagged Frame datagram.
+        /// </summary>
         public VLanTaggedFrameDatagram VLanTaggedFrame
         {
             get { return PayloadDatagrams.VLanTaggedFrame; }
