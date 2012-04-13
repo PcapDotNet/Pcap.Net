@@ -15,6 +15,7 @@ using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
+using PcapDotNet.Packets.VLanTaggedFrame;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
@@ -141,132 +142,155 @@ namespace PcapDotNet.Core.Test
             ComparePacketsToWireshark(packet);
         }
 
-        private enum PacketType
-        {
-            Ethernet,
-            Arp,
-            IpV4,
-            IpV4OverIpV4,
-            Igmp,
-            Icmp,
-            Gre,
-            Udp,
-            Tcp,
-            Dns,
-            Http,
-        }
-
         private static Packet CreateRandomPacket(Random random)
         {
-            PacketType packetType = random.NextEnum<PacketType>();
-            // BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
             Packet packet;
             do
             {
-                packet = CreateRandomPacket(random, packetType);
+                // TODO. BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
+                DateTime packetTimestamp =
+                    random.NextDateTime(new DateTime(2010, 1, 1), new DateTime(2010, 12, 31)).ToUniversalTime().ToLocalTime();
+                //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+
+                List<ILayer> layers = new List<ILayer>();
+                EthernetLayer ethernetLayer = random.NextEthernetLayer();
+                layers.Add(ethernetLayer);
+                CreateRandomEthernetPayload(random, ethernetLayer, layers);
+                packet = PacketBuilder.Build(packetTimestamp, layers);
             } while (packet.Length > 65536);
             return packet;
         }
 
-        private static Packet CreateRandomPacket(Random random, PacketType packetType)
+        private static void CreateRandomEthernetPayload(Random random, EthernetBaseLayer ethernetBaseLayer, List<ILayer> layers)
         {
-            DateTime packetTimestamp =
-                random.NextDateTime(new DateTime(2010,1,1), new DateTime(2010,12,31)).ToUniversalTime().ToLocalTime();
-            //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
-            
-            EthernetLayer ethernetLayer = random.NextEthernetLayer();
-            IpV4Layer ipV4Layer = random.NextIpV4Layer();
-            PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
-
-            switch (packetType)
-//            switch (PacketType.Icmp)
+            if (random.NextBool(20))
             {
-                case PacketType.Ethernet:
-                    return PacketBuilder.Build(DateTime.Now, ethernetLayer, payloadLayer);
+                // Finish with payload.
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
+                layers.Add(payloadLayer);
+                return;
+            }
 
-                case PacketType.Arp:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ethernetLayer.Destination = MacAddress.Zero;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, random.NextArpLayer());
+            ethernetBaseLayer.EtherType = EthernetType.None;
+            switch (random.NextInt(0, 3))
+            {
+                case 0: // VLanTaggedFrame.
+                    VLanTaggedFrameLayer vLanTaggedFrameLayer = random.NextVLanTaggedFrameLayer();
+                    layers.Add(vLanTaggedFrameLayer);
+                    CreateRandomEthernetPayload(random, vLanTaggedFrameLayer, layers);
+                    return;
 
-                case PacketType.IpV4:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, payloadLayer);
+                case 1: // ARP.
+                    EthernetLayer ethernetLayer = (ethernetBaseLayer as EthernetLayer);
+                    if (ethernetLayer != null)
+                        ethernetLayer.Destination = MacAddress.Zero;
+                    layers.Add(random.NextArpLayer());
+                    return;
 
-                case PacketType.IpV4OverIpV4:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextIpV4Layer(), payloadLayer);
-
-                case PacketType.Igmp:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextIgmpLayer());
-
-                case PacketType.Icmp:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    IcmpLayer icmpLayer = random.NextIcmpLayer();
-                    IEnumerable<ILayer> icmpPayloadLayers = random.NextIcmpPayloadLayers(icmpLayer);
-                    return PacketBuilder.Build(packetTimestamp, new ILayer[]{ethernetLayer, ipV4Layer, icmpLayer}.Concat(icmpPayloadLayers));
-
-                case PacketType.Gre:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    GreLayer greLayer = random.NextGreLayer();
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, greLayer, payloadLayer);
-
-                case PacketType.Udp:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    if (random.NextBool())
-                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextUdpLayer(), payloadLayer);
-
-                case PacketType.Tcp:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    if (random.NextBool())
-                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, random.NextTcpLayer(), payloadLayer);
-
-                case PacketType.Dns:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    if (random.NextBool())
-                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    UdpLayer udpLayer = random.NextUdpLayer();
-
-                    DnsLayer dnsLayer = random.NextDnsLayer();
-                    ushort specialPort = (ushort)(random.NextBool() ? 53 : 5355);
-                    if (dnsLayer.IsQuery)
-                        udpLayer.DestinationPort = specialPort;
-                    else
-                        udpLayer.SourcePort = specialPort;
-
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, udpLayer, dnsLayer);
-
-                case PacketType.Http:
-                    ethernetLayer.EtherType = EthernetType.None;
-                    ipV4Layer.Protocol = null;
-                    if (random.NextBool())
-                        ipV4Layer.Fragmentation = IpV4Fragmentation.None;
-                    TcpLayer tcpLayer = random.NextTcpLayer();
-
-                    HttpLayer httpLayer = random.NextHttpLayer();
-                    if (httpLayer.IsRequest)
-                        tcpLayer.DestinationPort = 80;
-                    else
-                        tcpLayer.SourcePort = 80;
-                    if (random.NextBool())
-                        return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, httpLayer);
-
-                    HttpLayer httpLayer2 = httpLayer.IsRequest ? (HttpLayer)random.NextHttpRequestLayer() : random.NextHttpResponseLayer();
-                    return PacketBuilder.Build(packetTimestamp, ethernetLayer, ipV4Layer, tcpLayer, httpLayer, httpLayer2);
+                case 2: // IPv4.
+                    IpV4Layer ipV4Layer = random.NextIpV4Layer();
+                    layers.Add(ipV4Layer);
+                    CreateRandomIpV4Payload(random, ipV4Layer, layers);
+                    return;
 
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("Invalid value.");
             }
+        }
+
+        private static void CreateRandomIpV4Payload(Random random, IpV4Layer ipV4Layer, List<ILayer> layers)
+        {
+            if (random.NextBool(15))
+            {
+                // Finish with payload.
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
+                layers.Add(payloadLayer);
+                return;
+            }
+
+            ipV4Layer.Protocol = null;
+            if (random.NextBool())
+                ipV4Layer.Fragmentation = IpV4Fragmentation.None;
+
+            switch (random.Next(0, 6))
+            {
+                case 0: // IpV4.
+                    IpV4Layer innerIpV4Layer = random.NextIpV4Layer();
+                    layers.Add(innerIpV4Layer);
+                    CreateRandomIpV4Payload(random, innerIpV4Layer, layers);
+                    return;
+
+                case 1: // Igmp.
+                    layers.Add(random.NextIgmpLayer());
+                    return;
+
+                case 2: // Icmp.
+                    layers.Add(random.NextIcmpLayer());
+                    return;
+
+                case 3: // Gre.
+                    layers.Add(random.NextGreLayer());
+                    return;
+                    
+                case 4: // Udp.
+                    UdpLayer udpLayer = random.NextUdpLayer();
+                    layers.Add(udpLayer);
+                    CreateRandomUdpPayload(random, udpLayer, layers);
+                    return;
+
+                case 5: // Tcp.
+                    TcpLayer tcpLayer = random.NextTcpLayer();
+                    layers.Add(tcpLayer);
+                    CreateRandomTcpPayload(random, tcpLayer, layers);
+                    return;
+
+                default:
+                    throw new InvalidOperationException("Invalid value.");
+            }
+        }
+
+        private static void CreateRandomUdpPayload(Random random, UdpLayer udpLayer, List<ILayer> layers)
+        {
+            if (random.NextBool(5))
+            {
+                // Finish with payload.
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
+                layers.Add(payloadLayer);
+                return;
+            }
+
+            DnsLayer dnsLayer = random.NextDnsLayer();
+            layers.Add(dnsLayer);
+
+            ushort specialPort = (ushort)(random.NextBool() ? 53 : 5355);
+            if (dnsLayer.IsQuery)
+                udpLayer.DestinationPort = specialPort;
+            else
+                udpLayer.SourcePort = specialPort;
+        }
+
+        private static void CreateRandomTcpPayload(Random random, TcpLayer tcpLayer, List<ILayer> layers)
+        {
+            if (random.NextBool(20))
+            {
+                // Finish with payload.
+                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
+                layers.Add(payloadLayer);
+                return;
+            }
+
+            HttpLayer httpLayer = random.NextHttpLayer();
+            layers.Add(httpLayer);
+            if (httpLayer.IsRequest)
+                tcpLayer.DestinationPort = 80;
+            else
+                tcpLayer.SourcePort = 80;
+
+            if (random.NextBool())
+                return;
+
+            HttpLayer httpLayer2 = httpLayer.IsRequest ? (HttpLayer)random.NextHttpRequestLayer() : random.NextHttpResponseLayer();
+            layers.Add(httpLayer2);
         }
 
         private static IEnumerable<Packet> CreateRandomPackets(Random random, int numPackets)

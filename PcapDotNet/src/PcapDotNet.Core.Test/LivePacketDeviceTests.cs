@@ -184,7 +184,7 @@ namespace PcapDotNet.Core.Test
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend + 1, int.MaxValue, 2, PacketSize, NumPacketsToSend, 2, 2.13);
 
             // Break loop
-            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.032);
+            TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, 0, 2, PacketSize, 0, 0, 0.051);
             TestReceivePacketsEnumerable(NumPacketsToSend, NumPacketsToSend, NumPacketsToSend / 2, 2, PacketSize, NumPacketsToSend / 2, 0, 0.1);
         }
 
