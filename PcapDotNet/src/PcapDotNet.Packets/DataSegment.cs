@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -142,7 +143,8 @@ namespace PcapDotNet.Packets
         public sealed override string ToString()
         {
             const int MaxNumBytesToUse = 10;
-            return string.Format("{0} bytes: {1}{2}", Length, Buffer.Range(StartOffset, Math.Min(Length, MaxNumBytesToUse)).BytesSequenceToHexadecimalString(),
+            return string.Format(CultureInfo.InvariantCulture, "{0} bytes: {1}{2}", Length,
+                                 Buffer.Range(StartOffset, Math.Min(Length, MaxNumBytesToUse)).BytesSequenceToHexadecimalString(),
                                  (Length > MaxNumBytesToUse ? "..." : ""));
         }
 
