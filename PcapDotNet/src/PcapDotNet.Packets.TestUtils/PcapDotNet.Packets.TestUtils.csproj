@@ -86,6 +86,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomTcpExtensions.cs" />
     <Compile Include="RandomUdpExtensions.cs" />
+    <Compile Include="RandomVLanTaggedFrameExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PcapDotNet.Base\PcapDotNet.Base.csproj">

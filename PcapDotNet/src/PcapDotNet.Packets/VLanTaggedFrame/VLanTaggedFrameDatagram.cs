@@ -1,4 +1,4 @@
-using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.VLanTaggedFrame
@@ -99,6 +99,11 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
             get { return (ushort)(ReadUShort(Offset.VLanIdentifier, Endianity.Big) & Mask.VLanIdentifier); }
         }
 
+        public ushort TagControlInformation
+        {
+            get { return CalculateTagControlInformation(PriorityCodePoint, CanonicalFormatIndicator, VLanIdentifier); }
+        }
+
         /// <summary>
         /// Ethernet type (next protocol).
         /// </summary>
@@ -115,10 +120,13 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
         /// </summary>
         public override ILayer ExtractLayer()
         {
-            return null;
-//            return new VLanTaggedFrameLayer()
-//            {
-//            };
+            return new VLanTaggedFrameLayer
+                   {
+                       PriorityCodePoint = PriorityCodePoint,
+                       CanonicalFormatIndicator = CanonicalFormatIndicator,
+                       VLanIdentifier = VLanIdentifier,
+                       EtherType = EtherType,
+                   };
         }
 
         /// <summary>
@@ -138,22 +146,18 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
         {
         }
 
-        /*
-        internal static void WriteHeader(byte[] buffer, int offset,
-                                         ArpHardwareType hardwareType, EthernetType protocolType, ArpOperation operation,
-                                         IList<byte> senderHardwareAddress, IList<byte> senderProtocolAddress,
-                                         IList<byte> targetHardwareAddress, IList<byte> targetProtocolAddress)
+        internal static void WriteHeader(byte[] buffer, int offset, ClassOfService priorityCodePoint, bool canonicalFormatIndicator, ushort vLanIdentifier, EthernetType etherType)
         {
-            buffer.Write(ref offset, (ushort)hardwareType, Endianity.Big);
-            buffer.Write(ref offset, (ushort)protocolType, Endianity.Big);
-            buffer.Write(ref offset, (byte)senderHardwareAddress.Count);
-            buffer.Write(ref offset, (byte)senderProtocolAddress.Count);
-            buffer.Write(ref offset, (ushort)operation, Endianity.Big);
-            buffer.Write(ref offset, senderHardwareAddress);
-            buffer.Write(ref offset, senderProtocolAddress);
-            buffer.Write(ref offset, targetHardwareAddress);
-            buffer.Write(ref offset, targetProtocolAddress);
+            ushort tagControlInformation = CalculateTagControlInformation(priorityCodePoint, canonicalFormatIndicator, vLanIdentifier);
+            buffer.Write(offset + Offset.PriorityCodePoint, tagControlInformation, Endianity.Big);
+            buffer.Write(offset + Offset.EtherTypeLength, (ushort)etherType, Endianity.Big);
         }
-        */
+
+        internal static ushort CalculateTagControlInformation(ClassOfService priorityCodePoint, bool canonicalFormatIndicator, ushort vLanIdentifier)
+        {
+            return (ushort)(((((((byte)priorityCodePoint) << Shift.PriorityCodePoint) & Mask.PriorityCodePoint) |
+                              (canonicalFormatIndicator ? Mask.CanonicalFormatIndicator : 0x00)) << 8) |
+                            (vLanIdentifier & Mask.VLanIdentifier));
+        }
     }
 }

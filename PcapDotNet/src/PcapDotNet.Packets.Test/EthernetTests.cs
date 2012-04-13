@@ -8,7 +8,7 @@ using PcapDotNet.Packets.Transport;
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for EthernetTests
+    /// Summary description for EthernetTests.
     /// </summary>
     [TestClass]
     public class EthernetTests
