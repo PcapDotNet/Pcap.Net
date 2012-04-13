@@ -37,6 +37,10 @@ namespace PcapDotNet.Core.Test
                     field.AssertShowDecimal((ushort)vLanTaggedFrameDatagram.EtherType);
                     break;
 
+                case "vlan.trailer":
+                    field.AssertValue(vLanTaggedFrameDatagram.Trailer);
+                    break;
+
                 default:
                     throw new InvalidOperationException("Invalid VLanTaggedFrame field " + field.Name());
             }

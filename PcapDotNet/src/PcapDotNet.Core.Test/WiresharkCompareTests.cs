@@ -34,7 +34,7 @@ namespace PcapDotNet.Core.Test
             get { return RetryNumber != -1; }
         }
 
-        private const int RetryNumber = -1;
+        private const int RetryNumber = 1000;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -108,6 +108,15 @@ namespace PcapDotNet.Core.Test
         public void CompareEthernetTrailerToWiresharkTest()
         {
             const string PacketString = "001120cf0900000c29566988080045000029627b00008006de80c0a8640bc0a81477a42cc03bdd3c481c6cfcd72050104278a5a90000000e01bf0101";
+            Packet packet = Packet.FromHexadecimalString(PacketString, DateTime.Now, DataLinkKind.Ethernet);
+            ComparePacketsToWireshark(packet);
+        }
+
+        [TestMethod]
+        public void CompareVLanTaggedFrameTrailerToWiresharkTest()
+        {
+            const string PacketString =
+                "0004f2402ffca870a5002e02810001f408060001080006040001a870a5002e02ac141401000000000000ac1414670000000000000000000000000000";
             Packet packet = Packet.FromHexadecimalString(PacketString, DateTime.Now, DataLinkKind.Ethernet);
             ComparePacketsToWireshark(packet);
         }
