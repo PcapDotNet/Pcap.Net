@@ -87,6 +87,7 @@
     <Compile Include="WiresharkDatagramComparerSimple.cs" />
     <Compile Include="WiresharkDatagramComparerTcp.cs" />
     <Compile Include="WiresharkDatagramComparerUdp.cs" />
+    <Compile Include="WiresharkDatagramComparerVLanTaggedFrame.cs" />
     <Compile Include="WiresharkStringExtensions.cs" />
     <Compile Include="XElementExtensions.cs" />
     <Compile Include="PacketDumpFileTests.cs" />

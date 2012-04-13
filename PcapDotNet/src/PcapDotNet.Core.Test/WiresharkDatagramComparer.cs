@@ -46,6 +46,9 @@ namespace PcapDotNet.Core.Test
                 case "eth":
                     return new WiresharkDatagramComparerEthernet();
 
+                case "vlan":
+                    return new WiresharkDatagramComparerVLanTaggedFrame();
+
                 case "arp":
                     return new WiresharkDatagramComparerArp();
 
