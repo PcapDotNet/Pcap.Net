@@ -244,7 +244,9 @@ namespace PcapDotNet.Core.Test
                     return;
 
                 case 4: // Gre.
-                    layers.Add(random.NextGreLayer());
+                    GreLayer greLayer = random.NextGreLayer();
+                    layers.Add(greLayer);
+                    CreateRandomEthernetPayload(random, greLayer, layers);
                     return;
                     
                 case 5: // Udp.

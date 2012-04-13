@@ -14,8 +14,10 @@ namespace PcapDotNet.Core.Test
                 return null;
 
             Datagram datagram = (Datagram)property.GetValue(datagramParent);
-            if (!Ignore(datagram))
-                CompareDatagram(layer, datagramParent as Datagram, datagram);
+            if (Ignore(datagram))
+                return null;
+
+            CompareDatagram(layer, datagramParent as Datagram, datagram);
             return datagram;
         }
 
