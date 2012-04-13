@@ -34,7 +34,7 @@ namespace PcapDotNet.Core.Test
             get { return RetryNumber != -1; }
         }
 
-        private const int RetryNumber = 1000;
+        private const int RetryNumber = -1;
 
         /// <summary>
         /// Gets or sets the test context which provides

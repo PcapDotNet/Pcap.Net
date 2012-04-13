@@ -61,9 +61,12 @@ namespace PcapDotNet.Packets.Test
 
                 ethernetLayer.EtherType = EthernetType.VLanTaggedFrame;
 
-                // Test equality.
+                // Test output.
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer());
                 Assert.AreEqual(vLanTaggedFrameLayer, packet.Ethernet.VLanTaggedFrame.ExtractLayer());
+                Assert.AreEqual(vLanTaggedFrameLayer.GetHashCode(), packet.Ethernet.VLanTaggedFrame.ExtractLayer().GetHashCode());
+                Assert.AreNotEqual(random.NextVLanTaggedFrameLayer().GetHashCode(), packet.Ethernet.VLanTaggedFrame.ExtractLayer().GetHashCode());
+                Assert.AreEqual(vLanTaggedFrameLayer.TagControlInformation, packet.Ethernet.VLanTaggedFrame.TagControlInformation);
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.VLanTaggedFrame.Payload);
             }
         }
@@ -86,6 +89,22 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(vLanTaggedFrameLayer, packet.Ethernet.VLanTaggedFrame.ExtractLayer());
             ipV4Layer.HeaderChecksum = packet.Ethernet.VLanTaggedFrame.IpV4.HeaderChecksum;
             Assert.AreEqual(ipV4Layer, packet.Ethernet.VLanTaggedFrame.IpV4.ExtractLayer());
+        }
+
+        [TestMethod]
+        public void DontAutoSetEthernetDestinationTest()
+        {
+            Random random = new Random();
+            EthernetLayer ethernetLayer = random.NextEthernetLayer(EthernetType.None);
+            ethernetLayer.Destination = MacAddress.Zero;
+            VLanTaggedFrameLayer vLanTaggedFrameLayer = random.NextVLanTaggedFrameLayer();
+            Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, vLanTaggedFrameLayer);
+
+            ethernetLayer.EtherType = EthernetType.VLanTaggedFrame;
+
+            // Test equality.
+            Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer());
+            Assert.AreEqual(vLanTaggedFrameLayer, packet.Ethernet.VLanTaggedFrame.ExtractLayer());
         }
     }
 }
