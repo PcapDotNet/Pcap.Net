@@ -91,40 +91,31 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "gre.routing.address_family":
-                    if (SupportedGre(greDatagram))
-                    {
-                        if (_routingEntryIndex == greDatagram.Routing.Count)
-                            field.AssertShowDecimal(0);
-                        else
-                            field.AssertShowDecimal((ushort)greDatagram.Routing[_routingEntryIndex].AddressFamily);
-                    }
+                    if (_routingEntryIndex == greDatagram.Routing.Count)
+                        field.AssertShowDecimal(0);
+                    else
+                        field.AssertShowDecimal((ushort)greDatagram.Routing[_routingEntryIndex].AddressFamily);
                     field.AssertNoFields();
                     break;
 
                 case "gre.routing.sre_offset":
-                    if (SupportedGre(greDatagram))
-                    {
-                        if (_routingEntryIndex == greDatagram.Routing.Count)
-                            field.AssertShowDecimal(0);
-                        else
-                            field.AssertShowDecimal(greDatagram.Routing[_routingEntryIndex].PayloadOffset);
-                    }
+                    if (_routingEntryIndex == greDatagram.Routing.Count)
+                        field.AssertShowDecimal(0);
+                    else
+                        field.AssertShowDecimal(greDatagram.Routing[_routingEntryIndex].PayloadOffset);
                     field.AssertNoFields();
                     break;
 
                 case "gre.routing.src_length":
-                    if (SupportedGre(greDatagram))
-                    {
-                        if (_routingEntryIndex == greDatagram.Routing.Count)
-                            field.AssertShowDecimal(0);
-                        else
-                            field.AssertShowDecimal(greDatagram.Routing[_routingEntryIndex].PayloadLength);
-                    }
+                    if (_routingEntryIndex == greDatagram.Routing.Count)
+                        field.AssertShowDecimal(0);
+                    else
+                        field.AssertShowDecimal(greDatagram.Routing[_routingEntryIndex].PayloadLength);
                     field.AssertNoFields();
                     break;
 
                 case "gre.routing.information":
-                    if (SupportedGre(greDatagram) && _routingEntryIndex != greDatagram.Routing.Count)
+                    if (_routingEntryIndex != greDatagram.Routing.Count)
                     {
                         switch (greDatagram.Routing[_routingEntryIndex].AddressFamily)
                         {
@@ -158,8 +149,7 @@ namespace PcapDotNet.Core.Test
 
                 case "data":
                 case "data.data":
-                    if (SupportedGre(greDatagram))
-                        field.AssertDataField(greDatagram.Payload);
+                    field.AssertDataField(greDatagram.Payload);
                     break;
 
                 default:
@@ -170,12 +160,13 @@ namespace PcapDotNet.Core.Test
             return true;
         }
 
-        private static bool SupportedGre(GreDatagram greDatagram)
+        protected override bool Ignore(Datagram datagram)
         {
-            return greDatagram.IsValid &&
-                   (greDatagram.ProtocolType == EthernetType.PointToPointProtocol ||
-                    greDatagram.Version == GreVersion.EnhancedGre ||
-                    !greDatagram.AcknowledgmentSequenceNumberPresent);
+            GreDatagram greDatagram = (GreDatagram)datagram;
+            return !greDatagram.IsValid ||
+                   (greDatagram.ProtocolType != EthernetType.PointToPointProtocol ||
+                    greDatagram.Version != GreVersion.EnhancedGre) &&
+                   greDatagram.AcknowledgmentSequenceNumberPresent;
         }
 
         private int _routingEntryIndex = 0;

@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Gre
     /// Represents a GRE layer.
     /// <seealso cref="GreDatagram"/>
     /// </summary>
-    public sealed class GreLayer : Layer, IIpV4NextLayer, IEquatable<GreLayer>
+    public sealed class GreLayer : EthernetBaseLayer, IIpV4NextLayer, IEquatable<GreLayer>
     {
         /// <summary>
         /// The GRE Version Number.
@@ -23,7 +23,11 @@ namespace PcapDotNet.Packets.Gre
         /// These Protocol Types are defined in [RFC1700] as "ETHER TYPES" and in [ETYPES]. 
         /// An implementation receiving a packet containing a Protocol Type which is not listed in [RFC1700] or [ETYPES] SHOULD discard the packet.
         /// </summary>
-        public EthernetType ProtocolType { get; set; }
+        public EthernetType ProtocolType
+        {
+            get { return EtherType; } 
+            set { EtherType = value; }
+        }
 
         /// <summary>
         /// Recursion control contains a three bit unsigned integer which contains the number of additional encapsulations which are permissible.  
