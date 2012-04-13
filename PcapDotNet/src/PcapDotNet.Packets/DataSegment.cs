@@ -132,10 +132,25 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
-        /// Converts the segment to a hexadecimal string representing every bytes as two hexadecimal digits.
+        /// Creates a string starting with the number of bytes the data segment contains 
+        /// and ending with the first 10 bytes of the data segment as hexadecimal digits.
         /// </summary>
-        /// <returns>A hexadecimal string representing every bytes as two hexadecimal digits.</returns>
+        /// <returns>
+        /// A string starting with the number of bytes the data segment contains 
+        /// and ending with the first 10 bytes of the data segment as hexadecimal digits.
+        /// </returns>
         public sealed override string ToString()
+        {
+            const int MaxNumBytesToUse = 10;
+            return string.Format("{0} bytes: {1}{2}", Length, Buffer.Range(StartOffset, Math.Min(Length, MaxNumBytesToUse)).BytesSequenceToHexadecimalString(),
+                                 (Length > MaxNumBytesToUse ? "..." : ""));
+        }
+
+        /// <summary>
+        /// Converts the segment to a hexadecimal string representing every byte as two hexadecimal digits.
+        /// </summary>
+        /// <returns>A hexadecimal string representing every byte as two hexadecimal digits.</returns>
+        public string ToHexadecimalString()
         {
             return Buffer.Range(StartOffset, Length).BytesSequenceToHexadecimalString();
         }
@@ -145,7 +160,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         /// <param name="encoding">The encoding to use to convert the bytes sequence in the segment to a string.</param>
         /// <returns>A string of the bytes in the segment converted using the given encoding.</returns>
-        public string ToString(Encoding encoding)
+        public string Decode(Encoding encoding)
         {
             if (encoding == null)
                 throw new ArgumentNullException("encoding");

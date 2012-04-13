@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets.Dns
         public override string ToString()
         {
             if (_utf8 == null)
-                _utf8 = _labels.Select(label => label.ToString(Encoding.UTF8)).SequenceToString('.') + ".";
+                _utf8 = _labels.Select(label => label.Decode(Encoding.UTF8)).SequenceToString('.') + ".";
             return _utf8;
         }
 

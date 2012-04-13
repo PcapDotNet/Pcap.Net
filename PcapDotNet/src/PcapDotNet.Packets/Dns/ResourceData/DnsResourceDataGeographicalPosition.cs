@@ -127,19 +127,19 @@ namespace PcapDotNet.Packets.Dns
             int longtitudeNumBytes = data[0];
             if (data.Length < longtitudeNumBytes + 3)
                 return null;
-            string longtitude = data.Subsegment(1, longtitudeNumBytes).ToString(Encoding.ASCII);
+            string longtitude = data.Subsegment(1, longtitudeNumBytes).Decode(Encoding.ASCII);
             data = data.Subsegment(longtitudeNumBytes + 1, data.Length - longtitudeNumBytes - 1);
 
             int latitudeNumBytes = data[0];
             if (data.Length < latitudeNumBytes + 2)
                 return null;
-            string latitude = data.Subsegment(1, latitudeNumBytes).ToString(Encoding.ASCII);
+            string latitude = data.Subsegment(1, latitudeNumBytes).Decode(Encoding.ASCII);
             data = data.Subsegment(latitudeNumBytes + 1, data.Length - latitudeNumBytes - 1);
 
             int altitudeNumBytes = data[0];
             if (data.Length != altitudeNumBytes + 1)
                 return null;
-            string altitude = data.Subsegment(1, altitudeNumBytes).ToString(Encoding.ASCII);
+            string altitude = data.Subsegment(1, altitudeNumBytes).Decode(Encoding.ASCII);
 
             return new DnsResourceDataGeographicalPosition(longtitude, latitude, altitude);
         }

@@ -53,7 +53,7 @@ namespace PcapDotNet.Packets.Http
         {
             Datagram bytesToken;
             Token(out bytesToken);
-            token = Success ? bytesToken.ToString(Encoding.ASCII) : null;
+            token = Success ? bytesToken.Decode(Encoding.ASCII) : null;
             return this;
         }
 

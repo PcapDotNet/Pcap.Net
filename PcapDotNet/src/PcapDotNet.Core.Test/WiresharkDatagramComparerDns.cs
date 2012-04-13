@@ -399,7 +399,7 @@ namespace PcapDotNet.Core.Test
                 case DnsType.Txt: // 16.
                 case DnsType.Spf: // 99.
                     var txtData = (DnsResourceDataText)data;
-                    dataField.AssertShow("Text: " + txtData.Text[_txtIndex++].ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                    dataField.AssertShow("Text: " + txtData.Text[_txtIndex++].Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
                     dataField.AssertNoFields();
                     break;
 
@@ -444,7 +444,7 @@ namespace PcapDotNet.Core.Test
 
                 case DnsType.X25:
                     dataField.AssertName("");
-                    dataField.AssertShow("PSDN-Address: " + ((DnsResourceDataString)data).String.ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                    dataField.AssertShow("PSDN-Address: " + ((DnsResourceDataString)data).String.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
                     dataField.AssertNoFields();
                     break;
 
@@ -455,12 +455,12 @@ namespace PcapDotNet.Core.Test
                     {
                         case "ISDN Address":
                             dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                 isdnData.IsdnAddress.ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                                                 isdnData.IsdnAddress.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
                             break;
 
                         case "Subaddress":
                             dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                 isdnData.Subaddress.ToString(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                                                 isdnData.Subaddress.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
                             break;
 
                         default:
