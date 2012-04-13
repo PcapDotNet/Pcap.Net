@@ -84,6 +84,7 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer());
             Assert.AreEqual(EthernetType.IpV4, packet.Ethernet.VLanTaggedFrame.EtherType);
             Assert.AreEqual(vLanTaggedFrameLayer, packet.Ethernet.VLanTaggedFrame.ExtractLayer());
+            ipV4Layer.HeaderChecksum = packet.Ethernet.VLanTaggedFrame.IpV4.HeaderChecksum;
             Assert.AreEqual(ipV4Layer, packet.Ethernet.VLanTaggedFrame.IpV4.ExtractLayer());
         }
     }

@@ -4,11 +4,46 @@ using PcapDotNet.Packets.Arp;
 
 namespace PcapDotNet.Packets.Ethernet
 {
+    public abstract class EthernetBaseLayer : Layer, IArpPreviousLayer
+    {
+        public EthernetBaseLayer()
+        {
+            EtherType = EthernetType.None;
+        }
+
+        /// <summary>
+        /// Ethernet type (next protocol).
+        /// </summary>
+        public EthernetType EtherType { get; set; }
+
+        /// <summary>
+        /// The ARP Hardware Type of the layer before the ARP layer.
+        /// </summary>
+        public ArpHardwareType PreviousLayerHardwareType
+        {
+            get { return ArpHardwareType.Ethernet; }
+        }
+
+        internal static EthernetType GetEthernetType(EthernetType ethernetType, ILayer nextLayer)
+        {
+            if (ethernetType != EthernetType.None)
+                return ethernetType;
+
+            if (nextLayer == null)
+                throw new ArgumentException("Can't determine ether type automatically from next layer because there is not next layer");
+            IEthernetNextLayer ethernetNextLayer = nextLayer as IEthernetNextLayer;
+            if (ethernetNextLayer == null)
+                throw new ArgumentException("Can't determine ether type automatically from next layer (" + nextLayer.GetType() + ")");
+
+            return ethernetNextLayer.PreviousLayerEtherType;
+        }
+    }
+
     /// <summary>
     /// Represents an Ethernet layer.
     /// <seealso cref="EthernetDatagram"/>
     /// </summary>
-    public sealed class EthernetLayer : Layer, IArpPreviousLayer
+    public sealed class EthernetLayer : EthernetBaseLayer
     {
         /// <summary>
         /// Creates an instance with zero values.
@@ -17,7 +52,6 @@ namespace PcapDotNet.Packets.Ethernet
         {
             Source = MacAddress.Zero;
             Destination = MacAddress.Zero;
-            EtherType = EthernetType.None;
         }
 
         /// <summary>
@@ -29,11 +63,6 @@ namespace PcapDotNet.Packets.Ethernet
         /// Ethernet destination address.
         /// </summary>
         public MacAddress Destination { get; set; }
-
-        /// <summary>
-        /// Ethernet type (next protocol).
-        /// </summary>
-        public EthernetType EtherType { get; set; }
 
         /// <summary>
         /// The number of bytes this layer will take.
@@ -73,14 +102,6 @@ namespace PcapDotNet.Packets.Ethernet
         public override DataLinkKind? DataLink
         {
             get { return DataLinkKind.Ethernet; }
-        }
-
-        /// <summary>
-        /// The ARP Hardware Type of the layer before the ARP layer.
-        /// </summary>
-        public ArpHardwareType PreviousLayerHardwareType
-        {
-            get { return ArpHardwareType.Ethernet; }
         }
 
         /// <summary>

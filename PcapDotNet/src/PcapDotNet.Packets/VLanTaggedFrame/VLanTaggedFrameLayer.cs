@@ -4,7 +4,7 @@ using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Packets.VLanTaggedFrame
 {
-    public sealed class VLanTaggedFrameLayer : Layer, IEquatable<VLanTaggedFrameLayer>, IEthernetNextLayer
+    public sealed class VLanTaggedFrameLayer : EthernetBaseLayer, IEquatable<VLanTaggedFrameLayer>, IEthernetNextLayer
     {
         public VLanTaggedFrameLayer()
         {
@@ -20,8 +20,6 @@ namespace PcapDotNet.Packets.VLanTaggedFrame
         {
             get { return VLanTaggedFrameDatagram.CalculateTagControlInformation(PriorityCodePoint, CanonicalFormatIndicator, VLanIdentifier); }
         }
-
-        public EthernetType EtherType { get; set; }
 
         /// <summary>
         /// The number of bytes this layer will take.
