@@ -33,6 +33,7 @@ namespace PcapDotNet.Core.Test
         {
             get { return RetryNumber != -1; }
         }
+
         private const int RetryNumber = -1;
 
         /// <summary>
