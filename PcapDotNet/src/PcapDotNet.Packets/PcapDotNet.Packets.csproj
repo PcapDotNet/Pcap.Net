@@ -234,6 +234,7 @@
     <Compile Include="Http\HttpRequestMethod.cs" />
     <Compile Include="Http\HttpResponseDatagram.cs" />
     <Compile Include="Http\HttpResponseLayer.cs" />
+    <Compile Include="Http\HttpTrailerField.cs" />
     <Compile Include="Http\HttpTransferEncodingField.cs" />
     <Compile Include="Http\HttpVersion.cs" />
     <Compile Include="Icmp\IcmpAddressMaskReplyDatagram.cs" />

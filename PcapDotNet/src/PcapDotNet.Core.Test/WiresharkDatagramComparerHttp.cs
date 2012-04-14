@@ -148,10 +148,6 @@ namespace PcapDotNet.Core.Test
                             string expected =
                                 httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).
                                     SequenceToString(';');
-                            if (expected.Contains(@"\;"))
-                                expected = expected.Split(new[] {@"\;"}, StringSplitOptions.None)[0] + @"\";
-                            if (expected.Contains(@"\r"))
-                                expected = expected.Split(new[] {@"\r"}, StringSplitOptions.None)[0];
                             Assert.AreEqual(expected, fieldShow.Substring(fieldShowParametersStart + 1));
                         }
                     }

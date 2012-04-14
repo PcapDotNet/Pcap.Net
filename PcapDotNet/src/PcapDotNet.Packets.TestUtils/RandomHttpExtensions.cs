@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static string NextHttpToken(this Random random)
         {
-            char[] httpToken = ((Func<char>)(() => random.NextHttpTokenChar())).GenerateArray(random.NextInt(1, 100));
+            char[] httpToken = ((Func<char>)(() => random.NextHttpTokenChar())).GenerateArray(random.NextInt(1, 20));
             return new string(httpToken);
         }
 
@@ -122,7 +122,11 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static char NextHttpTextChar(this Random random)
         {
-            char text = random.NextChar((char)33, (char)254);
+            char text = random.NextChar((char)33, (char)252);
+            if (text == '\\')
+                return (char)252;
+            if (text == ';')
+                return (char)253;
             if (text == '"')
                 return (char)254;
             if (text == 127)
@@ -155,13 +159,26 @@ namespace PcapDotNet.Packets.TestUtils
                 fieldNames.Add(fields.Last().Name);
             }
 
+            if (fields.Any(field => field.Name.Equals(HttpContentLengthField.FieldName, StringComparison.InvariantCultureIgnoreCase)) &&
+                fields.Any(field => field.Name.Equals(HttpTransferEncodingField.FieldName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                fields.RemoveAll(field => field.Name.Equals(HttpContentLengthField.FieldName, StringComparison.InvariantCultureIgnoreCase));
+            }
+
             return new HttpHeader(fields);
         }
 
         public static HttpField NextHttpField(this Random random, HashSet<string> fieldNames)
         {
             const string unknownField = "Unknown Name";
-            List<string> allOptions = new List<string> { unknownField, HttpTransferEncodingField.FieldNameUpper, HttpContentLengthField.FieldNameUpper, HttpContentTypeField.FieldNameUpper };
+            List<string> allOptions = new List<string>
+                                      {
+                                          unknownField,
+                                          HttpTransferEncodingField.FieldNameUpper,
+                                          HttpContentLengthField.FieldNameUpper,
+                                          HttpContentTypeField.FieldNameUpper,
+                                          HttpTrailerField.FieldNameUpper,
+                                      };
             List<string> possibleOptions = new List<string>(allOptions.Count);
             foreach (string option in allOptions)
             {
@@ -169,17 +186,22 @@ namespace PcapDotNet.Packets.TestUtils
                     possibleOptions.Add(option);
             }
 
-            string chosenOption = random.NextValue(possibleOptions);
-            switch (chosenOption)
+            string chosenFieldName = random.NextValue(possibleOptions);
+            if (chosenFieldName == unknownField)
             {
-                case unknownField:
-                    string fieldName;
-                    do
-                    {
-                        fieldName = random.NextHttpToken();
-                    } while (fieldNames.Contains(fieldName));
-                    return HttpField.CreateField(fieldName, random.NextHttpFieldValue());
+                do
+                {
+                    chosenFieldName = random.NextHttpToken();
+                } while (fieldNames.Contains(chosenFieldName));
+            }
 
+            return random.NextHttpField(chosenFieldName);
+        }
+
+        public static HttpField NextHttpField(this Random random, string fieldName)
+        {
+            switch (fieldName.ToUpperInvariant())
+            {
                 case HttpTransferEncodingField.FieldNameUpper:
                     string[] transferCodings = ((Func<string>)(() => random.NextHttpTransferCoding())).GenerateArray(random.NextInt(1, 10));
                     return new HttpTransferEncodingField(transferCodings);
@@ -188,11 +210,13 @@ namespace PcapDotNet.Packets.TestUtils
                     return new HttpContentLengthField(random.NextUInt(1000));
 
                 case HttpContentTypeField.FieldNameUpper:
-
                     return new HttpContentTypeField(random.NextHttpToken(), random.NextHttpToken(), random.NextHttpFieldParameters());
 
+                case HttpTrailerField.FieldNameUpper:
+                    return new HttpTrailerField(((Func<string>)(() => random.NextHttpToken())).GenerateArray(random.NextInt(1, 5)));
+
                 default:
-                    throw new InvalidOperationException("Invalid option " + chosenOption);
+                    return HttpField.CreateField(fieldName, random.NextHttpFieldValue());
             }
         }
 
@@ -240,12 +264,13 @@ namespace PcapDotNet.Packets.TestUtils
             for (int i = 0; i != numQuotedValues; ++i)
             {
                 char quotedValue = random.NextHttpTextChar();
-                if (quotedValue != '\\')
+                if (quotedValue != '"' && quotedValue != '\\')
                     quotedString.Append(quotedValue);
                 else
                 {
                     quotedString.Append('\\');
-                    quotedString.Append(random.NextChar((char)0, (char)128));
+                    quotedValue = random.NextChar((char)0, (char)128);
+                    quotedString.Append(quotedValue);
                 }
             }
             quotedString.Append('"');
@@ -262,7 +287,7 @@ namespace PcapDotNet.Packets.TestUtils
             if (httpHeader.TransferEncoding != null && 
                 httpHeader.TransferEncoding.TransferCodings.Any(coding => coding != "identity"))
             {
-                // chunked
+                // chunked.
                 List<byte> chunkedBody = new List<byte>();
                 int numChunks = random.Next(10);
                 for (int i = 0; i != numChunks; ++i)
@@ -293,10 +318,14 @@ namespace PcapDotNet.Packets.TestUtils
                     chunkedBody.AddRange(EncodingExtensions.Iso88591.GetBytes(parameter.Key));
                 }
                 chunkedBody.AddRange(Encoding.ASCII.GetBytes("\r\n"));
-                var trailer = random.NextHttpHeader();
-                byte[] trailerBuffer = new byte[trailer.BytesLength];
-                trailer.Write(trailerBuffer, 0);
-                chunkedBody.AddRange(trailerBuffer);
+                HttpTrailerField trailerField = httpHeader.Trailer;
+                if (trailerField != null)
+                {
+                    HttpHeader trailer = new HttpHeader(trailerField.FieldsNames.Distinct().Select(fieldName => random.NextHttpField(fieldName)));
+                    byte[] trailerBuffer = new byte[trailer.BytesLength];
+                    trailer.Write(trailerBuffer, 0);
+                    chunkedBody.AddRange(trailerBuffer);
+                }
 
                 return new Datagram(chunkedBody.ToArray());
             }

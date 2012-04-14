@@ -35,6 +35,8 @@ namespace PcapDotNet.Packets.Http
                     return new HttpContentLengthField(fieldValue);
                 case HttpContentTypeField.FieldNameUpper:
                     return new HttpContentTypeField(fieldValue);
+                case HttpTrailerField.FieldNameUpper:
+                    return new HttpTrailerField(fieldValue);
 
                 default:
                     return new HttpField(fieldName, fieldValue.ToArray());

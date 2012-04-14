@@ -22,6 +22,10 @@ namespace PcapDotNet.Core.Test
                             result.Append('\\');
                             result.Append(currentChar);
                             continue;
+                        
+                        case '\t':
+                            result.Append(@"\x9");
+                            continue;
 
                         case '\r':
                             result.Append(@"\r");
