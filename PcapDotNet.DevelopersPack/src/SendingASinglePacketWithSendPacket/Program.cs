@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
 using PcapDotNet.Core;
@@ -120,6 +121,7 @@ namespace SendingASinglePacketWithSendPacket
                 communicator.SendPacket(BuildTcpPacket());
                 communicator.SendPacket(BuildDnsPacket());
                 communicator.SendPacket(BuildHttpPacket());
+                communicator.SendPacket(BuildComplexPacket());
             }
         }
 
@@ -567,6 +569,144 @@ namespace SendingASinglePacketWithSendPacket
             PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV4Layer, tcpLayer, httpLayer);
 
             return builder.Build(DateTime.Now);
+        }
+
+        /// <summary>
+        /// This function build a DNS over UDP over IPv4 over GRE over IPv4 over IPv4 over VLAN Tagged Frame over VLAN Tagged Frame over Ethernet.
+        /// </summary>
+        private static Packet BuildComplexPacket()
+        {
+            return PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer
+                    {
+                        Source = new MacAddress("01:01:01:01:01:01"),
+                        Destination = new MacAddress("02:02:02:02:02:02"),
+                        EtherType = EthernetType.None, // Will be filled automatically.
+                    },
+                new VLanTaggedFrameLayer
+                    {
+                        PriorityCodePoint = ClassOfService.ExcellentEffort,
+                        CanonicalFormatIndicator = false,
+                        EtherType = EthernetType.None, // Will be filled automatically.
+                    },
+                new VLanTaggedFrameLayer
+                    {
+                        PriorityCodePoint = ClassOfService.BestEffort,
+                        CanonicalFormatIndicator = false,
+                        EtherType = EthernetType.None, // Will be filled automatically.
+                    },
+                new IpV4Layer
+                    {
+                        Source = new IpV4Address("1.2.3.4"),
+                        CurrentDestination = new IpV4Address("11.22.33.44"),
+                        Fragmentation = IpV4Fragmentation.None,
+                        HeaderChecksum = null, // Will be filled automatically.
+                        Identification = 123,
+                        Options = IpV4Options.None,
+                        Protocol = null, // Will be filled automatically.
+                        Ttl = 100,
+                        TypeOfService = 0,
+                    },
+                new IpV4Layer
+                    {
+                        Source = new IpV4Address("5.6.7.8"),
+                        CurrentDestination = new IpV4Address("55.66.77.88"),
+                        Fragmentation = IpV4Fragmentation.None,
+                        HeaderChecksum = null, // Will be filled automatically.
+                        Identification = 456,
+                        Options = new IpV4Options(new IpV4OptionStrictSourceRouting(new[]
+                                                                                        {
+                                                                                            new IpV4Address("100.200.100.200"),
+                                                                                            new IpV4Address("150.250.150.250")
+                                                                                        }, 1)),
+                        Protocol = null, // Will be filled automatically.
+                        Ttl = 200,
+                        TypeOfService = 0,
+                    },
+                new GreLayer
+                    {
+                        Version = GreVersion.Gre,
+                        ProtocolType = EthernetType.None, // Will be filled automatically.
+                        RecursionControl = 0,
+                        FutureUseBits = 0,
+                        ChecksumPresent = true,
+                        Checksum = null, // Will be filled automatically.
+                        Key = 100,
+                        SequenceNumber = 123,
+                        AcknowledgmentSequenceNumber = null,
+                        RoutingOffset = null,
+                        Routing = new[]
+                                      {
+                                          new GreSourceRouteEntryIp(new[]
+                                                                        {
+                                                                            new IpV4Address("10.20.30.40"),
+                                                                            new IpV4Address("40.30.20.10")
+                                                                        }.AsReadOnly(), 1),
+                                          new GreSourceRouteEntryIp(new[]
+                                                                        {
+                                                                            new IpV4Address("11.22.33.44"),
+                                                                            new IpV4Address("44.33.22.11")
+                                                                        }.AsReadOnly(), 0)
+                                      }.Cast<GreSourceRouteEntry>().ToArray().AsReadOnly(),
+                        StrictSourceRoute = false,
+                    },
+                new IpV4Layer
+                    {
+                        Source = new IpV4Address("51.52.53.54"),
+                        CurrentDestination = new IpV4Address("61.62.63.64"),
+                        Fragmentation = IpV4Fragmentation.None,
+                        HeaderChecksum = null, // Will be filled automatically.
+                        Identification = 123,
+                        Options = new IpV4Options(new IpV4OptionTimestampOnly(0, 1,
+                                                                              new IpV4TimeOfDay(new TimeSpan(1, 2, 3)),
+                                                                              new IpV4TimeOfDay(new TimeSpan(15, 55, 59))),
+                                                  new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 10, 200, 300)),
+                        Protocol = null, // Will be filled automatically.
+                        Ttl = 100,
+                        TypeOfService = 0,
+                    },
+                new UdpLayer
+                    {
+                        SourcePort = 53,
+                        DestinationPort = 40101,
+                        Checksum = null, // Will be filled automatically.
+                        CalculateChecksumValue = true,
+                    },
+                new DnsLayer
+                    {
+                        Id = 10012,
+                        IsResponse = true,
+                        OpCode = DnsOpCode.Query,
+                        IsAuthoritativeAnswer = true,
+                        IsTruncated = false,
+                        IsRecursionDesired = true,
+                        IsRecursionAvailable = true,
+                        FutureUse = false,
+                        IsAuthenticData = true,
+                        IsCheckingDisabled = false,
+                        ResponseCode = DnsResponseCode.NoError,
+                        Queries = new[] {new DnsQueryResourceRecord(new DnsDomainName("pcapdot.net"), DnsType.Any, DnsClass.Internet),},
+                        Answers = new[]
+                                      {
+                                          new DnsDataResourceRecord(new DnsDomainName("pcapdot.net"), DnsType.A, DnsClass.Internet, 50000,
+                                                                    new DnsResourceDataIpV4(new IpV4Address("10.20.30.44"))),
+                                          new DnsDataResourceRecord(new DnsDomainName("pcapdot.net"), DnsType.Txt, DnsClass.Internet, 50000,
+                                                                    new DnsResourceDataText(new[] {new DataSegment(Encoding.ASCII.GetBytes("Pcap.Net"))}.AsReadOnly()))
+                                      },
+                        Authorities = new[]
+                                          {
+                                              new DnsDataResourceRecord(new DnsDomainName("pcapdot.net"), DnsType.MailExchange, DnsClass.Internet, 100,
+                                                                        new DnsResourceDataMailExchange(100, new DnsDomainName("pcapdot.net")))
+                                          },
+                        Additionals = new[]
+                                          {
+                                              new DnsOptResourceRecord(new DnsDomainName("pcapdot.net"), 50000, 0, DnsOptVersion.Version0, DnsOptFlags.DnsSecOk,
+                                                                       new DnsResourceDataOptions(new DnsOptions(new DnsOptionUpdateLease(100),
+                                                                                                                 new DnsOptionLongLivedQuery(1, DnsLongLivedQueryOpCode.Refresh, DnsLongLivedQueryErrorCode.NoError, 10, 20))))
+                                          },
+                        DomainNameCompressionMode = DnsDomainNameCompressionMode.All,
+                    });
         }
     }
 }
