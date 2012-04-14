@@ -15,7 +15,7 @@ namespace PcapDotNet.Packets.Transport
         /// </summary>
         public override bool CalculateChecksum
         {
-            get{return CalculateChecksumValue;}
+            get { return CalculateChecksumValue; }
         }
 
         /// <summary>
