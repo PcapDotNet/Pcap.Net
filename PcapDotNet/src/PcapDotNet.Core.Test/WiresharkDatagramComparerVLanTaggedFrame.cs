@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Core.Test
@@ -38,7 +40,10 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "vlan.trailer":
-                    field.AssertValue(vLanTaggedFrameDatagram.Trailer);
+                    if (
+                        !new[] {(EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)30, (EthernetType)43, (EthernetType)50}.Contains(
+                            vLanTaggedFrameDatagram.EtherType))
+                        field.AssertValue(vLanTaggedFrameDatagram.Trailer);
                     break;
 
                 default:

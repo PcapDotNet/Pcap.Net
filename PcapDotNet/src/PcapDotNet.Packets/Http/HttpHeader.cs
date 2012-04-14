@@ -90,6 +90,17 @@ namespace PcapDotNet.Packets.Http
         }
 
         /// <summary>
+        /// The HTTP Trailer field if it exists (null otherwise).
+        /// </summary>
+        public HttpTrailerField Trailer
+        {
+            get
+            {
+                return GetField<HttpTrailerField>(HttpTrailerField.FieldName);
+            }
+        }
+
+        /// <summary>
         /// Two HTTP headers are equal if they have the same fields with the same values.
         /// </summary>
         public bool Equals(HttpHeader other)

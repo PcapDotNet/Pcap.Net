@@ -342,6 +342,12 @@ namespace PcapDotNet.Core.Test
                         ++currentOptionIndex;
                         break;
 
+                    case "tcp.options.rvbd.trpy":
+                        Assert.AreEqual((TcpOptionType)78, option.OptionType);
+                        // TODO: Support Riverbed.
+                        ++currentOptionIndex;
+                        break;
+
                     default:
                         throw new InvalidOperationException("Invalid tcp options field " + field.Name());
                 }
