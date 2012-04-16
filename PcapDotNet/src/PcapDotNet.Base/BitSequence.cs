@@ -205,6 +205,34 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
+        /// Merges 16 bytes to a UInt128.
+        /// Bytes should be arranged from the most significant to the least.
+        /// </summary>
+        /// <param name="value1">Bits 0-7 of the UInt128.</param>
+        /// <param name="value2">Bits 8-15 of the UInt128.</param>
+        /// <param name="value3">Bits 16-23 of the UInt128.</param>
+        /// <param name="value4">Bits 24-31 of the UInt128.</param>
+        /// <param name="value5">Bits 32-39 of the UInt128.</param>
+        /// <param name="value6">Bits 40-47 of the UInt128.</param>
+        /// <param name="value7">Bits 48-55 of the UInt128.</param>
+        /// <param name="value8">Bits 56-63 of the UInt128.</param>
+        /// <param name="value9">Bits 64-71 of the UInt128.</param>
+        /// <param name="value10">Bits 72-79 of the UInt128.</param>
+        /// <param name="value11">Bits 80-87 of the UInt128.</param>
+        /// <param name="value12">Bits 88-95 of the UInt128.</param>
+        /// <param name="value13">Bits 96-103 of the UInt128.</param>
+        /// <param name="value14">Bits 104-111 of the UInt128.</param>
+        /// <param name="value15">Bits 112-119 of the UInt128.</param>
+        /// <param name="value16">Bits 120-127 of the UInt128.</param>
+        /// <returns>A UInt128 whose bits are determined by the input.</returns>
+        public static UInt128 Merge(byte value1, byte value2, byte value3, byte value4, byte value5, byte value6, byte value7, byte value8,
+                                    byte value9, byte value10, byte value11, byte value12, byte value13, byte value14, byte value15, byte value16)
+        {
+            return Merge(Merge(value1, value2, value3, value4, value5, value6, value7, value8),
+                         Merge(value9, value10, value11, value12, value13, value14, value15, value16));
+        }
+
+        /// <summary>
         /// Merges 2 ushort to a uint.
         /// ushorts should be arranged from the most significant to the least.
         /// </summary>
@@ -277,6 +305,18 @@ namespace PcapDotNet.Base
         public static ulong Merge(uint value1, uint value2)
         {
             return (((ulong)value1) << 32) | value2;
+        }
+
+        /// <summary>
+        /// Merges 2 ulongs to a UInt128.
+        /// ulongs should be arranged from the most significant to the least.
+        /// </summary>
+        /// <param name="value1">Bits 0-63 of the UInt128.</param>
+        /// <param name="value2">Bits 64-127 of the UInt128.</param>
+        /// <returns>A UInt128 whose bits are determined by the input.</returns>
+        public static UInt128 Merge(ulong value1, ulong value2)
+        {
+            return new UInt128(value1, value2);
         }
     }
 }
