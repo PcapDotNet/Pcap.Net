@@ -17,6 +17,14 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// IPv4 DataLink.
+        /// </summary>
+        public static DataLink IpV4
+        {
+            get { return _ipV4; }
+        }
+
+        /// <summary>
         /// Create the DataLink from a kind.
         /// </summary>
         public DataLink(DataLinkKind kind)
@@ -82,6 +90,7 @@ namespace PcapDotNet.Packets
         }
 
         private static readonly DataLink _ethernet = new DataLink(DataLinkKind.Ethernet);
+        private static readonly DataLink _ipV4 = new DataLink(DataLinkKind.IpV4);
         private readonly DataLinkKind _kind;
     }
 }

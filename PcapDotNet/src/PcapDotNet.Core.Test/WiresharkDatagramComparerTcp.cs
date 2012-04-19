@@ -33,36 +33,44 @@ namespace PcapDotNet.Core.Test
                     }
                     else
                         field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.srcport":
                     field.AssertShowDecimal(tcpDatagram.SourcePort);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.dstport":
                     field.AssertShowDecimal(tcpDatagram.DestinationPort);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.port":
                     Assert.IsTrue(ushort.Parse(field.Show()) == tcpDatagram.SourcePort ||
                                   ushort.Parse(field.Show()) == tcpDatagram.DestinationPort);
+                    field.AssertNoFields();
                     break;
 
 
                 case "tcp.seq":
                     field.AssertShowDecimal(tcpDatagram.SequenceNumber);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.nxtseq":
                     field.AssertShowDecimal(tcpDatagram.NextSequenceNumber);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.ack":
                     field.AssertShowDecimal(tcpDatagram.AcknowledgmentNumber);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.hdr_len":
                     field.AssertShowDecimal(tcpDatagram.HeaderLength);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.flags":
@@ -107,11 +115,13 @@ namespace PcapDotNet.Core.Test
                                 flagField.AssertShowDecimal(tcpDatagram.IsFin);
                                 break;
                         }
+                        flagField.AssertNoFields();
                     }
                     break;
 
-                case "tcp.window_size":
+                case "tcp.window_size_value":
                     field.AssertShowDecimal(tcpDatagram.Window);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.checksum":
@@ -140,6 +150,7 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.urgent_pointer":
                     field.AssertShowDecimal(tcpDatagram.UrgentPointer);
+                    field.AssertNoFields();
                     break;
 
                 case "tcp.options":
@@ -148,9 +159,10 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.stream":
                 case "tcp.pdu.size":
-                case "tcp.window_size_value":
+                case "tcp.window_size":
                 case "tcp.window_size_scalefactor":
                 case "":
+                    field.AssertNoFields();
                     break;
 
                 default:

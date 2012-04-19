@@ -11,6 +11,11 @@ namespace PcapDotNet.Packets
         Ethernet,
 
         /// <summary>
+        /// IPv4 data link kind.
+        /// </summary>
+        IpV4,
+
+        /// <summary>
         /// Data Over Cable Service Interface Specification.
         /// </summary>
         Docsis,

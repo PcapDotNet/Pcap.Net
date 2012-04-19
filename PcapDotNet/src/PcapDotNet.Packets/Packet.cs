@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets
 {
@@ -249,10 +250,20 @@ namespace PcapDotNet.Packets
 
         /// <summary>
         /// Takes the entire packet as an Ethernet datagram.
+        /// Please note that if the DataLink is not Ethernet, this should make no sense.
         /// </summary>
         public EthernetDatagram Ethernet
         {
             get { return _ethernet ?? (_ethernet = new EthernetDatagram(Buffer, 0, Length)); }
+        }
+
+        /// <summary>
+        /// Takes the entire packet as an IPv4 datagram.
+        /// Please note that if the DataLink is not IPv4, this should make no sense.
+        /// </summary>
+        public IpV4Datagram IpV4
+        {
+            get { return _ipV4 ?? (_ipV4 = new IpV4Datagram(Buffer, 0, Length)); }
         }
 
         private bool CalculateIsValid()
@@ -261,6 +272,10 @@ namespace PcapDotNet.Packets
             {
                 case DataLinkKind.Ethernet:
                     return Ethernet.IsValid;
+
+                case DataLinkKind.IpV4:
+                    return IpV4.IsValid;
+
                 default:
                     return false;
             }
@@ -272,5 +287,6 @@ namespace PcapDotNet.Packets
         private bool? _isValid;
 
         private EthernetDatagram _ethernet;
+        private IpV4Datagram _ipV4;
     }
 }
