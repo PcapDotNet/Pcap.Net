@@ -37,7 +37,10 @@ DataLinkKind PcapDataLink::Kind::get()
     case 1:
         return DataLinkKind::Ethernet;
 
-	case 143:
+    case 12:
+        return DataLinkKind::IpV4;
+
+    case 143:
 		return DataLinkKind::Docsis;
 
 	default:
@@ -113,6 +116,9 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
     {
     case DataLinkKind::Ethernet:
         return 1;
+
+    case DataLinkKind::IpV4:
+        return 12;
 
 	case DataLinkKind::Docsis:
         return 143;

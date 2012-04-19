@@ -166,6 +166,15 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
+        /// The kind of the data link of the layer.
+        /// Can be null if this is not the first layer in the packet.
+        /// </summary>
+        public override DataLinkKind? DataLink
+        {
+            get { return DataLinkKind.IpV4; }
+        }
+
+        /// <summary>
         /// True iff the two IPv4 layers have the same TypeOfService, Identification, Fragmentation, Ttl, Protocol, HeaderChecksum, Source, Destination and Options.
         /// </summary>
         public bool Equals(IpV4Layer other)

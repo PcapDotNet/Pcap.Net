@@ -128,7 +128,7 @@ namespace PcapDotNet.Core.Test
                                                                 TimeSpan actualDiff = packet.Timestamp - lastTimestamp;
                                                                 MoreAssert.IsInRange(
                                                                     expectedDiff.Subtract(TimeSpan.FromSeconds(0.06)),
-                                                                    expectedDiff.Add(TimeSpan.FromSeconds(0.06)),
+                                                                    expectedDiff.Add(TimeSpan.FromSeconds(0.1)),
                                                                     actualDiff, "actualDiff");
                                                             }
                                                             lastTimestamp = packet.Timestamp;

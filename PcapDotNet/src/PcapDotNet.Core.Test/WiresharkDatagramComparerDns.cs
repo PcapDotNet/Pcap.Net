@@ -30,7 +30,7 @@ namespace PcapDotNet.Core.Test
                 case "dns.id":
                     field.AssertShowHex(dnsDatagram.Id);
                     break;
-                    
+
                 case "dns.flags":
                     field.AssertShowHex(dnsDatagram.Subsegment(2, 2).ToArray().ReadUShort(0, Endianity.Big));
                     foreach (var flagField in field.Fields())
@@ -132,6 +132,10 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
+                case "dns.response_to":
+                case "dns.time":
+                    break;
+
                 default:
                     throw new InvalidOperationException("Invalid DNS field " + field.Name());
             }
@@ -146,8 +150,10 @@ namespace PcapDotNet.Core.Test
             if (resourceRecordFieldsArray.Length != resourceRecordsArray.Length)
             {
                 var queryNameField = resourceRecordFieldsArray[resourceRecordsArray.Length].Fields().First();
-                Assert.AreEqual("dns.qry.name", queryNameField.Name());
-                Assert.AreEqual("<Unknown extended label>", queryNameField.Show());
+                if (queryNameField.Name() == "dns.qry.name")
+                    Assert.AreEqual("<Unknown extended label>", queryNameField.Show());
+                else
+                    Assert.AreEqual("dns.resp.name", queryNameField.Name());
             }
             for (int i = 0; i != resourceRecordsArray.Length; ++i)
             {

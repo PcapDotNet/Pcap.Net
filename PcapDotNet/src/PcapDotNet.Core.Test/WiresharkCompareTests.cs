@@ -152,6 +152,18 @@ namespace PcapDotNet.Core.Test
             ComparePacketsToWireshark(packet);
         }
 
+        [TestMethod]
+        public void CompareIpV4DataLinkToWiresharkTest()
+        {
+            ComparePacketsToWireshark(
+                // Normal.
+                Packet.FromHexadecimalString("46000028000000000102c48601487eebe0000016940400002200f9010000000104000000e00000fc", DateTime.Now, DataLinkKind.IpV4),
+                // dns.response_to.
+                Packet.FromHexadecimalString(
+                    "45000107400100003a110e4adc9fd4c801487eeb0035c8db00f3ead1fb96818000010001000500050436746f340469707636096d6963726f736f667403636f6d0000010001c00c0001000100000dbb00",
+                    DateTime.Now, DataLinkKind.IpV4));
+        }
+
         private static Packet CreateRandomPacket(Random random)
         {
             Packet packet;
@@ -334,7 +346,7 @@ namespace PcapDotNet.Core.Test
 // ReSharper disable HeuristicUnreachableCode
             if (!IsRetry)
             {
-                PacketDumpFile.Dump(pcapFilename, new PcapDataLink(DataLinkKind.Ethernet), PacketDevice.DefaultSnapshotLength, packets);
+                PacketDumpFile.Dump(pcapFilename, new PcapDataLink(packets.First().DataLink.Kind), PacketDevice.DefaultSnapshotLength, packets);
             }
             else
             {
@@ -431,6 +443,7 @@ namespace PcapDotNet.Core.Test
                 switch (layer.Name())
                 {
                     case "geninfo":
+                    case "raw":
                         break;
 
                     case "frame":
