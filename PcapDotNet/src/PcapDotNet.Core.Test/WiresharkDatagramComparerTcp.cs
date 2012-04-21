@@ -130,14 +130,15 @@ namespace PcapDotNet.Core.Test
                     {
                         foreach (var checksumField in field.Fields())
                         {
+                            // When TCP checksum is zero Wireshark assumes it's Checksum Offloading and puts false in both checksum_good and checksum_bad.
                             switch (checksumField.Name())
                             {
                                 case "tcp.checksum_good":
-                                    checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipV4Datagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "tcp.checksum_bad":
-                                    checksumField.AssertShowDecimal(!ipV4Datagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && !ipV4Datagram.IsTransportChecksumCorrect);
                                     break;
 
                                 default:

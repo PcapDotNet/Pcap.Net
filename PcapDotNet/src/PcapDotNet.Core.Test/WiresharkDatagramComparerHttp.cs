@@ -87,10 +87,15 @@ namespace PcapDotNet.Core.Test
                             break;
                         }
                         httpFieldName = fieldShow.Substring(0, colonIndex);
-                        string fieldValue = fieldShow.Substring(colonIndex + 1).SkipWhile(c => c == ' ').TakeWhile(c => c != '\\').SequenceToString();
-                        string expectedFieldValue = httpDatagram.Header[httpFieldName].ValueString;
-                        Assert.IsTrue(expectedFieldValue.Contains(fieldValue),
-                                      string.Format("{0} <{1}> doesn't contain <{2}>", field.Name(), expectedFieldValue, fieldValue));
+                        if (!field.Value().EndsWith("0d0a"))
+                            Assert.IsNull(httpDatagram.Header[httpFieldName]);
+                        else
+                        {
+                            string fieldValue = fieldShow.Substring(colonIndex + 1).SkipWhile(c => c == ' ').TakeWhile(c => c != '\\').SequenceToString();
+                            string expectedFieldValue = httpDatagram.Header[httpFieldName].ValueString;
+                            Assert.IsTrue(expectedFieldValue.Contains(fieldValue),
+                                          string.Format("{0} <{1}> doesn't contain <{2}>", field.Name(), expectedFieldValue, fieldValue));
+                        }
                     }
                     break;
 
@@ -130,7 +135,12 @@ namespace PcapDotNet.Core.Test
                 case "http.content_length_header":
                     _data.Append(field.Value());
                     if (!IsBadHttp(httpDatagram))
-                        field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
+                    {
+                        if (!field.Value().EndsWith("0d0a"))
+                            Assert.IsNull(httpDatagram.Header.ContentLength);
+                        else
+                            field.AssertShowDecimal(httpDatagram.Header.ContentLength.ContentLength.Value);
+                    }
                     break;
 
                 case "http.content_type":
@@ -138,17 +148,22 @@ namespace PcapDotNet.Core.Test
                     string[] mediaType = fieldShow.Split(new[] {';', ' ', '/'}, StringSplitOptions.RemoveEmptyEntries);
                     if (!IsBadHttp(httpDatagram))
                     {
-                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
-                        Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubtype, mediaType[1]);
-                        int fieldShowParametersStart = fieldShow.IndexOf(';');
-                        if (fieldShowParametersStart == -1)
-                            Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
+                        if (!field.Value().EndsWith("0d0a"))
+                            Assert.IsNull(httpDatagram.Header.ContentType);
                         else
                         {
-                            string expected =
-                                httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).
-                                    SequenceToString(';');
-                            Assert.AreEqual(expected, fieldShow.Substring(fieldShowParametersStart + 1));
+                            Assert.AreEqual(httpDatagram.Header.ContentType.MediaType, mediaType[0]);
+                            Assert.AreEqual(httpDatagram.Header.ContentType.MediaSubtype, mediaType[1]);
+                            int fieldShowParametersStart = fieldShow.IndexOf(';');
+                            if (fieldShowParametersStart == -1)
+                                Assert.IsFalse(httpDatagram.Header.ContentType.Parameters.Any());
+                            else
+                            {
+                                string expected =
+                                    httpDatagram.Header.ContentType.Parameters.Select(pair => pair.Key + '=' + pair.Value.ToWiresharkLiteral()).
+                                        SequenceToString(';');
+                                Assert.AreEqual(expected, fieldShow.Substring(fieldShowParametersStart + 1));
+                            }
                         }
                     }
                     break;
@@ -194,7 +209,7 @@ namespace PcapDotNet.Core.Test
                         if (httpDatagram.Version == null)
                         {
                             if (field.Show() != string.Empty)
-                                Assert.IsTrue(field.Show().Contains(" "));
+                                Assert.IsTrue(field.Show().Contains(" ") || field.Show().Length < 8);
                         }
                         else
                             field.AssertShow(httpDatagram.Version.ToString());

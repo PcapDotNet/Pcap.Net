@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
@@ -161,8 +162,38 @@ namespace PcapDotNet.Core.Test
                 // dns.response_to.
                 Packet.FromHexadecimalString(
                     "45000107400100003a110e4adc9fd4c801487eeb0035c8db00f3ead1fb96818000010001000500050436746f340469707636096d6963726f736f667403636f6d0000010001c00c0001000100000dbb00",
+                    DateTime.Now, DataLinkKind.IpV4),
+                // TCP Checksum is bad because of too big IP total length.
+                Packet.FromHexadecimalString(
+                    "450000a8392040003706944a4a7dab3501487eeb0050cb50800f365664e4726250180089df90000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                    DateTime.Now, DataLinkKind.IpV4),
+                // TCP Checksum is zero.
+                Packet.FromHexadecimalString(
+                    "450005dc54224000370674144a7dab3501487eeb0050cb5080a8136c64e4726250100089000000002db2707095328b271a9acf128e85be789f0e5ea6cb9d6f13f32481f6baf855420b60fe5c4053407e",
                     DateTime.Now, DataLinkKind.IpV4));
         }
+
+        [TestMethod]
+        public void CompareTcpZeroChecksumToWiresharkTest()
+        {
+            ComparePacketsToWireshark(
+                PacketBuilder.Build(DateTime.Now,
+                                    new EthernetLayer(),
+                                    new IpV4Layer
+                                    {
+                                        Ttl = 128
+                                    },
+                                    new TcpLayer
+                                    {
+                                        Checksum = 0,
+                                        Window = 100,
+                                    },
+                                    new PayloadLayer
+                                    {
+                                        Data = new Datagram(new byte[10])
+                                    }));
+        }
+
 
         private static Packet CreateRandomPacket(Random random)
         {
@@ -411,6 +442,9 @@ namespace PcapDotNet.Core.Test
         {
             IEnumerator<Packet> packetEnumerator = packets.GetEnumerator();
 
+            List<Packet> failedPackets = new List<Packet>();
+            StringBuilder failureMessage = new StringBuilder();
+
             // Parse XML
             int i = 1;
             foreach (var documentPacket in document.Element("pdml").Elements("packet"))
@@ -424,9 +458,16 @@ namespace PcapDotNet.Core.Test
                 }
                 catch (Exception e)
                 {
-                    throw new AssertFailedException("Failed comparing packet " + i + ". " + e.Message, e);
+                    failedPackets.Add(packet);
+                    failureMessage.Append(new AssertFailedException("Failed comparing packet " + i + ". " + e.Message, e) + Environment.NewLine);
                 }
                 ++i;
+            }
+
+            if (failedPackets.Any())
+            {
+                PacketDumpFile.Dump(Path.GetTempPath() + "temp." + 1000 + ".pcap", failedPackets.First().DataLink.Kind, 65536, failedPackets);
+                throw new AssertFailedException("Failed comparing " + failedPackets.Count + " packets:" + Environment.NewLine + failureMessage);
             }
         }
 
