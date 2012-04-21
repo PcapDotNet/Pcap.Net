@@ -433,30 +433,9 @@ namespace PcapDotNet.Packets.IpV4
             buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
         }
 
-        private ushort CalculateTransportChecksum()
-        {
-            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)(TotalLength - HeaderLength), Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
-        }
-
-        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV4Address destination)
-        {
-            int offsetAfterChecksum = offset + headerLength + transportChecksumOffset + 2;
-            uint sum = Sum16Bits(buffer, offset + Offset.Source, IpV4Address.SizeOf) +
-                       Sum16Bits(destination) +
-                       buffer[offset + Offset.Protocol] + transportLength +
-                       Sum16Bits(buffer, offset + headerLength, transportChecksumOffset) +
-                       Sum16Bits(buffer, offsetAfterChecksum, Math.Min(transportLength - transportChecksumOffset - 2, buffer.Length - offsetAfterChecksum));
-
-            ushort checksumResult = Sum16BitsToChecksum(sum);
-            if (checksumResult == 0 && isChecksumOptional)
-                return 0xFFFF;
-            return checksumResult;
-        }
-
         /// <summary>
         /// An IPv4 datagram is valid if its length is big enough for the header, the header checksum is correct and the payload is valid.
         /// </summary>
-        /// <returns></returns>
         protected override bool CalculateIsValid()
         {
             if (Length < HeaderMinimumLength || Length < HeaderLength)
@@ -493,6 +472,26 @@ namespace PcapDotNet.Packets.IpV4
                        Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, RealHeaderLength - Offset.HeaderChecksum - 2);
 
             return Sum16BitsToChecksum(sum);
+        }
+
+        private ushort CalculateTransportChecksum()
+        {
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
+        }
+
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV4Address destination)
+        {
+            int offsetAfterChecksum = offset + headerLength + transportChecksumOffset + 2;
+            uint sum = Sum16Bits(buffer, offset + Offset.Source, IpV4Address.SizeOf) +
+                       Sum16Bits(destination) +
+                       buffer[offset + Offset.Protocol] + transportLength +
+                       Sum16Bits(buffer, offset + headerLength, transportChecksumOffset) +
+                       Sum16Bits(buffer, offsetAfterChecksum, transportLength - transportChecksumOffset - 2);
+
+            ushort checksumResult = Sum16BitsToChecksum(sum);
+            if (checksumResult == 0 && isChecksumOptional)
+                return 0xFFFF;
+            return checksumResult;
         }
 
         private IpV4Address? _destination;

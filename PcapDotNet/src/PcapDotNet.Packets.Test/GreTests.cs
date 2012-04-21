@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.Test
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 if (greLayer.Checksum == null &&
-                    !new[] { EthernetType.IpV4, EthernetType.Arp }.Contains(packet.Ethernet.IpV4.Gre.ProtocolType))
+                    !new[] { EthernetType.IpV4, EthernetType.Arp, EthernetType.VLanTaggedFrame }.Contains(packet.Ethernet.IpV4.Gre.ProtocolType))
                 {
                     Assert.IsTrue(packet.IsValid, "IsValid, ProtocolType=" + packet.Ethernet.IpV4.Gre.ProtocolType);
                 }
