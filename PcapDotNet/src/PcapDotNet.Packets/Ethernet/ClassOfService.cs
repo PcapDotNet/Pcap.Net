@@ -1,4 +1,4 @@
-﻿namespace PcapDotNet.Packets.VLanTaggedFrame
+﻿namespace PcapDotNet.Packets.Ethernet
 {
     /// <summary>
     /// IEEE P802.1p.

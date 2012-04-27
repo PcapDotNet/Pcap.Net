@@ -1,6 +1,5 @@
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
-using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Packets.Ethernet
 {

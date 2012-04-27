@@ -5,7 +5,6 @@ using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
-using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Packets.Test
 {

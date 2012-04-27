@@ -396,9 +396,9 @@
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
     <Compile Include="Transport\UdpLayer.cs" />
-    <Compile Include="VLanTaggedFrame\ClassOfService.cs" />
-    <Compile Include="VLanTaggedFrame\VLanTaggedFrameDatagram.cs" />
-    <Compile Include="VLanTaggedFrame\VLanTaggedFrameLayer.cs" />
+    <Compile Include="Ethernet\ClassOfService.cs" />
+    <Compile Include="Ethernet\VLanTaggedFrameDatagram.cs" />
+    <Compile Include="Ethernet\VLanTaggedFrameLayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />
@@ -430,6 +430,9 @@
     <CodeAnalysisDictionary Include="..\PcapDotNet.CodeAnalysisDictionary.xml">
       <Link>PcapDotNet.CodeAnalysisDictionary.xml</Link>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VLanTaggedFrame\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

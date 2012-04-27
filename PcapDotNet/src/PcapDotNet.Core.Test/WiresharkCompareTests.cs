@@ -16,7 +16,6 @@ using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
-using PcapDotNet.Packets.VLanTaggedFrame;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
