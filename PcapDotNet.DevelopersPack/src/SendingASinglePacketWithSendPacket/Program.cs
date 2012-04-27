@@ -14,7 +14,6 @@ using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
-using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace SendingASinglePacketWithSendPacket
 {
