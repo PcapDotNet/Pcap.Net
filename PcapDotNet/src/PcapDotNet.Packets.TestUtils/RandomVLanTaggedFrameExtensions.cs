@@ -1,6 +1,5 @@
 ﻿using System;
 using PcapDotNet.Packets.Ethernet;
-using PcapDotNet.Packets.VLanTaggedFrame;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml.Linq;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
-using PcapDotNet.Packets.VLanTaggedFrame;
 
 namespace PcapDotNet.Core.Test
 {

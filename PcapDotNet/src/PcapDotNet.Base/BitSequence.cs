@@ -225,6 +225,7 @@ namespace PcapDotNet.Base
         /// <param name="value15">Bits 112-119 of the UInt128.</param>
         /// <param name="value16">Bits 120-127 of the UInt128.</param>
         /// <returns>A UInt128 whose bits are determined by the input.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static UInt128 Merge(byte value1, byte value2, byte value3, byte value4, byte value5, byte value6, byte value7, byte value8,
                                     byte value9, byte value10, byte value11, byte value12, byte value13, byte value14, byte value15, byte value16)
         {

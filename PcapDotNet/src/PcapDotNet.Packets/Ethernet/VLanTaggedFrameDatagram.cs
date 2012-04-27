@@ -1,7 +1,4 @@
-using PcapDotNet.Base;
-using PcapDotNet.Packets.Ethernet;
-
-namespace PcapDotNet.Packets.VLanTaggedFrame
+namespace PcapDotNet.Packets.Ethernet
 {
     /// <summary>
     /// IEEE 802.1Q.
