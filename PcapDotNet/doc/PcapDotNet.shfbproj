@@ -19,20 +19,21 @@
     <HtmlHelpName>Pcap.Net</HtmlHelpName>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.dll" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.xml" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.dll" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.dll" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.xml" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.xml" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.dll" />
-<DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.XML" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Base.xml" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.dll" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.dll" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.Extensions.xml" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Core.xml" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.dll" />
+      <DocumentationSource sourceFile="..\bin\Release\PcapDotNet.Packets.XML" />
+    </DocumentationSources>
     <FrameworkVersion>.NET 4.0.30319</FrameworkVersion>
     <Language>en-US</Language>
     <Preliminary>False</Preliminary>
     <CppCommentsFixup>True</CppCommentsFixup>
     <HelpTitle>Pcap.Net Documented Class Library</HelpTitle>
     <MissingTags>None</MissingTags>
-    <HelpFileVersion>0.9.0.0</HelpFileVersion>
+    <HelpFileVersion>0.10.0.0</HelpFileVersion>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <ShowFeedbackControl>False</ShowFeedbackControl>
     <IndentHtml>False</IndentHtml>
