@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -156,6 +158,31 @@ namespace PcapDotNet.Packets.Test
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Payload, "IP Payload");
             }
+        }
+
+        [TestMethod]
+        public void IpV4NullOptionsTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new IpV4Layer
+                                                {
+                                                    CurrentDestination = new IpV4Address("2.3.4.5"),
+                                                    Options = new IpV4Options(new IpV4OptionStrictSourceRouting(new[] {new IpV4Address("1.2.3.4")}, 0)),
+                                                    Protocol = IpV4Protocol.Emcon,
+                                                });
+
+            Assert.IsTrue(packet.IsValid);
+            Assert.IsNotNull(packet.IpV4.Options);
+            Assert.AreEqual(new IpV4Address("1.2.3.4"), packet.IpV4.Destination);
+
+            const int newPacketLength = IpV4Datagram.HeaderMinimumLength - 1;
+            byte[] newPacketBuffer = new byte[newPacketLength];
+            packet.Take(newPacketLength).ToArray().CopyTo(newPacketBuffer, 0);
+
+            Packet newPacket = new Packet(newPacketBuffer, DateTime.Now, DataLinkKind.IpV4);
+            Assert.IsFalse(newPacket.IsValid);
+            Assert.IsNull(newPacket.IpV4.Options);
+            Assert.AreNotEqual(new IpV4Address("1.2.3.4"), newPacket.IpV4.Destination);
         }
 
         [TestMethod]
