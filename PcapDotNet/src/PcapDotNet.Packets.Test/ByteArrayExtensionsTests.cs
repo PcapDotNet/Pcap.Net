@@ -150,13 +150,39 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void ByteArrayUnsignedBigIntegerTest()
         {
-            byte[] buffer = new byte[100];
             for (BigInteger expectedValue = 1; expectedValue <= ushort.MaxValue; expectedValue *= 10)
             {
+                byte[] buffer = new byte[100];
                 buffer.WriteUnsigned(5, expectedValue, 2, Endianity.Big);
                 BigInteger actualValue = buffer.ReadUnsignedBigInteger(5, 2, Endianity.Big);
                 Assert.AreEqual(expectedValue, actualValue);
+
+                buffer = new byte[100];
+                buffer.WriteUnsigned(5, expectedValue, 2, Endianity.Small);
+                actualValue = buffer.ReadUnsignedBigInteger(5, 2, Endianity.Small);
+                Assert.AreEqual(expectedValue, actualValue);
             }
+            for (BigInteger expectedValue = ushort.MaxValue; expectedValue > 0; expectedValue /= 10)
+            {
+                byte[] buffer = new byte[100];
+                buffer.WriteUnsigned(5, expectedValue, 2, Endianity.Big);
+                BigInteger actualValue = buffer.ReadUnsignedBigInteger(5, 2, Endianity.Big);
+                Assert.AreEqual(expectedValue, actualValue);
+
+                buffer = new byte[100];
+                buffer.WriteUnsigned(5, expectedValue, 2, Endianity.Small);
+                actualValue = buffer.ReadUnsignedBigInteger(5, 2, Endianity.Small);
+                Assert.AreEqual(expectedValue, actualValue);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void ByteArrayUnsignedBigIntegerNullBufferTest()
+        {
+            byte[] buffer = null;
+            Assert.IsNotNull(buffer.ReadUnsignedBigInteger(0, 0, Endianity.Big));
+            Assert.Fail();
         }
 
         [TestMethod]

@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Packets;
 
 namespace PcapDotNet.Core.Test
 {
@@ -71,6 +72,15 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
+        public void ValidKindsTest()
+        {
+            foreach (DataLinkKind kind in typeof(DataLinkKind).GetEnumValues())
+            {
+                Assert.AreEqual(kind, new PcapDataLink(kind).Kind);
+            }
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(NotSupportedException), AllowDerivedTypes = false)]
         public void UnsupportedKindErrorTest()
         {
@@ -92,6 +102,16 @@ namespace PcapDotNet.Core.Test
         public void InvalidNameErrorTest()
         {
             PcapDataLink dataLink = new PcapDataLink("Invalid Name");
+            Assert.IsNotNull(dataLink);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException), AllowDerivedTypes = false)]
+        public void InvalidKindTest()
+        {
+            const DataLinkKind InvalidKind = (DataLinkKind)100;
+            IDataLink dataLink = new PcapDataLink(InvalidKind);
             Assert.IsNotNull(dataLink);
             Assert.Fail();
         }
