@@ -1,13 +1,21 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PcapDotNet.TestUtils;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
+using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.TestUtils;
+using PcapDotNet.Packets.Transport;
 
-namespace PcapDotNet.Core.Test
+namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for PcapLibTests.
+    /// Summary description for DataSegmentTests.
     /// </summary>
     [TestClass]
-    public class PcapLibTests
+    public class DataSegmentTests
     {
         /// <summary>
         /// Gets or sets the test context which provides
@@ -38,15 +46,18 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
-        public void VersionTest()
+        public void ToHexadecimalStringTest()
         {
-            const string VersionNumberRegex = @"[0-9]+\.[0-9]+(?:\.| beta)[0-9]+(?:\.[0-9]+)?";
-            const string LibpcapVersionRegex = @"(?:[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?)|(?:[0-9]\.[0-9] branch [0-9]_[0-9]_rel0b \([0-9]+\))";
-            // WinPcap version 4.1.1 (packet.dll version 4.1.0.1753), based on libpcap version 1.0 branch 1_0_rel0b (20091008)
-            // WinPcap version 4.1 beta5 (packet.dll version 4.1.0.1452), based on libpcap version 1.0.0
-            const string VersionRegex = "^WinPcap version " + VersionNumberRegex + @" \(packet\.dll version " + VersionNumberRegex + @"\), based on libpcap version " + LibpcapVersionRegex + "$";
-            string version = PcapLibrary.Version;
-            MoreAssert.IsMatch(VersionRegex, version);
+            byte[] input = new byte[] {1, 2, 3, 4, 5, 6};
+            Assert.AreEqual(HexEncoding.Instance.GetString(input), new DataSegment(input).ToHexadecimalString());
         }
-    }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void DecodeNullEncodingTest()
+        {
+            Assert.IsNotNull(new DataSegment(new byte[1]).Decode(null));
+            Assert.Fail();
+        }
+   }
 }

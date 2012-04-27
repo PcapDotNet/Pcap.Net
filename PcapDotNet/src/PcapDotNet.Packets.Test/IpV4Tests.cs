@@ -114,6 +114,7 @@ namespace PcapDotNet.Packets.Test
                 // IpV4
                 ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
                 Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                Assert.AreEqual(ipV4Layer.Destination, packet.Ethernet.IpV4.Destination, "Destination");
                 Assert.AreNotEqual(ipV4Layer, null);
                 Assert.AreNotEqual(ipV4Layer, new PayloadLayer());
                 Assert.IsNotNull(ipV4Layer.ToString());

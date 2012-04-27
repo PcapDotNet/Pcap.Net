@@ -11,7 +11,7 @@ using PcapDotNet.Packets.Transport;
 namespace PcapDotNet.Packets.Test
 {
     /// <summary>
-    /// Summary description for DatagramTests
+    /// Summary description for DatagramTests.
     /// </summary>
     [TestClass]
     public class DatagramTests

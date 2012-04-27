@@ -175,9 +175,32 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
-        public void TcpOptionMoodBadEmotionStringTest()
+        public void TcpOptionMoodConstructorBadEmotionStringTest()
         {
             Assert.IsNotNull(new TcpOptionMood((TcpOptionMoodEmotion)202).EmotionString);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TcpOptionMoodReadFromBufferBadEmotionStringTest()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new IpV4Layer(),
+                                                new TcpLayer
+                                                {
+                                                    Options = new TcpOptions(new TcpOptionMood(TcpOptionMoodEmotion.Happy))
+                                                });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(1, packet.IpV4.Tcp.Options.Count);
+
+            byte[] newPacketBuffer = new byte[packet.Length];
+            packet.CopyTo(newPacketBuffer, 0);
+            newPacketBuffer[packet.Length - 1] = (byte)'a';
+            newPacketBuffer[packet.Length - 2] = (byte)'a';
+            Packet newPacket = new Packet(newPacketBuffer, DateTime.Now, DataLinkKind.IpV4);
+
+            Assert.IsFalse(newPacket.IsValid);
+            Assert.AreEqual(0, newPacket.IpV4.Tcp.Options.Count);
         }
 
         [TestMethod]
