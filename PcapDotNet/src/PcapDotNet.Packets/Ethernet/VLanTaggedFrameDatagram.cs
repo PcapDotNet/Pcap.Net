@@ -6,9 +6,9 @@ namespace PcapDotNet.Packets.Ethernet
     /// +-----+-----+-----+------+------------------+
     /// | bit | 0-2 | 3   | 4-15 | 16-31            |
     /// +-----+-----+-----+------+------------------+
-    /// | 0   |	TCI              | EtherType/Length |
+    /// | 0   | TCI              | EtherType/Length |
     /// +-----+-----+-----+------+------------------+
-    /// | 0   |	PCP | CFI | VID  | EtherType/Length |
+    /// | 0   | PCP | CFI | VID  | EtherType/Length |
     /// +-----+-----+-----+------+------------------+
     /// </pre>
     /// </summary>
