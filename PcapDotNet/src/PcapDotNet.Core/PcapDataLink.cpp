@@ -24,10 +24,19 @@ PcapDataLink::PcapDataLink(String^ name)
 {
     std::string unmanagedName = MarshalingServices::ManagedToUnmanagedString(name);
     int value = pcap_datalink_name_to_val(unmanagedName.c_str());
-    if (value == -1)
-        throw gcnew ArgumentException("Invalid datalink name " + name, "name");
+    if (value != -1)
+    {
+        _value = value;
+        return;
+    }
 
-    _value = value;
+    if (name == "PPP_WITH_DIR")
+    {
+        _value = 204;
+        return;
+    }
+
+    throw gcnew ArgumentException("Invalid datalink name " + name, "name");
 }
 
 DataLinkKind PcapDataLink::Kind::get()
@@ -43,6 +52,9 @@ DataLinkKind PcapDataLink::Kind::get()
     case 143:
 		return DataLinkKind::Docsis;
 
+    case 204:
+        return DataLinkKind::PppWithDirection;
+
 	default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
     }
@@ -57,19 +69,33 @@ int PcapDataLink::Value::get()
 String^ PcapDataLink::Name::get()
 {
     const char* name = pcap_datalink_val_to_name(Value);
-    if (name == NULL)
-        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no name");
+    if (name != NULL) 
+        return gcnew String(name);
 
-    return gcnew String(name);
+    switch (Value) 
+    {
+    case 204: 
+        return "PPP_WITH_DIR";
+
+    default:
+        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no name");
+    }
 }
 
 String^ PcapDataLink::Description::get()
 {
     const char* description = pcap_datalink_val_to_description(Value);
-    if (description == NULL)
-        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no description");
+    if (description != NULL)
+        return gcnew String(description);
 
-    return gcnew String(description);
+    switch (Value) 
+    {
+    case 204: 
+        return "PPP with Directional Info";
+
+    default:
+        throw gcnew InvalidOperationException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " has no description");
+    }
 }
 
 String^ PcapDataLink::ToString()
@@ -122,6 +148,9 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
 
 	case DataLinkKind::Docsis:
         return 143;
+
+    case DataLinkKind::PppWithDirection:
+        return 204;
 
 	default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " kind " + kind.ToString() + " is unsupported");

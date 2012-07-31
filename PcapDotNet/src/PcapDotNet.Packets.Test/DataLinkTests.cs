@@ -39,14 +39,18 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void DataLinkTest()
         {
-            Assert.AreEqual(DataLink.Ethernet, DataLink.Ethernet);
-            Assert.AreNotEqual(DataLink.Ethernet, 2);
             Assert.AreEqual(DataLinkKind.Ethernet.ToString(), DataLink.Ethernet.ToString());
-            Assert.AreEqual(DataLink.Ethernet.GetHashCode(), DataLink.Ethernet.GetHashCode());
-            // ReSharper disable EqualExpressionComparison
-            Assert.IsTrue(DataLink.Ethernet == DataLink.Ethernet);
-            Assert.IsFalse(DataLink.Ethernet != DataLink.Ethernet);
-            // ReSharper restore EqualExpressionComparison
+            Assert.AreEqual(DataLinkKind.PppWithDirection.ToString(), new DataLink(DataLinkKind.PppWithDirection).ToString());
+            foreach (DataLink dataLink in new[] { DataLink.Ethernet, DataLink.IpV4 })
+            {
+                Assert.AreEqual(dataLink, dataLink);
+                Assert.AreNotEqual(dataLink, 2);
+                Assert.AreEqual(dataLink.GetHashCode(), dataLink.GetHashCode());
+                // ReSharper disable EqualExpressionComparison
+                Assert.IsTrue(dataLink == dataLink);
+                Assert.IsFalse(dataLink != dataLink);
+                // ReSharper restore EqualExpressionComparison
+            }
         }
     }
 }
