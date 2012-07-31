@@ -173,7 +173,7 @@ namespace PcapDotNet.Core.Test
                     if (!IsBadHttp(httpDatagram))
                     {
                         Assert.AreEqual(fieldShow.ToWiresharkLowerLiteral(),
-                                        httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToWiresharkLiteral());
+                                        httpDatagram.Header.TransferEncoding.TransferCodings.SequenceToString(',').ToLowerInvariant().ToWiresharkLiteral());
                     }
                     break;
 
