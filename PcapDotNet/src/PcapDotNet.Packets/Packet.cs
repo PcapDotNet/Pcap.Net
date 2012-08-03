@@ -15,10 +15,15 @@ namespace PcapDotNet.Packets
     /// </summary>
     public sealed class Packet : IList<byte>, IEquatable<Packet>
     {
+        public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
+        {
+            return FromHexadecimalString(value, timestamp, new DataLink(dataLink));
+        }
+
         /// <summary>
         /// Creates a packet from a string that represents bytes in a hexadecimal format.
         /// </summary>
-        public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
+        public static Packet FromHexadecimalString(string value, DateTime timestamp, IDataLink dataLink)
         {
             if (value == null) 
                 throw new ArgumentNullException("value");
