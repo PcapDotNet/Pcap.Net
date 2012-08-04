@@ -323,6 +323,7 @@
     <Compile Include="IpV4\IpV4Layer.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="IpV6\IpV6Address.cs" />
+    <Compile Include="IpV6\IpV6Datagram.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="IOptionComplexFactory.cs" />
