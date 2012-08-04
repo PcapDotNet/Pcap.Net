@@ -43,16 +43,16 @@ DataLinkKind PcapDataLink::Kind::get()
 {
     switch (Value)
     {
-    case 1:
+    case DLT_EN10MB:
         return DataLinkKind::Ethernet;
 
-    case 12:
+    case DLT_RAW:
         return DataLinkKind::IpV4;
 
-    case 143:
+    case DLT_DOCSIS:
 		return DataLinkKind::Docsis;
 
-    case 204:
+    case DLT_PPP_WITH_DIR:
         return DataLinkKind::PppWithDirection;
 
 	default:
@@ -74,7 +74,7 @@ String^ PcapDataLink::Name::get()
 
     switch (Value) 
     {
-    case 204: 
+    case DLT_PPP_WITH_DIR: 
         return "PPP_WITH_DIR";
 
     default:
@@ -90,7 +90,7 @@ String^ PcapDataLink::Description::get()
 
     switch (Value) 
     {
-    case 204: 
+    case DLT_PPP_WITH_DIR: 
         return "PPP with Directional Info";
 
     default:
@@ -141,16 +141,16 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
     switch (kind)
     {
     case DataLinkKind::Ethernet:
-        return 1;
+        return DLT_EN10MB;
 
     case DataLinkKind::IpV4:
-        return 12;
+        return DLT_RAW;
 
 	case DataLinkKind::Docsis:
-        return 143;
+        return DLT_DOCSIS;
 
     case DataLinkKind::PppWithDirection:
-        return 204;
+        return DLT_PPP_WITH_DIR;
 
 	default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " kind " + kind.ToString() + " is unsupported");

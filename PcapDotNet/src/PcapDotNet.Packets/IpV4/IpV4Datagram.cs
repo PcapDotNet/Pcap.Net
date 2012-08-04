@@ -66,7 +66,7 @@ namespace PcapDotNet.Packets.IpV4
         public const int DefaultVersion = 0x4;
 
         /// <summary>
-        /// The header length in bytes.
+        /// Indicates the format of the internet header.
         /// </summary>
         public int Version
         {

@@ -233,6 +233,17 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// Reads 3 bytes from a specific offset in the segment as a UInt24 with a given endianity.
+        /// </summary>
+        /// <param name="offset">The offset in the segment to start reading.</param>
+        /// <param name="endianity">The endianity to use to translate the bytes to the value.</param>
+        /// <returns>The value converted from the read bytes according to the endianity.</returns>
+        internal UInt24 ReadUInt24(int offset, Endianity endianity)
+        {
+            return Buffer.ReadUInt24(StartOffset + offset, endianity);
+        }
+
+        /// <summary>
         /// Reads 4 bytes from a specific offset in the segment as an int with a given endianity.
         /// </summary>
         /// <param name="offset">The offset in the segment to start reading.</param>
