@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {

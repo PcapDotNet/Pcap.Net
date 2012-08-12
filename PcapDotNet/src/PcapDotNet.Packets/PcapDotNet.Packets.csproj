@@ -316,17 +316,22 @@
     <Compile Include="Igmp\IgmpRecordType.cs" />
     <Compile Include="Igmp\IgmpMessageType.cs" />
     <Compile Include="Igmp\IIgmpLayerWithGroupAddress.cs" />
+    <Compile Include="Ip\V4Option.cs" />
+    <Compile Include="Ip\IIpOptionQuickStart.cs" />
+    <Compile Include="IpV4\IpV4OptionTypeRegistrationAttribute.cs" />
     <Compile Include="IpV4\IIpV4NextLayer.cs" />
     <Compile Include="IpV4\IIpV4NextTransportLayer.cs" />
     <Compile Include="ILayer.cs" />
-    <Compile Include="IOptionUnknownFactory.cs" />
+    <Compile Include="Ip\IOptionUnknownFactory.cs" />
     <Compile Include="IpV4\IpV4Layer.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
+    <Compile Include="Ip\IpOptionQuickStartCommon.cs" />
+    <Compile Include="Transport\TcpOptionTypeRegistrationAttribute.cs" />
     <Compile Include="IpV6\IpV6Address.cs" />
     <Compile Include="IpV6\IpV6Datagram.cs" />
     <Compile Include="Layer.cs" />
-    <Compile Include="Option.cs" />
-    <Compile Include="IOptionComplexFactory.cs" />
+    <Compile Include="Ip\Option.cs" />
+    <Compile Include="Ip\IOptionComplexFactory.cs" />
     <Compile Include="IpV4\IpV4Address.cs" />
     <Compile Include="IpV4\IpV4Datagram.cs" />
     <Compile Include="IpV4\IpV4Fragmentation.cs" />
@@ -356,9 +361,9 @@
     <Compile Include="IpV4\IpV4OptionType.cs" />
     <Compile Include="IpV4\IpV4Protocol.cs" />
     <Compile Include="ByteArrayExtensions.cs" />
-    <Compile Include="OptionComplexFactory.cs" />
-    <Compile Include="Options.cs" />
-    <Compile Include="OptionTypeRegistrationAttribute.cs" />
+    <Compile Include="Ip\OptionComplexFactory.cs" />
+    <Compile Include="Ip\Options.cs" />
+    <Compile Include="Ip\OptionTypeRegistrationAttribute.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketBuilder.cs" />
     <Compile Include="PayloadLayer.cs" />
@@ -400,6 +405,7 @@
     <Compile Include="Ethernet\ClassOfService.cs" />
     <Compile Include="Ethernet\VLanTaggedFrameDatagram.cs" />
     <Compile Include="Ethernet\VLanTaggedFrameLayer.cs" />
+    <Compile Include="Ip\V4Options.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PcapDotNet.snk" />

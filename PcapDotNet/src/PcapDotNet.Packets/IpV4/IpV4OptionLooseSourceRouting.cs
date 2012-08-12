@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -56,7 +57,7 @@ namespace PcapDotNet.Packets.IpV4
     ///   Appears at most once in a datagram.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.LooseSourceRouting)]
+    [IpV4OptionTypeRegistration(IpV4OptionType.LooseSourceRouting)]
     public class IpV4OptionLooseSourceRouting : IpV4OptionRoute, IOptionComplexFactory
     {
         /// <summary>

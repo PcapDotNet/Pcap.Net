@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -31,7 +32,7 @@ namespace PcapDotNet.Packets.IpV4
     /// </pre>
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.RouterAlert)]
+    [IpV4OptionTypeRegistration(IpV4OptionType.RouterAlert)]
     public sealed class IpV4OptionRouterAlert : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionRouterAlert>
     {
         /// <summary>

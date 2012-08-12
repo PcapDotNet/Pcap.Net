@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// A collection of TCP options.
     /// </summary>
-    public class TcpOptions : Options<TcpOption>
+    public class TcpOptions : V4Options<TcpOption>
     {
         /// <summary>
         /// The maximum number of bytes the options can take.

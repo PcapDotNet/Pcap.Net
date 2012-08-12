@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -17,7 +18,7 @@ namespace PcapDotNet.Packets.Transport
     /// If this option is not used, any segment size is allowed.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.MaximumSegmentSize)]
+    [TcpOptionTypeRegistration(TcpOptionType.MaximumSegmentSize)]
     public sealed class TcpOptionMaximumSegmentSize : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMaximumSegmentSize>
     {
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -23,7 +24,7 @@ namespace PcapDotNet.Packets.Transport
     /// The "Filler" field serves merely to complete the third byte of the option.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.PartialOrderServiceProfile)]
+    [TcpOptionTypeRegistration(TcpOptionType.PartialOrderServiceProfile)]
     public sealed class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderServiceProfile>
     {
         private const byte NoFlags = 0x00;

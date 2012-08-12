@@ -1,11 +1,12 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
+    /// RFC 4782.
     /// The Quick-Start Option for IPv4
-    /// 
     /// <para>
     ///   The Quick-Start Request for IPv4 is defined as follows:
     ///   <pre>
@@ -20,23 +21,23 @@ namespace PcapDotNet.Packets.IpV4
     ///   </pre>
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.QuickStart)]
-    public sealed class IpV4OptionQuickStart : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionQuickStart>
+    [IpV4OptionTypeRegistration(IpV4OptionType.QuickStart)]
+    public sealed class IpV4OptionQuickStart : IpV4OptionComplex, IIpOptionQuickStart, IOptionComplexFactory, IEquatable<IpV4OptionQuickStart>
     {
         /// <summary>
         /// The number of bytes this option take.
         /// </summary>
-        public const int OptionLength = 8;
+        public const int OptionLength = OptionValueLength + OptionHeaderLength;
 
         /// <summary>
         /// The number of bytes this option's value take.
         /// </summary>
-        public const int OptionValueLength = OptionLength - OptionHeaderLength;
+        public const int OptionValueLength = IpOptionQuickStartCommon.DataLength;
 
         /// <summary>
         /// The maximum value for the rate field.
         /// </summary>
-        public const byte RateMaximumValue = 0x0F;
+        public const byte RateMaximumValue = IpOptionQuickStartCommon.RateMaximumValue;
 
         /// <summary>
         /// Create a quick start option according to the given field values.
@@ -55,22 +56,12 @@ namespace PcapDotNet.Packets.IpV4
         public IpV4OptionQuickStart(IpV4OptionQuickStartFunction function, byte rate, byte ttl, uint nonce)
             : base(IpV4OptionType.QuickStart)
         {
-            if (function != IpV4OptionQuickStartFunction.RateRequest &&
-                function != IpV4OptionQuickStartFunction.RateReport)
-            {
-                throw new ArgumentException("Illegal function " + function, "function");
-            }
+            IpOptionQuickStartCommon.AssertValidParameters(function, rate, ttl, nonce);
 
-            if (rate > RateMaximumValue)
-                throw new ArgumentOutOfRangeException("rate", rate, "Rate maximum value is " + RateMaximumValue);
-
-            if ((nonce & 0x00000003) != 0)
-                throw new ArgumentException("nonce last two bits are reserved and must be zero", "nonce");
-
-            _function = function;
-            _rate = rate;
-            _ttl = ttl;
-            _nonce = nonce;
+            Function = function;
+            Rate = rate;
+            Ttl = ttl;
+            Nonce = nonce;
         }
 
         /// <summary>
@@ -84,32 +75,20 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The function of this quick start option.
         /// </summary>
-        public IpV4OptionQuickStartFunction Function
-        {
-            get { return _function; }
-        }
+        public IpV4OptionQuickStartFunction Function { get; private set; }
 
         /// <summary>
         /// If function is request then this field is the rate request.
         /// If function is report then this field is the rate report.
         /// </summary>
-        public byte Rate
-        {
-            get { return _rate; }
-        }
+        public byte Rate { get; private set; }
 
         /// <summary>
         /// The rate translated to KBPS.
         /// </summary>
         public int RateKbps
         {
-            get
-            {
-                if (Rate == 0)
-                    return 0;
-
-                return 40 * (1 << Rate);
-            }
+            get { return IpOptionQuickStartCommon.CalcRateKbps(Rate); }
         }
 
         /// <summary>
@@ -124,10 +103,7 @@ namespace PcapDotNet.Packets.IpV4
         ///   TTL Diff = ( IP TTL - QS TTL ) mod 256                 
         /// </para>
         /// </summary>
-        public byte Ttl
-        {
-            get { return _ttl; }
-        }
+        public byte Ttl { get; private set; }
 
         /// <summary>
         /// The QS Nonce gives the Quick-Start sender some protection against receivers lying about the value of the received Rate Request. 
@@ -176,10 +152,7 @@ namespace PcapDotNet.Packets.IpV4
         /// and the receiver reports back a Rate Request of K, then the last 2K bits of the QS Nonce should have their original value.
         /// </para>
         /// </summary>
-        public uint Nonce
-        {
-            get { return _nonce; }
-        }
+        public uint Nonce { get; private set; }
 
         /// <summary>
         /// The number of bytes this option will take.
@@ -241,12 +214,12 @@ namespace PcapDotNet.Packets.IpV4
             if (valueLength != OptionValueLength)
                 return null;
 
-            byte functionAndRate = buffer[offset++];
-            IpV4OptionQuickStartFunction function = (IpV4OptionQuickStartFunction)(functionAndRate & 0xF0);
-            byte rate = (byte)(functionAndRate & 0x0F);
-
-            byte ttl = buffer[offset++];
-            uint nonce = buffer.ReadUInt(ref offset, Endianity.Big);
+            IpV4OptionQuickStartFunction function;
+            byte rate;
+            byte ttl;
+            uint nonce;
+            IpOptionQuickStartCommon.ReadData(new DataSegment(buffer, offset, valueLength), out function, out rate, out ttl, out nonce);
+            offset += OptionValueLength;
 
             return new IpV4OptionQuickStart(function, rate, ttl, nonce);
         }
@@ -255,14 +228,7 @@ namespace PcapDotNet.Packets.IpV4
         {
             base.Write(buffer, ref offset);
 
-            buffer[offset++] = (byte)((byte)Function | Rate);
-            buffer[offset++] = Ttl;
-            buffer.Write(ref offset, Nonce, Endianity.Big);
+            IpOptionQuickStartCommon.WriteData(buffer, ref offset, Function, Rate, Ttl, Nonce);
         }
-
-        private readonly IpV4OptionQuickStartFunction _function;
-        private readonly byte _rate;
-        private readonly byte _ttl;
-        private readonly uint _nonce;
     }
 }

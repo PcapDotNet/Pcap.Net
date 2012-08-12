@@ -1,5 +1,6 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -40,7 +41,7 @@ namespace PcapDotNet.Packets.IpV4
     ///   </pre>
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.BasicSecurity)]
+    [IpV4OptionTypeRegistration(IpV4OptionType.BasicSecurity)]
     public sealed class IpV4OptionBasicSecurity : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionBasicSecurity>
     {
         /// <summary>

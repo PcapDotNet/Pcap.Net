@@ -1,3 +1,5 @@
+using PcapDotNet.Packets.Ip;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -19,7 +21,7 @@ namespace PcapDotNet.Packets.Transport
     /// A CC.ECHO option should be sent only in a &lt;SYN,ACK&gt; segment and should be ignored if it is received in any other segment.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountEcho)]
+    [TcpOptionTypeRegistration(TcpOptionType.ConnectionCountEcho)]
     public class TcpOptionConnectionCountEcho : TcpOptionConnectionCountBase, IOptionComplexFactory
     {
         /// <summary>

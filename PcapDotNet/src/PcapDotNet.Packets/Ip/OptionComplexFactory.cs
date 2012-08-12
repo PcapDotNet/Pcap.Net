@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.Ip
 {
     internal static class OptionComplexFactory<TOptionType>
     {

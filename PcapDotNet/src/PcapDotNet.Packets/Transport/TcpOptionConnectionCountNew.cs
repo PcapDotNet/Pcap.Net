@@ -1,3 +1,5 @@
+using PcapDotNet.Packets.Ip;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCountNew)]
+    [TcpOptionTypeRegistration(TcpOptionType.ConnectionCountNew)]
     public class TcpOptionConnectionCountNew : TcpOptionConnectionCountBase, IOptionComplexFactory
     {
         /// <summary>

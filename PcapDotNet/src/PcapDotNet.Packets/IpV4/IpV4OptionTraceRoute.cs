@@ -1,5 +1,6 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -31,7 +32,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Number: 18 (F+C+Number = 82)
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.TraceRoute)]
+    [IpV4OptionTypeRegistration(IpV4OptionType.TraceRoute)]
     public sealed class IpV4OptionTraceRoute : IpV4OptionComplex, IOptionComplexFactory, IEquatable<IpV4OptionTraceRoute>
     {
         /// <summary>

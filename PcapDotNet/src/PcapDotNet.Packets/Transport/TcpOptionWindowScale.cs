@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -33,7 +34,7 @@ namespace PcapDotNet.Packets.Transport
     /// The Window field in a SYN (i.e., a SYN or SYN,ACK) segment itself is never scaled.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.WindowScale)]
+    [TcpOptionTypeRegistration(TcpOptionType.WindowScale)]
     public sealed class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionWindowScale>
     {
         /// <summary>

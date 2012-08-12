@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -10,7 +11,7 @@ namespace PcapDotNet.Packets.Transport
     /// +-----------+-------------+
     /// </pre>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.PartialOrderConnectionPermitted)]
+    [TcpOptionTypeRegistration(TcpOptionType.PartialOrderConnectionPermitted)]
     public sealed class TcpOptionPartialOrderConnectionPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderConnectionPermitted>
     {
         /// <summary>

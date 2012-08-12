@@ -1,5 +1,6 @@
 using System;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
@@ -73,7 +74,7 @@ namespace PcapDotNet.Packets.IpV4
     /// </summary>
     public abstract class IpV4OptionTimestamp : IpV4OptionComplex, IEquatable<IpV4OptionTimestamp>
     {
-        [OptionTypeRegistration(typeof(IpV4OptionType), IpV4OptionType.InternetTimestamp)]
+        [IpV4OptionTypeRegistration(IpV4OptionType.InternetTimestamp)]
         internal class IpV4OptionTimestampFactory : IOptionComplexFactory
         {
             Option IOptionComplexFactory.CreateInstance(byte[] buffer, ref int offset, byte valueLength)
