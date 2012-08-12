@@ -206,9 +206,9 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         Bna = 0x31,
         /// <summary>
-        /// Encapsulating Security Payload RFC 2406   
+        /// ESP. Encapsulating Security Payload RFC 2406.
         /// </summary>
-        Esp = 0x32,
+        EncapsulatingSecurityPayload = 0x32,
         /// <summary>
         /// Authentication Header RFC 2402   
         /// </summary>

@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -27,7 +28,7 @@ namespace PcapDotNet.Packets.Transport
     /// However, a TCP should not receive one of these options in a non-SYN segment unless it included a TCP Echo option in its own SYN segment.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.EchoReply)]
+    [TcpOptionTypeRegistration(TcpOptionType.EchoReply)]
     public sealed class TcpOptionEchoReply : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEchoReply>
     {
         /// <summary>

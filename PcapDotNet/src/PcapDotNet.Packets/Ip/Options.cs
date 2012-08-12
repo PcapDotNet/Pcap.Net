@@ -1,14 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
 
-namespace PcapDotNet.Packets
+namespace PcapDotNet.Packets.Ip
 {
     /// <summary>
     /// A generic Options class.
-    /// Represents a list of options (either IPv4 options or TCP options).
+    /// Represents a list of options (either IPv4 options, IPv6 options or TCP options).
     /// </summary>
     /// <typeparam name="T">The Option type this collection contains.</typeparam>
     public abstract class Options<T> where T : Option
@@ -88,12 +87,6 @@ namespace PcapDotNet.Packets
             return OptionsCollection.SequenceToString(", ", GetType().Name + " {", "}");
         }
 
-        internal Options(byte[] buffer, int offset, int length, T end)
-            : this(Read(buffer, offset, length, end))
-        {
-            BytesLength = length;
-        }
-
         internal void Write(byte[] buffer, int offset)
         {
             int offsetEnd = offset + BytesLength;
@@ -105,64 +98,28 @@ namespace PcapDotNet.Packets
                 buffer[offset++] = 0;
         }
 
-        internal Options(IList<T> options, T end, int maximumBytesLength)
-            : this(EndOptions(options, end), true)
-        {
-            if (BytesLength > maximumBytesLength)
-                throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + maximumBytesLength, "options");
-        }
-
-        private Options(IList<T> options, bool isValid)
+        internal Options(IList<T> options, bool isValid, int? length)
         {
             _options = options.AsReadOnly();
 
             IsValid = isValid;
 
-            BytesLength = SumBytesLength(OptionsCollection);
+            if (length.HasValue)
+            {
+                BytesLength = length.Value;
+            }
+            else
+            {
+                BytesLength = SumBytesLength(OptionsCollection);
 
-            if (BytesLength % 4 != 0)
-                BytesLength = (BytesLength / 4 + 1) * 4;
+                if (BytesLength % 4 != 0)
+                    BytesLength = (BytesLength / 4 + 1) * 4;
+            }
         }
 
-        private static IList<T> EndOptions(IList<T> options, T end)
-        {
-            if (options.Count == 0 || options.Last().Equivalent(end) || SumBytesLength(options) % 4 == 0)
-                return options;
-
-            return new List<T>(options.Concat(end));
-        }
-
-        private static int SumBytesLength(IEnumerable<T> options)
+        internal static int SumBytesLength(IEnumerable<T> options)
         {
             return options.Sum(option => option.Length);
-        }
-
-        private Options(Tuple<IList<T>, bool> optionsAndIsValid)
-            : this(optionsAndIsValid.Item1, optionsAndIsValid.Item2)
-        {
-        }
-
-        private static Tuple<IList<T>, bool> Read(byte[] buffer, int offset, int length, T end)
-        {
-            int offsetEnd = offset + length;
-
-            List<T> options = new List<T>();
-            while (offset != offsetEnd)
-            {
-                T option = (T)end.Read(buffer, ref offset, offsetEnd - offset);
-                if (option == null ||
-                    option.IsAppearsAtMostOnce && options.Any(option.Equivalent))
-                {
-                    // Invalid
-                    return new Tuple<IList<T>, bool>(options, false);
-                }
-
-                options.Add(option);
-                if (option.Equivalent(end))
-                    break; // Valid?
-            }
-
-            return new Tuple<IList<T>, bool>(options, true);
         }
 
         private readonly ReadOnlyCollection<T> _options;

@@ -1,11 +1,13 @@
 using System;
+using PcapDotNet.Packets.Ip;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
     /// Represents a TCP option according to rfc 793. 
     /// </summary>
-    public abstract class TcpOption : Option, IEquatable<TcpOption>
+    public abstract class TcpOption : V4Option, IEquatable<TcpOption>
     {
         /// <summary>
         /// This option code indicates the end of the option list.  
@@ -78,7 +80,7 @@ namespace PcapDotNet.Packets.Transport
             return OptionType.ToString();
         }
 
-        internal sealed override Option Read(byte[] buffer, ref int offset, int length)
+        internal sealed override V4Option Read(byte[] buffer, ref int offset, int length)
         {
             int offsetEnd = offset + length;
             if (offset == offsetEnd)
@@ -93,7 +95,7 @@ namespace PcapDotNet.Packets.Transport
                     return Nop;
 
                 default:
-                    return OptionComplexFactory<TcpOptionType>.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                    return (V4Option)OptionComplexFactory<TcpOptionType>.Read(optionType, buffer, ref offset, offsetEnd - offset);
             }
         }
 

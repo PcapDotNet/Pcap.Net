@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -28,7 +29,7 @@ namespace PcapDotNet.Packets.Transport
     /// and may send a TSopt in other segments only if it received a TSopt in the initial &lt;SYN&gt; segment for the connection.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Timestamp)]
+    [TcpOptionTypeRegistration(TcpOptionType.Timestamp)]
     public sealed class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>
     {
         /// <summary>

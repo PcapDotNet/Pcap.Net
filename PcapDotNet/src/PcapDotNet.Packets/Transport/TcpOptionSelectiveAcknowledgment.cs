@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -53,7 +54,7 @@ namespace PcapDotNet.Packets.Transport
     /// The SACK option is advisory, in that, while it notifies the data sender that the data receiver has received the indicated segments,
     /// the data receiver is permitted to later discard data which have been reported in a SACK option.  
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.SelectiveAcknowledgment)]
+    [TcpOptionTypeRegistration(TcpOptionType.SelectiveAcknowledgment)]
     public sealed class TcpOptionSelectiveAcknowledgment : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgment>
     {
         /// <summary>

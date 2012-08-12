@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -14,7 +15,7 @@ namespace PcapDotNet.Packets.Transport
     /// +---------+---------+
     /// </pre>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.SelectiveAcknowledgmentPermitted)]
+    [TcpOptionTypeRegistration(TcpOptionType.SelectiveAcknowledgmentPermitted)]
     public sealed class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgmentPermitted>
     {
         /// <summary>

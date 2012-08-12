@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -33,7 +34,7 @@ namespace PcapDotNet.Packets.Transport
     /// While computing the alternate checksum, the TCP checksum field and the data portion TCP Alternate Checksum Data Option are replaced with zeros.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.AlternateChecksumData)]
+    [TcpOptionTypeRegistration(TcpOptionType.AlternateChecksumData)]
     public sealed class TcpOptionAlternateChecksumData : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumData>
     {
         /// <summary>

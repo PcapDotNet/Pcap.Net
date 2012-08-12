@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -25,7 +26,7 @@ namespace PcapDotNet.Packets.Transport
     /// The MD5 digest is always 16 bytes in length, and the option would appear in every segment of a connection.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Md5Signature)]
+    [TcpOptionTypeRegistration(TcpOptionType.Md5Signature)]
     public sealed class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMd5Signature>
     {
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -20,7 +21,7 @@ namespace PcapDotNet.Packets.Transport
     /// and the four information bytes will define the time at which the data segment was transmitted in any format convenient to the sender.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Echo)]
+    [TcpOptionTypeRegistration(TcpOptionType.Echo)]
     public sealed class TcpOptionEcho : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEcho>
     {
         /// <summary>

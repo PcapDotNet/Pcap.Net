@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -62,7 +63,7 @@ namespace PcapDotNet.Packets.Transport
     /// </pre>
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.Mood)]
+    [TcpOptionTypeRegistration(TcpOptionType.Mood)]
     public sealed class TcpOptionMood : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMood>
     {
         /// <summary>

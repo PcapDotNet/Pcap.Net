@@ -1,11 +1,12 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
     /// Represents an ip option according to rfc 791. 
     /// </summary>
-    public abstract class IpV4Option : Option, IEquatable<IpV4Option>
+    public abstract class IpV4Option : V4Option, IEquatable<IpV4Option>
     {
         ///<summary>
         /// This option indicates the end of the option list.<br/>
@@ -28,7 +29,7 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The type of the ip option.
+        /// The type of the IP option.
         /// </summary>
         public IpV4OptionType OptionType
         {
@@ -79,7 +80,7 @@ namespace PcapDotNet.Packets.IpV4
             return OptionType.ToString();
         }
 
-        internal sealed override Option Read(byte[] buffer, ref int offset, int length)
+        internal sealed override V4Option Read(byte[] buffer, ref int offset, int length)
         {
             int offsetEnd = offset + length;
             if (offset == offsetEnd)
@@ -94,7 +95,7 @@ namespace PcapDotNet.Packets.IpV4
                     return Nop;
 
                 default:
-                    return OptionComplexFactory<IpV4OptionType>.Read(optionType, buffer, ref offset, offsetEnd - offset);
+                    return (V4Option)OptionComplexFactory<IpV4OptionType>.Read(optionType, buffer, ref offset, offsetEnd - offset);
             }
         }
 

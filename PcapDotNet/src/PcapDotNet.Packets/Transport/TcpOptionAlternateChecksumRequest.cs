@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.Transport
 {
@@ -27,7 +28,7 @@ namespace PcapDotNet.Packets.Transport
     /// Note that the 8-bit Fletcher algorithm gives a 16-bit checksum and the 16-bit algorithm gives a 32-bit checksum.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.AlternateChecksumRequest)]
+    [TcpOptionTypeRegistration(TcpOptionType.AlternateChecksumRequest)]
     public sealed class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumRequest>
     {
         /// <summary>

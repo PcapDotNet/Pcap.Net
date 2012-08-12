@@ -1,6 +1,7 @@
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
+    /// RFC 4782.
     /// Defines the possible quick start functions.
     /// </summary>
     public enum IpV4OptionQuickStartFunction : byte
@@ -14,6 +15,5 @@ namespace PcapDotNet.Packets.IpV4
         /// Reports on a specific rate that was agreed (or disagreed).
         /// </summary>
         RateReport = 0x80
-
     }
 }

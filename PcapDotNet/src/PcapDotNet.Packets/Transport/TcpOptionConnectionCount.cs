@@ -1,3 +1,5 @@
+using PcapDotNet.Packets.Ip;
+
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace PcapDotNet.Packets.Transport
     /// Its SEG.CC value is the TCB.CCsend value from the sender's TCB.
     /// </para>
     /// </summary>
-    [OptionTypeRegistration(typeof(TcpOptionType), TcpOptionType.ConnectionCount)]
+    [TcpOptionTypeRegistration(TcpOptionType.ConnectionCount)]
     public class TcpOptionConnectionCount : TcpOptionConnectionCountBase, IOptionComplexFactory
     {
         /// <summary>
