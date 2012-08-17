@@ -243,7 +243,7 @@ void PacketCommunicator::SendPacket(Packet^ packet)
         return;
     pin_ptr<Byte> unamangedPacketBytes = &packet->Buffer[0];
     if (pcap_sendpacket(_pcapDescriptor, unamangedPacketBytes, packet->Length) != 0)
-        throw BuildInvalidOperation("Failed writing to device");
+        throw BuildInvalidOperation("Failed writing to device. Packet length: " + packet->Length);
 }
 
 BerkeleyPacketFilter^ PacketCommunicator::CreateFilter(String^ filterValue)
