@@ -152,6 +152,10 @@ namespace PcapDotNet.Core.Test
                     field.AssertNoFields();
                     break;
 
+                case "icmp.resp_to":
+                case "icmp.resptime":
+                    break;
+
                 default:
                     if (!field.Name().StartsWith("lt2p.") &&
                         !field.Name().StartsWith("pweth."))
