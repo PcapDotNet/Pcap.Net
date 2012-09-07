@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Ethernet
         }
 
         /// <summary>
-        /// The 4 bytes of the France Check Sequence (FCS).
+        /// The 4 bytes of the Frame Check Sequence (FCS).
         /// Usually, these bytes won't be available because the device remvoed them after checking their validity.
         /// We assume they exist when we see that the Ethernet padding pads to 68 bytes or more.
         /// If the padding isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
