@@ -702,6 +702,19 @@ namespace PcapDotNet.Packets
         }
 
         /// <summary>
+        /// Writes the given value to the buffer using the given endianity and increments the offset by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
+        public static void Write(this byte[] buffer, ref int offset, UInt128 value, Endianity endianity)
+        {
+            buffer.Write(offset, value, endianity);
+            offset += UInt128.SizeOf;
+        }
+
+        /// <summary>
         /// Writes the given amount of least significant bytes of the value to the buffer using the given endianity.
         /// Doesn't write leading zero bytes.
         /// </summary>
@@ -851,6 +864,18 @@ namespace PcapDotNet.Packets
         public static void Write(this byte[] buffer, int offset, IpV6Address value, Endianity endianity)
         {
             buffer.Write(offset, value.ToValue(), endianity);
+        }
+
+        /// <summary>
+        /// Writes the given value to the buffer using the given endianity and increments the offset by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the value to.</param>
+        /// <param name="offset">The offset in the buffer to start writing.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
+        public static void Write(this byte[] buffer, ref int offset, IpV6Address value, Endianity endianity)
+        {
+            buffer.Write(ref offset, value.ToValue(), endianity);
         }
 
 //        public static void WriteCarriageReturnLinefeed(this byte[] buffer, int offset)
