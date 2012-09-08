@@ -1964,9 +1964,147 @@ namespace PcapDotNet.Packets.IpV6
             return IpV6OptionSmfDpdSequenceBased.CreateSpecificInstance(data);
         }
     }
-    //        HomeAddress = 0xC9,
-//        EndpointIdentification = 0x8A,
-//        RplOption = 0x63,
+
+    /// <summary>
+    /// RFC 6275.
+    /// Home Address Option.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Home Address               |
+    /// |     |                            |
+    /// |     |                            |
+    /// |     |                            |
+    /// |     |                            |
+    /// |     |                            |
+    /// |     |                            |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6OptionTypeRegistration(IpV6OptionType.HomeAddress)]
+    public class IpV6OptionHomeAddress : IpV6OptionComplex
+    {
+        public const int OptionDataLength = IpV6Address.SizeOf;
+
+        public IpV6OptionHomeAddress(IpV6Address homeAddress)
+            : base(IpV6OptionType.HomeAddress)
+        {
+            HomeAddress = homeAddress;
+        }
+
+        /// <summary>
+        /// The home address of the mobile node sending the packet.  
+        /// This address must be a unicast routable address.
+        /// </summary>
+        public IpV6Address HomeAddress { get; private set; }
+
+        internal IpV6OptionHomeAddress() 
+            : this(IpV6Address.Zero)
+        {
+        }
+
+        internal override IpV6Option CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+            IpV6Address homeAddress = data.ReadIpV6Address(0, Endianity.Big);
+            return new IpV6OptionHomeAddress(homeAddress);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, HomeAddress, Endianity.Big);
+        }
+    }
+
+    /// <summary>
+    /// Charles Lynn..
+    /// http://ana-3.lcs.mit.edu/~jnc/nimrod/eidoption.txt
+    /// Endpoint Identifier Option.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Src Len     | Dst Len      |
+    /// +-----+-------------+--------------+
+    /// | 32  | Source EID                 |
+    /// | ... |                            |
+    /// +-----+----------------------------+
+    /// |     | Destination EID            |
+    /// | ... |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6OptionTypeRegistration(IpV6OptionType.EndpointIdentification)]
+    public class IpV6OptionEndpointIdentification : IpV6OptionComplex
+    {
+        private static class Offset
+        {
+            public const int SourceEndpointIdentifierLength = 0;
+            public const int DestinationEndpointIdentifierLength = SourceEndpointIdentifierLength + sizeof(byte);
+            public const int SourceEndpointIdentifier = DestinationEndpointIdentifierLength + sizeof(byte);
+        }
+
+        public const int OptionDataMinimumLength = Offset.SourceEndpointIdentifier;
+
+        public IpV6OptionEndpointIdentification(DataSegment sourceEndpointIdentifier, DataSegment destinationEndpointIdentifier)
+            : base(IpV6OptionType.EndpointIdentification)
+        {
+            SourceEndpointIdentifier = sourceEndpointIdentifier;
+            DestinationEndpointIdentifier = destinationEndpointIdentifier;
+        }
+
+        public DataSegment SourceEndpointIdentifier { get; private set; }
+
+        public DataSegment DestinationEndpointIdentifier { get; private set; }
+
+        internal IpV6OptionEndpointIdentification()
+            : this(DataSegment.Empty, DataSegment.Empty)
+        {
+        }
+
+        internal override IpV6Option CreateInstance(DataSegment data)
+        {
+            if (data.Length < OptionDataMinimumLength)
+                return null;
+            
+            int sourceEndpointIdentifierLength = data[Offset.SourceEndpointIdentifierLength];
+            int destinationEndpointIdentifierLength = data[Offset.DestinationEndpointIdentifierLength];
+            if (data.Length != OptionDataMinimumLength + sourceEndpointIdentifierLength + destinationEndpointIdentifierLength)
+                return null;
+
+            DataSegment sourceEndpointIdentifier = data.Subsegment(Offset.SourceEndpointIdentifier, sourceEndpointIdentifierLength);
+            int destinationEndpointIdentifierOffset = Offset.SourceEndpointIdentifier + sourceEndpointIdentifierLength;
+            DataSegment destinationEndpointIdentifier = data.Subsegment(destinationEndpointIdentifierOffset, destinationEndpointIdentifierLength);
+            return new IpV6OptionEndpointIdentification(sourceEndpointIdentifier, destinationEndpointIdentifier);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataMinimumLength + SourceEndpointIdentifier.Length + DestinationEndpointIdentifier.Length; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, (byte)SourceEndpointIdentifier.Length);
+            buffer.Write(ref offset, (byte)DestinationEndpointIdentifier.Length);
+            buffer.Write(ref offset, SourceEndpointIdentifier);
+            buffer.Write(ref offset, DestinationEndpointIdentifier);
+        }
+    }
+    //        RplOption = 0x63,
 //        IlnpNonce = 0x8B,
 
     public class IpV6Options : Options<IpV6Option>
