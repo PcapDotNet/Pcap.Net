@@ -1473,8 +1473,498 @@ namespace PcapDotNet.Packets.IpV6
         private bool? _isChecksumCorrect;
     }
 
-//        SmfDpd = 0x08,
-//        HomeAddress = 0xC9,
+    /// <summary>
+    /// The type of the Tagger ID for <see cref="IpV6OptionSmfDpdSequenceBased"/>
+    /// </summary>
+    public enum IpV6TaggerIdType : byte
+    {
+        /// <summary>
+        /// No TaggerId field is present.
+        /// </summary>
+        Null = 0,
+
+        /// <summary>
+        /// A TaggerId of non-specific context is present.
+        /// </summary>
+        Default = 1,
+
+        /// <summary>
+        /// A TaggerId representing an IPv4 address is present.
+        /// </summary>
+        IpV4 = 2,
+
+        /// <summary>
+        /// A TaggerId representing an IPv6 address is present.
+        /// </summary>
+        IpV6 = 3,
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Sequence-based approach.
+    /// <pre>
+    /// +-----+---+-------+--------+
+    /// | Bit | 0 | 1-3   | 4-7    |
+    /// +-----+---+-------+--------+
+    /// | 0   | Option Type        |
+    /// +-----+--------------------+
+    /// | 8   | Opt Data Len       |
+    /// +-----+---+-------+--------+
+    /// | 16  | 0 | TidTy | TidLen |
+    /// +-----+---+-------+--------+
+    /// | 24  | TaggerId           |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// |     | Identifier         |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// </pre>
+    /// </summary>
+    public abstract class IpV6OptionSmfDpdSequenceBased : IpV6OptionSmfDpd
+    {
+        private static class Offset
+        {
+            public const int TaggerIdType = 0;
+            public const int TaggerIdLength = TaggerIdType;
+            public const int TaggerId = TaggerIdLength + sizeof(byte);
+        }
+
+        private static class Mask
+        {
+            public const byte TaggerIdType = 0x70;
+            public const byte TaggerIdLength = 0x0F;
+        }
+
+        private static class Shift
+        {
+            public const int TaggerIdType = 4;
+        }
+
+        /// <summary>
+        /// The length of the Tagger Id.
+        /// </summary>
+        public abstract int TaggerIdLength { get; }
+
+        /// <summary>
+        /// DPD packet Identifier.
+        /// When the TaggerId field is present, the Identifier can be considered a unique packet identifier 
+        /// in the context of the TaggerId:srcAddr:dstAddr tuple.
+        /// When the TaggerId field is not present, then it is assumed that the source applied the SMF_DPD option 
+        /// and the Identifier can be considered unique in the context of the IPv6 packet header srcAddr:dstAddr tuple.
+        /// </summary>
+        public DataSegment Identifier { get; private set; }
+
+        /// <summary>
+        /// Identifying DPD marking type.
+        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSmfDpdSequenceBased"/>.
+        /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
+        /// </summary>
+        public override bool HashIndicator
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Indicating the presence and type of the optional TaggerId field.
+        /// </summary>
+        public abstract IpV6TaggerIdType TaggerIdType { get; }
+
+        protected IpV6OptionSmfDpdSequenceBased(DataSegment identifier)
+        {
+            Identifier = identifier;
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataMinimumLength + TaggerIdLength + Identifier.Length; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            byte taggerIdInfo = (byte)(((byte)TaggerIdType << Shift.TaggerIdType) & Mask.TaggerIdType);
+            if (TaggerIdType != IpV6TaggerIdType.Null)
+                taggerIdInfo |= (byte)((TaggerIdLength - 1) & Mask.TaggerIdLength);
+            buffer.Write(ref offset, taggerIdInfo);
+            WriteTaggerId(buffer, ref offset);
+            buffer.Write(ref offset, Identifier);
+        }
+
+        internal abstract void WriteTaggerId(byte[] buffer, ref int offset);
+
+        internal static IpV6OptionSmfDpdSequenceBased CreateSpecificInstance(DataSegment data)
+        {
+            IpV6TaggerIdType taggerIdType = (IpV6TaggerIdType)((data[Offset.TaggerIdType] & Mask.TaggerIdType) >> Shift.TaggerIdType);
+            int taggerIdLength = (taggerIdType == IpV6TaggerIdType.Null ? 0 : (data[Offset.TaggerIdLength] & Mask.TaggerIdLength) + 1);
+            if (data.Length < Offset.TaggerId + taggerIdLength)
+                return null;
+            DataSegment identifier = data.Subsegment(Offset.TaggerId + taggerIdLength, data.Length - Offset.TaggerId - taggerIdLength);
+            switch (taggerIdType)
+            {
+                case IpV6TaggerIdType.Null:
+                    return new IpV6OptionSmfDpdNull(identifier);
+                    
+                case IpV6TaggerIdType.Default:
+                    return new IpV6OptionSmfDpdDefault(data.Subsegment(Offset.TaggerId, taggerIdLength), identifier);
+
+                case IpV6TaggerIdType.IpV4:
+                    if (taggerIdLength != IpV4Address.SizeOf)
+                        return null;
+                    IpV4Address ipV4Address = data.ReadIpV4Address(0, Endianity.Big);
+                    return new IpV6OptionSmfDpdIpV4(ipV4Address, identifier);
+
+                case IpV6TaggerIdType.IpV6:
+                    if (taggerIdLength != IpV6Address.SizeOf)
+                        return null;
+                    IpV6Address ipV6Address = data.ReadIpV6Address(0, Endianity.Big);
+                    return new IpV6OptionSmfDpdIpV6(ipV6Address, identifier);
+
+                default:
+                    return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Sequence-based approach.
+    /// IPv4 tagger ID.
+    /// <pre>
+    /// +-----+---+-------+--------+
+    /// | Bit | 0 | 1-3   | 4-7    |
+    /// +-----+---+-------+--------+
+    /// | 0   | Option Type        |
+    /// +-----+--------------------+
+    /// | 8   | Opt Data Len       |
+    /// +-----+---+-------+--------+
+    /// | 16  | 0 | TidTy | TidLen |
+    /// +-----+---+-------+--------+
+    /// | 24  | TaggerId           |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// | 56  | Identifier         |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6OptionSmfDpdIpV4 : IpV6OptionSmfDpdSequenceBased
+    {
+        public IpV6OptionSmfDpdIpV4(IpV4Address taggerId, DataSegment identifier)
+            :base(identifier)
+        {
+            TaggerId = taggerId;
+        }
+
+        public IpV4Address TaggerId { get; private set; }
+
+        /// <summary>
+        /// The length of the Tagger Id.
+        /// </summary>
+        public override int TaggerIdLength
+        {
+            get { return IpV4Address.SizeOf; }
+        }
+
+        /// <summary>
+        /// Indicating the presence and type of the optional TaggerId field.
+        /// </summary>
+        public override IpV6TaggerIdType TaggerIdType
+        {
+            get { return IpV6TaggerIdType.IpV4; }
+        }
+
+        internal override void WriteTaggerId(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, TaggerId, Endianity.Big);
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Sequence-based approach.
+    /// IPv6 tagger ID.
+    /// <pre>
+    /// +-----+---+-------+--------+
+    /// | Bit | 0 | 1-3   | 4-7    |
+    /// +-----+---+-------+--------+
+    /// | 0   | Option Type        |
+    /// +-----+--------------------+
+    /// | 8   | Opt Data Len       |
+    /// +-----+---+-------+--------+
+    /// | 16  | 0 | TidTy | TidLen |
+    /// +-----+---+-------+--------+
+    /// | 24  | TaggerId           |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// |     |                    |
+    /// +-----+--------------------+
+    /// | 152 | Identifier         |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6OptionSmfDpdIpV6 : IpV6OptionSmfDpdSequenceBased
+    {
+        public IpV6OptionSmfDpdIpV6(IpV6Address taggerId, DataSegment identifier)
+            : base(identifier)
+        {
+            TaggerId = taggerId;
+        }
+
+        public IpV6Address TaggerId { get; private set; }
+
+        /// <summary>
+        /// The length of the Tagger Id.
+        /// </summary>
+        public override int TaggerIdLength
+        {
+            get { return IpV6Address.SizeOf; }
+        }
+
+        /// <summary>
+        /// Indicating the presence and type of the optional TaggerId field.
+        /// </summary>
+        public override IpV6TaggerIdType TaggerIdType
+        {
+            get { return IpV6TaggerIdType.IpV6; }
+        }
+
+        internal override void WriteTaggerId(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, TaggerId, Endianity.Big);
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Sequence-based approach.
+    /// Default Tagger ID.
+    /// <pre>
+    /// +-----+---+-------+--------+
+    /// | Bit | 0 | 1-3   | 4-7    |
+    /// +-----+---+-------+--------+
+    /// | 0   | Option Type        |
+    /// +-----+--------------------+
+    /// | 8   | Opt Data Len       |
+    /// +-----+---+-------+--------+
+    /// | 16  | 0 | TidTy | TidLen |
+    /// +-----+---+-------+--------+
+    /// | 24  | TaggerId           |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// |     | Identifier         |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6OptionSmfDpdDefault : IpV6OptionSmfDpdSequenceBased
+    {
+        public IpV6OptionSmfDpdDefault(DataSegment taggerId, DataSegment identifier)
+            : base(identifier)
+        {
+            TaggerId = taggerId;
+        }
+
+        public DataSegment TaggerId { get; private set; }
+
+        /// <summary>
+        /// The length of the Tagger Id.
+        /// </summary>
+        public override int TaggerIdLength
+        {
+            get { return TaggerId.Length; }
+        }
+
+        /// <summary>
+        /// Indicating the presence and type of the optional TaggerId field.
+        /// </summary>
+        public override IpV6TaggerIdType TaggerIdType
+        {
+            get { return IpV6TaggerIdType.Default; }
+        }
+
+        internal override void WriteTaggerId(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, TaggerId);
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Sequence-based approach.
+    /// Null Tagger ID.
+    /// <pre>
+    /// +-----+---+-------+--------+
+    /// | Bit | 0 | 1-3   | 4-7    |
+    /// +-----+---+-------+--------+
+    /// | 0   | Option Type        |
+    /// +-----+--------------------+
+    /// | 8   | Opt Data Len       |
+    /// +-----+---+-------+--------+
+    /// | 16  | 0 | TidTy | TidLen |
+    /// +-----+---+-------+--------+
+    /// | 24  | Identifier         |
+    /// | ... |                    |
+    /// +-----+--------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6OptionSmfDpdNull : IpV6OptionSmfDpdSequenceBased
+    {
+        public IpV6OptionSmfDpdNull(DataSegment identifier)
+            : base(identifier)
+        {
+        }
+
+        /// <summary>
+        /// The length of the Tagger Id.
+        /// </summary>
+        public override int TaggerIdLength
+        {
+            get { return 0; }
+        }
+
+        /// <summary>
+        /// Indicating the presence and type of the optional TaggerId field.
+        /// </summary>
+        public override IpV6TaggerIdType TaggerIdType
+        {
+            get { return IpV6TaggerIdType.Null; }
+        }
+
+        internal override void WriteTaggerId(byte[] buffer, ref int offset)
+        {
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// Hash assist value.
+    /// <pre>
+    /// +-----+---+----------+
+    /// | Bit | 0 | 1-7      |
+    /// +-----+---+----------+
+    /// | 0   | Option Type  |
+    /// +-----+--------------+
+    /// | 8   | Opt Data Len |
+    /// +-----+---+----------+
+    /// | 16  | 1 | Hash     |
+    /// +-----+---+ Assist   |
+    /// | ... | Value (HAV)  |
+    /// +-----+--------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6OptionSmfDpdSequenceHashAssistValue : IpV6OptionSmfDpd
+    {
+        private static class Offset
+        {
+            public const int HashAssistValue = 0;
+        }
+
+        public IpV6OptionSmfDpdSequenceHashAssistValue(DataSegment data)
+        {
+            byte[] hashAssistValueBuffer = new byte[data.Length - Offset.HashAssistValue];
+            data.Buffer.BlockCopy(data.StartOffset + Offset.HashAssistValue, hashAssistValueBuffer, 0, hashAssistValueBuffer.Length);
+            hashAssistValueBuffer[0] &= 0x7F;
+            HashAssistValue = new DataSegment(hashAssistValueBuffer);
+        }
+
+        /// <summary>
+        /// Hash assist value (HAV) used to facilitate H-DPD operation.
+        /// </summary>
+        public DataSegment HashAssistValue { get; private set; }
+
+        internal override int DataLength
+        {
+            get { return HashAssistValue.Length; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, (byte)(HashAssistValue[0] | 0x80));
+            buffer.Write(ref offset, HashAssistValue.Subsegment(1, HashAssistValue.Length - 1));
+        }
+
+        public override bool HashIndicator
+        {
+            get { return true; }
+        }
+    }
+
+    /// <summary>
+    /// RFC 6621.
+    /// Simplified Multicast Forwarding Duplicate Packet Detection.
+    /// <pre>
+    /// +-----+---+------------------+
+    /// | Bit | 0 | 1-7              |
+    /// +-----+---+------------------+
+    /// | 0   | Option Type          |
+    /// +-----+----------------------+
+    /// | 8   | Opt Data Len         |
+    /// +-----+---+------------------+
+    /// | 16  | H | DPD Identifier   |
+    /// +-----+---+ Option Fields    |
+    /// | ... | or Hash Assist Value |
+    /// +-----+----------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6OptionTypeRegistration(IpV6OptionType.SmfDpd)]
+    public abstract class IpV6OptionSmfDpd : IpV6OptionComplex
+    {
+        private static class Offset
+        {
+            public const int HashIndicator = 0;
+        }
+
+        private static class Mask
+        {
+            public const int HashIndicator = 0x80;
+        }
+
+        public const int OptionDataMinimumLength = Offset.HashIndicator + sizeof(byte);
+
+        protected IpV6OptionSmfDpd()
+            : base(IpV6OptionType.SmfDpd)
+        {
+        }
+
+        /// <summary>
+        /// Identifying DPD marking type.
+        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSmfDpdSequenceBased"/>.
+        /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
+        /// </summary>
+        public abstract bool HashIndicator { get; }
+
+        internal override IpV6Option CreateInstance(DataSegment data)
+        {
+            if (data.Length < OptionDataMinimumLength)
+                return null;
+
+            bool hashIndicator = data.ReadBool(Offset.HashIndicator, Mask.HashIndicator);
+            if (hashIndicator)
+                return new IpV6OptionSmfDpdSequenceHashAssistValue(data);
+            return IpV6OptionSmfDpdSequenceBased.CreateSpecificInstance(data);
+        }
+    }
+    //        HomeAddress = 0xC9,
 //        EndpointIdentification = 0x8A,
 //        RplOption = 0x63,
 //        IlnpNonce = 0x8B,
