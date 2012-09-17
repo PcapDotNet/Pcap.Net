@@ -170,7 +170,9 @@ namespace PcapDotNet.Packets.IpV6
             while (extendedHeaderLength + 8 <= RealPayloadLength && IsExtensionHeader(nextHeader))
             {
                 int numBytesRead;
-                IpV6ExtensionHeader extensionHeader = CreateExtensionHeader(nextHeader, Subsegment(extendedHeaderLength, Length - extendedHeaderLength), out numBytesRead);
+                IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader,
+                                                                                         Subsegment(extendedHeaderLength, Length - extendedHeaderLength),
+                                                                                         out numBytesRead);
                 if (extensionHeader == null)
                     break;
                 nextHeader = extensionHeader.NextHeader;
@@ -179,36 +181,6 @@ namespace PcapDotNet.Packets.IpV6
             _isValid = !IsExtensionHeader(nextHeader) && (HeaderLength + _extensionHeadersLength == PayloadLength);
             _extensionHeaders = extensionHeaders.AsReadOnly();
             _extensionHeadersLength = extendedHeaderLength - HeaderLength;
-        }
-
-        private IpV6ExtensionHeader CreateExtensionHeader(IpV4Protocol nextHeader, DataSegment data, out int numBytesRead)
-        {
-            switch (nextHeader)
-            {
-                case IpV4Protocol.IpV6HopByHopOption:           // 0
-                    return IpV6ExtensionHeaderHopByHopOptions.Parse(data, out numBytesRead);
-                    /*
-                case IpV4Protocol.IpV6Route:                    // 43
-                    return IpV6ExtensionHeaderRouting.Parse(data);
-
-                case IpV4Protocol.FragmentHeaderForIpV6:        // 44
-                    return IpV6ExtensionHeaderFragment.Parse(data);
-
-                case IpV4Protocol.EncapsulatingSecurityPayload: // 50
-                    return IpV6ExtensionHeaderEncapsulatingSecurityPayload.Parse(data);
-
-                case IpV4Protocol.AuthenticationHeader:         // 51
-                    return IpV6ExtensionHeaderAuthentication.Parse(data);
-
-                case IpV4Protocol.IpV6Opts:                     // 60
-                    return IpV6ExtensionHeaderDestinationOptions.Parse(data);
-
-                case IpV4Protocol.MobilityHeader:               // 135
-                    return IpV6MobilityExtensionHeader.Parse(data);
-                    */
-                default:
-                    throw new InvalidOperationException(string.Format("Invalid next header value {0}", nextHeader));
-            }
         }
 
         private static bool IsExtensionHeader(IpV4Protocol nextHeader)
