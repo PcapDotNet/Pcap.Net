@@ -46,27 +46,27 @@ namespace PcapDotNet.Packets.IpV6
 
             switch (nextHeader)
             {
-                case IpV4Protocol.IpV6HopByHopOption:           // 0
+                case IpV4Protocol.IpV6HopByHopOption: // 0
                     return IpV6ExtensionHeaderHopByHopOptions.ParseData(nextNextHeader, data);
 
-                case IpV4Protocol.IpV6Route:                    // 43
+                case IpV4Protocol.IpV6Route: // 43
                     return IpV6ExtensionHeaderRouting.ParseData(nextNextHeader, data);
-                /*
-            case IpV4Protocol.FragmentHeaderForIpV6:        // 44
-                return IpV6ExtensionHeaderFragment.Parse(data);
 
-            case IpV4Protocol.EncapsulatingSecurityPayload: // 50
-                return IpV6ExtensionHeaderEncapsulatingSecurityPayload.Parse(data);
+                case IpV4Protocol.FragmentHeaderForIpV6: // 44
+                    return IpV6ExtensionHeaderFragmentData.ParseData(nextNextHeader, data);
+                    /*
+        case IpV4Protocol.EncapsulatingSecurityPayload: // 50
+            return IpV6ExtensionHeaderEncapsulatingSecurityPayload.Parse(data);
 
-            case IpV4Protocol.AuthenticationHeader:         // 51
-                return IpV6ExtensionHeaderAuthentication.Parse(data);
+        case IpV4Protocol.AuthenticationHeader:         // 51
+            return IpV6ExtensionHeaderAuthentication.Parse(data);
 
-            case IpV4Protocol.IpV6Opts:                     // 60
-                return IpV6ExtensionHeaderDestinationOptions.Parse(data);
+        case IpV4Protocol.IpV6Opts:                     // 60
+            return IpV6ExtensionHeaderDestinationOptions.Parse(data);
 
-            case IpV4Protocol.MobilityHeader:               // 135
-                return IpV6MobilityExtensionHeader.Parse(data);
-                */
+        case IpV4Protocol.MobilityHeader:               // 135
+            return IpV6MobilityExtensionHeader.Parse(data);
+            */
                 default:
                     return null;
             }
