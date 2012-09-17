@@ -319,6 +319,10 @@
     <Compile Include="IpV6\IpV6CalipsoDomainOfInterpretation.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeader.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderHopByHopOptions.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderRouting.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderRoutingHomeAddress.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderRoutingRpl.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderRoutingSourceRoute.cs" />
     <Compile Include="IpV6\IpV6Option.cs" />
     <Compile Include="IpV6\IpV6OptionCalipso.cs" />
     <Compile Include="IpV6\IpV6OptionComplex.cs" />
@@ -346,6 +350,7 @@
     <Compile Include="IpV6\IpV6OptionTypeRegistrationAttribute.cs" />
     <Compile Include="IpV6\IpV6OptionUnknown.cs" />
     <Compile Include="IpV6\IpV6RouterAlertType.cs" />
+    <Compile Include="IpV6\IpV6RoutingType.cs" />
     <Compile Include="IpV6\IpV6TaggerIdType.cs" />
     <Compile Include="IpV6\PppFrameCheckSequenceCalculator.cs" />
     <Compile Include="Ip\V4Option.cs" />
