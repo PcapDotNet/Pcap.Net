@@ -15,17 +15,14 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderHopByHopOptions : IpV6ExtensionHeaderOptions
+    public abstract class IpV6ExtensionHeaderOptions : IpV6ExtensionHeader
     {
-        private IpV6ExtensionHeaderHopByHopOptions(IpV4Protocol nextHeader, IpV6Options options)
-            : base(nextHeader, options)
-        {
-        }
+        public IpV6Options Options { get; private set; }
 
-        internal static IpV6ExtensionHeaderHopByHopOptions ParseData(IpV4Protocol nextHeader, DataSegment data)
+        internal IpV6ExtensionHeaderOptions(IpV4Protocol nextHeader, IpV6Options options)
+            : base(nextHeader)
         {
-            IpV6Options options = new IpV6Options(data);
-            return new IpV6ExtensionHeaderHopByHopOptions(nextHeader, options);
+            Options = options;
         }
     }
 }

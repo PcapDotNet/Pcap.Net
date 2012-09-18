@@ -10,22 +10,22 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-------------+-------------------------+
     /// | 0   | Next Header | Header Extension Length |
     /// +-----+-------------+-------------------------+
-    /// | 16  | Options                               |
+    /// | 32  | Options                               |
     /// | ... |                                       |
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderHopByHopOptions : IpV6ExtensionHeaderOptions
+    public class IpV6ExtensionHeaderDestinationOptions : IpV6ExtensionHeaderOptions
     {
-        private IpV6ExtensionHeaderHopByHopOptions(IpV4Protocol nextHeader, IpV6Options options)
+        public IpV6ExtensionHeaderDestinationOptions(IpV4Protocol nextHeader, IpV6Options options)
             : base(nextHeader, options)
         {
         }
 
-        internal static IpV6ExtensionHeaderHopByHopOptions ParseData(IpV4Protocol nextHeader, DataSegment data)
+        internal static IpV6ExtensionHeaderDestinationOptions ParseData(IpV4Protocol nextHeader, DataSegment data)
         {
             IpV6Options options = new IpV6Options(data);
-            return new IpV6ExtensionHeaderHopByHopOptions(nextHeader, options);
+            return new IpV6ExtensionHeaderDestinationOptions(nextHeader, options);
         }
     }
 }

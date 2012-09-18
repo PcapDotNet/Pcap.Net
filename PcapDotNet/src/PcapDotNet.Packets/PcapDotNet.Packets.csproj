@@ -319,9 +319,11 @@
     <Compile Include="IpV6\IpV6CalipsoDomainOfInterpretation.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeader.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderAuthentication.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderDestinationOptions.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderEncapsulatingSecurityPayload.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderFragmentData.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderHopByHopOptions.cs" />
+    <Compile Include="IpV6\IpV6ExtensionHeaderOptions.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderRouting.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderRoutingHomeAddress.cs" />
     <Compile Include="IpV6\IpV6ExtensionHeaderRoutingRpl.cs" />
