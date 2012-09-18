@@ -166,11 +166,11 @@ namespace PcapDotNet.Packets.IpV6
                 return;
             }
             int extendedHeaderLength = HeaderLength;
-            IpV4Protocol nextHeader = NextHeader;
-            while (extendedHeaderLength + 8 <= RealPayloadLength && IsExtensionHeader(nextHeader))
+            IpV4Protocol? nextHeader = NextHeader;
+            while (extendedHeaderLength + 8 <= RealPayloadLength && nextHeader.HasValue && IsExtensionHeader(nextHeader.Value))
             {
                 int numBytesRead;
-                IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader,
+                IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader.Value,
                                                                                          Subsegment(extendedHeaderLength, Length - extendedHeaderLength),
                                                                                          out numBytesRead);
                 if (extensionHeader == null)
@@ -178,7 +178,7 @@ namespace PcapDotNet.Packets.IpV6
                 nextHeader = extensionHeader.NextHeader;
                 extendedHeaderLength += numBytesRead;
             }
-            _isValid = !IsExtensionHeader(nextHeader) && (HeaderLength + _extensionHeadersLength == PayloadLength);
+            _isValid = (!nextHeader.HasValue || !IsExtensionHeader(nextHeader.Value)) && (HeaderLength + _extensionHeadersLength == PayloadLength);
             _extensionHeaders = extensionHeaders.AsReadOnly();
             _extensionHeadersLength = extendedHeaderLength - HeaderLength;
         }
