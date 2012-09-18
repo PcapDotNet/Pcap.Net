@@ -39,31 +39,21 @@ namespace PcapDotNet.Packets.IpV6
         {
             switch (nextHeader)
             {
-                case IpV4Protocol.IpV6HopByHopOption: // 0
-                case IpV4Protocol.IpV6Route: // 43
+                case IpV4Protocol.IpV6HopByHopOption:    // 0
+                case IpV4Protocol.IpV6Route:             // 43
                 case IpV4Protocol.FragmentHeaderForIpV6: // 44
-                    numBytesRead = 0;
-                    if (extensionHeaderData.Length < MinimumLength)
-                        return null;
-                    IpV4Protocol nextNextHeader = (IpV4Protocol)extensionHeaderData[Offset.NextHeader];
-                    int length = (extensionHeaderData[Offset.HeaderExtensionLength] + 1) * 8;
-                    if (extensionHeaderData.Length < length)
-                        return null;
-
-                    DataSegment data = extensionHeaderData.Subsegment(Offset.Data, length - Offset.Data);
-                    numBytesRead = data.Length;
-
-                    return CreateStandardInstance(nextHeader, nextNextHeader, data);
+                case IpV4Protocol.IpV6Opts:              // 60
+                    return CreateStandardInstance(nextHeader, extensionHeaderData, out numBytesRead);
 
                 case IpV4Protocol.EncapsulatingSecurityPayload: // 50
                     return IpV6ExtensionHeaderEncapsulatingSecurityPayload.CreateInstance(extensionHeaderData, out numBytesRead);
 
                 case IpV4Protocol.AuthenticationHeader:         // 51
                     return IpV6ExtensionHeaderAuthentication.CreateInstance(extensionHeaderData, out numBytesRead);
+                    
+                
+                    
                     /*
-    case IpV4Protocol.IpV6Opts:                     // 60
-        return IpV6ExtensionHeaderDestinationOptions.Parse(data);
-
     case IpV4Protocol.MobilityHeader:               // 135
         return IpV6MobilityExtensionHeader.Parse(data);
         */
@@ -73,8 +63,19 @@ namespace PcapDotNet.Packets.IpV6
 
         }
 
-        private static IpV6ExtensionHeader CreateStandardInstance(IpV4Protocol nextHeader, IpV4Protocol nextNextHeader, DataSegment data)
+        private static IpV6ExtensionHeader CreateStandardInstance(IpV4Protocol nextHeader, DataSegment extensionHeaderData, out int numBytesRead)
         {
+            numBytesRead = 0;
+            if (extensionHeaderData.Length < MinimumLength)
+                return null;
+            IpV4Protocol nextNextHeader = (IpV4Protocol)extensionHeaderData[Offset.NextHeader];
+            int length = (extensionHeaderData[Offset.HeaderExtensionLength] + 1) * 8;
+            if (extensionHeaderData.Length < length)
+                return null;
+
+            DataSegment data = extensionHeaderData.Subsegment(Offset.Data, length - Offset.Data);
+            numBytesRead = data.Length;
+
             switch (nextHeader)
             {
                 case IpV4Protocol.IpV6HopByHopOption: // 0
@@ -85,6 +86,9 @@ namespace PcapDotNet.Packets.IpV6
 
                 case IpV4Protocol.FragmentHeaderForIpV6: // 44
                     return IpV6ExtensionHeaderFragmentData.ParseData(nextNextHeader, data);
+                
+                case IpV4Protocol.IpV6Opts:                     // 60
+                    return IpV6ExtensionHeaderDestinationOptions.ParseData(nextNextHeader, data);
 
                 default:
                     throw new InvalidOperationException("Invalid nextHeader value" + nextHeader);
