@@ -58,10 +58,9 @@ namespace PcapDotNet.Packets.IpV6
                 case IpV4Protocol.EncapsulatingSecurityPayload: // 50
                     return IpV6ExtensionHeaderEncapsulatingSecurityPayload.CreateInstance(extensionHeaderData, out numBytesRead);
 
+                case IpV4Protocol.AuthenticationHeader:         // 51
+                    return IpV6ExtensionHeaderAuthentication.CreateInstance(extensionHeaderData, out numBytesRead);
                     /*
-    case IpV4Protocol.AuthenticationHeader:         // 51
-        return IpV6ExtensionHeaderAuthentication.Parse(data);
-
     case IpV4Protocol.IpV6Opts:                     // 60
         return IpV6ExtensionHeaderDestinationOptions.Parse(data);
 
