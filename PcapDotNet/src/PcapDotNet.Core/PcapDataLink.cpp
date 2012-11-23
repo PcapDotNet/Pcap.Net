@@ -55,7 +55,10 @@ DataLinkKind PcapDataLink::Kind::get()
     case DLT_PPP_WITH_DIR:
         return DataLinkKind::PppWithDirection;
 
-	default:
+    case DLT_LINUX_SLL:
+        return DataLinkKind::LinuxSll;
+
+    default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " " + Value.ToString(CultureInfo::InvariantCulture) + " - " + ToString() + " is unsupported");
     }
 }
@@ -152,7 +155,10 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
     case DataLinkKind::PppWithDirection:
         return DLT_PPP_WITH_DIR;
 
-	default:
+    case DataLinkKind::LinuxSll:
+        return DLT_LINUX_SLL;
+
+    default:
         throw gcnew NotSupportedException(PcapDataLink::typeid->Name + " kind " + kind.ToString() + " is unsupported");
     }
 }
