@@ -173,6 +173,15 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
+        public void CompareLinuxSllDataLinkToWiresharkTest()
+        {
+            ComparePacketsToWireshark(
+                Packet.FromHexadecimalString(
+                    "000402120000000000000000000008004500003996e1400040118e5a1bfd9042ca209f18140300350025668c10e3010000010000000000000169057974696d67",
+                    DateTime.Now, new DataLink(DataLinkKind.LinuxSll)));
+        }
+
+        [TestMethod]
         public void CompareTcpZeroChecksumToWiresharkTest()
         {
             ComparePacketsToWireshark(
@@ -525,7 +534,7 @@ namespace PcapDotNet.Core.Test
                         MoreAssert.IsInRange(fieldTimestamp.AddMilliseconds(-1), fieldTimestamp.AddMilliseconds(1), packet.Timestamp.ToUniversalTime(), "Timestamp");
                         break;
 
-                    case "frame.len":
+                    case "frame.cap_len":
                         field.AssertShowDecimal(packet.Length);
                         break;
                 }

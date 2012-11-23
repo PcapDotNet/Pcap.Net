@@ -27,5 +27,10 @@ namespace PcapDotNet.Packets
         /// and a non-zero value meaning "sent by this host".
         /// </summary>
         PppWithDirection,
+
+        /// <summary>
+        /// Linux cooked-mode capture.
+        /// </summary>
+        LinuxSll,
     }
 }
