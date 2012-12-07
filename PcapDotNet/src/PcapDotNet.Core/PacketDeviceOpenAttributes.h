@@ -44,6 +44,7 @@ namespace PcapDotNet { namespace Core
 		/// Defines if the local adapter will capture its own generated traffic.
 		/// This flag tells the underlying capture driver to drop the packets that were sent by itself.
 		/// This is useful when building applications like bridges, that should ignore the traffic they just sent. 
+		/// Note that this flag applies to the specific PacketCommunicator opened with it only.
 		/// </summary>
         NoCaptureLocal          = 8,
 
