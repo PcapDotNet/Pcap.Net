@@ -45,6 +45,38 @@ namespace PcapDotNet.Core.Test
         #endregion
 
         [TestMethod]
+        public void OpenOfflineMultipleTimes()
+        {
+            const string SourceMac = "11:22:33:44:55:66";
+            const string DestinationMac = "77:88:99:AA:BB:CC";
+            const int NumPackets = 10;
+            Packet expectedPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
+            PacketDevice device = GetOfflineDevice(NumPackets, expectedPacket);
+            // TODO: Fix so we can go beyond 509.
+            //       See http://www.winpcap.org/pipermail/winpcap-bugs/2012-December/001547.html
+            for (int j = 0; j != 100; ++j)
+            {
+                using (PacketCommunicator communicator = device.Open())
+                {
+                    PacketCommunicatorReceiveResult result;
+                    Packet actualPacket;
+                    for (int i = 0; i != NumPackets; ++i)
+                    {
+                        result = communicator.ReceivePacket(out actualPacket);
+                        Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                        Assert.AreEqual(expectedPacket, actualPacket);
+                        MoreAssert.IsInRange(expectedPacket.Timestamp.AddSeconds(-0.05), expectedPacket.Timestamp.AddSeconds(0.05),
+                                             actualPacket.Timestamp);
+                    }
+
+                    result = communicator.ReceivePacket(out actualPacket);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Eof, result);
+                    Assert.IsNull(actualPacket);
+                }
+            }
+        }
+
+        [TestMethod]
         public void GetPacketTest()
         {
             const string SourceMac = "11:22:33:44:55:66";
@@ -65,7 +97,7 @@ namespace PcapDotNet.Core.Test
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                     Assert.AreEqual(expectedPacket, actualPacket);
                     MoreAssert.IsInRange(expectedPacket.Timestamp.AddSeconds(-0.05), expectedPacket.Timestamp.AddSeconds(0.05),
-                                         actualPacket.Timestamp);
+                                            actualPacket.Timestamp);
                 }
 
                 result = communicator.ReceivePacket(out actualPacket);
