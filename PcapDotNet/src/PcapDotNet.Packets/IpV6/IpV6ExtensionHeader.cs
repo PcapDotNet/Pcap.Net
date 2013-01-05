@@ -43,6 +43,7 @@ namespace PcapDotNet.Packets.IpV6
                 case IpV4Protocol.IpV6Route:             // 43
                 case IpV4Protocol.FragmentHeaderForIpV6: // 44
                 case IpV4Protocol.IpV6Opts:              // 60
+                case IpV4Protocol.MobilityHeader:        // 135
                     return CreateStandardInstance(nextHeader, extensionHeaderData, out numBytesRead);
 
                 case IpV4Protocol.EncapsulatingSecurityPayload: // 50
@@ -50,13 +51,7 @@ namespace PcapDotNet.Packets.IpV6
 
                 case IpV4Protocol.AuthenticationHeader:         // 51
                     return IpV6ExtensionHeaderAuthentication.CreateInstance(extensionHeaderData, out numBytesRead);
-                    
-                
-                    
-                    /*
-    case IpV4Protocol.MobilityHeader:               // 135
-        return IpV6MobilityExtensionHeader.Parse(data);
-        */
+
                 default:
                     throw new InvalidOperationException("Invalid nextHeader value" + nextHeader);
             }
@@ -89,6 +84,9 @@ namespace PcapDotNet.Packets.IpV6
                 
                 case IpV4Protocol.IpV6Opts:                     // 60
                     return IpV6ExtensionHeaderDestinationOptions.ParseData(nextNextHeader, data);
+
+                case IpV4Protocol.MobilityHeader:        // 135
+                    return IpV6ExtensionHeaderMobility.ParseData(nextNextHeader, data);
 
                 default:
                     throw new InvalidOperationException("Invalid nextHeader value" + nextHeader);

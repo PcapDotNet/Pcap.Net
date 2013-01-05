@@ -22,4 +22,28 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6OptionPad1();
         }
     }
+
+    /// <summary>
+    /// RFC 6275.
+    /// +-----+-----+
+    /// | Bit | 0-7 |
+    /// +-----+-----+
+    /// | 0   | 0   |
+    /// +-----+-----+
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.Pad1)]
+    public class IpV6MobilityOptionPad1 : IpV6MobilityOption
+    {
+        public const int OptionLength = sizeof(byte);
+
+        public IpV6MobilityOptionPad1()
+            : base(IpV6MobilityOptionType.Pad1)
+        {
+        }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            return new IpV6MobilityOptionPad1();
+        }
+    }
 }

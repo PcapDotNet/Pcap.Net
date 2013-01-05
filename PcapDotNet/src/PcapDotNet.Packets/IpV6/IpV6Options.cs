@@ -91,4 +91,91 @@ namespace PcapDotNet.Packets.IpV6
             return registraionAttributes.First();
         }
     }
+
+    public class IpV6MobilityOptions : Options<IpV6MobilityOption>
+    {
+        public IpV6MobilityOptions(DataSegment data)
+            : this(Read(data))
+        {
+        }
+
+        private IpV6MobilityOptions(Tuple<IList<IpV6MobilityOption>, bool> optionsAndIsValid)
+            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+        {
+        }
+
+        public static Tuple<IList<IpV6MobilityOption>, bool> Read(DataSegment data)
+        {
+            int offset = 0;
+            List<IpV6MobilityOption> options = new List<IpV6MobilityOption>();
+            bool isValid = true;
+            while (offset < data.Length)
+            {
+                IpV6MobilityOptionType optionType = (IpV6MobilityOptionType)data[offset++];
+                if (optionType == IpV6MobilityOptionType.Pad1)
+                {
+                    options.Add(new IpV6MobilityOptionPad1());
+                    continue;
+                }
+
+                if (offset >= data.Length)
+                {
+                    isValid = false;
+                    break;
+                }
+
+                byte optionDataLength = data[offset++];
+                if (offset + optionDataLength > data.Length)
+                {
+                    isValid = false;
+                    break;
+                }
+
+                IpV6MobilityOption option = CreateOption(optionType, data.Subsegment(ref offset, optionDataLength));
+                if (option == null)
+                {
+                    isValid = false;
+                    break;
+                }
+
+                options.Add(option);
+            }
+
+            return new Tuple<IList<IpV6MobilityOption>, bool>(options, isValid);
+        }
+
+        private static IpV6MobilityOption CreateOption(IpV6MobilityOptionType optionType, DataSegment data)
+        {
+            IpV6MobilityOption prototype;
+            if (!_prototypes.TryGetValue(optionType, out prototype))
+                return new IpV6MobilityOptionUnknown(optionType, data);
+            return prototype.CreateInstance(data);
+        }
+
+        private static readonly Dictionary<IpV6MobilityOptionType, IpV6MobilityOption> _prototypes = InitializePrototypes();
+
+        private static Dictionary<IpV6MobilityOptionType, IpV6MobilityOption> InitializePrototypes()
+        {
+            var prototypes =
+                from type in Assembly.GetExecutingAssembly().GetTypes()
+                where typeof(IpV6MobilityOption).IsAssignableFrom(type) &&
+                      GetRegistrationAttribute(type) != null
+                select new
+                {
+                    GetRegistrationAttribute(type).OptionType,
+                    Option = (IpV6MobilityOption)Activator.CreateInstance(type)
+                };
+
+            return prototypes.ToDictionary(option => option.OptionType, option => option.Option);
+        }
+
+        private static IpV6MobilityOptionTypeRegistrationAttribute GetRegistrationAttribute(Type type)
+        {
+            var registraionAttributes = type.GetCustomAttributes<IpV6MobilityOptionTypeRegistrationAttribute>(false);
+            if (!registraionAttributes.Any())
+                return null;
+
+            return registraionAttributes.First();
+        }
+    }
 }
