@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LivePacketDeviceExtensions.cs" />
+    <Compile Include="NetworkInterfaceExtensions.cs" />
     <Compile Include="PacketCommunicatorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

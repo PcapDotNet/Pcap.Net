@@ -14,8 +14,8 @@ namespace PcapDotNet.Core.Extensions
     /// </summary>
     public static class LivePacketDeviceExtensions
     {
-        const string NamePrefix = @"rpcap://\Device\NPF_";
-        const string NetworkConnectionConfigKey = @"SYSTEM\CurrentControlSet\Control\Network\{4D36E972-E325-11CE-BFC1-08002BE10318}";
+        internal const string NamePrefix = @"rpcap://\Device\NPF_";
+        private const string NetworkConnectionConfigKey = @"SYSTEM\CurrentControlSet\Control\Network\{4D36E972-E325-11CE-BFC1-08002BE10318}";
 
         /// <summary>
         /// Returns the GUID (NetCfgInstanceId) for a <see cref="LivePacketDevice"/> instance.
@@ -27,7 +27,7 @@ namespace PcapDotNet.Core.Extensions
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static string GetGuid(this LivePacketDevice livePacketDevice)
         {
-            if (livePacketDevice == null) 
+            if (livePacketDevice == null)
                 throw new ArgumentNullException("livePacketDevice");
 
             string livePacketDeviceName = livePacketDevice.Name;
@@ -71,7 +71,7 @@ namespace PcapDotNet.Core.Extensions
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static NetworkInterface GetNetworkInterface(this LivePacketDevice livePacketDevice)
         {
-            if (livePacketDevice == null) 
+            if (livePacketDevice == null)
                 throw new ArgumentNullException("livePacketDevice");
 
             string guid = GetGuid(livePacketDevice);
@@ -113,7 +113,9 @@ namespace PcapDotNet.Core.Extensions
             ManagementScope scope = new ManagementScope(@"\\.\root\cimv2");
             scope.Connect();
 
-            var searcher = new ManagementObjectSearcher(scope, new SelectQuery("SELECT MACAddress FROM Win32_NetworkAdapter WHERE PNPDeviceID='" + escapedPnpDeviceId + "'"));
+            var searcher = new ManagementObjectSearcher(scope,
+                                                        new SelectQuery("SELECT MACAddress FROM Win32_NetworkAdapter WHERE PNPDeviceID='" + escapedPnpDeviceId +
+                                                                        "'"));
             foreach (ManagementObject managementObject in searcher.Get())
             {
                 string macAddress = managementObject["MACAddress"] as string;

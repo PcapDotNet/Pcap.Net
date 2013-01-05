@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using PcapDotNet.Base;
 using PcapDotNet.Core.Extensions;
@@ -841,9 +842,10 @@ namespace PcapDotNet.Core.Test
 
         public static PacketCommunicator OpenLiveDevice()
         {
-            IList<LivePacketDevice> devices = LivePacketDevice.AllLocalMachine;
-            MoreAssert.IsBiggerOrEqual(1, devices.Count);
-            LivePacketDevice device = devices[0];
+            NetworkInterface networkInterface =
+                NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
+                    ni => !ni.IsReceiveOnly && ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet && ni.OperationalStatus == OperationalStatus.Up);
+            LivePacketDevice device = networkInterface.GetLivePacketDevice();
             MoreAssert.IsMatch(@"Network adapter '.*' on local host", device.Description);
             Assert.AreEqual(DeviceAttributes.None, device.Attributes);
             Assert.AreNotEqual(MacAddress.Zero, device.GetMacAddress());
