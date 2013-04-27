@@ -100,6 +100,7 @@
     <Compile Include="Sequence.cs" />
     <Compile Include="SerialNumber32.cs" />
     <Compile Include="ShortExtensions.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="UInt128.cs" />
