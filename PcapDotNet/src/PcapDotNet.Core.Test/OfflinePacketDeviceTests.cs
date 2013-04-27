@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -44,17 +44,14 @@ namespace PcapDotNet.Core.Test
         //
         #endregion
 
-        [TestMethod]
-        public void OpenOfflineMultipleTimes()
+        private static void TestOpenMultipleTimes(int numTimes, string filename)
         {
             const string SourceMac = "11:22:33:44:55:66";
             const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPackets = 10;
             Packet expectedPacket = _random.NextEthernetPacket(100, SourceMac, DestinationMac);
-            PacketDevice device = GetOfflineDevice(NumPackets, expectedPacket);
-            // TODO: Fix so we can go beyond 509.
-            //       See http://www.winpcap.org/pipermail/winpcap-bugs/2012-December/001547.html
-            for (int j = 0; j != 100; ++j)
+            PacketDevice device = GetOfflineDevice(NumPackets, expectedPacket, TimeSpan.Zero, Path.GetTempPath() + @"dump.pcap", Path.GetTempPath() + filename);
+            for (int j = 0; j != numTimes; ++j)
             {
                 using (PacketCommunicator communicator = device.Open())
                 {
@@ -74,6 +71,20 @@ namespace PcapDotNet.Core.Test
                     Assert.IsNull(actualPacket);
                 }
             }
+        }
+
+        [TestMethod]
+        public void OpenOfflineMultipleTimes()
+        {
+            TestOpenMultipleTimes(1000, @"dump.pcap");
+        }
+
+        [TestMethod]
+        public void OpenOfflineMultipleTimesUnicode()
+        {
+            // TODO: Fix so we can go beyond 509 when using unicode filenames.
+            //       See http://www.winpcap.org/pipermail/winpcap-bugs/2012-December/001547.html
+            TestOpenMultipleTimes(100, @"דמפ.pcap");
         }
 
         [TestMethod]
@@ -189,7 +200,7 @@ namespace PcapDotNet.Core.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void OpenNullFilenameTest()
         {
             using (new OfflinePacketDevice(null).Open())
@@ -450,7 +461,11 @@ namespace PcapDotNet.Core.Test
             }
 
             if (readFilename != dumpFilename)
+            {
+                if (File.Exists(readFilename))
+                    File.Delete(readFilename);
                 File.Move(dumpFilename, readFilename);
+            }
 
             OfflinePacketDevice device = new OfflinePacketDevice(readFilename);
             Assert.AreEqual(0, device.Addresses.Count);
