@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -130,10 +133,10 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5568.
         /// </summary>
-        FastBindingAcknowledgment = 9,
+        FastBindingAcknowledgement = 9,
 
         /// <summary>
-        /// RFC 5568.
+        /// RFCs 4068, 5568.
         /// Deprecated.
         /// </summary>
         FastNeighborAdvertisement = 10,
@@ -141,7 +144,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5096.
         /// </summary>
-        ExperimentalMobilityHeader = 11,
+        Experimental = 11,
 
         /// <summary>
         /// RFC 5142.
@@ -176,7 +179,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC-ietf-netext-pmip-lr-10.
         /// </summary>
-        LocalizedRoutingAcknowledgment = 18,
+        LocalizedRoutingAcknowledgement = 18,
     }
 
     /// <summary>
@@ -285,17 +288,41 @@ namespace PcapDotNet.Packets.IpV6
                     return IpV6ExtensionHeaderMobilityBindingAcknowledgement.ParseMessageData(nextHeader, checksum, messageData);
 
                 case IpV6MobilityHeaderType.BindingError: // 7
+                    return IpV6ExtensionHeaderMobilityBindingError.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.FastBindingUpdate: // 8
-                case IpV6MobilityHeaderType.FastBindingAcknowledgment: // 9
+                    return IpV6ExtensionHeaderMobilityFastBindingUpdate.ParseMessageData(nextHeader, checksum, messageData);
+
+                case IpV6MobilityHeaderType.FastBindingAcknowledgement: // 9
+                    return IpV6ExtensionHeaderMobilityFastBindingAcknowledgement.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.FastNeighborAdvertisement: // 10
-                case IpV6MobilityHeaderType.ExperimentalMobilityHeader: // 11
+                    return IpV6ExtensionHeaderMobilityFastNeighborAdvertisement.ParseMessageData(nextHeader, checksum, messageData);
+
+                case IpV6MobilityHeaderType.Experimental: // 11
+                    return IpV6ExtensionHeaderMobilityExperimental.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.HomeAgentSwitchMessage: // 12
+                    return IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.HeartbeatMessage: // 13
+                    return IpV6ExtensionHeaderMobilityHeartbeatMessage.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.HandoverInitiateMessage: // 14
+                    return IpV6ExtensionHeaderMobilityHandoverInitiateMessage.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.HandoverAcknowledgeMessage: // 15
+                    return IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.BindingRevocationMessage: // 16
+                    return IpV6ExtensionHeaderMobilityBindingRevocationMessage.ParseMessageData(nextHeader, checksum, messageData);
+
                 case IpV6MobilityHeaderType.LocalizedRoutingInitiation: // 17
-                case IpV6MobilityHeaderType.LocalizedRoutingAcknowledgment: // 18
+                    return IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation.ParseMessageData(nextHeader, checksum, messageData);
+
+                case IpV6MobilityHeaderType.LocalizedRoutingAcknowledgement: // 18
+                    return IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement.ParseMessageData(nextHeader, checksum, messageData);
+
                 default:
                     return null;
             }
@@ -659,7 +686,7 @@ namespace PcapDotNet.Packets.IpV6
     }
 
     /// <summary>
-    /// RFC 6275.
+    /// RFCs 5568, 6275.
     /// <pre>
     /// +-----+---+---+---+---+-----+-------------------------+
     /// | Bit | 0 | 1 | 2 | 3 | 4-7 | 8-15                    |
@@ -681,7 +708,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingUpdate : IpV6ExtensionHeaderMobility
+    public abstract class IpV6ExtensionHeaderMobilityBindingUpdateBase : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -704,9 +731,9 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
-        public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
-                                                        bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability, ushort lifetime,
-                                                        IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityBindingUpdateBase(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge,
+                                                            bool homeRegistration, bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability,
+                                                            ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options)
         {
             SequenceNumber = sequenceNumber;
@@ -718,21 +745,13 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         /// <summary>
-        /// Identifies the particular mobility message in question.
-        /// An unrecognized MH Type field causes an error indication to be sent.
-        /// </summary>
-        public override IpV6MobilityHeaderType MobilityHeaderType
-        {
-            get { return IpV6MobilityHeaderType.BindingUpdate; }
-        }
-
-        /// <summary>
         /// Used by the receiving node to sequence Binding Updates and by the sending node to match a returned Binding Acknowledgement with this Binding Update.
         /// </summary>
         public ushort SequenceNumber { get; private set; }
 
         /// <summary>
         /// Set by the sending mobile node to request a Binding Acknowledgement be returned upon receipt of the Binding Update.
+        /// For Fast Binding Update this must be set to one to request that PAR send a Fast Binding Acknowledgement message.
         /// </summary>
         public bool Acknowledge { get; private set; }
 
@@ -740,6 +759,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Set by the sending mobile node to request that the receiving node should act as this node's home agent.
         /// The destination of the packet carrying this message must be that of a router sharing the same subnet prefix as the home address 
         /// of the mobile node in the binding.
+        /// For Fast Binding Update this must be set to one.
         /// </summary>
         public bool HomeRegistration { get; private set; }
 
@@ -765,24 +785,95 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// The number of time units remaining before the binding must be considered expired.
         /// A value of zero indicates that the Binding Cache entry for the mobile node must be deleted.
-        /// One time unit is 4 seconds.
+        /// One time unit is 4 seconds for Binding Update and 1 second for Fast Binding Update.
         /// </summary>
         public ushort Lifetime { get; private set; }
 
-        internal static IpV6ExtensionHeaderMobilityBindingUpdate ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        internal static bool ParseMessageDataToFields(DataSegment messageData, out ushort sequenceNumber,
+                                                      out bool acknowledge, out bool homeRegistration, out bool linkLocalAddressCompatibility,
+                                                      out bool keyManagementMobilityCapability, out ushort lifetime, out IpV6MobilityOptions options)
         {
             if (messageData.Length < MinimumMessageDataLength)
-                return null;
+            {
+                sequenceNumber = 0;
+                acknowledge = false;
+                homeRegistration = false;
+                linkLocalAddressCompatibility = false;
+                keyManagementMobilityCapability = false;
+                lifetime = 0;
+                options = null;
+                return false;
+            }
 
-            ushort sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
-            bool acknowledge = messageData.ReadBool(MessageDataOffset.Acknowledge, MessageDataMask.Acknowledge);
-            bool homeRegistration = messageData.ReadBool(MessageDataOffset.HomeRegistration, MessageDataMask.HomeRegistration);
-            bool linkLocalAddressCompatibility = messageData.ReadBool(MessageDataOffset.LinkLocalAddressCompatibility,
-                                                                      MessageDataMask.LinkLocalAddressCompatibility);
-            bool keyManagementMobilityCapability = messageData.ReadBool(MessageDataOffset.KeyManagementMobilityCapability,
-                                                                        MessageDataMask.KeyManagementMobilityCapability);
-            ushort lifetime = messageData.ReadUShort(MessageDataOffset.Lifetime, Endianity.Big);
-            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
+            sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            acknowledge = messageData.ReadBool(MessageDataOffset.Acknowledge, MessageDataMask.Acknowledge);
+            homeRegistration = messageData.ReadBool(MessageDataOffset.HomeRegistration, MessageDataMask.HomeRegistration);
+            linkLocalAddressCompatibility = messageData.ReadBool(MessageDataOffset.LinkLocalAddressCompatibility, MessageDataMask.LinkLocalAddressCompatibility);
+            keyManagementMobilityCapability = messageData.ReadBool(MessageDataOffset.KeyManagementMobilityCapability,
+                                                                   MessageDataMask.KeyManagementMobilityCapability);
+            lifetime = messageData.ReadUShort(MessageDataOffset.Lifetime, Endianity.Big);
+            options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// RFC 6275.
+    /// <pre>
+    /// +-----+---+---+---+---+-----+-------------------------+
+    /// | Bit | 0 | 1 | 2 | 3 | 4-7 | 8-15                    |
+    /// +-----+---+---+---+---+-----+-------------------------+
+    /// | 0   | Next Header         | Header Extension Length |
+    /// +-----+---------------------+-------------------------+
+    /// | 16  | MH Type             | Reserved                |
+    /// +-----+---------------------+-------------------------+
+    /// | 32  | Checksum                                      |
+    /// +-----+-----------------------------------------------+
+    /// | 48  | Sequence #                                    |
+    /// +-----+---+---+---+---+-------------------------------+
+    /// | 64  | A | H | L | K | Reserved                      |
+    /// +-----+---+---+---+---+-------------------------------+
+    /// | 80  | Lifetime                                      |
+    /// +-----+-----------------------------------------------+
+    /// | 96  | Mobility Options                              |
+    /// | ... |                                               |
+    /// +-----+-----------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityBindingUpdate : IpV6ExtensionHeaderMobilityBindingUpdateBase
+    {
+        public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
+                                                        bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability, ushort lifetime,
+                                                        IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, acknowledge, homeRegistration, linkLocalAddressCompatibility, keyManagementMobilityCapability,
+                   lifetime, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.BindingUpdate; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityBindingUpdate ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            ushort sequenceNumber;
+            bool acknowledge;
+            bool homeRegistration;
+            bool linkLocalAddressCompatibility;
+            bool keyManagementMobilityCapability;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataToFields(messageData, out sequenceNumber, out acknowledge, out homeRegistration, out linkLocalAddressCompatibility, 
+                                          out keyManagementMobilityCapability, out lifetime, out options))
+            {
+                return null;
+            }
+
             return new IpV6ExtensionHeaderMobilityBindingUpdate(nextHeader, checksum, sequenceNumber, acknowledge, homeRegistration,
                                                                 linkLocalAddressCompatibility, keyManagementMobilityCapability, lifetime, options);
         }
@@ -791,14 +882,16 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6BindingAcknowledgementStatus : byte
     {
         /// <summary>
-        /// RFCs 5213, 6275.
+        /// RFCs 5213, 5568, 6275.
         /// </summary>
-        BindingUpdateAcceptedProxyBindingUpdateAccepted = 0,
+        BindingUpdateAccepted = 0,
 
         /// <summary>
-        /// RFC 6275.
+        /// RFCs 5568, 6275.
+        /// Binding Acknowledgement: Prefix discovery necessary.
+        /// Fast Binding Acknowledgement: NCoA is invalid. Use NCoA supplied in "alternate" CoA.
         /// </summary>
-        AcceptedButPrefixDiscoveryNecessary = 1,
+        AcceptedBut = 1,
 
         /// <summary>
         /// RFC 5845.
@@ -826,24 +919,26 @@ namespace PcapDotNet.Packets.IpV6
         PbuAcceptedTbIgnoredSettingsMistmatch = 6,
 
         /// <summary>
-        /// RFC 6275.
+        /// RFCs 5568, 6275.
         /// </summary>
         ReasonUnspecified = 128,
 
         /// <summary>
-        /// RFC 6275.
+        /// RFCs 5568, 6275.
         /// </summary>
         AdministrativelyProhibited = 129,
 
         /// <summary>
-        /// RFC 6275.
+        /// RFCs 5568, 6275.
         /// </summary>
         InsufficientResources = 130,
 
         /// <summary>
-        /// RFC 6275.
+        /// RFCs 5568, 6275.
+        /// Binding Acknowledgement: Home registration not supported.
+        /// Fast Binding Acknowledgement: Incorrect interface identifier length.
         /// </summary>
-        HomeRegistrationNotSupported = 131,
+        HomeRegistrationNotSupportedOrIncorrectInterfaceIdentifierLength = 131,
 
         /// <summary>
         /// RFC 6275.
@@ -1072,7 +1167,7 @@ namespace PcapDotNet.Packets.IpV6
     }
 
     /// <summary>
-    /// RFC 6275.
+    /// RFCs 5568, 6275.
     /// <pre>
     /// +-----+-------------+---+---------------------+
     /// | Bit | 0-7         | 8 | 9-15                |
@@ -1094,7 +1189,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingAcknowledgement : IpV6ExtensionHeaderMobility
+    public abstract class IpV6ExtensionHeaderMobilityBindingAcknowledgementBase : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -1112,24 +1207,15 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
-        public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
-                                                                 bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
-                                                                 IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+                                                                     bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
+                                                                     IpV6MobilityOptions options)
             : base(nextHeader, checksum, options)
         {
             Status = status;
             KeyManagementMobilityCapability = keyManagementMobilityCapability;
             SequenceNumber = sequenceNumber;
             Lifetime = lifetime;
-        }
-
-        /// <summary>
-        /// Identifies the particular mobility message in question.
-        /// An unrecognized MH Type field causes an error indication to be sent.
-        /// </summary>
-        public override IpV6MobilityHeaderType MobilityHeaderType
-        {
-            get { return IpV6MobilityHeaderType.BindingAcknowledgement; }
         }
 
         /// <summary>
@@ -1160,7 +1246,8 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// <para>
-        /// The granted lifetime, in time units of 4 seconds, for which this node should retain the entry for this mobile node in its Binding Cache.
+        /// The granted lifetime, in time units of 4 seconds for Binding Acknowledgement and 1 second for Fast Binding Acknowledgement, 
+        /// for which this node should retain the entry for this mobile node in its Binding Cache.
         /// </para>
         /// <para>
         /// The value of this field is undefined if the Status field indicates that the Binding Update was rejected.
@@ -1168,18 +1255,82 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Lifetime { get; private set; }
 
-        internal static IpV6ExtensionHeaderMobilityBindingAcknowledgement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        internal static bool ParseMessageDataFields(DataSegment messageData, out IpV6BindingAcknowledgementStatus status,
+                                                    out bool keyManagementMobilityCapability, out ushort sequenceNumber, out ushort lifetime,
+                                                    out IpV6MobilityOptions options)
         {
             if (messageData.Length < MinimumMessageDataLength)
+            {
+                status = IpV6BindingAcknowledgementStatus.BindingUpdateAccepted;
+                keyManagementMobilityCapability = false;
+                sequenceNumber = 0;
+                lifetime = 0;
+                options = null;
+                return false;
+            }
+
+            status = (IpV6BindingAcknowledgementStatus)messageData[MessageDataOffset.Status];
+            keyManagementMobilityCapability = messageData.ReadBool(MessageDataOffset.KeyManagementMobilityCapability,
+                                                                   MessageDataMask.KeyManagementMobilityCapability);
+
+            sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            lifetime = messageData.ReadUShort(MessageDataOffset.Lifetime, Endianity.Big);
+            options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// RFC 6275.
+    /// <pre>
+    /// +-----+-------------+---+---------------------+
+    /// | Bit | 0-7         | 8 | 9-15                |
+    /// +-----+-------------+---+---------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+-------------+---+---------------------+
+    /// | 48  | Status      | K | Reserved            |
+    /// +-----+-------------+---+---------------------+
+    /// | 64  | Sequence #                            |
+    /// +-----+---------------------------------------+
+    /// | 80  | Lifetime                              |
+    /// +-----+---------------------------------------+
+    /// | 96  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityBindingAcknowledgement : IpV6ExtensionHeaderMobilityBindingAcknowledgementBase
+    {
+        public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+                                                                 bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
+                                                                 IpV6MobilityOptions options)
+            : base(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.BindingAcknowledgement; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityBindingAcknowledgement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            IpV6BindingAcknowledgementStatus status;
+            bool keyManagementMobilityCapability;
+            ushort sequenceNumber;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataFields(messageData, out status, out keyManagementMobilityCapability, out sequenceNumber, out lifetime, out options))
                 return null;
 
-            IpV6BindingAcknowledgementStatus status = (IpV6BindingAcknowledgementStatus)messageData[MessageDataOffset.Status];
-            bool keyManagementMobilityCapability = messageData.ReadBool(MessageDataOffset.KeyManagementMobilityCapability,
-                                                                        MessageDataMask.KeyManagementMobilityCapability);
-
-            ushort sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
-            ushort lifetime = messageData.ReadUShort(MessageDataOffset.Lifetime, Endianity.Big);
-            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
             return new IpV6ExtensionHeaderMobilityBindingAcknowledgement(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime,
                                                                          options);
         }
@@ -1274,6 +1425,1166 @@ namespace PcapDotNet.Packets.IpV6
             IpV6Address homeAddress = messageData.ReadIpV6Address(MessageDataOffset.HomeAddress, Endianity.Big);
             IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
             return new IpV6ExtensionHeaderMobilityBindingError(nextHeader, checksum, status, homeAddress, options);
+        }
+    }
+
+    /// <summary>
+    /// RFC 5568.
+    /// <pre>
+    /// +-----+---+---+---+---+-----+-------------------------+
+    /// | Bit | 0 | 1 | 2 | 3 | 4-7 | 8-15                    |
+    /// +-----+---+---+---+---+-----+-------------------------+
+    /// | 0   | Next Header         | Header Extension Length |
+    /// +-----+---------------------+-------------------------+
+    /// | 16  | MH Type             | Reserved                |
+    /// +-----+---------------------+-------------------------+
+    /// | 32  | Checksum                                      |
+    /// +-----+---------------------+-------------------------+
+    /// | 48  | Sequence #                                    |
+    /// +-----+---+---+---+---+-------------------------------+
+    /// | 64  | A | H | L | K | Reserved                      |
+    /// +-----+---+---+---+---+-------------------------------+
+    /// | 80  | Lifetime                                      |
+    /// +-----+-----------------------------------------------+
+    /// | 96  | Mobility Options                              |
+    /// | ... |                                               |
+    /// +-----+-----------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityFastBindingUpdate : IpV6ExtensionHeaderMobilityBindingUpdateBase
+    {
+        public IpV6ExtensionHeaderMobilityFastBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge,
+                                                            bool homeRegistration, bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability,
+                                                            ushort lifetime, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, acknowledge, homeRegistration, linkLocalAddressCompatibility, keyManagementMobilityCapability, lifetime, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.FastBindingUpdate; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityFastBindingUpdate ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            ushort sequenceNumber;
+            bool acknowledge;
+            bool homeRegistration;
+            bool linkLocalAddressCompatibility;
+            bool keyManagementMobilityCapability;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataToFields(messageData, out sequenceNumber, out acknowledge, out homeRegistration, out linkLocalAddressCompatibility,
+                                          out keyManagementMobilityCapability, out lifetime, out options))
+            {
+                return null;
+            }
+
+            return new IpV6ExtensionHeaderMobilityFastBindingUpdate(nextHeader, checksum, sequenceNumber, acknowledge, homeRegistration,
+                                                                    linkLocalAddressCompatibility, keyManagementMobilityCapability, lifetime, options);
+        }
+    }
+
+    /// <summary>
+    /// RFC 5568.
+    /// <pre>
+    /// +-----+-------------+---+---------------------+
+    /// | Bit | 0-7         | 8 | 9-15                |
+    /// +-----+-------------+---+---------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+-------------+---+---------------------+
+    /// | 48  | Status      | K | Reserved            |
+    /// +-----+-------------+---+---------------------+
+    /// | 64  | Sequence #                            |
+    /// +-----+---------------------------------------+
+    /// | 80  | Lifetime                              |
+    /// +-----+---------------------------------------+
+    /// | 96  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityFastBindingAcknowledgement : IpV6ExtensionHeaderMobilityBindingAcknowledgementBase
+    {
+        public IpV6ExtensionHeaderMobilityFastBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+                                                                     bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
+                                                                     IpV6MobilityOptions options)
+            : base(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.FastBindingAcknowledgement; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityFastBindingAcknowledgement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            IpV6BindingAcknowledgementStatus status;
+            bool keyManagementMobilityCapability;
+            ushort sequenceNumber;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataFields(messageData, out status, out keyManagementMobilityCapability, out sequenceNumber, out lifetime, out options))
+                return null;
+
+            return new IpV6ExtensionHeaderMobilityFastBindingAcknowledgement(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber,
+                                                                             lifetime, options);
+        }
+    }
+
+    /// <summary>
+    /// RFCs 4068, 5568.
+    /// Deprecated.
+    /// <pre>
+    /// +-----+-------------+-------------------------+
+    /// | Bit | 0-7         | 8-15                    |
+    /// +-----+-------------+-------------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+-------------+-------------------------+
+    /// | 48  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityFastNeighborAdvertisement : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int Options = 0;
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.Options;
+
+        public IpV6ExtensionHeaderMobilityFastNeighborAdvertisement(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.FastNeighborAdvertisement; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityFastNeighborAdvertisement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
+            return new IpV6ExtensionHeaderMobilityFastNeighborAdvertisement(nextHeader, checksum, options);
+        }
+    }
+
+    /// <summary>
+    /// RFCs 5096.
+    /// <pre>
+    /// +-----+-------------+-------------------------+
+    /// | Bit | 0-7         | 8-15                    |
+    /// +-----+-------------+-------------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+-------------+-------------------------+
+    /// | 48  | Message Data                          |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityExperimental : IpV6ExtensionHeaderMobility
+    {
+        public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+            : base(nextHeader, checksum, IpV6MobilityOptions.None)
+        {
+            MessageData = messageData;
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.Experimental; }
+        }
+
+        /// <summary>
+        /// Carries the data specific to the experimental protocol extension.
+        /// </summary>
+        public DataSegment MessageData { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityExperimental ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            return new IpV6ExtensionHeaderMobilityExperimental(nextHeader, checksum, messageData);
+        }
+    }
+
+    /// <summary>
+    /// RFC 5142.
+    /// <pre>
+    /// +-----+----------------+-------------------------+
+    /// | Bit | 0-7            | 8-15                    |
+    /// +-----+----------------+-------------------------+
+    /// | 0   | Next Header    | Header Extension Length |
+    /// +-----+----------------+-------------------------+
+    /// | 16  | MH Type        | Reserved                |
+    /// +-----+----------------+-------------------------+
+    /// | 32  | Checksum                                 |
+    /// +-----+----------------+-------------------------+
+    /// | 48  | # of Addresses | Reserved                |
+    /// +-----+----------------+-------------------------+
+    /// | 64  | Home Agent Addresses                     |
+    /// | ... |                                          |
+    /// +-----+------------------------------------------+
+    /// |     | Mobility Options                         |
+    /// | ... |                                          |
+    /// +-----+------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int NumberOfAddresses = 0;
+            public const int HomeAgentAddresses = NumberOfAddresses + sizeof(byte) + sizeof(byte);
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.HomeAgentAddresses;
+
+        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, ReadOnlyCollection<IpV6Address> homeAgentAddresses,
+                                                                 IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            HomeAgentAddresses = homeAgentAddresses;
+        }
+
+        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, IList<IpV6Address> homeAgentAddresses, IpV6MobilityOptions options)
+            : this(nextHeader, checksum, homeAgentAddresses.AsReadOnly(), options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.HomeAgentSwitchMessage; }
+        }
+
+        /// <summary>
+        /// A list of alternate home agent addresses for the mobile node.
+        /// </summary>
+        public ReadOnlyCollection<IpV6Address> HomeAgentAddresses { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            byte numberOfAddresses = messageData[MessageDataOffset.NumberOfAddresses];
+            int homeAgentAddressesSize = numberOfAddresses * IpV6Address.SizeOf;
+            if (messageData.Length < MinimumMessageDataLength + homeAgentAddressesSize)
+                return null;
+
+            IpV6Address[] homeAgentAddresses = new IpV6Address[numberOfAddresses];
+            for (int i = 0; i != numberOfAddresses; ++i)
+                homeAgentAddresses[i] = messageData.ReadIpV6Address(MessageDataOffset.HomeAgentAddresses + i * IpV6Address.SizeOf, Endianity.Big);
+
+            int optionsOffset = MessageDataOffset.HomeAgentAddresses + homeAgentAddressesSize;
+            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(optionsOffset, messageData.Length - optionsOffset));
+            return new IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(nextHeader, checksum, homeAgentAddresses, options);
+        }
+    }
+
+    /// <summary>
+    /// RFC 5847.
+    /// <pre>
+    /// +-----+----------------+------+----+-------------+
+    /// | Bit | 0-7            | 8-13 | 14 | 15          |
+    /// +-----+----------------+------+----+-------------+
+    /// | 0   | Next Header    | Header Extension Length |
+    /// +-----+----------------+-------------------------+
+    /// | 16  | MH Type        | Reserved                |
+    /// +-----+----------------+-------------------------+
+    /// | 32  | Checksum                                 |
+    /// +-----+-----------------------+----+-------------+
+    /// | 48  | Reserved              | U  | R           |
+    /// +-----+-----------------------+----+-------------+
+    /// | 64  | Sequence Number                          |
+    /// |     |                                          |
+    /// +-----+------------------------------------------+
+    /// | 96  | Mobility Options                         |
+    /// | ... |                                          |
+    /// +-----+------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityHeartbeatMessage : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int IsUnsolicitedHeartbeatResponse = sizeof(byte);
+            public const int IsResponse = IsUnsolicitedHeartbeatResponse;
+            public const int SequenceNumber = IsResponse + sizeof(byte);
+            public const int MobilityOptions = SequenceNumber + sizeof(uint);
+        }
+
+        private static class MessageDataMask
+        {
+            public const byte IsUnsolicitedHeartbeatResponse = 0x02;
+            public const byte IsResponse = 0x01;
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
+
+        public IpV6ExtensionHeaderMobilityHeartbeatMessage(IpV4Protocol nextHeader, ushort checksum, bool isUnsolicitedHeartbeatResponse, bool isResponse,
+                                                           uint sequenceNumber, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            IsUnsolicitedHeartbeatResponse = isUnsolicitedHeartbeatResponse;
+            IsResponse = isResponse;
+            SequenceNumber = sequenceNumber;
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.HeartbeatMessage; }
+        }
+
+        /// <summary>
+        /// Set to true in Unsolicited Heartbeat Response.
+        /// </summary>
+        public bool IsUnsolicitedHeartbeatResponse { get; private set; }
+
+        /// <summary>
+        /// Indicates whether the message is a request or a response. 
+        /// When it's set to false, it indicates that the Heartbeat message is a request.
+        /// When it's set to true, it indicates that the Heartbeat message is a response.
+        /// </summary>
+        public bool IsResponse { get; private set; }
+
+        /// <summary>
+        /// Sequence number used for matching the request to the reply.
+        /// </summary>
+        public uint SequenceNumber { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityHeartbeatMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            bool isUnsolicitedHeartbeatResponse = messageData.ReadBool(MessageDataOffset.IsUnsolicitedHeartbeatResponse, MessageDataMask.IsUnsolicitedHeartbeatResponse);
+            bool isResponse = messageData.ReadBool(MessageDataOffset.IsResponse, MessageDataMask.IsResponse);
+            uint sequenceNumber = messageData.ReadUInt(MessageDataOffset.SequenceNumber, Endianity.Big);
+            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.MobilityOptions, messageData.Length - MessageDataOffset.MobilityOptions));
+            return new IpV6ExtensionHeaderMobilityHeartbeatMessage(nextHeader, checksum, isUnsolicitedHeartbeatResponse, isResponse, sequenceNumber, options);
+        }
+    }
+    
+    public enum IpV6HandoverInitiateMessageCode : byte
+    {
+        SourceIpAddressIsPreviousCareOfAddress = 0x00,
+        SourceIpAddressIsNotPreviousCareOfAddress = 0x01,
+    }
+    
+    /// <summary>
+    /// RFC 5568.
+    /// <pre>
+    /// +-----+---+---+----------+-------------------------+
+    /// | Bit | 0 | 1 | 2-7      | 8-15                    |
+    /// +-----+---+---+----------+-------------------------+
+    /// | 0   | Next Header      | Header Extension Length |
+    /// +-----+------------------+-------------------------+
+    /// | 16  | MH Type          | Reserved                |
+    /// +-----+------------------+-------------------------+
+    /// | 32  | Checksum                                   |
+    /// +-----+--------------------------------------------+
+    /// | 48  | Sequence #                                 |
+    /// +-----+---+---+----------+-------------------------+
+    /// | 64  | S | U | Reserved | Code                    |
+    /// +-----+---+---+----------+-------------------------+
+    /// | 96  | Mobility Options                           |
+    /// | ... |                                            |
+    /// +-----+--------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityHandoverInitiateMessage : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int SequenceNumber = 0;
+            public const int AssignedAddressConfiguration = SequenceNumber + sizeof(ushort);
+            public const int Buffer = AssignedAddressConfiguration;
+            public const int Code = Buffer + sizeof(byte);
+            public const int MobilityOptions = Code + sizeof(byte);
+        }
+
+        private static class MessageDataMask
+        {
+            public const byte AssignedAddressConfiguration = 0x80;
+            public const byte Buffer = 0x40;
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
+
+        public IpV6ExtensionHeaderMobilityHandoverInitiateMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool assignedAddressConfiguration,
+                                                                  bool buffer, IpV6HandoverInitiateMessageCode code,
+                                                                  IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            SequenceNumber = sequenceNumber;
+            AssignedAddressConfiguration = assignedAddressConfiguration;
+            Buffer = buffer;
+            Code = code;
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.HandoverInitiateMessage; }
+        }
+
+        /// <summary>
+        /// Must be set by the sender so replies can be matched to this message.
+        /// </summary>
+        public ushort SequenceNumber { get; private set; }
+
+        /// <summary>
+        /// Assigned address configuration flag.  
+        /// When set to true, this message requests a new CoA to be returned by the destination.
+        /// May be set when Code = 0. Must be false when Code = 1.
+        /// </summary>
+        public bool AssignedAddressConfiguration { get; private set; }
+
+        /// <summary>
+        /// When set, the destination should buffer any packets toward the node indicated in the options of this message.
+        /// Used when Code = 0, should be set to false when Code = 1.
+        /// </summary>
+        public bool Buffer { get; private set; }
+
+        /// <summary>
+        /// Describes whether the source ip address is a previous care of address.
+        /// </summary>
+        public IpV6HandoverInitiateMessageCode Code { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityHandoverInitiateMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            ushort sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            bool assignedAddressConfiguration = messageData.ReadBool(MessageDataOffset.AssignedAddressConfiguration,
+                                                                     MessageDataMask.AssignedAddressConfiguration);
+            bool buffer = messageData.ReadBool(MessageDataOffset.Buffer, MessageDataMask.Buffer);
+            IpV6HandoverInitiateMessageCode code = (IpV6HandoverInitiateMessageCode)messageData[MessageDataOffset.Code];
+            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.MobilityOptions, messageData.Length - MessageDataOffset.MobilityOptions));
+            return new IpV6ExtensionHeaderMobilityHandoverInitiateMessage(nextHeader, checksum, sequenceNumber, assignedAddressConfiguration, buffer, code, options);
+        }
+    }
+
+    public enum IpV6MobilityHandoverAcknowledgeCode : byte
+    {
+        /// <summary>
+        /// Handover Accepted, NCoA valid.
+        /// </summary>
+        HandoverAcceptedMobilityNodeCareOfAddressValid = 0,
+        
+        /// <summary>
+        /// Handover Accepted, NCoA not valid or in use.
+        /// </summary>
+        HandoverAcceptedMobilityNodeCareOfAddressNotValidOrInUse = 1,
+
+        /// <summary>
+        /// Handover Accepted, NCoA assigned (used in Assigned Addressing).
+        /// </summary>
+        HandoverAcceptedMobilityNodeCareOfAddressAssigned = 2,
+
+        /// <summary>
+        /// Handover Accepted, use PCoA.
+        /// </summary>
+        HandoverAcceptedUsePreviousCareOfAddress = 3,
+
+        /// <summary>
+        /// Message sent unsolicited, usually to trigger an HI message.
+        /// </summary>
+        MessageSentUnsolicited = 4,
+
+        /// <summary>
+        /// Handover Not Accepted, reason unspecified.
+        /// </summary>
+        HandoverNotAccepted = 128,
+
+        /// <summary>
+        /// Administratively prohibited.
+        /// </summary>
+        AdministrativelyProhibited = 129,
+
+        /// <summary>
+        /// Insufficient resources.
+        /// </summary>
+        InsufficientResources = 130,
+    }
+
+    /// <summary>
+    /// RFC 5568.
+    /// <pre>
+    /// +-----+-------------+-------------------------+
+    /// | Bit | 0-7         | 8-15                    |
+    /// +-----+-------------+-------------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+---------------------------------------+
+    /// | 48  | Sequence #                            |
+    /// +-----+-------------+-------------------------+
+    /// | 64  | Reserved    | Code                    |
+    /// +-----+-------------+-------------------------+
+    /// | 80  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int SequenceNumber = 0;
+            public const int Code = SequenceNumber + sizeof(ushort) + sizeof(byte);
+            public const int MobilityOptions = Code + sizeof(byte);
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
+
+        public IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
+                                                                     IpV6MobilityHandoverAcknowledgeCode code, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            SequenceNumber = sequenceNumber;
+            Code = code;
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.HandoverAcknowledgeMessage; }
+        }
+
+        /// <summary>
+        /// Copied from the corresponding field in the Handover Initiate message to which this message is a response,
+        /// to enable the receiver to match this Handover Acknowledge message with an outstanding Handover Initiate message.
+        /// </summary>
+        public ushort SequenceNumber { get; private set; }
+
+        /// <summary>
+        /// Describes whether the handover was accepted or not and more details.
+        /// </summary>
+        public IpV6MobilityHandoverAcknowledgeCode Code { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            ushort sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            IpV6MobilityHandoverAcknowledgeCode code = (IpV6MobilityHandoverAcknowledgeCode)messageData[MessageDataOffset.Code];
+            IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.MobilityOptions, messageData.Length - MessageDataOffset.MobilityOptions));
+            return new IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(nextHeader, checksum, sequenceNumber, code, options);
+        }
+    }
+
+    public enum IpV6MobilityBindingRevocationType : byte
+    {
+        /// <summary>
+        /// Binding Revocation Indication.
+        /// </summary>
+        BindingRevocationIndication = 1,
+
+        /// <summary>
+        /// Binding Revocation Acknowledgement.
+        /// </summary>
+        BindingRevocationAcknowledgement = 2,
+    }
+
+    /// <summary>
+    /// RFC 5846.
+    /// <pre>
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | Bit | 0 | 1 | 2 | 3-7 | 8-15                    |
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | 0   | Next Header     | Header Extension Length |
+    /// +-----+-----------------+-------------------------+
+    /// | 16  | MH Type         | Reserved                |
+    /// +-----+-----------------+-------------------------+
+    /// | 32  | Checksum                                  |
+    /// +-----+-----------------+-------------------------+
+    /// | 48  | B.R. Type       | R. Trigger or Status    |
+    /// +-----+-----------------+-------------------------+
+    /// | 64  | Sequence #                                |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 80  | P | V | G | Reserved                      |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 96  | Mobility Options                          |
+    /// | ... |                                           |
+    /// +-----+-------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public abstract class IpV6ExtensionHeaderMobilityBindingRevocationMessage : IpV6ExtensionHeaderMobility
+    {
+        private static class MessageDataOffset
+        {
+            public const int BindingRevocationType = 0;
+            public const int RevocationTriggerOrStatus = BindingRevocationType + sizeof(byte);
+            public const int SequenceNumber = RevocationTriggerOrStatus + sizeof(byte);
+            public const int ProxyBinding = SequenceNumber + sizeof(ushort);
+            public const int IpV4HomeAddressBindingOnly = ProxyBinding;
+            public const int Global = IpV4HomeAddressBindingOnly;
+            public const int MobilityOptions = Global + sizeof(byte) + sizeof(byte);
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
+
+        private static class MessageDataMask
+        {
+            public const byte ProxyBinding = 0x80;
+            public const byte IpV4HomeAddressBindingOnly = 0x40;
+            public const byte Global = 0x20;
+        }
+
+        public IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
+                                                                   bool ipV4HomeAddressBindingOnly, bool global, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            SequenceNumber = sequenceNumber;
+            ProxyBinding = proxyBinding;
+            IpV4HomeAddressBindingOnly = ipV4HomeAddressBindingOnly;
+            Global = global;
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override sealed IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.BindingRevocationMessage; }
+        }
+
+        /// <summary>
+        /// Defines the type of the Binding Revocation Message.
+        /// </summary>
+        public abstract IpV6MobilityBindingRevocationType BindingRevocationType { get; }
+
+        /// <summary>
+        /// In indication, used by the initiator to match a returned Binding Revocation Acknowledgement with this Binding Revocation Indication.
+        /// This sequence number could be a random number.
+        /// At any time, implementations must ensure there is no collision between the sequence numbers of all outstanding Binding Revocation Indication 
+        /// Messages.
+        /// In acknowledgement, copied from the Sequence Number field in the Binding Revocation Indication.
+        /// It is used by the initiator, e.g., HA, LMA, MAG, in matching this Binding Revocation Acknowledgement 
+        /// with the outstanding Binding Revocation Indication.
+        /// </summary>
+        public ushort SequenceNumber { get; private set; }
+
+        /// <summary>
+        /// In indication, set by the initiator to indicate that the revoked binding(s) is a PMIPv6 binding.
+        /// In acknowledgement, set if set in the corresponding Binding Revocation Indication message.
+        /// </summary>
+        public bool ProxyBinding { get; private set; }
+
+        /// <summary>
+        /// In indication, Set by the initiator, home agent, or local mobility anchor to indicate to the receiving mobility entity the termination
+        /// of the IPv4 Home Address binding only as in Home Agent Operation and Local Mobility Anchor Operation.
+        /// In acknowledgement, set if the it is set in the corresponding Binding Revocation Indication message.
+        /// </summary>
+        public bool IpV4HomeAddressBindingOnly { get; private set; }
+
+        /// <summary>
+        /// In indication, Set by the initiator, LMA or MAG, to indicate the termination of all Per-Peer mobility Bindings or Multiple Bindings that share 
+        /// a common identifier(s) and are served by the initiator and responder as in Local Mobility Anchor Operation and Mobile Access Gateway Operation.
+        /// In acknowledgement, set if it is set in the corresponding Binding Revocation Indication message.
+        /// </summary>
+        public bool Global { get; private set; }
+
+        internal static IpV6ExtensionHeaderMobilityBindingRevocationMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+                return null;
+
+            IpV6MobilityBindingRevocationType bindingRevocationType = (IpV6MobilityBindingRevocationType)messageData[MessageDataOffset.BindingRevocationType];
+            byte revocationTriggerOrStatus = messageData[MessageDataOffset.RevocationTriggerOrStatus];
+            ushort sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            bool proxyBinding = messageData.ReadBool(MessageDataOffset.ProxyBinding, MessageDataMask.ProxyBinding);
+            bool ipV4HomeAddressBindingOnly = messageData.ReadBool(MessageDataOffset.IpV4HomeAddressBindingOnly, MessageDataMask.IpV4HomeAddressBindingOnly);
+            bool global = messageData.ReadBool(MessageDataOffset.Global, MessageDataMask.Global);
+            IpV6MobilityOptions options =
+                new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.MobilityOptions, messageData.Length - MessageDataOffset.MobilityOptions));
+            switch (bindingRevocationType)
+            {
+                case IpV6MobilityBindingRevocationType.BindingRevocationIndication:
+                    return new IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage(nextHeader, checksum, (Ipv6MobilityBindingRevocationTrigger)revocationTriggerOrStatus, sequenceNumber,
+                                                                                             proxyBinding, ipV4HomeAddressBindingOnly, global, options);
+
+                case IpV6MobilityBindingRevocationType.BindingRevocationAcknowledgement:
+                    return new IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage(nextHeader, checksum,
+                                                                                                  (Ipv6MobilityBindingRevocationStatus)revocationTriggerOrStatus,
+                                                                                                  sequenceNumber, proxyBinding, ipV4HomeAddressBindingOnly,
+                                                                                                  global, options);
+
+                default:
+                    return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The Per-MN Revocation Trigger values are less than 128.
+    /// The Per-MN Revocation Trigger is used when the BRI message intends to revoke one or more bindings for the same mobile node.
+    /// The Global Revocation Trigger values are greater than 128 and less than 250 and used in the BRI message 
+    /// when the Global (G) bit is set for global revocation.
+    /// The values 250-255 are reserved for testing purposes only.
+    /// </summary>
+    public enum Ipv6MobilityBindingRevocationTrigger : byte
+    {
+        /// <summary>
+        /// Unspecified.
+        /// </summary>
+        Unspecified = 0,
+
+        /// <summary>
+        /// Administrative Reason.
+        /// </summary>
+        AdministrativeReason = 1,
+
+        /// <summary>
+        /// Inter-MAG Handover - same Access Type.
+        /// </summary>
+        InterMagHandoverSameAccessType = 2,
+
+        /// <summary>
+        /// Inter-MAG Handover - different Access Type.
+        /// </summary>
+        InterMagHandoverDifferentAccessType = 3,
+
+        /// <summary>
+        /// Inter-MAG Handover - Unknown.
+        /// </summary>
+        InterMagHandoverUnknown = 4,
+
+        /// <summary>
+        /// User-Initiated Session(s) Termination
+        /// </summary>
+        UserInitiatedSessionsTermination = 5,
+
+        /// <summary>
+        /// Access Network Session(s) Termination
+        /// </summary>
+        AccessNetworkSessionsTermination = 6,
+        
+        /// <summary>
+        /// Possible Out-of-Sync BCE State.
+        /// </summary>
+        PossibleOutOfSyncBceState = 7,
+
+        /// <summary>
+        /// Global Revocation Trigger Value.
+        /// Per-Peer Policy.
+        /// </summary>
+        GlobalPerPeerPolicy = 128,
+
+        /// <summary>
+        /// Global Revocation Trigger Value.
+        /// Revoking Mobility Node Local Policy.
+        /// </summary>
+        GlobalRevokingMobilityNodeLocalPolicy = 129,
+    }
+
+    /// <summary>
+    /// RFC 5846.
+    /// <pre>
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | Bit | 0 | 1 | 2 | 3-7 | 8-15                    |
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | 0   | Next Header     | Header Extension Length |
+    /// +-----+-----------------+-------------------------+
+    /// | 16  | MH Type         | Reserved                |
+    /// +-----+-----------------+-------------------------+
+    /// | 32  | Checksum                                  |
+    /// +-----+-----------------+-------------------------+
+    /// | 48  | B.R. Type       | R. Trigger              |
+    /// +-----+-----------------+-------------------------+
+    /// | 64  | Sequence #                                |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 80  | P | V | G | Reserved                      |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 96  | Mobility options                          |
+    /// | ... |                                           |
+    /// +-----+-------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
+    {
+        public IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage(IpV4Protocol nextHeader, ushort checksum,
+                                                                             Ipv6MobilityBindingRevocationTrigger revocationTrigger, ushort sequenceNumber,
+                                                                             bool proxyBinding, bool ipV4HomeAddressBindingOnly, bool global,
+                                                                             IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, proxyBinding, ipV4HomeAddressBindingOnly, global, options)
+        {
+            RevocationTrigger = revocationTrigger;
+        }
+
+        /// <summary>
+        /// Defines the type of the Binding Revocation Message.
+        /// </summary>
+        public override sealed IpV6MobilityBindingRevocationType BindingRevocationType
+        {
+            get { return IpV6MobilityBindingRevocationType.BindingRevocationIndication; }
+        }
+
+        /// <summary>
+        /// Indicating the event that triggered the initiator to send the BRI message.
+        /// </summary>
+        public Ipv6MobilityBindingRevocationTrigger RevocationTrigger { get; private set; }
+    }
+
+    /// <summary>
+    /// Values of the Status field less than 128 indicate that the Binding Revocation Indication was processed successfully by the responder.
+    /// Values greater than or equal to 128 indicate that the Binding Revocation Indication was rejected by the responder. 
+    /// </summary>
+    public enum Ipv6MobilityBindingRevocationStatus : byte
+    {
+        /// <summary>
+        /// Success.
+        /// </summary>
+        Success = 0,
+
+        /// <summary>
+        /// Partial success.
+        /// </summary>
+        PartialSuccess = 1,
+
+        /// <summary>
+        /// Binding Does NOT Exist.
+        /// </summary>
+        BindingDoesNotExist = 128,
+
+        /// <summary>
+        /// IPv4 Home Address Option Required.
+        /// </summary>
+        IpV4HomeAddressOptionRequired = 129,
+
+        /// <summary>
+        /// Global Revocation NOT Authorized.
+        /// </summary>
+        GlobalRevocationNotAuthorized = 130,
+
+        /// <summary>
+        /// Revoked Mobile Nodes Identity Required.
+        /// </summary>
+        RevokedMobileNodesIdentityRequired = 131,
+
+        /// <summary>
+        /// Revocation Failed - MN is Attached.
+        /// </summary>
+        RevocationFailedMobilityNodeIsAttached = 132,
+
+        /// <summary>
+        /// Revocation Trigger NOT Supported.
+        /// </summary>
+        RevocationTriggerNotSupported = 133,
+
+        /// <summary>
+        /// Revocation Function NOT Supported.
+        /// </summary>
+        RevocationFunctionNotSupported = 134,
+
+        /// <summary>
+        /// Proxy Binding Revocation NOT Supported.
+        /// </summary>
+        ProxyBindingRevocationNotSupported = 135,
+    }
+
+    /// <summary>
+    /// RFC 5846.
+    /// <pre>
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | Bit | 0 | 1 | 2 | 3-7 | 8-15                    |
+    /// +-----+---+---+---+-----+-------------------------+
+    /// | 0   | Next Header     | Header Extension Length |
+    /// +-----+-----------------+-------------------------+
+    /// | 16  | MH Type         | Reserved                |
+    /// +-----+-----------------+-------------------------+
+    /// | 32  | Checksum                                  |
+    /// +-----+-----------------+-------------------------+
+    /// | 48  | B.R. Type       | Status                  |
+    /// +-----+-----------------+-------------------------+
+    /// | 64  | Sequence #                                |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 80  | P | V | G | Reserved                      |
+    /// +-----+---+---+---+-------------------------------+
+    /// | 96  | Mobility options                          |
+    /// | ... |                                           |
+    /// +-----+-------------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
+    {
+        public IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage(IpV4Protocol nextHeader, ushort checksum,
+                                                                                  Ipv6MobilityBindingRevocationStatus status, ushort sequenceNumber,
+                                                                                  bool proxyBinding, bool ipV4HomeAddressBindingOnly, bool global,
+                                                                                  IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, proxyBinding, ipV4HomeAddressBindingOnly, global, options)
+        {
+            Status = status;
+        }
+
+        /// <summary>
+        /// Defines the type of the Binding Revocation Message.
+        /// </summary>
+        public override sealed IpV6MobilityBindingRevocationType BindingRevocationType
+        {
+            get { return IpV6MobilityBindingRevocationType.BindingRevocationAcknowledgement; }
+        }
+
+        /// <summary>
+        /// Indicating the result of processing the Binding Revocation Indication message by the responder.
+        /// </summary>
+        public Ipv6MobilityBindingRevocationStatus Status { get; private set; }
+    }
+
+    /// <summary>
+    /// RFC-ietf-netext-pmip-lr-10.
+    /// <pre>
+    /// +-----+-------------+-------------------------+
+    /// | Bit | 0-7         | 8-15                    |
+    /// +-----+-------------+-------------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+---------------------------------------+
+    /// | 48  | Sequence #                            |
+    /// +-----+---------------------------------------+
+    /// | 64  |                                       |
+    /// +-----+---------------------------------------+
+    /// | 80  | Lifetime                              |
+    /// +-----+---------------------------------------+
+    /// | 96  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public abstract class IpV6ExtensionHeaderMobilityLocalizedRouting : IpV6ExtensionHeaderMobility
+    {
+        /// <summary>
+        /// Indicates an infinite lifetime.
+        /// </summary>
+        public const ushort LifetimeInfinite = 0xFFFF;
+
+        private static class MessageDataOffset
+        {
+            public const int SequenceNumber = 0;
+            public const int Lifetime = SequenceNumber + sizeof(ushort) + sizeof(ushort);
+            public const int MobilityOptions = Lifetime + sizeof(ushort);
+        }
+
+        public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
+
+        public IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
+                                                           IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options)
+        {
+            SequenceNumber = sequenceNumber;
+            Lifetime = lifetime;
+        }
+
+        /// <summary>
+        /// In initiation, a monotonically increasing integer. Set by a sending node in a request message, and used to match a reply to the request.
+        /// In acknowledgement, copied from the sequence number field of the LRI message being responded to.
+        /// </summary>
+        public ushort SequenceNumber { get; private set; }
+
+        /// <summary>
+        /// In initiation, the requested time in seconds for which the sender wishes to have local forwarding.
+        /// A value of 0xffff (all ones) indicates an infinite lifetime.
+        /// When set to 0, indicates a request to stop localized routing.
+        /// In acknowledgement, the time in seconds for which the local forwarding is supported.
+        /// Typically copied from the corresponding field in the LRI message.
+        /// </summary>
+        public ushort Lifetime { get; private set; }
+
+        internal static bool ParseMessageDataToFields(DataSegment messageData, out ushort sequenceNumber, out ushort lifetime, out IpV6MobilityOptions options)
+        {
+            if (messageData.Length < MinimumMessageDataLength)
+            {
+                sequenceNumber = 0;
+                lifetime = 0;
+                options = null;
+                return false;
+            }
+
+            sequenceNumber = messageData.ReadUShort(MessageDataOffset.SequenceNumber, Endianity.Big);
+            lifetime = messageData.ReadUShort(MessageDataOffset.Lifetime, Endianity.Big);
+            options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.MobilityOptions, messageData.Length - MessageDataOffset.MobilityOptions));
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// RFC-ietf-netext-pmip-lr-10.
+    /// <pre>
+    /// +-----+-------------+-------------------------+
+    /// | Bit | 0-7         | 8-15                    |
+    /// +-----+-------------+-------------------------+
+    /// | 0   | Next Header | Header Extension Length |
+    /// +-----+-------------+-------------------------+
+    /// | 16  | MH Type     | Reserved                |
+    /// +-----+-------------+-------------------------+
+    /// | 32  | Checksum                              |
+    /// +-----+---------------------------------------+
+    /// | 48  | Sequence #                            |
+    /// +-----+---------------------------------------+
+    /// | 64  | Reserved                              |
+    /// +-----+---------------------------------------+
+    /// | 80  | Lifetime                              |
+    /// +-----+---------------------------------------+
+    /// | 96  | Mobility Options                      |
+    /// | ... |                                       |
+    /// +-----+---------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation : IpV6ExtensionHeaderMobilityLocalizedRouting
+    {
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
+                                                                     ushort lifetime, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, lifetime, options)
+        {
+        }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.LocalizedRoutingInitiation; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            ushort sequenceNumber;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataToFields(messageData, out sequenceNumber, out lifetime, out options))
+                return null;
+
+            return new IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(nextHeader, checksum, sequenceNumber, lifetime, options);
+        }
+    }
+
+    /// <summary>
+    /// RFC-ietf-netext-pmip-lr-10.
+    /// <pre>
+    /// +-----+---+----------+-------------------------+
+    /// | Bit | 0 | 3-7      | 8-15                    |
+    /// +-----+---+----------+-------------------------+
+    /// | 0   | Next Header  | Header Extension Length |
+    /// +-----+--------------+-------------------------+
+    /// | 16  | MH Type      | Reserved                |
+    /// +-----+--------------+-------------------------+
+    /// | 32  | Checksum                               |
+    /// +-----+----------------------------------------+
+    /// | 48  | Sequence #                             |
+    /// +-----+---+----------+-------------------------+
+    /// | 64  | U | Reserved | Status                  |
+    /// +-----+---+----------+-------------------------+
+    /// | 80  | Lifetime                               |
+    /// +-----+----------------------------------------+
+    /// | 96  | Mobility Options                       |
+    /// | ... |                                        |
+    /// +-----+----------------------------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement : IpV6ExtensionHeaderMobilityLocalizedRouting
+    {
+        private static class MessageDataOffset
+        {
+            public const int Unsolicited = sizeof(ushort);
+        }
+
+        private static class MessageDataMask
+        {
+            public const byte Unsolicited = 0x80;
+        }
+
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited,
+                                                                          ushort lifetime, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, sequenceNumber, lifetime, options)
+        {
+            Unsolicited = unsolicited;
+        }
+
+        /// <summary>
+        /// When true, the LRA message is sent unsolicited.
+        /// The Lifetime field indicates a new requested value.
+        /// The MAG must wait for the regular LRI message to confirm that the request is acceptable to the LMA.
+        /// </summary>
+        public bool Unsolicited { get; private set; }
+
+        /// <summary>
+        /// Identifies the particular mobility message in question.
+        /// An unrecognized MH Type field causes an error indication to be sent.
+        /// </summary>
+        public override IpV6MobilityHeaderType MobilityHeaderType
+        {
+            get { return IpV6MobilityHeaderType.LocalizedRoutingAcknowledgement; }
+        }
+
+        internal static IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        {
+            ushort sequenceNumber;
+            ushort lifetime;
+            IpV6MobilityOptions options;
+            if (!ParseMessageDataToFields(messageData, out sequenceNumber, out lifetime, out options))
+                return null;
+
+            bool unsolicited = messageData.ReadBool(MessageDataOffset.Unsolicited, MessageDataMask.Unsolicited);
+
+            return new IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(nextHeader, checksum, sequenceNumber, unsolicited, lifetime, options);
         }
     }
 }

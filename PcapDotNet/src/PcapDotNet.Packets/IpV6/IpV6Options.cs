@@ -94,7 +94,25 @@ namespace PcapDotNet.Packets.IpV6
 
     public class IpV6MobilityOptions : Options<IpV6MobilityOption>
     {
-        public IpV6MobilityOptions(DataSegment data)
+        /// <summary>
+        /// Creates options from a list of options.
+        /// </summary>
+        /// <param name="options">The list of options.</param>
+        public IpV6MobilityOptions(IList<IpV6MobilityOption> options)
+            : base(options, true, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates options from a list of options.
+        /// </summary>
+        /// <param name="options">The list of options.</param>
+        public IpV6MobilityOptions(params IpV6MobilityOption[] options)
+            : this((IList<IpV6MobilityOption>)options)
+        {
+        }
+
+        internal IpV6MobilityOptions(DataSegment data)
             : this(Read(data))
         {
         }
@@ -102,6 +120,14 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptions(Tuple<IList<IpV6MobilityOption>, bool> optionsAndIsValid)
             : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
         {
+        }
+
+        /// <summary>
+        /// No options instance.
+        /// </summary>
+        public static IpV6MobilityOptions None
+        {
+            get { return _none; }
         }
 
         public static Tuple<IList<IpV6MobilityOption>, bool> Read(DataSegment data)
@@ -177,5 +203,7 @@ namespace PcapDotNet.Packets.IpV6
 
             return registraionAttributes.First();
         }
+
+        private static readonly IpV6MobilityOptions _none = new IpV6MobilityOptions();
     }
 }
