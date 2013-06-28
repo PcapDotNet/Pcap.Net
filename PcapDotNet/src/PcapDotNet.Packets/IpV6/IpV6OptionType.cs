@@ -99,7 +99,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6275.
         /// </summary>
-        AuthorizationData = 0x05,
+        BindingAuthorizationData = 0x05,
 
         /// <summary>
         /// RFC 3963.
@@ -111,25 +111,25 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 5568.
         /// Mobility Header Link-Layer Address option.
         /// </summary>
-        MobilityHeaderLinkLayerAddress = 0x07,
+        LinkLayerAddress = 0x07,
 
         /// <summary>
         /// RFC 4283.
         /// MN-ID-OPTION-TYPE.
         /// </summary>
-        MnId = 0x08,
+        MobileNodeIdentifier = 0x08,
 
         /// <summary>
         /// RFC 4285.
         /// AUTH-OPTION-TYPE.
         /// </summary>
-        Auth = 0x09,
+        Authentication = 0x09,
 
         /// <summary>
         /// RFC 4285.
         /// MESG-ID-OPTION-TYPE
         /// </summary>
-        MesgId = 0x0A,
+        ReplayProtection = 0x0A,
 
         /// <summary>
         /// RFC 4866.
