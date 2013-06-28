@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -24,6 +26,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override sealed void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
+        }
+
+        internal override sealed IpV6Option CreateInstance(DataSegment data)
+        {
+            throw new InvalidOperationException("Simple options shouldn't be registered.");
         }
     }
 }
