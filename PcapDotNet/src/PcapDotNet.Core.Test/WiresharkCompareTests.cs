@@ -438,7 +438,7 @@ namespace PcapDotNet.Core.Test
 
             try
             {
-                Compare(XDocument.Load(fixedDocumentFilename), packets);
+                Compare(XDocument.Load(fixedDocumentFilename,LoadOptions.None), packets);
             }
             catch (AssertFailedException exception)
             {
@@ -529,7 +529,7 @@ namespace PcapDotNet.Core.Test
 //                        break;
 
                     case "frame.time_epoch":
-                        double timeEpoch = double.Parse(field.Show());
+                        double timeEpoch = double.Parse(field.Show(), CultureInfo.InvariantCulture);
                         DateTime fieldTimestamp = new DateTime(1970, 1, 1).AddSeconds(timeEpoch);
                         MoreAssert.IsInRange(fieldTimestamp.AddMilliseconds(-1), fieldTimestamp.AddMilliseconds(1), packet.Timestamp.ToUniversalTime(), "Timestamp");
                         break;

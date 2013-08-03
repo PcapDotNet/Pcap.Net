@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using PcapDotNet.Base;
@@ -60,9 +61,9 @@ namespace PcapDotNet.Core.Test
                     else if (quickStart.RateKbps < 1024)
                         quickStartWireshark.Append(quickStart.RateKbps + " kbit/s");
                     else if (quickStart.RateKbps < 1024 * 1024)
-                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000) + " Mbit/s");
+                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000).ToString(CultureInfo.InvariantCulture) + " Mbit/s");
                     else
-                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000000) + " Gbit/s");
+                        quickStartWireshark.Append(((double)quickStart.RateKbps / 1000000).ToString(CultureInfo.InvariantCulture) + " Gbit/s");
 
                     if (quickStart.Function == IpV4OptionQuickStartFunction.RateRequest)
                         quickStartWireshark.Append(", QS TTL " + quickStart.Ttl);
