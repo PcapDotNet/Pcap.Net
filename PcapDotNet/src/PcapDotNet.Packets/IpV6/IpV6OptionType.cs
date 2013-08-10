@@ -169,23 +169,24 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 5026.
         /// DNS-UPDATE-TYPE.
         /// </summary>
-        DnsUpdateType = 0x11,
+        DnsUpdate = 0x11,
 
         /// <summary>
         /// RFC 5096.
         /// Experimental Mobility Option.
         /// </summary>
-        ExperimentalMobilityOption = 0x12,
+        Experimental = 0x12,
         
         /// <summary>
         /// RFC 5094.
+        /// Vendor Specific Mobility Option.
         /// </summary>
-        VendorSpecificMobilityOption = 0x13,
+        VendorSpecific = 0x13,
 
         /// <summary>
         /// RFC 5149.
         /// </summary>
-        ServiceSelectionMobilityOption = 0x14,
+        ServiceSelection = 0x14,
 
         /// <summary>
         /// RFC 5568.
@@ -196,34 +197,34 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        HomeNetworkPrefixOption = 0x16,
+        HomeNetworkPrefix = 0x16,
 
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        HandoffIndicatorOption = 0x17,
+        HandoffIndicator = 0x17,
 
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        AccessTechnologyTypeOption = 0x18,
+        AccessTechnologyType = 0x18,
 
         /// <summary>
         /// RFC 5213.
         /// Mobile Node Link-layer Identifier Option
         /// </summary>
-        MobileNodeLinkLayerIdentifierOption = 0x19,
+        MobileNodeLinkLayerIdentifier = 0x19,
 
         /// <summary>
         /// RFC 5213.
         /// Link-local Address Option.
         /// </summary>
-        LinkLocalAddressOption = 0x1A,
+        LinkLocalAddress = 0x1A,
 
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        TimestampOption = 0x1B,
+        Timestamp = 0x1B,
 
         /// <summary>
         /// RFC 5847.
