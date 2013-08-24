@@ -259,7 +259,7 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 5845.
         /// GRE Key Option.
         /// </summary>
-        GreKeyOption = 0x21,
+        GreKey = 0x21,
 
         /// <summary>
         /// RFC 5568.
@@ -294,23 +294,23 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 5844.
         /// IPv4 DHCP Support Mode.
         /// </summary>
-        IpV4DHCPSupportMode = 0x27,
+        IpV4DhcpSupportMode = 0x27,
 
         /// <summary>
         /// RFC 5949.
         /// </summary>
-        ContextRequestOption = 0x28,
+        ContextRequest = 0x28,
 
         /// <summary>
         /// RFC 5949.
         /// </summary>
-        LocalMobilityAnchorAddressOption = 0x29,
+        LocalMobilityAnchorAddress = 0x29,
 
         /// <summary>
         /// RFC 5949.
         /// Mobile Node Link-local Address Interface Identifier Option.
         /// </summary>
-        MobileNodeLinkLocalAddressInterfaceIdentifierOption = 0x2A,
+        MobileNodeLinkLocalAddressInterfaceIdentifier = 0x2A,
 
         /// <summary>
         /// RFC 6058.

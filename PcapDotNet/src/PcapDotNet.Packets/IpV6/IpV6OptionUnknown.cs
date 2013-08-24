@@ -1,4 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -1621,7 +1626,7 @@ namespace PcapDotNet.Packets.IpV6
     /// | 0   | Option Type | Opt Data Len |
     /// +-----+-------------+--------------+
     /// | 16  | Reserved    | Value        |
-    /// +-----+----------------------------+
+    /// +-----+-------------+--------------+
     /// </pre>
     /// </summary>
     public abstract class IpV6MobilityOptionReservedByteValueByte : IpV6MobilityOptionComplex
@@ -2235,6 +2240,1084 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + Offset.PrefixLength, prefixLengthAndRequestPrefix);
             buffer.Write(offset + Offset.HomeAddress, HomeAddress, Endianity.Big);
             offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5555.
+    /// <pre>
+    /// +-----+---+---------+--------------+
+    /// | Bit | 0 | 1-7     | 8-15         |
+    /// +-----+---+---------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+---+---------+--------------+
+    /// | 16  | F | Reserved               |
+    /// +-----+---+------------------------+
+    /// | 32  | Refresh time               |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.NatDetection)]
+    public class IpV6MobilityOptionNatDetection : IpV6MobilityOptionComplex
+    {
+        public const uint RecommendedRefreshTime = 110;
+
+        private static class Offset
+        {
+            public const int UdpEncapsulationRequired = 0;
+            public const int RefreshTime = UdpEncapsulationRequired + sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.RefreshTime + sizeof(ushort);
+
+        private static class Mask
+        {
+            public const byte UdpEncapsulationRequired = 0x80;
+        }
+
+        public IpV6MobilityOptionNatDetection(bool udpEncapsulationRequired, uint refreshTime)
+            : base(IpV6MobilityOptionType.NatDetection)
+        {
+            UdpEncapsulationRequired = udpEncapsulationRequired;
+            RefreshTime = refreshTime;
+        }
+
+        /// <summary>
+        /// Indicates to the mobile node that UDP encapsulation is required.
+        /// When set, this flag indicates that the mobile node must use UDP encapsulation even if a NAT is not located between the mobile node and home agent.
+        /// This flag should not be set when the mobile node is assigned an IPv6 care-of address with some exceptions.
+        /// </summary>
+        public bool UdpEncapsulationRequired { get; private set; }
+
+        /// <summary>
+        /// A suggested time (in seconds) for the mobile node to refresh the NAT binding.
+        /// If set to zero, it is ignored.
+        /// If this field is set to uint.MaxValue, it means that keepalives are not needed, i.e., no NAT was detected.
+        /// The home agent must be configured with a default value for the refresh time.
+        /// The recommended value is RecommendedRefreshTime.
+        /// </summary>
+        public uint RefreshTime { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            bool udpEncapsulationRequired = data.ReadBool(Offset.UdpEncapsulationRequired, Mask.UdpEncapsulationRequired);
+            uint refreshTime = data.ReadUInt(Offset.RefreshTime, Endianity.Big);
+            return new IpV6MobilityOptionNatDetection(udpEncapsulationRequired, refreshTime);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            byte udpEncapsulationRequired = 0;
+            if (UdpEncapsulationRequired)
+                udpEncapsulationRequired |= Mask.UdpEncapsulationRequired;
+
+            buffer.Write(offset + Offset.UdpEncapsulationRequired, udpEncapsulationRequired);
+            buffer.Write(offset + Offset.RefreshTime, RefreshTime, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5555.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Reserved                   |
+    /// +-----+----------------------------+
+    /// | 32  | IPv4 Care-of address       |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4CareOfAddress)]
+    public class IpV6MobilityOptionIpV4CareOfAddress : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int CareOfAddress = sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.CareOfAddress + IpV4Address.SizeOf;
+
+        public IpV6MobilityOptionIpV4CareOfAddress(IpV4Address careOfAddress)
+            : base(IpV6MobilityOptionType.IpV4CareOfAddress)
+        {
+            CareOfAddress = careOfAddress;
+        }
+
+        /// <summary>
+        /// Contains the mobile node's IPv4 care-of address.
+        /// The IPv4 care-of address is used when the mobile node is located in an IPv4-only network.
+        /// </summary>
+        public IpV4Address CareOfAddress { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            IpV4Address careOfAddress = data.ReadIpV4Address(Offset.CareOfAddress, Endianity.Big);
+            return new IpV6MobilityOptionIpV4CareOfAddress(careOfAddress);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.CareOfAddress, CareOfAddress, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5845.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Reserved                   |
+    /// +-----+----------------------------+
+    /// | 32  | GRE Key Identifier         |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.GreKey)]
+    public class IpV6MobilityOptionGreKey : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int GreKeyIdentifier = sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.GreKeyIdentifier + sizeof(uint);
+
+        public IpV6MobilityOptionGreKey(uint greKeyIdentifier)
+            : base(IpV6MobilityOptionType.GreKey)
+        {
+            GreKeyIdentifier = greKeyIdentifier;
+        }
+
+        /// <summary>
+        /// Contains the downlink or the uplink GRE key.
+        /// This field is present in the GRE Key option only if the GRE keys are being exchanged using the Proxy Binding Update and Proxy Binding
+        /// Acknowledgement messages.
+        /// </summary>
+        public uint GreKeyIdentifier { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            uint greKeyIdentifier = data.ReadUInt(Offset.GreKeyIdentifier, Endianity.Big);
+            return new IpV6MobilityOptionGreKey(greKeyIdentifier);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.GreKeyIdentifier, GreKeyIdentifier, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5845.
+    /// </summary>
+    public enum IpV6MobilityHeaderIpV6AddressPrefixCode : byte
+    {
+        /// <summary>
+        /// Old Care-of Address.
+        /// </summary>
+        OldCareOfAddress = 1,
+
+        /// <summary>
+        /// New Care-of Address.
+        /// </summary>
+        NewCareOfAddress = 2,
+
+        /// <summary>
+        /// NAR's IP address.
+        /// </summary>
+        NewAccessRouterIpAddress = 3,
+
+        /// <summary>
+        /// NAR's Prefix, sent in PrRtAdv.
+        /// The Prefix Length field contains the number of valid leading bits in the prefix.
+        /// The bits in the prefix after the prefix length are reserved and must be initialized to zero by the sender and ignored by the receiver.
+        /// </summary>
+        NewAccessRouterPrefix = 4,
+    }
+
+    /// <summary>
+    /// RFC 5845.
+    /// <pre>
+    /// +-----+-------------+---------------+
+    /// | Bit | 0-7         | 8-15          |
+    /// +-----+-------------+---------------+
+    /// | 0   | Option Type | Opt Data Len  |
+    /// +-----+-------------+---------------+
+    /// | 16  | Option-Code | Prefix Length |
+    /// +-----+-------------+---------------+
+    /// | 32  | IPv6 Address/Prefix         |
+    /// |     |                             |
+    /// |     |                             |
+    /// |     |                             |
+    /// |     |                             |
+    /// |     |                             |
+    /// |     |                             |
+    /// |     |                             |
+    /// +-----+-----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobilityHeaderIpV6AddressPrefix)]
+    public class IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix : IpV6MobilityOptionComplex
+    {
+        public const byte MaxPrefixLength = 128;
+
+        private static class Offset
+        {
+            public const int Code = 0;
+            public const int PrefixLength = Code + sizeof(byte);
+            public const int AddressOrPrefix = PrefixLength + sizeof(byte);
+        }
+
+        public const int OptionDataLength = Offset.AddressOrPrefix + IpV6Address.SizeOf;
+
+        public IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix(IpV6MobilityHeaderIpV6AddressPrefixCode code, byte prefixLength, IpV6Address addressOrPrefix)
+            : base(IpV6MobilityOptionType.MobilityHeaderIpV6AddressPrefix)
+        {
+            if (prefixLength > MaxPrefixLength)
+                throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max value is {0}", MaxPrefixLength));
+
+            Code = code;
+            PrefixLength = prefixLength;
+            AddressOrPrefix = addressOrPrefix;
+        }
+
+        /// <summary>
+        /// Describes the kind of the address or the prefix.
+        /// </summary>
+        public IpV6MobilityHeaderIpV6AddressPrefixCode Code { get; private set; }
+
+        /// <summary>
+        /// Indicates the length of the IPv6 Address Prefix.
+        /// The value ranges from 0 to 128.
+        /// </summary>
+        public byte PrefixLength { get; private set; }
+
+        /// <summary>
+        /// The IP address/prefix defined by the Option-Code field.
+        /// </summary>
+        public IpV6Address AddressOrPrefix { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            IpV6MobilityHeaderIpV6AddressPrefixCode code = (IpV6MobilityHeaderIpV6AddressPrefixCode)data[Offset.Code];
+            byte prefixLength = data[Offset.PrefixLength];
+            IpV6Address addressOrPrefix = data.ReadIpV6Address(Offset.AddressOrPrefix, Endianity.Big);
+            return new IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix(code, prefixLength, addressOrPrefix);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.Code, (byte)Code);
+            buffer.Write(offset + Offset.PrefixLength, PrefixLength);
+            buffer.Write(offset + Offset.AddressOrPrefix, AddressOrPrefix, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5648.
+    /// <pre>
+    /// +-----+-------------+---+-----------+
+    /// | Bit | 0-7         | 8 | 9-15      |
+    /// +-----+-------------+---+-----------+
+    /// | 0   | Option Type | Opt Data Len  |
+    /// +-----+-------------+---------------+
+    /// | 16  |  Binding ID (BID)           |
+    /// +-----+-------------+---+-----------+
+    /// | 32  |  Status     | H | Reserved  |
+    /// +-----+-------------+---+-----------+
+    /// | 48  | IPv4 or IPv6                |
+    /// | ... | care-of address (CoA)       |
+    /// +-----+-----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.BindingIdentifier)]
+    public class IpV6MobilityOptionBindingIdentifier : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int BindingId = 0;
+            public const int Status = BindingId + sizeof(ushort);
+            public const int SimultaneousHomeAndForeignBinding = Status + sizeof(byte);
+            public const int CareOfAddress = SimultaneousHomeAndForeignBinding + sizeof(byte);
+        }
+
+        public const int OptionDataMinimumLength = Offset.CareOfAddress;
+
+        private static class Mask
+        {
+            public const byte SimultaneousHomeAndForeignBinding = 0x80;
+        }
+
+        public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
+                                                   IpV4Address careOfAddress)
+            : this(bindingId, status, simultaneousHomeAndForeignBinding, careOfAddress, null)
+        {
+        }
+
+        public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
+                                                   IpV6Address careOfAddress)
+            : this(bindingId, status, simultaneousHomeAndForeignBinding, null, careOfAddress)
+        {
+        }
+
+        public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding)
+            : this(bindingId, status, simultaneousHomeAndForeignBinding, null, null)
+        {
+        }
+
+        /// <summary>
+        /// The BID that is assigned to the binding indicated by the care-of address in the Binding Update or the Binding Identifier mobility option.
+        /// The value of zero is reserved and should not be used.
+        /// </summary>
+        public ushort BindingId { get; private set; }
+
+        /// <summary>
+        /// When the Binding Identifier mobility option is included in a Binding Acknowledgement,
+        /// this field overwrites the Status field in the Binding Acknowledgement only for this BID.
+        /// If this field is set to zero, the receiver ignores this field and uses the registration status stored in the Binding Acknowledgement message.
+        /// The receiver must ignore this field if the Binding Identifier mobility option is not carried within either the Binding Acknowledgement
+        /// or the Care-of Test messages.
+        /// The possible status codes are the same as the status codes of the Binding Acknowledgement.
+        /// This Status field is also used to carry error information related to the care-of address test in the Care-of Test message.
+        /// </summary>
+        public IpV6BindingAcknowledgementStatus Status { get; private set; }
+
+        /// <summary>
+        /// Indicates that the mobile node registers multiple bindings to the home agent while it is attached to the home link.
+        /// This flag is valid only for a Binding Update sent to the home agent.
+        /// </summary>
+        public bool SimultaneousHomeAndForeignBinding { get; private set; }
+
+        /// <summary>
+        /// The IPv4 care-of address for the corresponding BID, or null if no IPv4 care-of address is stored.
+        /// </summary>
+        public IpV4Address? IpV4CareOfAddress { get; private set; }
+
+        /// <summary>
+        /// The IPv6 care-of address for the corresponding BID, or null if no IPv6 care-of address is stored.
+        /// </summary>
+        public IpV6Address? IpV6CareOfAddress { get; private set; }
+
+        /// <summary>
+        /// If a Binding Identifier mobility option is included in a Binding Update for the home registration,
+        /// either IPv4 or IPv6 care-of addresses for the corresponding BID can be stored in this field.
+        /// For the binding registration to correspondent nodes (i.e., route optimization), only IPv6 care-of addresses can be stored in this field.
+        /// If no address is specified in this field, returns null.
+        /// If the option is included in any messages other than a Binding Update, returns null.
+        /// </summary>
+        public object CareOfAddress
+        {
+            get
+            {
+                if (IpV4CareOfAddress.HasValue)
+                    return IpV4CareOfAddress.Value;
+                if (IpV6CareOfAddress.HasValue)
+                    return IpV6CareOfAddress.Value;
+                return null;
+            }
+        }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length < OptionDataMinimumLength)
+                return null;
+
+            ushort bindingId = data.ReadUShort(Offset.BindingId, Endianity.Big);
+            IpV6BindingAcknowledgementStatus status = (IpV6BindingAcknowledgementStatus)data[Offset.Status];
+            bool simultaneousHomeAndForeignBinding = data.ReadBool(Offset.SimultaneousHomeAndForeignBinding, Mask.SimultaneousHomeAndForeignBinding);
+            if (data.Length == OptionDataMinimumLength)
+                return new IpV6MobilityOptionBindingIdentifier(bindingId, status, simultaneousHomeAndForeignBinding);
+            if (data.Length == OptionDataMinimumLength + IpV4Address.SizeOf)
+            {
+                IpV4Address careOfAddress = data.ReadIpV4Address(Offset.CareOfAddress, Endianity.Big);
+                return new IpV6MobilityOptionBindingIdentifier(bindingId, status, simultaneousHomeAndForeignBinding, careOfAddress);
+            }
+            if (data.Length == OptionDataMinimumLength + IpV6Address.SizeOf)
+            {
+                IpV6Address careOfAddress = data.ReadIpV6Address(Offset.CareOfAddress, Endianity.Big);
+                return new IpV6MobilityOptionBindingIdentifier(bindingId, status, simultaneousHomeAndForeignBinding, careOfAddress);
+            }
+            return null;
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataMinimumLength + (IpV4CareOfAddress.HasValue ? IpV4Address.SizeOf : (IpV6CareOfAddress.HasValue ? IpV6Address.SizeOf : 0)); }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.BindingId, BindingId, Endianity.Big);
+            buffer.Write(offset + Offset.Status, (byte)Status);
+            byte simultaneousHomeAndForeignBinding = 0;
+            if (SimultaneousHomeAndForeignBinding)
+                simultaneousHomeAndForeignBinding |= Mask.SimultaneousHomeAndForeignBinding;
+            buffer.Write(offset + Offset.SimultaneousHomeAndForeignBinding, simultaneousHomeAndForeignBinding);
+            if (IpV4CareOfAddress.HasValue)
+            {
+                buffer.Write(offset + Offset.CareOfAddress, IpV4CareOfAddress.Value, Endianity.Big);
+                offset += OptionDataMinimumLength + IpV4Address.SizeOf;
+                return;
+            }
+            if (IpV6CareOfAddress.HasValue)
+            {
+                buffer.Write(offset + Offset.CareOfAddress, IpV6CareOfAddress.Value, Endianity.Big);
+                offset += OptionDataMinimumLength + IpV6Address.SizeOf;
+                return;
+            }
+            offset += OptionDataMinimumLength;
+        }
+
+        private IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
+                                                    IpV4Address? ipV4CareOfAddress, IpV6Address? ipV6CareOfAddress)
+            : base(IpV6MobilityOptionType.BindingIdentifier)
+        {
+            BindingId = bindingId;
+            Status = status;
+            SimultaneousHomeAndForeignBinding = simultaneousHomeAndForeignBinding;
+            IpV4CareOfAddress = ipV4CareOfAddress;
+            IpV6CareOfAddress = ipV6CareOfAddress;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5844.
+    /// <pre>
+    /// +-----+------------+-----+--------------+
+    /// | Bit | 0-5        | 6-7 | 8-15         |
+    /// +-----+------------+-----+--------------+
+    /// | 0   | Option Type      | Opt Data Len |
+    /// +-----+------------+-----+--------------+
+    /// | 16  | Prefix-len | Reserved           |
+    /// +-----+------------+--------------------+
+    /// | 32  | IPv4 home address               |
+    /// |     |                                 |
+    /// +-----+---------------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressRequest)]
+    public class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex
+    {
+        public const byte MaxPrefixLength = 0x3F;
+
+        private static class Offset
+        {
+            public const int PrefixLength = 0;
+            public const int HomeAddress = PrefixLength + sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.HomeAddress + IpV4Address.SizeOf;
+
+        private static class Mask
+        {
+            public const byte PrefixLength = 0xFC;
+        }
+
+        private static class Shift
+        {
+            public const int PrefixLength = 2;
+        }
+
+        public IpV6MobilityOptionIpV4HomeAddressRequest(byte prefixLength, IpV4Address homeAddress)
+            : base(IpV6MobilityOptionType.IpV4HomeAddressRequest)
+        {
+            if (prefixLength > MaxPrefixLength)
+                throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max prefix length is {0}", MaxPrefixLength));
+
+            PrefixLength = prefixLength;
+            HomeAddress = homeAddress;
+        }
+
+        /// <summary>
+        /// Indicates the prefix length of the mobile node's IPv4 home network corresponding to the IPv4 home address contained in the option.
+        /// </summary>
+        public byte PrefixLength { get; private set; }
+
+        /// <summary>
+        /// Containing the IPv4 home address that is being requested.
+        /// The value of 0.0.0.0 is used to request that the local mobility anchor perform the address allocation.
+        /// </summary>
+        public IpV4Address HomeAddress { get; private set; }
+        
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Offset.PrefixLength);
+            IpV4Address homeAddress = data.ReadIpV4Address(Offset.HomeAddress, Endianity.Big);
+            return new IpV6MobilityOptionIpV4HomeAddressRequest(prefixLength, homeAddress);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.PrefixLength, (byte)(PrefixLength << Shift.PrefixLength));
+            buffer.Write(offset + Offset.HomeAddress, HomeAddress, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5844.
+    /// </summary>
+    public enum IpV6IpV4HomeAddressReplyStatus : byte
+    {
+        /// <summary>
+        /// Success.
+        /// </summary>
+            Success = 0,
+
+        /// <summary>
+        /// Failure, reason unspecified.
+        /// </summary>
+        FailureReasonUnspecified = 128,
+
+        /// <summary>
+        /// Administratively prohibited.
+        /// </summary>
+        AdministrativelyProhibited = 129,
+
+        /// <summary>
+        /// Incorrect IPv4 home address.
+        /// </summary>
+        IncorrectIpV4HomeAddress = 130,
+
+        /// <summary>
+        /// Invalid IPv4 address.
+        /// </summary>
+        InvalidIpV4Address = 131,
+
+        /// <summary>
+        /// Dynamic IPv4 home address assignment not available.
+        /// </summary>
+        DynamicIpV4HomeAddressAssignmentNotAvailable = 132,
+    }
+
+    /// <summary>
+    /// RFC 5844.
+    /// <pre>
+    /// +-----+-------------+----------+-------+
+    /// | Bit | 0-7         | 8-13     | 14-15 |
+    /// +-----+-------------+----------+-------+
+    /// | 0   | Option Type | Opt Data Len     |
+    /// +-----+-------------+----------+-------+
+    /// | 16  | Status      | Pref-len | Res   |
+    /// +-----+-------------+----------+-------+
+    /// | 32  | IPv4 home address              |
+    /// |     |                                |
+    /// +-----+--------------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressReply)]
+    public class IpV6MobilityOptionIpV4HomeAddressReply : IpV6MobilityOptionComplex
+    {
+        public const byte MaxPrefixLength = 0x3F;
+
+        private static class Offset
+        {
+            public const int Status = 0;
+            public const int PrefixLength = Status + sizeof(byte);
+            public const int HomeAddress = PrefixLength + sizeof(byte);
+        }
+
+        public const int OptionDataLength = Offset.HomeAddress + IpV4Address.SizeOf;
+
+        private static class Mask
+        {
+            public const byte PrefixLength = 0xFC;
+        }
+
+        private static class Shift
+        {
+            public const int PrefixLength = 2;
+        }
+
+        public IpV6MobilityOptionIpV4HomeAddressReply(IpV6IpV4HomeAddressReplyStatus status, byte prefixLength, IpV4Address homeAddress)
+            : base(IpV6MobilityOptionType.IpV4HomeAddressReply)
+        {
+            if (prefixLength > MaxPrefixLength)
+                throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max prefix length is {0}", MaxPrefixLength));
+
+            Status = status;
+            PrefixLength = prefixLength;
+            HomeAddress = homeAddress;
+        }
+
+        /// <summary>
+        /// Indicates success or failure for the IPv4 home address assignment.
+        /// Values from 0 to 127 indicate success.
+        /// Higher values (128 to 255) indicate failure.
+        /// </summary>
+        public IpV6IpV4HomeAddressReplyStatus Status { get; private set; }
+
+        /// <summary>
+        /// Used to carry the prefix length of the mobile node's IPv4 home network corresponding to the IPv4 home address contained in the option.
+        /// </summary>
+        public byte PrefixLength { get; private set; }
+
+        /// <summary>
+        /// Used to carry the IPv4 home address assigned to the mobile node.
+        /// </summary>
+        public IpV4Address HomeAddress { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            IpV6IpV4HomeAddressReplyStatus status = (IpV6IpV4HomeAddressReplyStatus)data[Offset.Status];
+            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Offset.PrefixLength);
+            IpV4Address homeAddress = data.ReadIpV4Address(Offset.HomeAddress, Endianity.Big);
+            return new IpV6MobilityOptionIpV4HomeAddressReply(status, prefixLength, homeAddress);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.Status, (byte)Status);
+            buffer.Write(offset + Offset.PrefixLength, (byte)(PrefixLength << Shift.PrefixLength));
+            buffer.Write(offset + Offset.HomeAddress, HomeAddress, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5844.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Reserved                   |
+    /// +-----+----------------------------+
+    /// | 32  | IPv4 home address          |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4DefaultRouterAddress)]
+    public class IpV6MobilityOptionIpV4DefaultRouterAddress : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int DefaultRouterAddress = sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.DefaultRouterAddress + IpV4Address.SizeOf;
+
+        public IpV6MobilityOptionIpV4DefaultRouterAddress(IpV4Address defaultRouterAddress)
+            : base(IpV6MobilityOptionType.IpV4DefaultRouterAddress)
+        {
+            DefaultRouterAddress = defaultRouterAddress;
+        }
+
+        /// <summary>
+        /// The mobile node's default router address.
+        /// </summary>
+        public IpV4Address DefaultRouterAddress { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            IpV4Address defaultRouterAddress = data.ReadIpV4Address(Offset.DefaultRouterAddress, Endianity.Big);
+            return new IpV6MobilityOptionIpV4DefaultRouterAddress(defaultRouterAddress);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.DefaultRouterAddress, DefaultRouterAddress, Endianity.Big);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5844.
+    /// <pre>
+    /// +-----+-------------+------+-------+
+    /// | Bit | 0-7         | 8-14 | 15    |
+    /// +-----+-------------+------+-------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+------+-------+
+    /// | 16  | Reserved           | S     |
+    /// +-----+--------------------+-------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4DhcpSupportMode)]
+    public class IpV6MobilityOptionIpV4DhcpSupportMode : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int IsServer = sizeof(byte);
+        }
+
+        private static class Mask
+        {
+            public const byte IsServer = 0x01;
+        }
+
+        public const int OptionDataLength = Offset.IsServer + sizeof(byte);
+
+        public IpV6MobilityOptionIpV4DhcpSupportMode(bool isServer)
+            : base(IpV6MobilityOptionType.IpV4DhcpSupportMode)
+        {
+            IsServer = isServer;
+        }
+
+        /// <summary>
+        /// Specifies the DHCP support mode.
+        /// This flag indicates whether the mobile access gateway should function as a DHCP Server or a DHCP Relay for the attached mobile node.
+        /// If false, the mobile access gateway should act as a DHCP Relay and if true, it should act as a DHCP Server.
+        /// </summary>
+        public bool IsServer { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length != OptionDataLength)
+                return null;
+
+            bool isServer = data.ReadBool(Offset.IsServer, Mask.IsServer);
+            return new IpV6MobilityOptionIpV4DhcpSupportMode(isServer);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            if (IsServer)
+                buffer.Write(offset + Offset.IsServer, Mask.IsServer);
+            offset += OptionDataLength;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5949.
+    /// <pre>
+    /// +-----+----------+------------+
+    /// | Bit | 0-7      | 8-15       |
+    /// +-----+----------+------------+
+    /// | 0   | Req-type | Req-length |
+    /// +-----+----------+------------+
+    /// | 16  | Req-option            |
+    /// | ... |                       |
+    /// +-----+-----------------------+
+    /// </pre>
+    /// </summary>
+    public class IpV6MobilityOptionContextRequestEntry
+    {
+        public IpV6MobilityOptionContextRequestEntry(byte requestType, DataSegment option)
+        {
+            if (option.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("option", option, string.Format("Option length must not exceed {0}", byte.MaxValue));
+            RequestType = requestType;
+            Option = option;
+        }
+
+        /// <summary>
+        /// The total length of the request in bytes.
+        /// </summary>
+        public int Length
+        {
+            get { return sizeof(byte) + sizeof(byte) + OptionLength; }
+        }
+
+        /// <summary>
+        /// The type value for the requested option.
+        /// </summary>
+        public byte RequestType { get; private set; }
+
+        /// <summary>
+        /// The length of the requested option, excluding the Request Type and Request Length fields.
+        /// </summary>
+        public byte OptionLength { get { return (byte)Option.Length; } }
+
+        /// <summary>
+        /// The optional data to uniquely identify the requested context for the requested option.
+        /// </summary>
+        public DataSegment Option { get; private set; }
+
+        internal void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(ref offset, RequestType);
+            buffer.Write(ref offset, OptionLength);
+            Option.Write(buffer, ref offset);
+        }
+    }
+
+    /// <summary>
+    /// RFC 5949.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Request 1                  |
+    /// | ... | Request 2                  |
+    /// |     | ...                        |
+    /// |     | Request n                  |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ContextRequest)]
+    public class IpV6MobilityOptionContextRequest : IpV6MobilityOptionComplex
+    {
+        public IpV6MobilityOptionContextRequest(params IpV6MobilityOptionContextRequestEntry[] requests)
+            : this(requests.AsReadOnly())
+        {
+        }
+
+        public IpV6MobilityOptionContextRequest(IList<IpV6MobilityOptionContextRequestEntry> requests)
+            : this(requests.AsReadOnly())
+        {
+        }
+
+        public IpV6MobilityOptionContextRequest(ReadOnlyCollection<IpV6MobilityOptionContextRequestEntry> requests)
+            : base(IpV6MobilityOptionType.ContextRequest)
+        {
+            Requests = requests;
+            _dataLength = Requests.Sum(request => request.Length);
+        }
+
+        /// <summary>
+        /// The requests types and options.
+        /// </summary>
+        public ReadOnlyCollection<IpV6MobilityOptionContextRequestEntry> Requests { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            List<IpV6MobilityOptionContextRequestEntry> requests = new List<IpV6MobilityOptionContextRequestEntry>();
+            int offset = 0;
+            while (data.Length > offset)
+            {
+                byte requestType = data[offset++];
+                
+                if (offset >= data.Length)
+                    return null;
+                byte requestLength = data[offset++];
+
+                if (offset + requestLength >= data.Length)
+                    return null;
+
+                DataSegment requestOption = data.Subsegment(offset, requestLength);
+                offset += requestLength;
+
+                requests.Add(new IpV6MobilityOptionContextRequestEntry(requestType, requestOption));
+            }
+
+            return new IpV6MobilityOptionContextRequest(requests);
+        }
+
+        internal override int DataLength
+        {
+            get { return _dataLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            foreach (var request in Requests)
+                request.Write(buffer, ref offset);
+        }
+
+        private readonly int _dataLength;
+    }
+
+    /// <summary>
+    /// RFC 5949.
+    /// </summary>
+    public enum IpV6LocalMobilityAnchorAddressCode : byte
+    {
+        /// <summary>
+        /// IPv6 address of the local mobility anchor (LMAA).
+        /// </summary>
+        IpV6 = 1,
+
+        /// <summary>
+        /// IPv4 address of the local mobility anchor (IPv4-LMAA).
+        /// </summary>
+        IpV4 = 2,
+    }
+
+    /// <summary>
+    /// RFC 5949.
+    /// <pre>
+    /// +-----+-------------+-----------------+
+    /// | Bit | 0-7         | 8-15            |
+    /// +-----+-------------+-----------------+
+    /// | 0   | Option Type | Opt Data Len    |
+    /// +-----+-------------+-----------------+
+    /// | 16  | Option-Code | Reserved        |
+    /// +-----+-------------+-----------------+
+    /// | 32  | Local Mobility Anchor Address |
+    /// |     |                               |
+    /// | ... |                               |
+    /// +-----+-------------------------------+
+    /// </pre>
+    /// </summary>
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.LocalMobilityAnchorAddress)]
+    public class IpV6MobilityOptionLocalMobilityAnchorAddress : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int Code = 0;
+            public const int LocalMobilityAnchorAddress = Code + sizeof(byte) + sizeof(byte);
+        }
+
+        public const int OptionDataMinimumLength = Offset.LocalMobilityAnchorAddress;
+
+        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6LocalMobilityAnchorAddressCode code, IpV4Address localMobilityAnchorAddress)
+            : this(code, localMobilityAnchorAddress, null)
+        {
+        }
+
+        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6LocalMobilityAnchorAddressCode code, IpV6Address localMobilityAnchorAddress)
+            : this(code, null, localMobilityAnchorAddress)
+        {
+        }
+
+        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV4Address localMobilityAnchorAddress)
+            : this(IpV6LocalMobilityAnchorAddressCode.IpV4, localMobilityAnchorAddress)
+        {
+        }
+
+        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6Address localMobilityAnchorAddress)
+            : this(IpV6LocalMobilityAnchorAddressCode.IpV6, localMobilityAnchorAddress)
+        {
+        }
+
+        /// <summary>
+        /// Determines the type of the local mobility anchor address.
+        /// </summary>
+        public IpV6LocalMobilityAnchorAddressCode Code { get; private set; }
+
+        /// <summary>
+        /// If the Code IPv6, the LMA IPv6 address (LMAA), otherwise null.
+        /// </summary>
+        public IpV6Address? LocalMobilityAnchorAddressIpV6 { get; private set; }
+
+        /// <summary>
+        /// If the Code is IPv4, the LMA IPv4 address (IPv4-LMA), otherwise null.
+        /// </summary>
+        public IpV4Address? LocalMobilityAnchorAddressIpV4 { get; private set; }
+
+        internal override IpV6MobilityOption CreateInstance(DataSegment data)
+        {
+            if (data.Length < OptionDataMinimumLength)
+                return null;
+
+            IpV6LocalMobilityAnchorAddressCode code = (IpV6LocalMobilityAnchorAddressCode)data[Offset.Code];
+            switch (code)
+            {
+                case IpV6LocalMobilityAnchorAddressCode.IpV6:
+                {
+                    if (data.Length != Offset.LocalMobilityAnchorAddress + IpV6Address.SizeOf)
+                        return null;
+                    IpV6Address localMobilityAnchorAddress = data.ReadIpV6Address(Offset.LocalMobilityAnchorAddress, Endianity.Big);
+                    return new IpV6MobilityOptionLocalMobilityAnchorAddress(localMobilityAnchorAddress);
+                }
+
+                case IpV6LocalMobilityAnchorAddressCode.IpV4:
+                {
+                    if (data.Length != Offset.LocalMobilityAnchorAddress + IpV4Address.SizeOf)
+                        return null;
+                    IpV4Address localMobilityAnchorAddress = data.ReadIpV4Address(Offset.LocalMobilityAnchorAddress, Endianity.Big);
+                    return new IpV6MobilityOptionLocalMobilityAnchorAddress(localMobilityAnchorAddress);
+                }
+
+                default:
+                    return null;
+            }
+        }
+
+        internal override int DataLength
+        {
+            get
+            {
+                return OptionDataMinimumLength +
+                       (LocalMobilityAnchorAddressIpV4.HasValue ? IpV4Address.SizeOf : 0) +
+                       (LocalMobilityAnchorAddressIpV6.HasValue ? IpV6Address.SizeOf : 0);
+            }
+        }
+
+        internal override void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.Code, (byte)Code);
+            if (LocalMobilityAnchorAddressIpV4.HasValue)
+                buffer.Write(offset + Offset.LocalMobilityAnchorAddress, LocalMobilityAnchorAddressIpV4.Value, Endianity.Big);
+            else if (LocalMobilityAnchorAddressIpV6.HasValue)
+                buffer.Write(offset + Offset.LocalMobilityAnchorAddress, LocalMobilityAnchorAddressIpV6.Value, Endianity.Big);
+        }
+
+        private IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6LocalMobilityAnchorAddressCode code, IpV4Address? localMobilityAnchorAddressIpV4, IpV6Address? localMobilityAnchorAddressIpV6)
+            : base(IpV6MobilityOptionType.LocalMobilityAnchorAddress)
+        {
+            Code = code;
+            LocalMobilityAnchorAddressIpV6 = localMobilityAnchorAddressIpV6;
+            LocalMobilityAnchorAddressIpV4 = localMobilityAnchorAddressIpV4;
         }
     }
 }
