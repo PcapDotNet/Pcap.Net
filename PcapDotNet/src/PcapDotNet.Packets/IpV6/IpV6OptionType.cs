@@ -320,28 +320,28 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6089
         /// </summary>
-        FlowSummaryMobilityOption = 0x2C,
+        FlowSummary = 0x2C,
 
         /// <summary>
         /// RFC 6089.
         /// </summary>
-        FlowIdentificationMobilityOption = 0x2D,
+        FlowIdentification = 0x2D,
 
         /// <summary>
         /// RFC 6463.
         /// Redirect-Capability Mobility Option.
         /// </summary>
-        RedirectCapabilityMobilityOption = 0x2E,
+        RedirectCapability = 0x2E,
 
         /// <summary>
         /// RFC 6463.
         /// </summary>
-        RedirectMobilityOption = 0x2F,
+        Redirect = 0x2F,
 
         /// <summary>
         /// RFC 6463.
         /// </summary>
-        LoadInformationMobilityOption = 0x30,
+        LoadInformation = 0x30,
 
         /// <summary>
         /// RFC 6463.
@@ -358,7 +358,7 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 6705.
         /// MAG IPv6 Address.
         /// </summary>
-        MagIpV6Address = 0x33,
+        MobileAccessGatewayIpV6Address = 0x33,
 
         /// <summary>
         /// RFC 6757.
