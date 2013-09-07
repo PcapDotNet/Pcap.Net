@@ -92,7 +92,7 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
             }
             IpV4Protocol nextHeader = (IpV4Protocol)extensionHeaderData[Offset.NextHeader];
-            byte payloadLength = extensionHeaderData[Offset.PayloadLength];
+            int payloadLength = (extensionHeaderData[Offset.PayloadLength] + 2) * 4;
             if (extensionHeaderData.Length < Offset.AuthenticationData + payloadLength)
             {
                 numBytesRead = 0;
@@ -101,10 +101,44 @@ namespace PcapDotNet.Packets.IpV6
 
             uint securityParametersIndex = extensionHeaderData.ReadUInt(Offset.SecurityParametersIndex, Endianity.Big);
             uint sequenceNumber = extensionHeaderData.ReadUInt(Offset.SequenceNumber, Endianity.Big);
-            DataSegment authenticationData = extensionHeaderData.Subsegment(Offset.AuthenticationData, payloadLength);
-            numBytesRead = Offset.AuthenticationData + payloadLength;
+            DataSegment authenticationData = extensionHeaderData.Subsegment(Offset.AuthenticationData, payloadLength - Offset.AuthenticationData);
+            numBytesRead = payloadLength;
 
             return new IpV6ExtensionHeaderAuthentication(nextHeader, securityParametersIndex, sequenceNumber, authenticationData);
+        }
+
+        public static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
+        {
+            if (extensionHeader.Length < MinimumLength)
+            {
+                nextNextHeader = null;
+                extensionHeaderLength = extensionHeader.Length;
+                return;
+            }
+
+            nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
+            extensionHeaderLength = extensionHeader[Offset.PayloadLength] * 4;
+        }
+
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.AuthenticationHeader; }
+        }
+
+        public override int Length
+        {
+            get { return MinimumLength + AuthenticationData.Length; }
+        }
+
+        internal override void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);
+            int length = Length;
+            buffer.Write(offset + Offset.PayloadLength, (byte)((length / 4) - 2));
+            buffer.Write(offset + Offset.SecurityParametersIndex, SecurityParametersIndex, Endianity.Big);
+            buffer.Write(offset + Offset.SequenceNumber, SequenceNumber, Endianity.Big);
+            AuthenticationData.Write(buffer, offset + Offset.AuthenticationData);
+            offset += length;
         }
     }
 }

@@ -265,7 +265,7 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 5568.
         /// Mobility Header IPv6 Address/Prefix.
         /// </summary>
-        MobilityHeaderIpV6AddressPrefix = 0x22,
+        IpV6AddressPrefix = 0x22,
 
         /// <summary>
         /// RFC 5648.

@@ -81,6 +81,7 @@
     <Compile Include="IgmpTests.cs" />
     <Compile Include="IpV4Tests.cs" />
     <Compile Include="IpV6AddressTests.cs" />
+    <Compile Include="IpV6Tests.cs" />
     <Compile Include="MacAddressTests.cs" />
     <Compile Include="PacketBuilderTests.cs" />
     <Compile Include="PacketTests.cs" />

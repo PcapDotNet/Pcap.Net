@@ -1,5 +1,6 @@
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets.Ethernet
 {
@@ -16,6 +17,9 @@ namespace PcapDotNet.Packets.Ethernet
             {
                 case EthernetType.IpV4:
                     return IpV4;
+
+                case EthernetType.IpV6:
+                    return IpV6;
 
                 case EthernetType.Arp:
                     return Arp;
@@ -38,6 +42,19 @@ namespace PcapDotNet.Packets.Ethernet
                 if (_ipV4 == null && _payload != null)
                     _ipV4 = new IpV4Datagram(_payload.Buffer, _payload.StartOffset, IpV4Datagram.GetTotalLength(_payload));
                 return _ipV4;
+            }
+        }
+
+        /// <summary>
+        /// The Ethernet payload as an IPv6 datagram.
+        /// </summary>
+        public IpV6Datagram IpV6
+        {
+            get
+            {
+                if (_ipV6 == null && _payload != null)
+                    _ipV6 = new IpV6Datagram(_payload.Buffer, _payload.StartOffset, IpV6Datagram.GetTotalLength(_payload));
+                return _ipV6;
             }
         }
 
@@ -74,6 +91,7 @@ namespace PcapDotNet.Packets.Ethernet
 
         private readonly Datagram _payload;
         private IpV4Datagram _ipV4;
+        private IpV6Datagram _ipV6;
         private ArpDatagram _arp;
         private VLanTaggedFrameDatagram _vLanTaggedFrame;
     }

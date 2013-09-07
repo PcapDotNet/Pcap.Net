@@ -17,9 +17,14 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public class IpV6ExtensionHeaderHopByHopOptions : IpV6ExtensionHeaderOptions
     {
-        private IpV6ExtensionHeaderHopByHopOptions(IpV4Protocol nextHeader, IpV6Options options)
+        public IpV6ExtensionHeaderHopByHopOptions(IpV4Protocol nextHeader, IpV6Options options)
             : base(nextHeader, options)
         {
+        }
+
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.IpV6HopByHopOption; }
         }
 
         internal static IpV6ExtensionHeaderHopByHopOptions ParseData(IpV4Protocol nextHeader, DataSegment data)

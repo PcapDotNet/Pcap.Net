@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.IpV6
     public class IpV6OptionSmfDpdIpV4 : IpV6OptionSmfDpdSequenceBased
     {
         public IpV6OptionSmfDpdIpV4(IpV4Address taggerId, DataSegment identifier)
-            :base(identifier)
+            : base(identifier)
         {
             TaggerId = taggerId;
         }

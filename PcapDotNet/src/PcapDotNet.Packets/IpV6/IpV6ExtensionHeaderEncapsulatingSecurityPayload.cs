@@ -1,3 +1,5 @@
+using PcapDotNet.Packets.IpV4;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -60,6 +62,16 @@ namespace PcapDotNet.Packets.IpV6
             SecurityParametersIndex = securityParametersIndex;
             SequenceNumber = sequenceNumber;
             EncryptedDataAndAuthenticationData = encryptedDataAndAuthenticationData;
+        }
+
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.EncapsulatingSecurityPayload; }
+        }
+
+        public override int Length
+        {
+            get { return MinimumLength + EncryptedDataAndAuthenticationData.Length; }
         }
 
         /// <summary>
@@ -132,6 +144,12 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment EncryptedDataAndAuthenticationData { get; private set; }
 
+        internal static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
+        {
+            nextNextHeader = null;
+            extensionHeaderLength = extensionHeader.Length;
+        }
+
         internal static IpV6ExtensionHeaderEncapsulatingSecurityPayload CreateInstance(DataSegment extensionHeaderData, out int numBytesRead)
         {
             if (extensionHeaderData.Length < MinimumLength)
@@ -145,6 +163,14 @@ namespace PcapDotNet.Packets.IpV6
             numBytesRead = extensionHeaderData.Length;
 
             return new IpV6ExtensionHeaderEncapsulatingSecurityPayload(securityParametersIndex, sequenceNumber, encryptedDataAndAuthenticationData);
+        }
+
+        internal override void Write(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.SecurityParametersIndex, SecurityParametersIndex, Endianity.Big);
+            buffer.Write(offset + Offset.SequenceNumber, SequenceNumber, Endianity.Big);
+            EncryptedDataAndAuthenticationData.Write(buffer, offset + Offset.PayloadData);
+            offset += Length;
         }
     }
 }

@@ -15,9 +15,19 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public abstract class IpV6ExtensionHeaderOptions : IpV6ExtensionHeader
+    public abstract class IpV6ExtensionHeaderOptions : IpV6ExtensionHeaderStandard
     {
         public IpV6Options Options { get; private set; }
+
+        internal override sealed int DataLength
+        {
+            get { return Options.BytesLength; }
+        }
+
+        internal override void WriteData(byte[] buffer, int offset)
+        {
+            Options.Write(buffer, offset);
+        }
 
         internal IpV6ExtensionHeaderOptions(IpV4Protocol nextHeader, IpV6Options options)
             : base(nextHeader)

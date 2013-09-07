@@ -15,7 +15,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public abstract class IpV6ExtensionHeaderRouting : IpV6ExtensionHeader
+    public abstract class IpV6ExtensionHeaderRouting : IpV6ExtensionHeaderStandard
     {
         private static class DataOffset
         {
@@ -26,6 +26,8 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int DataMinimumLength = DataOffset.TypeSpecificData;
 
+        internal abstract int RoutingDataLength { get; }
+
         /// <summary>
         /// Identifier of a particular Routing header variant.
         /// </summary>
@@ -35,6 +37,22 @@ namespace PcapDotNet.Packets.IpV6
         /// Number of route segments remaining, i.e., number of explicitly listed intermediate nodes still to be visited before reaching the final destination.
         /// </summary>
         public byte SegmentsLeft { get; private set; }
+
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.IpV6Route; }
+        }
+
+        internal IpV6ExtensionHeaderRouting(IpV4Protocol nextHeader, byte segmentsLeft)
+            : base(nextHeader)
+        {
+            SegmentsLeft = segmentsLeft;
+        }
+
+        internal override sealed int DataLength
+        {
+            get { return DataMinimumLength + RoutingDataLength; }
+        }
 
         internal static IpV6ExtensionHeaderRouting ParseData(IpV4Protocol nextHeader, DataSegment data)
         {
@@ -63,10 +81,13 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal IpV6ExtensionHeaderRouting(IpV4Protocol nextHeader, byte segmentsLeft)
-            : base(nextHeader)
+        internal override sealed void WriteData(byte[] buffer, int offset)
         {
-            SegmentsLeft = segmentsLeft;
+            buffer.Write(offset + DataOffset.RoutingType, (byte)RoutingType);
+            buffer.Write(offset + DataOffset.SegmentsLeft, SegmentsLeft);
+            WriteRoutingData(buffer, offset + DataOffset.TypeSpecificData);
         }
+
+        internal abstract void WriteRoutingData(byte[] buffer, int offset);
     }
 }
