@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.Calipso)]
-    public class IpV6OptionCalipso : IpV6OptionComplex
+    public class IpV6OptionCalipso : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -138,7 +138,7 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + CompartmentLengthInBytes; }
         }
 
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
                 return null;
@@ -163,6 +163,11 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, SensitivityLevel);
             buffer.Write(ref offset, Checksum, Endianity.Big);
             buffer.Write(ref offset, CompartmentBitmap);
+        }
+
+        private IpV6OptionCalipso()
+            : this(IpV6CalipsoDomainOfInterpretation.Null, 0, 0, DataSegment.Empty)
+        {
         }
 
         private bool? _isChecksumCorrect;

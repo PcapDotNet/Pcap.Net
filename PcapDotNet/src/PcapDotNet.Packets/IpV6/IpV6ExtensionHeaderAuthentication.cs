@@ -117,7 +117,7 @@ namespace PcapDotNet.Packets.IpV6
             }
 
             nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
-            extensionHeaderLength = extensionHeader[Offset.PayloadLength] * 4;
+            extensionHeaderLength = (extensionHeader[Offset.PayloadLength] + 2) * 4;
         }
 
         public override IpV4Protocol Protocol

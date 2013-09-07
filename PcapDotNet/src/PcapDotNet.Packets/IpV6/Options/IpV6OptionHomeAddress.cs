@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.HomeAddress)]
-    public class IpV6OptionHomeAddress : IpV6OptionComplex
+    public class IpV6OptionHomeAddress : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = IpV6Address.SizeOf;
 
@@ -37,12 +37,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Address HomeAddress { get; private set; }
 
-        internal IpV6OptionHomeAddress() 
-            : this(IpV6Address.Zero)
-        {
-        }
-
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length != OptionDataLength)
                 return null;
@@ -59,6 +54,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, HomeAddress, Endianity.Big);
+        }
+
+        private IpV6OptionHomeAddress()
+            : this(IpV6Address.Zero)
+        {
         }
     }
 }

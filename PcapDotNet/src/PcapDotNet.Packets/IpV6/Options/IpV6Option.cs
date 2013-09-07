@@ -22,8 +22,6 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6OptionType OptionType { get; private set; }
 
-        internal abstract IpV6Option CreateInstance(DataSegment data);
-
         protected IpV6Option(IpV6OptionType type)
         {
             OptionType = type;

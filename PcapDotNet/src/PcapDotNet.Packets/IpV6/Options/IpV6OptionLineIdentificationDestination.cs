@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.LineIdentification)]
-    public class IpV6OptionLineIdentificationDestination : IpV6OptionComplex
+    public class IpV6OptionLineIdentificationDestination : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -50,12 +50,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment LineIdentification { get; private set; }
 
-        internal IpV6OptionLineIdentificationDestination()
-            : this(DataSegment.Empty)
-        {
-        }
-
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
                 return null;
@@ -77,6 +72,11 @@ namespace PcapDotNet.Packets.IpV6
         {
             buffer.Write(ref offset, (byte)LineIdentification.Length);
             buffer.Write(ref offset, LineIdentification);
+        }
+
+        private IpV6OptionLineIdentificationDestination()
+            : this(DataSegment.Empty)
+        {
         }
     }
 }

@@ -7,6 +7,11 @@ using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV6
 {
+    internal interface IIpV6OptionComplexFactory
+    {
+        IpV6Option CreateInstance(DataSegment data);
+    }
+
     public class IpV6Options : Options<IpV6Option>
     {
         public IpV6Options(IList<IpV6Option> options)
@@ -65,24 +70,23 @@ namespace PcapDotNet.Packets.IpV6
 
         private static IpV6Option CreateOption(IpV6OptionType optionType, DataSegment data)
         {
-            IpV6Option prototype;
-            if (!_prototypes.TryGetValue(optionType, out prototype))
+            IIpV6OptionComplexFactory factory;
+            if (!_factories.TryGetValue(optionType, out factory))
                 return new IpV6OptionUnknown(optionType, data);
-            return prototype.CreateInstance(data);
+            return factory.CreateInstance(data);
         }
 
-        private static readonly Dictionary<IpV6OptionType, IpV6Option> _prototypes = InitializePrototypes();
+        private static readonly Dictionary<IpV6OptionType, IIpV6OptionComplexFactory> _factories = InitializeFactories();
 
-        private static Dictionary<IpV6OptionType, IpV6Option> InitializePrototypes()
+        private static Dictionary<IpV6OptionType, IIpV6OptionComplexFactory> InitializeFactories()
         {
             var prototypes =
                 from type in Assembly.GetExecutingAssembly().GetTypes()
-                where typeof(IpV6Option).IsAssignableFrom(type) &&
-                      GetRegistrationAttribute(type) != null
+                where GetRegistrationAttribute(type) != null
                 select new
                            {
                                GetRegistrationAttribute(type).OptionType,
-                               Option = (IpV6Option)Activator.CreateInstance(type)
+                               Option = (IIpV6OptionComplexFactory)Activator.CreateInstance(type, true)
                            };
 
             return prototypes.ToDictionary(option => option.OptionType, option => option.Option);
@@ -195,7 +199,7 @@ namespace PcapDotNet.Packets.IpV6
                 select new
                 {
                     GetRegistrationAttribute(type).OptionType,
-                    Option = (IpV6MobilityOption)Activator.CreateInstance(type)
+                    Option = (IpV6MobilityOption)Activator.CreateInstance(type, true)
                 };
 
             return prototypes.ToDictionary(option => option.OptionType, option => option.Option);

@@ -17,7 +17,6 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------+
     /// </pre>
     /// </summary>
-    [IpV6OptionTypeRegistration(IpV6OptionType.SmfDpd)]
     public abstract class IpV6OptionSmfDpd : IpV6OptionComplex
     {
         private static class Offset
@@ -43,8 +42,7 @@ namespace PcapDotNet.Packets.IpV6
         /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
         /// </summary>
         public abstract bool HashIndicator { get; }
-
-        internal override IpV6Option CreateInstance(DataSegment data)
+        internal static IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
                 return null;
@@ -53,6 +51,15 @@ namespace PcapDotNet.Packets.IpV6
             if (hashIndicator)
                 return new IpV6OptionSmfDpdSequenceHashAssistValue(data);
             return IpV6OptionSmfDpdSequenceBased.CreateSpecificInstance(data);
+        }
+    }
+
+    [IpV6OptionTypeRegistration(IpV6OptionType.SmfDpd)]
+    internal class IpV6OptionSmfDpdFactory : IIpV6OptionComplexFactory
+    {
+        public IpV6Option CreateInstance(DataSegment data)
+        {
+            return IpV6OptionSmfDpd.CreateInstance(data);
         }
     }
 }

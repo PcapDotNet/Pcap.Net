@@ -247,7 +247,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IpV6OptionType.SmfDpd:
                     if (random.NextBool())
-                        return new IpV6OptionSmfDpdSequenceHashAssistValue(random.NextDataSegment(random.NextInt(0, 100)));
+                        return new IpV6OptionSmfDpdSequenceHashAssistValue(random.NextDataSegment(random.NextInt(1, 100)));
                     IpV6TaggerIdType taggerIdType = random.NextEnum<IpV6TaggerIdType>();
                     DataSegment identifier = random.NextDataSegment(random.NextInt(0, 100));
                     switch (taggerIdType)
@@ -391,7 +391,8 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6MobilityOptionRestartCounter(random.NextUInt());
 
                 case IpV6MobilityOptionType.IpV4HomeAddress:
-                    return new IpV6MobilityOptionIpV4HomeAddress(random.NextByte(), random.NextBool(), random.NextIpV4Address());
+                    return new IpV6MobilityOptionIpV4HomeAddress(random.NextByte(IpV6MobilityOptionIpV4HomeAddress.MaxPrefixLength + 1), random.NextBool(),
+                                                                 random.NextIpV4Address());
 
                 case IpV6MobilityOptionType.IpV4AddressAcknowledgement:
                     return new IpV6MobilityOptionIpV4AddressAcknowledgement(random.NextEnum<IpV6AddressAcknowledgementStatus>(),
