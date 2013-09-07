@@ -23,11 +23,10 @@ namespace PcapDotNet.Packets.IpV6
     {
         private static class RoutingDataOffset
         {
-            public const int Reserved = 0;
-            public const int HomeAddress = Reserved + sizeof(uint);
+            public const int HomeAddress = sizeof(uint);
         }
 
-        public const int RoutingDataLength = RoutingDataOffset.HomeAddress + IpV6Address.SizeOf;
+        public const int ConstRoutingDataLength = RoutingDataOffset.HomeAddress + IpV6Address.SizeOf;
 
         public IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol nextHeader, byte segmentsLeft, IpV6Address homeAddress)
             : base(nextHeader, segmentsLeft)
@@ -45,13 +44,23 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Address HomeAddress { get; private set; }
 
+        internal override int RoutingDataLength
+        {
+            get { return ConstRoutingDataLength; }
+        }
+
         internal static IpV6ExtensionHeaderRoutingHomeAddress ParseRoutingData(IpV4Protocol nextHeader, byte segmentsLeft, DataSegment routingData)
         {
-            if (routingData.Length != RoutingDataLength)
+            if (routingData.Length != ConstRoutingDataLength)
                 return null;
 
             IpV6Address homeAddress = routingData.ReadIpV6Address(RoutingDataOffset.HomeAddress, Endianity.Big);
             return new IpV6ExtensionHeaderRoutingHomeAddress(nextHeader, segmentsLeft, homeAddress);
+        }
+
+        internal override void WriteRoutingData(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + RoutingDataOffset.HomeAddress, HomeAddress, Endianity.Big);
         }
     }
 }

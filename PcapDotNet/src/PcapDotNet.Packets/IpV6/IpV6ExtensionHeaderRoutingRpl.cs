@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -14,7 +15,7 @@ namespace PcapDotNet.Packets.IpV6
     /// | 0   | Next Header   | Header Extension Length | Routing Type | Segments Left |
     /// +-----+-------+-------+------+------------------+--------------+---------------+
     /// | 32  | CmprI | CmprE | Pad  | Reserved                                        |
-    /// +-----+-------+-------+------+------------------+--------------+---------------+
+    /// +-----+-------+-------+------+-------------------------------------------------+
     /// | 64  | Address[1]                                                             |
     /// | ... |                                                                        |
     /// +-----+------------------------------------------------------------------------+
@@ -110,6 +111,18 @@ namespace PcapDotNet.Packets.IpV6
 
         public ReadOnlyCollection<IpV6Address> Addresses { get; private set; }
 
+        internal override int RoutingDataLength
+        {
+            get
+            {
+                return RoutingDataMinimumLength +
+                       (Addresses.Any()
+                            ? Addresses.Count * IpV6Address.SizeOf -
+                              (Addresses.Count - 1) * CommonPrefixLengthForNonLastAddresses - CommonPrefixLengthForLastAddress
+                            : 0) + PadSize;
+            }
+        }
+
         internal static IpV6ExtensionHeaderRoutingRpl ParseRoutingData(IpV4Protocol nextHeader, byte segmentsLeft, DataSegment routingData)
         {
             if (routingData.Length < RoutingDataMinimumLength)
@@ -157,6 +170,26 @@ namespace PcapDotNet.Packets.IpV6
             }
             return new IpV6ExtensionHeaderRoutingRpl(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress, padSize,
                                                      addresses);
+        }
+
+        internal override void WriteRoutingData(byte[] buffer, int offset)
+        {
+            buffer.Write(offset + RoutingDataOffset.CommonPrefixLengthForNonLastAddresses,
+                         (byte)((CommonPrefixLengthForNonLastAddresses << RoutingDataShift.CommonPrefixLengthForNonLastAddresses) |
+                                CommonPrefixLengthForLastAddress));
+            buffer.Write(offset + RoutingDataOffset.PadSize, (byte)(PadSize << RoutingDataShift.PadSize));
+            if (Addresses.Any())
+            {
+                int addressOffset = offset + RoutingDataOffset.Addresses;
+                byte[] addressBytes = new byte[IpV6Address.SizeOf];
+                for (int i = 0; i != Addresses.Count - 1; ++i)
+                {
+                    addressBytes.Write(0, Addresses[i], Endianity.Big);
+                    addressBytes.SubSegment(CommonPrefixLengthForNonLastAddresses, IpV6Address.SizeOf - CommonPrefixLengthForNonLastAddresses).Write(buffer, ref addressOffset);
+                }
+                addressBytes.Write(0, Addresses[Addresses.Count - 1], Endianity.Big);
+                addressBytes.SubSegment(CommonPrefixLengthForLastAddress, IpV6Address.SizeOf - CommonPrefixLengthForLastAddress).Write(buffer, ref addressOffset);
+            }
         }
     }
 }

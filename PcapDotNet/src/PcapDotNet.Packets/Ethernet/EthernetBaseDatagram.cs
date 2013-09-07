@@ -1,5 +1,6 @@
 ﻿using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Packets.Ethernet
 {
@@ -83,6 +84,14 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.IpV4; }
         }
 
+        /// <summary>
+        /// The Ethernet payload as an IPv6 datagram.
+        /// </summary>
+        public IpV6Datagram IpV6
+        {
+            get { return PayloadDatagrams.IpV6; }
+        }
+        
         /// <summary>
         /// The Ethernet payload as an ARP datagram.
         /// </summary>

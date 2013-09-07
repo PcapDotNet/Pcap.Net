@@ -39,6 +39,8 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public const int HeaderLength = 40;
 
+        public const int MaxFlowLabel = 0xFFFFF;
+
         private static class Offset
         {
             public const int Version = 0;
@@ -107,7 +109,12 @@ namespace PcapDotNet.Packets.IpV6
 
         public ushort RealPayloadLength
         {
-            get { return (ushort)Math.Min(PayloadLength, Length); }
+            get
+            {
+                if (Length < HeaderLength)
+                    return 0;
+                return (ushort)Math.Min(PayloadLength, Length - HeaderLength);
+            }
         }
 
         /// <summary>
@@ -144,7 +151,7 @@ namespace PcapDotNet.Packets.IpV6
             get { return ReadIpV6Address(Offset.DestinationAddress, Endianity.Big); }
         }
 
-        public ReadOnlyCollection<IpV6ExtensionHeader> ExtensionHeaders
+        public IpV6ExtensionHeaders ExtensionHeaders
         {
             get
             {
@@ -158,16 +165,17 @@ namespace PcapDotNet.Packets.IpV6
             if (_extensionHeaders != null)
                 return;
 
-            List<IpV6ExtensionHeader> extensionHeaders = new List<IpV6ExtensionHeader>();
-            if (HeaderLength > RealPayloadLength)
+            if (Length < HeaderLength)
             {
                 _isValid = false;
-                _extensionHeaders = extensionHeaders.AsReadOnly();
+                _extensionHeaders = IpV6ExtensionHeaders.Empty;
                 return;
             }
+            _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
+/*
             int extendedHeaderLength = HeaderLength;
             IpV4Protocol? nextHeader = NextHeader;
-            while (extendedHeaderLength + 8 <= RealPayloadLength && nextHeader.HasValue && IsExtensionHeader(nextHeader.Value))
+            while (extendedHeaderLength + 8 <= RealPayloadLength && nextHeader.HasValue && IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value))
             {
                 int numBytesRead;
                 IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader.Value,
@@ -178,27 +186,10 @@ namespace PcapDotNet.Packets.IpV6
                 nextHeader = extensionHeader.NextHeader;
                 extendedHeaderLength += numBytesRead;
             }
-            _isValid = (!nextHeader.HasValue || !IsExtensionHeader(nextHeader.Value)) && (HeaderLength + _extensionHeadersLength == PayloadLength);
-            _extensionHeaders = extensionHeaders.AsReadOnly();
             _extensionHeadersLength = extendedHeaderLength - HeaderLength;
-        }
-
-        private static bool IsExtensionHeader(IpV4Protocol nextHeader)
-        {
-            switch (nextHeader)
-            {
-                case IpV4Protocol.IpV6HopByHopOption:           // 0
-                case IpV4Protocol.IpV6Route:                    // 43
-                case IpV4Protocol.FragmentHeaderForIpV6:        // 44
-                case IpV4Protocol.EncapsulatingSecurityPayload: // 50
-                case IpV4Protocol.AuthenticationHeader:         // 51
-                case IpV4Protocol.IpV6Opts:                     // 60
-                case IpV4Protocol.MobilityHeader:               // 135
-                    return true;
-
-                default:
-                    return false;
-            }
+            _extensionHeaders = extensionHeaders.AsReadOnly();
+            _isValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value));
+ */
         }
 
         /// <summary>
@@ -206,20 +197,16 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override ILayer ExtractLayer()
         {
-            return null;
-            // TODO: Implement.
-//            return new IpV6Layer
-//            {
-//                Version = Version,
-//                TrafficClass = TrafficClass,
-//                FlowLabel = FlowLabel,
-//                PayloadLength = PayloadLength,
-//                NextHeader = NextHeader,
-//                HopLimit = HopLimit,
-//                Source = Source,
-//                CurrentDestination = CurrentDestination,
-//                ExtensionHeaders = ExtensionHeaders,
-//            };
+            return new IpV6Layer
+            {
+                TrafficClass = TrafficClass,
+                FlowLabel = FlowLabel,
+                NextHeader = NextHeader,
+                HopLimit = HopLimit,
+                Source = Source,
+                CurrentDestination = CurrentDestination,
+                ExtensionHeaders = ExtensionHeaders,
+            };
         }
 
 
@@ -228,16 +215,34 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        internal static void WriteHeader(byte[] buffer, int offset,
-                                         byte version, byte trafficClass, int flowLabel, ushort payloadLength, IpV4Protocol nextHeader, byte hopLimit,
-                                         IpV6Address source, IpV6Address currentDestination)
+        internal static int GetTotalLength(Datagram payload)
         {
-            buffer.Write(offset + Offset.Version, (uint)(((((version << Shift.Version) << 8) | trafficClass) << 16) | flowLabel), Endianity.Big);
+            if (payload.Length <= HeaderLength)
+                return payload.Length;
+
+            int totalLength = HeaderLength;
+            IpV4Protocol? nextHeader = (IpV4Protocol)payload[Offset.NextHeader];
+            while (nextHeader.HasValue && IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value))
+            {
+                int extensionHeaderLength;
+                IpV6ExtensionHeader.GetNextNextHeaderAndLength(nextHeader.Value, payload.Subsegment(totalLength, payload.Length - totalLength), out nextHeader,
+                                                               out extensionHeaderLength);
+                totalLength += extensionHeaderLength;
+            }
+            return totalLength;
+        }
+
+        internal static void WriteHeader(byte[] buffer, int offset,
+                                         byte trafficClass, int flowLabel, ushort payloadLength, IpV4Protocol nextHeader, byte hopLimit,
+                                         IpV6Address source, IpV6Address currentDestination, IpV6ExtensionHeaders extensionHeaders)
+        {
+            buffer.Write(offset + Offset.Version, (uint)(((((DefaultVersion << Shift.Version) << 8) | trafficClass) << 16) | flowLabel), Endianity.Big);
             buffer.Write(offset + Offset.PayloadLength, payloadLength, Endianity.Big);
             buffer.Write(offset + Offset.NextHeader, (byte)nextHeader);
             buffer.Write(offset + Offset.HopLimit, hopLimit);
             buffer.Write(offset + Offset.SourceAddress, source, Endianity.Big);
             buffer.Write(offset + Offset.DestinationAddress, currentDestination, Endianity.Big);
+            extensionHeaders.Write(buffer, offset + HeaderLength);
         }
 
         protected override bool CalculateIsValid()
@@ -246,68 +251,8 @@ namespace PcapDotNet.Packets.IpV6
             return _isValid;
         }
 
-        private ReadOnlyCollection<IpV6ExtensionHeader> _extensionHeaders;
+        private IpV6ExtensionHeaders _extensionHeaders;
         private int _extensionHeadersLength;
         private bool _isValid;
     }
-
-    /*
-    /// <summary>
-    /// RFC 2460.
-    /// +-----+-------------+-------------------------+--------------+---------------+
-    /// | Bit | 0-7         | 8-15                    | 16-23        | 24-31         |
-    /// +-----+-------------+-------------------------+--------------+---------------+
-    /// | 0   | Next Header | Header Extension Length | Routing Type | Segments Left |
-    /// +-----+-------------+-------------------------+--------------+---------------+
-    /// | 32  | type-specific data                                                   |
-    /// | ... |                                                                      |
-    /// +-----+----------------------------------------------------------------------+
-    /// </summary>
-    public class IpV6ExtensionHeaderRouting : IpV6ExtensionHeader
-    {
-    }
-
-    /// <summary>
-    /// RFC 2460.
-    /// +-----+-------------+----------+-----------------+----------+----+
-    /// | Bit | 0-7         | 8-15     | 16-28           | 29-30    | 31 |
-    /// +-----+-------------+----------+-----------------+----------+----+
-    /// | 0   | Next Header | Reserved | Fragment Offset | Reserved | M  |
-    /// +-----+-------------+----------+-----------------+----------+----+
-    /// | 32  | Identification                                           |
-    /// +-----+----------------------------------------------------------+
-    /// </summary>
-    public class IpV6ExtensionHeaderFragment : IpV6ExtensionHeader
-    {
-    }
-
-    /// <summary>
-    /// RFC 2460.
-    /// +-----+-------------+-------------------------+
-    /// | Bit | 0-7         | 8-15                    |
-    /// +-----+-------------+-------------------------+
-    /// | 0   | Next Header | Header Extension Length |
-    /// +-----+-------------+-------------------------+
-    /// | 16  | Options                               |
-    /// | ... |                                       |
-    /// +-----+---------------------------------------+
-    /// </summary>
-    public class IpV6ExtensionHeaderDestinationOptions : IpV6ExtensionHeader
-    {
-    }
-
-    /// <summary>
-    /// RFC 2402.
-    /// </summary>
-    public class IpV6ExtensionHeaderAuthentication : IpV6ExtensionHeader
-    {
-    }
-
-    /// <summary>
-    /// RFC 2406.
-    /// </summary>
-    public class IpV6ExtensionHeaderEncapsulatingSecurityPayload : IpV6ExtensionHeader
-    {
-    }
-    */
 }

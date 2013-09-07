@@ -58,6 +58,11 @@ namespace PcapDotNet.Packets.IpV6
 
         public ReadOnlyCollection<IpV6Address> Addresses { get; private set; }
 
+        internal override int RoutingDataLength
+        {
+            get { return RoutingDataMinimumLength + Addresses.Count * IpV6Address.SizeOf; }
+        }
+
         internal static IpV6ExtensionHeaderRoutingSourceRoute ParseRoutingData(IpV4Protocol nextHeader, byte segmentsLeft, DataSegment routingData)
         {
             if (routingData.Length < RoutingDataMinimumLength)
@@ -71,6 +76,12 @@ namespace PcapDotNet.Packets.IpV6
             for (int i = 0; i != numAddresses; ++i)
                 addresses[i] = routingData.ReadIpV6Address(RoutingDataOffset.Addresses + i * IpV6Address.SizeOf, Endianity.Big);
             return new IpV6ExtensionHeaderRoutingSourceRoute(nextHeader, segmentsLeft, addresses);
+        }
+
+        internal override void WriteRoutingData(byte[] buffer, int offset)
+        {
+            for (int i = 0; i != Addresses.Count; ++i)
+                buffer.Write(offset + RoutingDataOffset.Addresses + i * IpV6Address.SizeOf, Addresses[i], Endianity.Big);
         }
     }
 }

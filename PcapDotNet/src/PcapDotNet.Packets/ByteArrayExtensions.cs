@@ -62,6 +62,11 @@ namespace PcapDotNet.Packets
             return array.Compare(offset, other, otherOffset, count) == 0;
         }
 
+        public static DataSegment SubSegment(this byte[] array, int offset, int length)
+        {
+            return new DataSegment(array, offset, length);
+        }
+
         /// <summary>
         /// Returns the first offset in the array where the other array's range sequence of bytes can be found or the length of the array if no match exists.
         /// </summary>

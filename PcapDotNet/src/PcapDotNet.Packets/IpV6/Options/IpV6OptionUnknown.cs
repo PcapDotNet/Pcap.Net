@@ -561,7 +561,7 @@ namespace PcapDotNet.Packets.IpV6
         }
     }
 
-    public enum IpV6MobilityOptionLinkLayerAddressCode : byte
+    public enum IpV6MobilityLinkLayerAddressCode : byte
     {
         /// <summary>
         /// Wildcard requesting resolution for all nearby access points.
@@ -637,14 +637,14 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int OptionDataMinimumLength = Offset.LinkLayerAddress;
 
-        public IpV6MobilityOptionLinkLayerAddress(IpV6MobilityOptionLinkLayerAddressCode code, DataSegment linkLayerAddress)
+        public IpV6MobilityOptionLinkLayerAddress(IpV6MobilityLinkLayerAddressCode code, DataSegment linkLayerAddress)
             : base(IpV6MobilityOptionType.LinkLayerAddress)
         {
             Code = code;
             LinkLayerAddress = linkLayerAddress;
         }
 
-        public IpV6MobilityOptionLinkLayerAddressCode Code { get; private set; }
+        public IpV6MobilityLinkLayerAddressCode Code { get; private set; }
 
         /// <summary>
         /// Variable-length link-layer address.
@@ -656,7 +656,7 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length < OptionDataMinimumLength)
                 return null;
 
-            IpV6MobilityOptionLinkLayerAddressCode code = (IpV6MobilityOptionLinkLayerAddressCode)data[Offset.OptionCode];
+            IpV6MobilityLinkLayerAddressCode code = (IpV6MobilityLinkLayerAddressCode)data[Offset.OptionCode];
             DataSegment linkLayerAddress = data.Subsegment(Offset.LinkLayerAddress, data.Length - Offset.LinkLayerAddress);
 
             return new IpV6MobilityOptionLinkLayerAddress(code, linkLayerAddress);
@@ -2468,7 +2468,7 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 5845.
     /// </summary>
-    public enum IpV6MobilityHeaderIpV6AddressPrefixCode : byte
+    public enum IpV6MobilityIpV6AddressPrefixCode : byte
     {
         /// <summary>
         /// Old Care-of Address.
@@ -2514,8 +2514,8 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------------+
     /// </pre>
     /// </summary>
-    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobilityHeaderIpV6AddressPrefix)]
-    public class IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix : IpV6MobilityOptionComplex
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV6AddressPrefix)]
+    public class IpV6MobilityOptionIpV6AddressPrefix : IpV6MobilityOptionComplex
     {
         public const byte MaxPrefixLength = 128;
 
@@ -2528,8 +2528,8 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int OptionDataLength = Offset.AddressOrPrefix + IpV6Address.SizeOf;
 
-        public IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix(IpV6MobilityHeaderIpV6AddressPrefixCode code, byte prefixLength, IpV6Address addressOrPrefix)
-            : base(IpV6MobilityOptionType.MobilityHeaderIpV6AddressPrefix)
+        public IpV6MobilityOptionIpV6AddressPrefix(IpV6MobilityIpV6AddressPrefixCode code, byte prefixLength, IpV6Address addressOrPrefix)
+            : base(IpV6MobilityOptionType.IpV6AddressPrefix)
         {
             if (prefixLength > MaxPrefixLength)
                 throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max value is {0}", MaxPrefixLength));
@@ -2542,7 +2542,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Describes the kind of the address or the prefix.
         /// </summary>
-        public IpV6MobilityHeaderIpV6AddressPrefixCode Code { get; private set; }
+        public IpV6MobilityIpV6AddressPrefixCode Code { get; private set; }
 
         /// <summary>
         /// Indicates the length of the IPv6 Address Prefix.
@@ -2560,10 +2560,10 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length != OptionDataLength)
                 return null;
 
-            IpV6MobilityHeaderIpV6AddressPrefixCode code = (IpV6MobilityHeaderIpV6AddressPrefixCode)data[Offset.Code];
+            IpV6MobilityIpV6AddressPrefixCode code = (IpV6MobilityIpV6AddressPrefixCode)data[Offset.Code];
             byte prefixLength = data[Offset.PrefixLength];
             IpV6Address addressOrPrefix = data.ReadIpV6Address(Offset.AddressOrPrefix, Endianity.Big);
-            return new IpV6MobilityOptionMobilityHeaderIpV6AddressPrefix(code, prefixLength, addressOrPrefix);
+            return new IpV6MobilityOptionIpV6AddressPrefix(code, prefixLength, addressOrPrefix);
         }
 
         internal override int DataLength

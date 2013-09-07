@@ -22,6 +22,11 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.IpV6Opts; }
+        }
+
         internal static IpV6ExtensionHeaderDestinationOptions ParseData(IpV4Protocol nextHeader, DataSegment data)
         {
             IpV6Options options = new IpV6Options(data);

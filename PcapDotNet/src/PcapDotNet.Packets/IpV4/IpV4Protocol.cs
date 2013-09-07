@@ -170,19 +170,22 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         Il = 0x28,
         /// <summary>
-        /// IPv6 RFC 2460   
+        /// RFC 2460.
+        /// IPv6.
         /// </summary>
         IpV6 = 0x29,
         /// <summary>
-        /// Source Demand Routing Protocol   
+        /// Source Demand Routing Protocol.
         /// </summary>
         SourceDemandRoutingProtocol = 0x2A,
         /// <summary>
-        /// Routing Header for IPv6 RFC 2460   
+        /// RFC 2460.
+        /// Routing Header for IPv6.
         /// </summary>
         IpV6Route = 0x2B,
         /// <summary>
-        /// Fragment Header for IPv6 RFC 2460   
+        /// RFC 2460.
+        /// Fragment Header for IPv6.
         /// </summary>
         FragmentHeaderForIpV6 = 0x2C,
         /// <summary>
