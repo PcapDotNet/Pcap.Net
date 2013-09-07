@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.PadN)]
-    public class IpV6OptionPadN : IpV6OptionComplex
+    public class IpV6OptionPadN : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public IpV6OptionPadN(int paddingDataLength) : base(IpV6OptionType.PadN)
         {
@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public int PaddingDataLength { get; private set; }
 
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             return new IpV6OptionPadN(data.Length);
         }
@@ -38,6 +38,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             offset += PaddingDataLength;
+        }
+
+        private IpV6OptionPadN()
+            : this(0)
+        {
         }
     }
 }

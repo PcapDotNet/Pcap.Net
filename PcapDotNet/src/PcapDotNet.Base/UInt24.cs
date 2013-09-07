@@ -19,6 +19,11 @@ namespace PcapDotNet.Base
         /// </summary>
         public static readonly UInt24 MaxValue = (UInt24)0x00FFFFFF;
 
+        public static implicit operator UInt24(ushort value)
+        {
+            return new UInt24(value);
+        }
+
         /// <summary>
         /// Converts a 32 bit signed integer to a 24 bit unsigned integer by taking the 24 least significant bits.
         /// </summary>

@@ -27,10 +27,5 @@ namespace PcapDotNet.Packets.IpV6
         {
             base.Write(buffer, ref offset);
         }
-
-        internal override sealed IpV6Option CreateInstance(DataSegment data)
-        {
-            throw new InvalidOperationException("Simple options shouldn't be registered.");
-        }
     }
 }

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.EndpointIdentification)]
-    public class IpV6OptionEndpointIdentification : IpV6OptionComplex
+    public class IpV6OptionEndpointIdentification : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -43,12 +43,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public DataSegment DestinationEndpointIdentifier { get; private set; }
 
-        internal IpV6OptionEndpointIdentification()
-            : this(DataSegment.Empty, DataSegment.Empty)
-        {
-        }
-
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
                 return null;
@@ -75,6 +70,11 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, (byte)DestinationEndpointIdentifier.Length);
             buffer.Write(ref offset, SourceEndpointIdentifier);
             buffer.Write(ref offset, DestinationEndpointIdentifier);
+        }
+
+        private IpV6OptionEndpointIdentification()
+            : this(DataSegment.Empty, DataSegment.Empty)
+        {
         }
     }
 }

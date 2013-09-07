@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.JumboPayload)]
-    public class IpV6OptionJumboPayload : IpV6OptionComplex
+    public class IpV6OptionJumboPayload : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = sizeof(uint);
 
@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public uint JumboPayloadLength { get; private set; }
 
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length != OptionDataLength)
                 return null;
@@ -45,6 +45,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, JumboPayloadLength, Endianity.Big);
+        }
+
+        private IpV6OptionJumboPayload()
+            : this(0)
+        {
         }
     }
 }

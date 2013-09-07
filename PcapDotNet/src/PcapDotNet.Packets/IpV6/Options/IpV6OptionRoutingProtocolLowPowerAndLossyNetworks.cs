@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.RplOption)]
-    public class IpV6OptionRoutingProtocolLowPowerAndLossyNetworks : IpV6OptionComplex
+    public class IpV6OptionRoutingProtocolLowPowerAndLossyNetworks : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -89,12 +89,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment SubTlvs { get; private set; }
 
-        internal IpV6OptionRoutingProtocolLowPowerAndLossyNetworks()
-            : this(false, false, false, 0, 0, DataSegment.Empty)
-        {
-        }
-
-        internal override IpV6Option CreateInstance(DataSegment data)
+        public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
                 return null;
@@ -121,6 +116,11 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, RplInstanceId);
             buffer.Write(ref offset, SenderRank, Endianity.Big);
             buffer.Write(ref offset, SubTlvs);
+        }
+
+        private IpV6OptionRoutingProtocolLowPowerAndLossyNetworks()
+            : this(false, false, false, 0, 0, DataSegment.Empty)
+        {
         }
     }
 }
