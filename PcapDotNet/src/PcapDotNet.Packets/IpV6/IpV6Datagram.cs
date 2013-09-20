@@ -44,13 +44,13 @@ namespace PcapDotNet.Packets.IpV6
         private static class Offset
         {
             public const int Version = 0;
-            public const int TrafficClass = 0;
-            public const int FlowLabel = 1;
-            public const int PayloadLength = 4;
-            public const int NextHeader = 6;
-            public const int HopLimit = 7;
-            public const int SourceAddress  = 8;
-            public const int DestinationAddress = 24;
+            public const int TrafficClass = Version;
+            public const int FlowLabel = TrafficClass + 1;
+            public const int PayloadLength = FlowLabel + 3;
+            public const int NextHeader = PayloadLength + sizeof(ushort);
+            public const int HopLimit = NextHeader + sizeof(byte);
+            public const int SourceAddress = HopLimit + sizeof(byte);
+            public const int DestinationAddress = SourceAddress + IpV6Address.SizeOf;
         }
 
         private static class Mask
@@ -172,6 +172,7 @@ namespace PcapDotNet.Packets.IpV6
                 return;
             }
             _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
+            _isValid = _isValid && _extensionHeaders.IsValid;
 /*
             int extendedHeaderLength = HeaderLength;
             IpV4Protocol? nextHeader = NextHeader;
@@ -236,7 +237,7 @@ namespace PcapDotNet.Packets.IpV6
                                          byte trafficClass, int flowLabel, ushort payloadLength, IpV4Protocol nextHeader, byte hopLimit,
                                          IpV6Address source, IpV6Address currentDestination, IpV6ExtensionHeaders extensionHeaders)
         {
-            buffer.Write(offset + Offset.Version, (uint)(((((DefaultVersion << Shift.Version) << 8) | trafficClass) << 16) | flowLabel), Endianity.Big);
+            buffer.Write(offset + Offset.Version, (uint)((((DefaultVersion << 8) | trafficClass) << 20) | flowLabel), Endianity.Big);
             buffer.Write(offset + Offset.PayloadLength, payloadLength, Endianity.Big);
             buffer.Write(offset + Offset.NextHeader, (byte)nextHeader);
             buffer.Write(offset + Offset.HopLimit, hopLimit);
@@ -253,7 +254,6 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;
-        private int _extensionHeadersLength;
         private bool _isValid;
     }
 }

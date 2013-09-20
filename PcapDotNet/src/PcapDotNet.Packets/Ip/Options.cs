@@ -105,22 +105,17 @@ namespace PcapDotNet.Packets.Ip
             IsValid = isValid;
 
             if (length.HasValue)
-            {
                 BytesLength = length.Value;
-            }
             else
-            {
-                BytesLength = SumBytesLength(OptionsCollection);
-
-                if (BytesLength % 4 != 0)
-                    BytesLength = (BytesLength / 4 + 1) * 4;
-            }
+                BytesLength = CalculateBytesLength(SumBytesLength(OptionsCollection));
         }
 
         internal static int SumBytesLength(IEnumerable<T> options)
         {
             return options.Sum(option => option.Length);
         }
+
+        internal abstract int CalculateBytesLength(int optionsLength);
 
         private readonly ReadOnlyCollection<T> _options;
     }

@@ -73,10 +73,10 @@ namespace PcapDotNet.Packets.Test
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
-//                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
 
                 // IpV6
-//                Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
+                Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
                 /*
                 if (packet.Ethernet.IpV6.NextHeader == IpV4Protocol.Tcp)
                     Assert.IsInstanceOfType(packet.Ethernet.IpV6.Transport, typeof(TcpDatagram));

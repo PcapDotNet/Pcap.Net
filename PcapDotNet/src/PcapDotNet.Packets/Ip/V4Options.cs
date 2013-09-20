@@ -18,7 +18,14 @@ namespace PcapDotNet.Packets.Ip
             if (BytesLength > maximumBytesLength)
                 throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + maximumBytesLength, "options");
         }
-       
+
+        internal override sealed int CalculateBytesLength(int optionsLength)
+        {
+            if (optionsLength % 4 == 0)
+                return optionsLength;
+            return (optionsLength / 4 + 1) * 4;
+        }
+
         private V4Options(Tuple<IList<T>, bool> optionsAndIsValid, int? length)
             : this(optionsAndIsValid.Item1, optionsAndIsValid.Item2, length)
         {

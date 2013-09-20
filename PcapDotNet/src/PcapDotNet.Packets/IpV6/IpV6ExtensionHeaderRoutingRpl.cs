@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+------------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderRoutingRpl : IpV6ExtensionHeaderRouting
+    public sealed class IpV6ExtensionHeaderRoutingRpl : IpV6ExtensionHeaderRouting
     {
         private static class RoutingDataOffset
         {
@@ -170,6 +170,11 @@ namespace PcapDotNet.Packets.IpV6
                                                      addresses);
         }
 
+        internal override bool EqualsRoutingData(IpV6ExtensionHeaderRouting other)
+        {
+            return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingRpl);
+        }
+
         internal override void WriteRoutingData(byte[] buffer, int offset)
         {
             buffer.Write(offset + RoutingDataOffset.CommonPrefixLengthForNonLastAddresses,
@@ -188,6 +193,14 @@ namespace PcapDotNet.Packets.IpV6
                 addressBytes.Write(0, Addresses[Addresses.Count - 1], Endianity.Big);
                 addressBytes.SubSegment(CommonPrefixLengthForLastAddress, IpV6Address.SizeOf - CommonPrefixLengthForLastAddress).Write(buffer, ref addressOffset);
             }
+        }
+
+        private bool EqualsRoutingData(IpV6ExtensionHeaderRoutingRpl other)
+        {
+            return other != null &&
+                   CommonPrefixLengthForNonLastAddresses == other.CommonPrefixLengthForNonLastAddresses &&
+                   CommonPrefixLengthForLastAddress == other.CommonPrefixLengthForLastAddress && PadSize == other.PadSize &&
+                   Addresses.SequenceEqual(other.Addresses);
         }
     }
 }

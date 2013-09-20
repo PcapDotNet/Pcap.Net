@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderRoutingHomeAddress : IpV6ExtensionHeaderRouting
+    public sealed class IpV6ExtensionHeaderRoutingHomeAddress : IpV6ExtensionHeaderRouting
     {
         private static class RoutingDataOffset
         {
@@ -58,9 +58,20 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderRoutingHomeAddress(nextHeader, segmentsLeft, homeAddress);
         }
 
+        internal override bool EqualsRoutingData(IpV6ExtensionHeaderRouting other)
+        {
+            return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingHomeAddress);
+        }
+
         internal override void WriteRoutingData(byte[] buffer, int offset)
         {
             buffer.Write(offset + RoutingDataOffset.HomeAddress, HomeAddress, Endianity.Big);
+        }
+
+        private bool EqualsRoutingData(IpV6ExtensionHeaderRoutingHomeAddress other)
+        {
+            return other != null &&
+                   HomeAddress.Equals(other.HomeAddress);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -35,7 +36,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderRoutingSourceRoute : IpV6ExtensionHeaderRouting
+    public sealed class IpV6ExtensionHeaderRoutingSourceRoute : IpV6ExtensionHeaderRouting
     {
         private static class RoutingDataOffset
         {
@@ -78,10 +79,21 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderRoutingSourceRoute(nextHeader, segmentsLeft, addresses);
         }
 
+        internal override bool EqualsRoutingData(IpV6ExtensionHeaderRouting other)
+        {
+            return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingSourceRoute);
+        }
+
         internal override void WriteRoutingData(byte[] buffer, int offset)
         {
             for (int i = 0; i != Addresses.Count; ++i)
                 buffer.Write(offset + RoutingDataOffset.Addresses + i * IpV6Address.SizeOf, Addresses[i], Endianity.Big);
+        }
+
+        private bool EqualsRoutingData(IpV6ExtensionHeaderRoutingSourceRoute other)
+        {
+            return other != null &&
+                   Addresses.SequenceEqual(other.Addresses);
         }
     }
 }

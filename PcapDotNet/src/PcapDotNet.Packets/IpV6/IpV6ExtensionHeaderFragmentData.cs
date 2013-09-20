@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -75,6 +76,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return IpV4Protocol.FragmentHeaderForIpV6; }
         }
 
+        public override bool IsValid
+        {
+            get { return true; }
+        }
+
         internal override int DataLength
         {
             get { return ExtensionHeaderDataLength; }
@@ -92,6 +98,11 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderFragmentData(nextHeader, fragmentOffset, moreFragments, identification);
         }
 
+        internal override bool EqualsData(IpV6ExtensionHeader other)
+        {
+            return EqualsData(other as IpV6ExtensionHeaderFragmentData);
+        }
+
         internal override void WriteData(byte[] buffer, int offset)
         {
             ushort fragmentOffsetAndMoreFragments = (ushort)(FragmentOffset << DataShift.FragmentOffset);
@@ -100,6 +111,12 @@ namespace PcapDotNet.Packets.IpV6
 
             buffer.Write(offset + DataOffset.FragmentOffset, fragmentOffsetAndMoreFragments, Endianity.Big);
             buffer.Write(offset + DataOffset.Identification, Identification, Endianity.Big);
+        }
+
+        private bool EqualsData(IpV6ExtensionHeaderFragmentData other)
+        {
+            return other != null &&
+                   FragmentOffset == other.FragmentOffset && MoreFragments == other.MoreFragments && Identification == other.Identification;
         }
     }
 
@@ -221,10 +238,16 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6ExtensionHeaderMobility : IpV6ExtensionHeaderStandard
     {
-        public override IpV4Protocol Protocol
+        public override sealed IpV4Protocol Protocol
         {
             get { return IpV4Protocol.MobilityHeader; }
         }
+
+        public override sealed bool IsValid
+        {
+            get { return MobilityOptions.IsValid && Length % 8 == 0; }
+        }
+
         private static class DataOffset
         {
             public const int MobilityHeaderType = 0;
@@ -240,13 +263,6 @@ namespace PcapDotNet.Packets.IpV6
             Checksum = checksum;
             MobilityOptions = mobilityOptions;
         }
-
-        internal override sealed int DataLength
-        {
-            get { return MinimumDataLength + MessageDataLength; }
-        }
-
-        internal abstract int MessageDataLength { get; }
 
         /// <summary>
         /// Identifies the particular mobility message in question.
@@ -367,6 +383,27 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         internal abstract void WriteMessageData(byte[] buffer, int offset);
+
+        internal override sealed int DataLength
+        {
+            get { return MinimumDataLength + MessageDataLength; }
+        }
+
+        internal abstract int MessageDataLength { get; }
+
+        internal override sealed bool EqualsData(IpV6ExtensionHeader other)
+        {
+            return EqualsData(other as IpV6ExtensionHeaderMobility);
+        }
+
+        internal abstract bool EqualsMessageData(IpV6ExtensionHeaderMobility other);
+
+        private bool EqualsData(IpV6ExtensionHeaderMobility other)
+        {
+            return other != null &&
+                   MobilityHeaderType == other.MobilityHeaderType && Checksum == other.Checksum && MobilityOptions.Equals(other.MobilityOptions) &&
+                   EqualsMessageData(other);
+        }
     }
 
     /// <summary>
@@ -429,6 +466,11 @@ namespace PcapDotNet.Packets.IpV6
         {
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
         }
+
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return other != null;
+        }
     }
 
     /// <summary>
@@ -455,7 +497,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHomeTestInit : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHomeTestInit : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -490,6 +532,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHomeTestInit);
+        }
+
         internal static IpV6ExtensionHeaderMobilityHomeTestInit ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -504,6 +551,12 @@ namespace PcapDotNet.Packets.IpV6
         {
             buffer.Write(offset + MessageDataOffset.HomeInitCookie, HomeInitCookie, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHomeTestInit other)
+        {
+            return other != null &&
+                   HomeInitCookie == other.HomeInitCookie;
         }
     }
 
@@ -531,7 +584,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityCareOfTestInit : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityCareOfTestInit : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -566,6 +619,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityCareOfTestInit);
+        }
+
         internal static IpV6ExtensionHeaderMobilityCareOfTestInit ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -580,6 +638,12 @@ namespace PcapDotNet.Packets.IpV6
         {
             buffer.Write(offset + MessageDataOffset.CareOfInitCookie, CareOfInitCookie, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityCareOfTestInit other)
+        {
+            return other != null &&
+                   CareOfInitCookie == other.CareOfInitCookie;
         }
     }
 
@@ -612,7 +676,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHomeTest : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHomeTest : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -662,6 +726,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHomeTest);
+        }
+
         internal static IpV6ExtensionHeaderMobilityHomeTest ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -680,6 +749,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.HomeInitCookie, HomeInitCookie, Endianity.Big);
             buffer.Write(offset + MessageDataOffset.HomeKeygenToken, HomeKeygenToken, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHomeTest other)
+        {
+            return other != null &&
+                   HomeNonceIndex == other.HomeNonceIndex && HomeInitCookie == other.HomeInitCookie && HomeKeygenToken == other.HomeKeygenToken;
         }
     }
 
@@ -712,7 +787,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityCareOfTest : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityCareOfTest : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -762,6 +837,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityCareOfTest);
+        }
+
         internal static IpV6ExtensionHeaderMobilityCareOfTest ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -780,6 +860,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.CareOfInitCookie, CareOfInitCookie, Endianity.Big);
             buffer.Write(offset + MessageDataOffset.CareOfKeygenToken, CareOfKeygenToken, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityCareOfTest other)
+        {
+            return other != null &&
+                   CareOfNonceIndex == other.CareOfNonceIndex && CareOfInitCookie == other.CareOfInitCookie && CareOfKeygenToken == other.CareOfKeygenToken;
         }
     }
 
@@ -887,6 +973,19 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Lifetime { get; private set; }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingUpdateBase);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingUpdateBase other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && Acknowledge == other.Acknowledge && HomeRegistration == other.HomeRegistration &&
+                   LinkLocalAddressCompatibility == other.LinkLocalAddressCompatibility &&
+                   KeyManagementMobilityCapability == other.KeyManagementMobilityCapability && Lifetime == other.Lifetime;
+        }
+
         internal override int MessageDataLength
         {
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
@@ -962,7 +1061,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingUpdate : IpV6ExtensionHeaderMobilityBindingUpdateBase
+    public sealed class IpV6ExtensionHeaderMobilityBindingUpdate : IpV6ExtensionHeaderMobilityBindingUpdateBase
     {
         public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
                                                         bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability, ushort lifetime,
@@ -1382,6 +1481,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingAcknowledgementBase);
+        }
+
         internal static bool ParseMessageDataFields(DataSegment messageData, out IpV6BindingAcknowledgementStatus status,
                                                     out bool keyManagementMobilityCapability, out ushort sequenceNumber, out ushort lifetime,
                                                     out IpV6MobilityOptions options)
@@ -1415,6 +1519,13 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.Lifetime, Lifetime, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
         }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingAcknowledgementBase other)
+        {
+            return other != null &&
+                   Status == other.Status && KeyManagementMobilityCapability == other.KeyManagementMobilityCapability && SequenceNumber == other.SequenceNumber &&
+                   Lifetime == other.Lifetime;
+        }
     }
 
     /// <summary>
@@ -1440,7 +1551,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingAcknowledgement : IpV6ExtensionHeaderMobilityBindingAcknowledgementBase
+    public sealed class IpV6ExtensionHeaderMobilityBindingAcknowledgement : IpV6ExtensionHeaderMobilityBindingAcknowledgementBase
     {
         public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                  bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
@@ -1514,7 +1625,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingError : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityBindingError : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -1556,6 +1667,17 @@ namespace PcapDotNet.Packets.IpV6
         internal override int MessageDataLength
         {
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
+        }
+
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingError);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingError other)
+        {
+            return other != null &&
+                   Status == other.Status && HomeAddress == other.HomeAddress;
         }
 
         internal static IpV6ExtensionHeaderMobilityBindingError ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
@@ -1712,7 +1834,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityFastNeighborAdvertisement : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityFastNeighborAdvertisement : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -1738,6 +1860,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override int MessageDataLength
         {
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
+        }
+
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return other != null;
         }
 
         internal static IpV6ExtensionHeaderMobilityFastNeighborAdvertisement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
@@ -1772,7 +1899,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityExperimental : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityExperimental : IpV6ExtensionHeaderMobility
     {
         public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
             : base(nextHeader, checksum, IpV6MobilityOptions.None)
@@ -1799,6 +1926,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MessageData.Length; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityExperimental);
+        }
+
         internal static IpV6ExtensionHeaderMobilityExperimental ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             return new IpV6ExtensionHeaderMobilityExperimental(nextHeader, checksum, messageData);
@@ -1807,6 +1939,12 @@ namespace PcapDotNet.Packets.IpV6
         internal override void WriteMessageData(byte[] buffer, int offset)
         {
             MessageData.Write(buffer, offset);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityExperimental other)
+        {
+            return other != null &&
+                   MessageData.Equals(other.MessageData);
         }
     }
 
@@ -1832,7 +1970,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -1873,6 +2011,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + HomeAgentAddresses.Count * IpV6Address.SizeOf + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage);
+        }
+
         internal static IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -1899,6 +2042,12 @@ namespace PcapDotNet.Packets.IpV6
                 buffer.Write(offset + MessageDataOffset.HomeAgentAddresses + i * IpV6Address.SizeOf, HomeAgentAddresses[i], Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.HomeAgentAddresses + HomeAgentAddresses.Count * IpV6Address.SizeOf);
         }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage other)
+        {
+            return other != null &&
+                   HomeAgentAddresses.SequenceEqual(other.HomeAgentAddresses);
+        }
     }
 
     /// <summary>
@@ -1923,7 +2072,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHeartbeatMessage : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHeartbeatMessage : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -1981,6 +2130,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHeartbeatMessage);
+        }
+
         internal static IpV6ExtensionHeaderMobilityHeartbeatMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -2000,10 +2154,17 @@ namespace PcapDotNet.Packets.IpV6
                 isUnsolicitedHeartbeatResponseAndIsResponse |= MessageDataMask.IsUnsolicitedHeartbeatResponse;
             if (IsResponse)
                 isUnsolicitedHeartbeatResponseAndIsResponse |= MessageDataMask.IsResponse;
-            buffer.Write(MessageDataOffset.IsUnsolicitedHeartbeatResponse, isUnsolicitedHeartbeatResponseAndIsResponse);
+            buffer.Write(offset + MessageDataOffset.IsUnsolicitedHeartbeatResponse, isUnsolicitedHeartbeatResponseAndIsResponse);
 
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.MobilityOptions);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHeartbeatMessage other)
+        {
+            return other != null &&
+                   IsUnsolicitedHeartbeatResponse == other.IsUnsolicitedHeartbeatResponse && IsResponse == other.IsResponse &&
+                   SequenceNumber == other.SequenceNumber;
         }
     }
     
@@ -2034,7 +2195,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHandoverInitiateMessage : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHandoverInitiateMessage : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -2101,6 +2262,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHandoverInitiateMessage);
+        }
+
         internal static IpV6ExtensionHeaderMobilityHandoverInitiateMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -2128,6 +2294,13 @@ namespace PcapDotNet.Packets.IpV6
 
             buffer.Write(offset + MessageDataOffset.Code, (byte)Code);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHandoverInitiateMessage other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && AssignedAddressConfiguration == other.AssignedAddressConfiguration && Buffer == other.Buffer &&
+                   Code == other.Code;
         }
     }
 
@@ -2195,7 +2368,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -2237,6 +2410,17 @@ namespace PcapDotNet.Packets.IpV6
         internal override int MessageDataLength
         {
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
+        }
+
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && Code == other.Code;
         }
 
         internal static IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
@@ -2378,6 +2562,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingRevocationMessage);
+        }
+
         internal static IpV6ExtensionHeaderMobilityBindingRevocationMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -2424,6 +2613,14 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.ProxyBinding, flags);
 
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingRevocationMessage other)
+        {
+            return other != null &&
+                   BindingRevocationType == other.BindingRevocationType && RevocationTriggerOrStatus == other.RevocationTriggerOrStatus &&
+                   SequenceNumber == other.SequenceNumber && ProxyBinding == other.ProxyBinding &&
+                   IpV4HomeAddressBindingOnly == other.IpV4HomeAddressBindingOnly && Global == other.Global;
         }
     }
 
@@ -2507,12 +2704,12 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---+---+---+-------------------------------+
     /// | 80  | P | V | G | Reserved                      |
     /// +-----+---+---+---+-------------------------------+
-    /// | 96  | Mobility options                          |
+    /// | 96  | Mobility Options                          |
     /// | ... |                                           |
     /// +-----+-------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
+    public sealed class IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
     {
         public IpV6ExtensionHeaderMobilityBindingRevocationIndicationMessage(IpV4Protocol nextHeader, ushort checksum,
                                                                              Ipv6MobilityBindingRevocationTrigger revocationTrigger, ushort sequenceNumber,
@@ -2719,6 +2916,13 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
+        internal override sealed bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        {
+            return EqualsMessageData(other as IpV6ExtensionHeaderMobilityLocalizedRouting);
+        }
+
+        internal abstract bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRouting other);
+
         internal static bool ParseMessageDataToFields(DataSegment messageData, out ushort sequenceNumber, out ushort lifetime, out IpV6MobilityOptions options)
         {
             if (messageData.Length < MinimumMessageDataLength)
@@ -2740,6 +2944,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
             buffer.Write(offset + MessageDataOffset.Lifetime, Lifetime, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityLocalizedRouting other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && Lifetime == other.Lifetime && EqualsMessageDataLocalizedRoutingExtraFields(other);
         }
     }
 
@@ -2766,7 +2976,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation : IpV6ExtensionHeaderMobilityLocalizedRouting
+    public sealed class IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation : IpV6ExtensionHeaderMobilityLocalizedRouting
     {
         public IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      ushort lifetime, IpV6MobilityOptions options)
@@ -2793,6 +3003,11 @@ namespace PcapDotNet.Packets.IpV6
 
             return new IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(nextHeader, checksum, sequenceNumber, lifetime, options);
         }
+
+        internal override bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRouting other)
+        {
+            return true;
+        }
     }
 
     /// <summary>
@@ -2818,7 +3033,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement : IpV6ExtensionHeaderMobilityLocalizedRouting
+    public sealed class IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement : IpV6ExtensionHeaderMobilityLocalizedRouting
     {
         private static class MessageDataOffset
         {
@@ -2864,6 +3079,17 @@ namespace PcapDotNet.Packets.IpV6
             bool unsolicited = messageData.ReadBool(MessageDataOffset.Unsolicited, MessageDataMask.Unsolicited);
 
             return new IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(nextHeader, checksum, sequenceNumber, unsolicited, lifetime, options);
+        }
+
+        internal override bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRouting other)
+        {
+            return EqualsMessageDataLocalizedRoutingExtraFields(other as IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement);
+        }
+
+        private bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement other)
+        {
+            return other != null &&
+                   Unsolicited == other.Unsolicited;
         }
     }
 }

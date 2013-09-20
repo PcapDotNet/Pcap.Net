@@ -3938,14 +3938,14 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 6089.
     /// </summary>
-    public class IpV6FlowIdentificationSubOptions : Options<IpV6FlowIdentificationSubOption>
+    public class IpV6FlowIdentificationSubOptions : V6Options<IpV6FlowIdentificationSubOption>
     {
         /// <summary>
         /// Creates options from a list of options.
         /// </summary>
         /// <param name="options">The list of options.</param>
         public IpV6FlowIdentificationSubOptions(IList<IpV6FlowIdentificationSubOption> options)
-            : base(options, true, null)
+            : base(options, true)
         {
         }
 
@@ -3964,7 +3964,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6FlowIdentificationSubOptions(Tuple<IList<IpV6FlowIdentificationSubOption>, bool> optionsAndIsValid)
-            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2)
         {
         }
 
@@ -4955,14 +4955,14 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 6757.
     /// </summary>
-    public class IpV6AccessNetworkIdentifierSubOptions : Options<IpV6AccessNetworkIdentifierSubOption>
+    public class IpV6AccessNetworkIdentifierSubOptions : V6Options<IpV6AccessNetworkIdentifierSubOption>
     {
         /// <summary>
         /// Creates options from a list of options.
         /// </summary>
         /// <param name="options">The list of options.</param>
         public IpV6AccessNetworkIdentifierSubOptions(IList<IpV6AccessNetworkIdentifierSubOption> options)
-            : base(options, true, null)
+            : base(options, true)
         {
         }
 
@@ -4981,7 +4981,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6AccessNetworkIdentifierSubOptions(Tuple<IList<IpV6AccessNetworkIdentifierSubOption>, bool> optionsAndIsValid)
-            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2)
         {
         }
 
