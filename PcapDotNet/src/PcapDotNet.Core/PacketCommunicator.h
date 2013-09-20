@@ -125,7 +125,7 @@ namespace PcapDotNet { namespace Core
 
         /// <summary>
         /// Set the size of the kernel buffer associated with an adapter.
-        /// If an old buffer was already created with a previous call to pcap_setbuff(), it is deleted and its content is discarded.
+        /// If an old buffer was already created with a previous call to SetKernelBufferSize(), it is deleted and its content is discarded.
         /// LivePacketDevice.Open() creates a 1 MByte buffer by default.
         /// <!--seealso cref="LivePacketDevice::Open"/-->
         /// </summary>
