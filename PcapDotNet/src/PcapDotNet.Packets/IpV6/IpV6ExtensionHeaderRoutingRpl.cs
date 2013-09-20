@@ -63,7 +63,7 @@ namespace PcapDotNet.Packets.IpV6
         public const byte MaxPadSize = IpV6Address.SizeOf - 1;
 
         public IpV6ExtensionHeaderRoutingRpl(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
-                                             byte commonPrefixLengthForLastAddress, byte padSize, params IpV6Address[] addresses)
+                                             byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
         {
             if (commonPrefixLengthForNonLastAddresses > MaxCommonPrefixLength)
@@ -80,11 +80,9 @@ namespace PcapDotNet.Packets.IpV6
             }
             CommonPrefixLengthForLastAddress = commonPrefixLengthForLastAddress;
 
-            if (padSize > MaxPadSize)
-                throw new ArgumentOutOfRangeException("padSize", padSize, string.Format("Maximum value is {0}", MaxPadSize));
-            PadSize = padSize;
-
             Addresses = addresses.AsReadOnly();
+
+            PadSize = (byte)((8 - RoutingDataLength % 8) % 8);
         }
 
         public override IpV6RoutingType RoutingType
@@ -168,7 +166,7 @@ namespace PcapDotNet.Packets.IpV6
                 lastAddressSegment.Write(addressBytes, 0);
                 addresses[numAddresses - 1] = addressBytes.ReadIpV6Address(0, Endianity.Big);
             }
-            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress, padSize,
+            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress,
                                                      addresses);
         }
 

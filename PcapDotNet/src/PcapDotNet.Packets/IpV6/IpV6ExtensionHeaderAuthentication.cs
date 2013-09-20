@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -35,6 +36,12 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderAuthentication(IpV4Protocol nextHeader, uint securityParametersIndex, uint sequenceNumber, DataSegment authenticationData)
             : base(nextHeader)
         {
+            if (authenticationData.Length % 4 != 0)
+            {
+                throw new ArgumentException(
+                    string.Format("Authentication Data must be an integral multiple of 4 byte in length, and not {0}.", authenticationData.Length),
+                    "authenticationData");
+            }
             SecurityParametersIndex = securityParametersIndex;
             SequenceNumber = sequenceNumber;
             AuthenticationData = authenticationData;
