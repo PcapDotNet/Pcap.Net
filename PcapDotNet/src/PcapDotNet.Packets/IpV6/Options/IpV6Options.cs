@@ -12,20 +12,36 @@ namespace PcapDotNet.Packets.IpV6
         IpV6Option CreateInstance(DataSegment data);
     }
 
-    public class IpV6Options : Options<IpV6Option>
+    public sealed class IpV6Options : Options<IpV6Option>
     {
         public IpV6Options(IList<IpV6Option> options)
-            : base(options, true, null)
+            : base(AddPadding(options), true, null)
         {
         }
 
-
-        public IpV6Options(DataSegment data) : this(Read(data))
+        public IpV6Options(IEnumerable<IpV6Option> options)
+            : this(options.ToList())
         {
         }
 
-        private IpV6Options(Tuple<IList<IpV6Option>, bool> optionsAndIsValid) : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+        public IpV6Options(DataSegment data) 
+            : this(Read(data))
         {
+        }
+
+        private IpV6Options(Tuple<IList<IpV6Option>, bool> optionsAndIsValid)
+            : base(AddPadding(optionsAndIsValid.Item1), optionsAndIsValid.Item2, null)
+        {
+        }
+
+        private static IList<IpV6Option> AddPadding(IList<IpV6Option> options)
+        {
+            int optionsLength = options.Sum(option => option.Length);
+            if (optionsLength % 8 == 6)
+                return options;
+
+            int paddingLength = (14 - optionsLength % 8) % 8;
+            return options.Concat(paddingLength == 1 ? (IpV6Option)new IpV6OptionPad1() : new IpV6OptionPadN(paddingLength - 2)).ToArray();
         }
 
         public static Tuple<IList<IpV6Option>, bool> Read(DataSegment data) 
@@ -68,6 +84,11 @@ namespace PcapDotNet.Packets.IpV6
             return new Tuple<IList<IpV6Option>, bool>(options, isValid);
         }
 
+        internal override int CalculateBytesLength(int optionsLength)
+        {
+            return optionsLength;
+        }
+
         private static IpV6Option CreateOption(IpV6OptionType optionType, DataSegment data)
         {
             IIpV6OptionComplexFactory factory;
@@ -102,14 +123,27 @@ namespace PcapDotNet.Packets.IpV6
         }
     }
 
-    public class IpV6MobilityOptions : Options<IpV6MobilityOption>
+    public abstract class V6Options<T> : Options<T> where T : Option
+    {
+        public V6Options(IList<T> options, bool isValid) 
+            : base(options, isValid, null)
+        {
+        }
+
+        internal override sealed int CalculateBytesLength(int optionsLength)
+        {
+            return optionsLength;
+        }
+    }
+
+    public class IpV6MobilityOptions : V6Options<IpV6MobilityOption>
     {
         /// <summary>
         /// Creates options from a list of options.
         /// </summary>
         /// <param name="options">The list of options.</param>
         public IpV6MobilityOptions(IList<IpV6MobilityOption> options)
-            : base(options, true, null)
+            : base(options, true)
         {
         }
 
@@ -128,7 +162,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6MobilityOptions(Tuple<IList<IpV6MobilityOption>, bool> optionsAndIsValid)
-            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2)
         {
         }
 

@@ -101,10 +101,12 @@ namespace PcapDotNet.Packets.IpV6
                 nextHeader = ipV4NextLayer.PreviousLayerProtocol;
             }
             else
+            {
                 nextHeader = NextHeader.Value;
+            }
 
             IpV6Datagram.WriteHeader(buffer, offset,
-                                     TrafficClass, FlowLabel, (ushort)payloadLength, nextHeader, HopLimit, Source, CurrentDestination, ExtensionHeaders);
+                                     TrafficClass, FlowLabel, (ushort)(payloadLength + ExtensionHeaders.Sum(header => header.Length)), nextHeader, HopLimit, Source, CurrentDestination, ExtensionHeaders);
         }
 
         /// <summary>

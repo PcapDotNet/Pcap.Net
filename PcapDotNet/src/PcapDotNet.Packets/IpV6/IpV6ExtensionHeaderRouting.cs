@@ -26,7 +26,10 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int DataMinimumLength = DataOffset.TypeSpecificData;
 
-        internal abstract int RoutingDataLength { get; }
+        public override bool IsValid
+        {
+            get { return true; }
+        }
 
         /// <summary>
         /// Identifier of a particular Routing header variant.
@@ -53,6 +56,15 @@ namespace PcapDotNet.Packets.IpV6
         {
             get { return DataMinimumLength + RoutingDataLength; }
         }
+
+        internal abstract int RoutingDataLength { get; }
+
+        internal override sealed bool EqualsData(IpV6ExtensionHeader other)
+        {
+            return EqualsData(other as IpV6ExtensionHeaderRouting);
+        }
+
+        internal abstract bool EqualsRoutingData(IpV6ExtensionHeaderRouting other);
 
         internal static IpV6ExtensionHeaderRouting ParseData(IpV4Protocol nextHeader, DataSegment data)
         {
@@ -89,5 +101,11 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         internal abstract void WriteRoutingData(byte[] buffer, int offset);
+
+        private bool EqualsData(IpV6ExtensionHeaderRouting other)
+        {
+            return other != null &&
+                   RoutingType == other.RoutingType && SegmentsLeft == other.SegmentsLeft && EqualsRoutingData(other);
+        }
     }
 }

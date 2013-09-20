@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(bool down, bool rankError, bool forwardingError, byte rplInstanceId, ushort senderRank,
                                                                  DataSegment subTlvs)
-            : base(IpV6OptionType.EndpointIdentification)
+            : base(IpV6OptionType.RplOption)
         {
             Down = down;
             RankError = rankError;

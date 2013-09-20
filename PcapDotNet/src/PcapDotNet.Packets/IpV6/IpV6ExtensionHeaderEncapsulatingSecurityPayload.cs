@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -45,7 +46,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderEncapsulatingSecurityPayload : IpV6ExtensionHeader
+    public sealed class IpV6ExtensionHeaderEncapsulatingSecurityPayload : IpV6ExtensionHeader, IEquatable<IpV6ExtensionHeaderEncapsulatingSecurityPayload>
     {
         private static class Offset
         {
@@ -72,6 +73,23 @@ namespace PcapDotNet.Packets.IpV6
         public override int Length
         {
             get { return MinimumLength + EncryptedDataAndAuthenticationData.Length; }
+        }
+
+        public override bool IsValid
+        {
+            get { return true; }
+        }
+
+        public override bool Equals(IpV6ExtensionHeader other)
+        {
+            return Equals(other as IpV6ExtensionHeaderEncapsulatingSecurityPayload);
+        }
+
+        public bool Equals(IpV6ExtensionHeaderEncapsulatingSecurityPayload other)
+        {
+            return other != null &&
+                   SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
+                   EncryptedDataAndAuthenticationData.Equals(other.EncryptedDataAndAuthenticationData);
         }
 
         /// <summary>

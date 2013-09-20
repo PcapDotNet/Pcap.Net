@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderAuthentication : IpV6ExtensionHeader
+    public class IpV6ExtensionHeaderAuthentication : IpV6ExtensionHeader, IEquatable<IpV6ExtensionHeaderAuthentication>
     {
         private static class Offset
         {
@@ -100,7 +100,7 @@ namespace PcapDotNet.Packets.IpV6
             }
             IpV4Protocol nextHeader = (IpV4Protocol)extensionHeaderData[Offset.NextHeader];
             int payloadLength = (extensionHeaderData[Offset.PayloadLength] + 2) * 4;
-            if (extensionHeaderData.Length < Offset.AuthenticationData + payloadLength)
+            if (extensionHeaderData.Length < payloadLength || payloadLength < MinimumLength)
             {
                 numBytesRead = 0;
                 return null;
@@ -135,6 +135,23 @@ namespace PcapDotNet.Packets.IpV6
         public override int Length
         {
             get { return MinimumLength + AuthenticationData.Length; }
+        }
+
+        public override bool IsValid
+        {
+            get { return true; }
+        }
+
+        public override bool Equals(IpV6ExtensionHeader other)
+        {
+            return Equals(other as IpV6ExtensionHeaderAuthentication);
+        }
+
+        public bool Equals(IpV6ExtensionHeaderAuthentication other)
+        {
+            return other != null &&
+                   NextHeader == other.NextHeader && SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
+                   AuthenticationData.Equals(other.AuthenticationData);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

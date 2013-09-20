@@ -33,6 +33,14 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumLength = 8;
 
+        public override sealed bool Equals(IpV6ExtensionHeader other)
+        {
+            return other != null &&
+                   Protocol == other.Protocol && NextHeader == other.NextHeader && EqualsData(other);
+        }
+
+        internal abstract bool EqualsData(IpV6ExtensionHeader other);
+
         internal IpV6ExtensionHeaderStandard(IpV4Protocol nextHeader) 
             : base(nextHeader)
         {
@@ -49,7 +57,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract void WriteData(byte[] buffer, int offset);
 
-        public override sealed int Length { get { return MinimumLength + DataLength; } }
+        public override sealed int Length { get { return Offset.Data + DataLength; } }
         internal abstract int DataLength { get; }
         internal static bool IsStandard(IpV4Protocol nextHeader)
         {
@@ -132,7 +140,7 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 2460.
     /// </summary>
-    public abstract class IpV6ExtensionHeader
+    public abstract class IpV6ExtensionHeader : IEquatable<IpV6ExtensionHeader>
     {
         public abstract IpV4Protocol Protocol { get; }
 
@@ -144,6 +152,15 @@ namespace PcapDotNet.Packets.IpV6
         {
             get { return _extensionHeaders; }
         }
+
+        public abstract bool IsValid { get; }
+
+        public override sealed bool Equals(object obj)
+        {
+            return Equals(obj as IpV6ExtensionHeader);
+        }
+
+        public abstract bool Equals(IpV6ExtensionHeader other);
 
         internal static bool IsExtensionHeader(IpV4Protocol nextHeader)
         {
@@ -301,7 +318,7 @@ namespace PcapDotNet.Packets.IpV6
                 data = data.Subsegment(numBytesRead, data.Length - numBytesRead);
             }
             Headers = headers.AsReadOnly();
-            IsValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value));
+            IsValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value)) && headers.All(header => header.IsValid);
         }
 
         private static readonly IpV6ExtensionHeaders _empty = new IpV6ExtensionHeaders();
