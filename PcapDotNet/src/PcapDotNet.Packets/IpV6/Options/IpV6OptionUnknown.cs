@@ -2987,7 +2987,7 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length != OptionDataLength)
                 return null;
 
-            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Offset.PrefixLength);
+            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Shift.PrefixLength);
             IpV4Address homeAddress = data.ReadIpV4Address(Offset.HomeAddress, Endianity.Big);
             return new IpV6MobilityOptionIpV4HomeAddressRequest(prefixLength, homeAddress);
         }
@@ -3119,7 +3119,7 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             IpV6IpV4HomeAddressReplyStatus status = (IpV6IpV4HomeAddressReplyStatus)data[Offset.Status];
-            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Offset.PrefixLength);
+            byte prefixLength = (byte)((data[Offset.PrefixLength] & Mask.PrefixLength) >> Shift.PrefixLength);
             IpV4Address homeAddress = data.ReadIpV4Address(Offset.HomeAddress, Endianity.Big);
             return new IpV6MobilityOptionIpV4HomeAddressReply(status, prefixLength, homeAddress);
         }

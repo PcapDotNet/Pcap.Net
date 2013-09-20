@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.IpV6
                 return;
             }
             nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
-            extensionHeaderLength = extensionHeader[Offset.HeaderExtensionLength] * 8;
+            extensionHeaderLength = (extensionHeader[Offset.HeaderExtensionLength] + 1) * 8;
         }
 
         internal static ReadOnlyCollection<IpV4Protocol> StandardExtensionHeaders

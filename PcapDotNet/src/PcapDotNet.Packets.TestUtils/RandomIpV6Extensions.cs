@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets.TestUtils
                            HopLimit = random.NextByte(),
                            Source = random.NextIpV6Address(),
                            CurrentDestination = random.NextIpV6Address(),
-                           ExtensionHeaders = random.NextIpV6ExtensionHeaders(random.NextInt(0, 10)),
+                           ExtensionHeaders = extensionHeaders,
                        };
         }
 
@@ -73,7 +73,6 @@ namespace PcapDotNet.Packets.TestUtils
                             return new IpV6ExtensionHeaderRoutingRpl(nextHeader, random.NextByte(),
                                                                      random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1),
                                                                      random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1),
-                                                                     random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxPadSize + 1),
                                                                      random.NextIpV6AddressArray(random.NextInt(0, 10)));
 
                         default:
@@ -94,7 +93,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6ExtensionHeaderEncapsulatingSecurityPayload(random.NextUInt(), random.NextUInt(), random.NextDataSegment(random.Next(100)));
 
                 case IpV4Protocol.AuthenticationHeader: // 51
-                    return new IpV6ExtensionHeaderAuthentication(nextHeader, random.NextUInt(), random.NextUInt(), random.NextDataSegment(random.Next(100)));
+                    return new IpV6ExtensionHeaderAuthentication(nextHeader, random.NextUInt(), random.NextUInt(), random.NextDataSegment(random.Next(25) * 4));
 
                 default:
                     throw new InvalidOperationException(string.Format("Invalid extensionHeaderType value {0}", extensionHeaderType));

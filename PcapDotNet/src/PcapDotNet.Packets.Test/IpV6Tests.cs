@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.Test
 
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV6Layer, payloadLayer);
 
-//                Assert.IsTrue(packet.IsValid, string.Format("IsValid ({0})", ipV6Layer.NextHeader));
+                Assert.IsTrue(packet.IsValid, string.Format("IsValid ({0}...{1})", ipV6Layer.NextHeader, ipV6Layer.ExtensionHeaders.NextHeader));
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");
