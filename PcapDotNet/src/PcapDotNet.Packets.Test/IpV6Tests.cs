@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.Test
                                                   EtherType = EthernetType
                                               };
 
-            Random random = new Random();
+            Random random = new Random(1);
 
             for (int i = 0; i != 1000; ++i)
             {

@@ -44,7 +44,7 @@ namespace PcapDotNet.Packets.IpV6
             : base(nextHeader)
         {
             if (options.BytesLength % 8 != 6)
-                throw new ArgumentException("Options length in bytes must be an integral product of 8 + 6.", "options");
+                options = options.Pad((14 - options.BytesLength % 8) % 8);
             Options = options;
         }
 

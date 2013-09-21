@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.JumboPayload)]
-    public class IpV6OptionJumboPayload : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionJumboPayload : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = sizeof(uint);
 
