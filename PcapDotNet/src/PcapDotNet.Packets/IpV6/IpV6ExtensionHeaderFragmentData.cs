@@ -245,7 +245,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public override sealed bool IsValid
         {
-            get { return MobilityOptions.IsValid && Length % 8 == 0; }
+            get { return MobilityOptions.IsValid; }
         }
 
         private static class DataOffset
@@ -257,9 +257,15 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumDataLength = DataOffset.MessageData;
 
-        public IpV6ExtensionHeaderMobility(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions)
+        public IpV6ExtensionHeaderMobility(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions, int? messageDataMobilityOptionsOffset)
             : base(nextHeader)
         {
+            if (messageDataMobilityOptionsOffset.HasValue)
+            {
+                int mobilityOptionsExtraBytes = (messageDataMobilityOptionsOffset.Value - 2) % 8;
+                if (mobilityOptions.BytesLength % 8 != mobilityOptionsExtraBytes)
+                    mobilityOptions = mobilityOptions.Pad((8 + mobilityOptionsExtraBytes - (mobilityOptions.BytesLength % 8)) % 8);
+            }
             Checksum = checksum;
             MobilityOptions = mobilityOptions;
         }
@@ -435,7 +441,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         public IpV6ExtensionHeaderMobilityBindingRefreshRequest(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
         }
 
@@ -508,7 +514,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         public IpV6ExtensionHeaderMobilityHomeTestInit(IpV4Protocol nextHeader, ushort checksum, ulong homeInitCookie, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             HomeInitCookie = homeInitCookie;
         }
@@ -595,7 +601,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         public IpV6ExtensionHeaderMobilityCareOfTestInit(IpV4Protocol nextHeader, ushort checksum, ulong careOfInitCookie, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             CareOfInitCookie = careOfInitCookie;
         }
@@ -690,7 +696,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityHomeTest(IpV4Protocol nextHeader, ushort checksum, ushort homeNonceIndex, ulong homeInitCookie, ulong homeKeygenToken,
                                                    IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             HomeNonceIndex = homeNonceIndex;
             HomeInitCookie = homeInitCookie;
@@ -801,7 +807,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityCareOfTest(IpV4Protocol nextHeader, ushort checksum, ushort careOfNonceIndex, ulong careOfInitCookie,
                                                      ulong careOfKeygenToken, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             CareOfNonceIndex = careOfNonceIndex;
             CareOfInitCookie = careOfInitCookie;
@@ -918,7 +924,7 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderMobilityBindingUpdateBase(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge,
                                                             bool homeRegistration, bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability,
                                                             ushort lifetime, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;
             Acknowledge = acknowledge;
@@ -1431,7 +1437,7 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                      bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
                                                                      IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             Status = status;
             KeyManagementMobilityCapability = keyManagementMobilityCapability;
@@ -1638,7 +1644,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityBindingError(IpV4Protocol nextHeader, ushort checksum, IpV6BindingErrorStatus status, IpV6Address homeAddress,
                                                        IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             Status = status;
             HomeAddress = homeAddress;
@@ -1844,7 +1850,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         public IpV6ExtensionHeaderMobilityFastNeighborAdvertisement(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
         }
 
@@ -1902,8 +1908,10 @@ namespace PcapDotNet.Packets.IpV6
     public sealed class IpV6ExtensionHeaderMobilityExperimental : IpV6ExtensionHeaderMobility
     {
         public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
-            : base(nextHeader, checksum, IpV6MobilityOptions.None)
+            : base(nextHeader, checksum, IpV6MobilityOptions.None, null)
         {
+            if (messageData.Length % 8 != 4)
+                throw new ArgumentException("Message data size must be an integral product of 8 bytes plus 4 bytes", "messageData");
             MessageData = messageData;
         }
 
@@ -1982,7 +1990,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, ReadOnlyCollection<IpV6Address> homeAgentAddresses,
                                                                  IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.HomeAgentAddresses + homeAgentAddresses.Count * IpV6Address.SizeOf)
         {
             HomeAgentAddresses = homeAgentAddresses;
         }
@@ -2092,7 +2100,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityHeartbeatMessage(IpV4Protocol nextHeader, ushort checksum, bool isUnsolicitedHeartbeatResponse, bool isResponse,
                                                            uint sequenceNumber, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.MobilityOptions)
         {
             IsUnsolicitedHeartbeatResponse = isUnsolicitedHeartbeatResponse;
             IsResponse = isResponse;
@@ -2217,7 +2225,7 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderMobilityHandoverInitiateMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool assignedAddressConfiguration,
                                                                   bool buffer, IpV6HandoverInitiateMessageCode code,
                                                                   IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;
             AssignedAddressConfiguration = assignedAddressConfiguration;
@@ -2381,7 +2389,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      IpV6MobilityHandoverAcknowledgeCode code, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;
             Code = code;
@@ -2502,7 +2510,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
                                                                    bool ipV4HomeAddressBindingOnly, bool global, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;
             ProxyBinding = proxyBinding;
@@ -2890,7 +2898,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
                                                            IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;
             Lifetime = lifetime;

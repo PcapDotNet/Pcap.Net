@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int OptionDataLength = sizeof(byte);
 
         public IpV6OptionTunnelEncapsulationLimit(byte tunnelEncapsulationLimit)
-            : base(IpV6OptionType.JumboPayload)
+            : base(IpV6OptionType.TunnelEncapsulationLimit)
         {
             TunnelEncapsulationLimit = tunnelEncapsulationLimit;
         }

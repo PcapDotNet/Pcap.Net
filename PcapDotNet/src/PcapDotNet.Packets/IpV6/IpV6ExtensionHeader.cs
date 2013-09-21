@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             DataSegment data = extensionHeaderData.Subsegment(Offset.Data, length - Offset.Data);
-            numBytesRead = data.Length;
+            numBytesRead = length;
 
             switch (nextHeader)
             {
