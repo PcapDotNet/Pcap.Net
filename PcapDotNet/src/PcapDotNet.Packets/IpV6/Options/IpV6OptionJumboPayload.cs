@@ -42,6 +42,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionJumboPayload);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, JumboPayloadLength, Endianity.Big);
@@ -50,6 +55,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionJumboPayload()
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6OptionJumboPayload other)
+        {
+            return other != null &&
+                   JumboPayloadLength == other.JumboPayloadLength;
         }
     }
 }

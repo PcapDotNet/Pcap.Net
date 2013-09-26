@@ -156,6 +156,11 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6OptionCalipso(domainOfInterpretation, sensitivityLevel, checksum, compartmentBitmap);
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionCalipso);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (uint)DomainOfInterpretation, Endianity.Big);
@@ -168,6 +173,13 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionCalipso()
             : this(IpV6CalipsoDomainOfInterpretation.Null, 0, 0, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6OptionCalipso other)
+        {
+            return other != null &&
+                   DomainOfInterpretation == other.DomainOfInterpretation && CompartmentLength == other.CompartmentLength &&
+                   SensitivityLevel == other.SensitivityLevel && Checksum == other.Checksum && CompartmentBitmap.Equals(CompartmentBitmap);
         }
 
         private bool? _isChecksumCorrect;

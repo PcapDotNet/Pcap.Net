@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public override sealed int Length
         {
-            get { return base.Length + sizeof (byte) + DataLength; }
+            get { return sizeof(byte) + sizeof (byte) + DataLength; }
         }
 
         internal abstract int DataLength { get; }

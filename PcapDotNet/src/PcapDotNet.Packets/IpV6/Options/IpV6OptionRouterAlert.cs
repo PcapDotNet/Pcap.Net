@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.RouterAlert)]
-    public class IpV6OptionRouterAlert : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionRouterAlert : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = sizeof(ushort);
 
@@ -41,6 +41,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionRouterAlert);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (ushort)RouterAlertType, Endianity.Big);
@@ -49,6 +54,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionRouterAlert()
             : this(IpV6RouterAlertType.MulticastListenerDiscovery)
         {
+        }
+
+        private bool EqualsData(IpV6OptionRouterAlert other)
+        {
+            return other != null &&
+                   RouterAlertType == other.RouterAlertType;
         }
     }
 }

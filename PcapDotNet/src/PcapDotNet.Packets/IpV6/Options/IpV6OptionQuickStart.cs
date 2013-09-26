@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.QuickStart)]
-    public class IpV6OptionQuickStart : IpV6OptionComplex, IIpOptionQuickStart, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionQuickStart : IpV6OptionComplex, IIpOptionQuickStart, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = IpOptionQuickStartCommon.DataLength;
 
@@ -61,6 +61,11 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6OptionQuickStart(function, rate, ttl, nonce);
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionQuickStart);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             IpOptionQuickStartCommon.WriteData(buffer, ref offset, Function, Rate, Ttl, Nonce);
@@ -69,6 +74,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionQuickStart()
             : this(IpV4OptionQuickStartFunction.RateRequest, 0, 0, 0)
         {
+        }
+
+        private bool EqualsData(IpV6OptionQuickStart other)
+        {
+            return other != null &&
+                   Function == other.Function && Rate == other.Rate && Ttl == other.Ttl && Nonce == other.Nonce;
         }
     }
 }

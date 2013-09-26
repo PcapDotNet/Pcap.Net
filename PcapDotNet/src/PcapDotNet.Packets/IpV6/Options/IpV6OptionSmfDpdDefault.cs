@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
-    public class IpV6OptionSmfDpdDefault : IpV6OptionSmfDpdSequenceBased
+    public sealed class IpV6OptionSmfDpdDefault : IpV6OptionSmfDpdSequenceBased
     {
         public IpV6OptionSmfDpdDefault(DataSegment taggerId, DataSegment identifier)
             : base(identifier)
@@ -49,9 +49,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return IpV6TaggerIdType.Default; }
         }
 
+        internal override bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other)
+        {
+            return EqualsTaggerId(other as IpV6OptionSmfDpdDefault);
+        }
+
         internal override void WriteTaggerId(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, TaggerId);
+        }
+
+        private bool EqualsTaggerId(IpV6OptionSmfDpdDefault other)
+        {
+            return other != null &&
+                   TaggerId.Equals(other.TaggerId);
         }
     }
 }

@@ -58,9 +58,9 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Checks if the two options are exactly the same - including type and value.
         /// </summary>
-        public sealed override bool Equals(object obj)
+        public sealed override bool Equals(Option other)
         {
-            return Equals(obj as IpV4Option);
+            return Equals(other as IpV4Option);
         }
 
         /// <summary>

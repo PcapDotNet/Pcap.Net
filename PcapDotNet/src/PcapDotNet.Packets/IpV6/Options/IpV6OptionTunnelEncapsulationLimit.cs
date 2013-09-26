@@ -13,7 +13,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.TunnelEncapsulationLimit)]
-    public class IpV6OptionTunnelEncapsulationLimit : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionTunnelEncapsulationLimit : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public const int OptionDataLength = sizeof(byte);
 
@@ -41,6 +41,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionTunnelEncapsulationLimit);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, TunnelEncapsulationLimit);
@@ -49,6 +54,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionTunnelEncapsulationLimit() 
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6OptionTunnelEncapsulationLimit other)
+        {
+            return other != null &&
+                   TunnelEncapsulationLimit == other.TunnelEncapsulationLimit;
         }
     }
 }

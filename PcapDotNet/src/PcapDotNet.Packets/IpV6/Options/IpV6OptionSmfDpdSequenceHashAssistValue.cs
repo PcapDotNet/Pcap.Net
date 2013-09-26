@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------+
     /// </pre>
     /// </summary>
-    public class IpV6OptionSmfDpdSequenceHashAssistValue : IpV6OptionSmfDpd
+    public sealed class IpV6OptionSmfDpdSequenceHashAssistValue : IpV6OptionSmfDpd
     {
         private static class Offset
         {
@@ -38,9 +38,19 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment HashAssistValue { get; private set; }
 
+        public override bool HashIndicator
+        {
+            get { return true; }
+        }
+
         internal override int DataLength
         {
             get { return HashAssistValue.Length; }
+        }
+
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionSmfDpdSequenceHashAssistValue);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
@@ -49,9 +59,10 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, HashAssistValue.Subsegment(1, HashAssistValue.Length - 1));
         }
 
-        public override bool HashIndicator
+        private bool EqualsData(IpV6OptionSmfDpdSequenceHashAssistValue other)
         {
-            get { return true; }
+            return other != null &&
+                   HashAssistValue.Equals(other.HashAssistValue);
         }
     }
 }

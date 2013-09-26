@@ -42,6 +42,7 @@ namespace PcapDotNet.Packets.IpV6
         /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
         /// </summary>
         public abstract bool HashIndicator { get; }
+
         internal static IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)

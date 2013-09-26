@@ -37,9 +37,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return Data.Length; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionUnknown);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(IpV6OptionUnknown other)
+        {
+            return other != null &&
+                   Data.Equals(other.Data);
         }
     }
 
@@ -110,6 +121,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return PaddingDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return true;
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             offset += PaddingDataLength;
@@ -164,6 +180,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionBindingRefreshAdvice);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, RefreshInterval, Endianity.Big);
@@ -172,6 +193,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionBindingRefreshAdvice()
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionBindingRefreshAdvice other)
+        {
+            return other != null &&
+                   RefreshInterval == other.RefreshInterval;
         }
     }
 
@@ -222,9 +249,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV6Address);
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Address, Endianity.Big);
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV6Address other)
+        {
+            return other != null &&
+                   other.Address.Equals(other.Address);
         }
     }
 
@@ -337,6 +375,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionNonceIndices);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, HomeNonceIndex, Endianity.Big);
@@ -346,6 +389,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionNonceIndices()
             : this(0, 0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionNonceIndices other)
+        {
+            return other != null &&
+                   HomeNonceIndex == other.HomeNonceIndex && CareOfNonceIndex == other.CareOfNonceIndex;
         }
     }
 
@@ -478,6 +527,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionNetworkPrefix);
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.PrefixLength, PrefixLength);
@@ -497,6 +551,12 @@ namespace PcapDotNet.Packets.IpV6
             prefixLength = data[Offset.PrefixLength];
             networkPrefix = data.ReadIpV6Address(Offset.NetworkPrefix, Endianity.Big);
             return true;
+        }
+
+        private bool EqualsData(IpV6MobilityOptionNetworkPrefix other)
+        {
+            return other != null &&
+                   PrefixLength == other.PrefixLength && NetworkPrefix.Equals(other.NetworkPrefix);
         }
     }
 
@@ -673,11 +733,6 @@ namespace PcapDotNet.Packets.IpV6
             LinkLayerAddress = linkLayerAddress;
         }
 
-        private IpV6MobilityOptionLinkLayerAddress()
-            : this(IpV6MobilityLinkLayerAddressCode.Wildcard, DataSegment.Empty)
-        {
-        }
-
         public IpV6MobilityLinkLayerAddressCode Code { get; private set; }
 
         /// <summary>
@@ -701,11 +756,28 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + LinkLayerAddress.Length; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionLinkLayerAddress);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.OptionCode, (byte)Code);
             LinkLayerAddress.Write(buffer, offset + Offset.LinkLayerAddress);
             offset += DataLength;
+        }
+
+        private IpV6MobilityOptionLinkLayerAddress()
+            : this(IpV6MobilityLinkLayerAddressCode.Wildcard, DataSegment.Empty)
+        {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionLinkLayerAddress other)
+        {
+            return other != null &&
+                   Code == other.Code && LinkLayerAddress.Equals(other.LinkLayerAddress);
+
         }
     }
 
@@ -782,6 +854,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + Identifier.Length; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionMobileNodeIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Subtype, (byte)Subtype);
@@ -792,6 +869,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionMobileNodeIdentifier()
             : this(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionMobileNodeIdentifier other)
+        {
+            return other != null &&
+                   Subtype == other.Subtype && Identifier.Equals(other.Identifier);
         }
     }
 
@@ -922,6 +1005,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + AuthenticationData.Length; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionAuthentication);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Subtype, (byte)Subtype);
@@ -933,6 +1021,13 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionAuthentication()
             : this(IpV6AuthenticationSubtype.HomeAgent, 0, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionAuthentication other)
+        {
+            return other != null &&
+                   Subtype == other.Subtype && MobilitySecurityParameterIndex == other.MobilitySecurityParameterIndex &&
+                   AuthenticationData.Equals(other.AuthenticationData);
         }
     }
 
@@ -979,9 +1074,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override sealed bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionULong);
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Value, Endianity.Big);
+        }
+
+        private bool EqualsData(IpV6MobilityOptionULong other)
+        {
+            return other != null &&
+                   Value == other.Value;
         }
     }
 
@@ -1045,6 +1151,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return true;
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
         }
@@ -1104,11 +1215,21 @@ namespace PcapDotNet.Packets.IpV6
             get { return Value.Length; }
         }
 
+        internal override sealed bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionSingleDataSegmentField);
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
             Value.Write(buffer, ref offset);
         }
 
+        private bool EqualsData(IpV6MobilityOptionSingleDataSegmentField other)
+        {
+            return other != null &&
+                   Value.Equals(other.Value);
+        }
     }
 
     /// <summary>
@@ -1421,8 +1542,9 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + MobileNodeIdentity.Length; }
         }
 
-        private IpV6MobilityOptionDnsUpdate() : this(IpV6DnsUpdateStatus.DnsUpdatePerformed, false, DataSegment.Empty)
+        internal override bool EqualsData(IpV6MobilityOption other)
         {
+            return EqualsData(other as IpV6MobilityOptionDnsUpdate);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
@@ -1434,6 +1556,17 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + Offset.Remove, flags);
             buffer.Write(offset + Offset.MobileNodeIdentity, MobileNodeIdentity);
             offset += DataLength;
+        }
+
+        private IpV6MobilityOptionDnsUpdate()
+            : this(IpV6DnsUpdateStatus.DnsUpdatePerformed, false, DataSegment.Empty)
+        {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionDnsUpdate other)
+        {
+            return other != null &&
+                   Status == other.Status && Remove == other.Remove && MobileNodeIdentity.Equals(other.MobileNodeIdentity);
         }
     }
 
@@ -1552,6 +1685,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + Data.Length; }
         }
 
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionVendorSpecific);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.VendorId, VendorId, Endianity.Big);
@@ -1563,6 +1701,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionVendorSpecific()
             : this(0, 0, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionVendorSpecific other)
+        {
+            return other != null &&
+                   VendorId == other.VendorId && SubType == other.SubType && Data.Equals(other.Data);
         }
     }
 
@@ -1707,6 +1851,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + Authenticator.Length; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionBindingAuthorizationDataForFmIpV6);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.SecurityParameterIndex, SecurityParameterIndex, Endianity.Big);
@@ -1717,6 +1866,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionBindingAuthorizationDataForFmIpV6()
             : this(0, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionBindingAuthorizationDataForFmIpV6 other)
+        {
+            return other != null &&
+                   SecurityParameterIndex == other.SecurityParameterIndex && Authenticator.Equals(other.Authenticator);
         }
     }
 
@@ -1766,10 +1921,21 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionReservedByteValueByte);
+        }
+
         internal override sealed void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Value, Value);
             offset += DataLength;
+        }
+
+        private bool EqualsData(IpV6MobilityOptionReservedByteValueByte other)
+        {
+            return other != null &&
+                   Value == other.Value;
         }
     }
 
@@ -1946,7 +2112,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNodeLinkLayerIdentifier)]
-    public class IpV6MobilityOptionMobileNodeLinkLayerIdentifier : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionMobileNodeLinkLayerIdentifier : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -1980,6 +2146,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + LinkLayerIdentifier.Length; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionMobileNodeLinkLayerIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.LinkLayerIdentifier, LinkLayerIdentifier);
@@ -1989,6 +2160,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionMobileNodeLinkLayerIdentifier()
             : this(DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionMobileNodeLinkLayerIdentifier other)
+        {
+            return other != null &&
+                   LinkLayerIdentifier.Equals(other.LinkLayerIdentifier);
         }
     }
 
@@ -2104,7 +2281,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.RestartCounter)]
-    public class IpV6MobilityOptionRestartCounter : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionRestartCounter : IpV6MobilityOptionComplex
     {
         public const int OptionDataLength = sizeof(uint);
 
@@ -2133,6 +2310,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionRestartCounter);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, RestartCounter, Endianity.Big);
@@ -2141,6 +2323,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionRestartCounter()
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionRestartCounter other)
+        {
+            return other != null &&
+                   RestartCounter == other.RestartCounter;
         }
     }
 
@@ -2160,7 +2348,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4AddressAcknowledgement)]
-    public class IpV6MobilityOptionIpV4AddressAcknowledgement : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4AddressAcknowledgement : IpV6MobilityOptionComplex
     {
         public const byte MaxPrefixLength = 0x3F;
 
@@ -2233,6 +2421,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4AddressAcknowledgement);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Status, (byte)Status);
@@ -2244,6 +2437,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV4AddressAcknowledgement()
             : this(IpV6AddressAcknowledgementStatus.Success, 0, IpV4Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4AddressAcknowledgement other)
+        {
+            return other != null &&
+                   Status == other.Status && PrefixLength == other.PrefixLength && HomeAddress.Equals(other.HomeAddress);
         }
 }
 
@@ -2304,7 +2503,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddress)]
-    public class IpV6MobilityOptionIpV4HomeAddress : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4HomeAddress : IpV6MobilityOptionComplex
     {
         public const byte MaxPrefixLength = 0x3F;
 
@@ -2381,6 +2580,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4HomeAddress);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             byte prefixLengthAndRequestPrefix = (byte)(PrefixLength << Shift.PrefixLength);
@@ -2395,6 +2599,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV4HomeAddress()
             : this(0, false, IpV4Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4HomeAddress other)
+        {
+            return other != null &&
+                   PrefixLength == other.PrefixLength && RequestPrefix == other.RequestPrefix && HomeAddress.Equals(other.HomeAddress);
         }
     }
 
@@ -2414,7 +2624,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.NatDetection)]
-    public class IpV6MobilityOptionNatDetection : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionNatDetection : IpV6MobilityOptionComplex
     {
         public const uint RecommendedRefreshTime = 110;
 
@@ -2469,6 +2679,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionNatDetection);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             byte udpEncapsulationRequired = 0;
@@ -2483,6 +2698,79 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionNatDetection()
             : this(false, 0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionNatDetection other)
+        {
+            return other != null &&
+                   UdpEncapsulationRequired == other.UdpEncapsulationRequired && RefreshTime == other.RefreshTime;
+        }
+    }
+
+    /// <summary>
+    /// RFC 5555, 5844.
+    /// <pre>
+    /// +-----+-------------+--------------+
+    /// | Bit | 0-7         | 8-15         |
+    /// +-----+-------------+--------------+
+    /// | 0   | Option Type | Opt Data Len |
+    /// +-----+-------------+--------------+
+    /// | 16  | Reserved                   |
+    /// +-----+----------------------------+
+    /// | 32  | IPv4 address               |
+    /// |     |                            |
+    /// +-----+----------------------------+
+    /// </pre>
+    /// </summary>
+    public abstract class IpV6MobilityOptionIpV4Address : IpV6MobilityOptionComplex
+    {
+        private static class Offset
+        {
+            public const int Address = sizeof(ushort);
+        }
+
+        public const int OptionDataLength = Offset.Address + IpV4Address.SizeOf;
+
+        internal IpV6MobilityOptionIpV4Address(IpV6MobilityOptionType type, IpV4Address address) 
+            : base(type)
+        {
+            Address = address;
+        }
+
+        internal IpV4Address Address { get; private set; }
+
+        internal static bool Read(DataSegment data, out IpV4Address address)
+        {
+            if (data.Length != OptionDataLength)
+            {
+                address = IpV4Address.Zero;
+                return false;
+            }
+
+            address = data.ReadIpV4Address(Offset.Address, Endianity.Big);
+            return true;
+        }
+
+        internal override sealed int DataLength
+        {
+            get { return OptionDataLength; }
+        }
+
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4Address);
+        }
+
+        internal override sealed void WriteData(byte[] buffer, ref int offset)
+        {
+            buffer.Write(offset + Offset.Address, Address, Endianity.Big);
+            offset += OptionDataLength;
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4Address other)
+        {
+            return other != null &&
+                   Address.Equals(other.Address);
         }
     }
 
@@ -2502,45 +2790,26 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4CareOfAddress)]
-    public class IpV6MobilityOptionIpV4CareOfAddress : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4CareOfAddress : IpV6MobilityOptionIpV4Address
     {
-        private static class Offset
-        {
-            public const int CareOfAddress = sizeof(ushort);
-        }
-
-        public const int OptionDataLength = Offset.CareOfAddress + IpV4Address.SizeOf;
-
         public IpV6MobilityOptionIpV4CareOfAddress(IpV4Address careOfAddress)
-            : base(IpV6MobilityOptionType.IpV4CareOfAddress)
+            : base(IpV6MobilityOptionType.IpV4CareOfAddress, careOfAddress)
         {
-            CareOfAddress = careOfAddress;
         }
 
         /// <summary>
         /// Contains the mobile node's IPv4 care-of address.
         /// The IPv4 care-of address is used when the mobile node is located in an IPv4-only network.
         /// </summary>
-        public IpV4Address CareOfAddress { get; private set; }
+        public IpV4Address CareOfAddress { get { return Address; } }
 
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
-            if (data.Length != OptionDataLength)
+            IpV4Address careOfAddress;
+            if (!Read(data, out careOfAddress))
                 return null;
 
-            IpV4Address careOfAddress = data.ReadIpV4Address(Offset.CareOfAddress, Endianity.Big);
             return new IpV6MobilityOptionIpV4CareOfAddress(careOfAddress);
-        }
-
-        internal override int DataLength
-        {
-            get { return OptionDataLength; }
-        }
-
-        internal override void WriteData(byte[] buffer, ref int offset)
-        {
-            buffer.Write(offset + Offset.CareOfAddress, CareOfAddress, Endianity.Big);
-            offset += OptionDataLength;
         }
 
         private IpV6MobilityOptionIpV4CareOfAddress()
@@ -2565,7 +2834,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.GreKey)]
-    public class IpV6MobilityOptionGreKey : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionGreKey : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -2601,6 +2870,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionGreKey);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.GreKeyIdentifier, GreKeyIdentifier, Endianity.Big);
@@ -2611,7 +2885,13 @@ namespace PcapDotNet.Packets.IpV6
             : this(0)
         {
         }
-}
+
+        private bool EqualsData(IpV6MobilityOptionGreKey other)
+        {
+            return other != null &&
+                   GreKeyIdentifier == other.GreKeyIdentifier;
+        }
+    }
 
     /// <summary>
     /// RFC 5845.
@@ -2719,6 +2999,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV6AddressPrefix);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Code, (byte)Code);
@@ -2730,6 +3015,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV6AddressPrefix()
             : this(IpV6MobilityIpV6AddressPrefixCode.NewCareOfAddress, 0, IpV6Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV6AddressPrefix other)
+        {
+            return other != null &&
+                   Code == other.Code && PrefixLength == other.PrefixLength && AddressOrPrefix.Equals(other.AddressOrPrefix);
         }
     }
 
@@ -2880,6 +3171,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + (IpV4CareOfAddress.HasValue ? IpV4Address.SizeOf : (IpV6CareOfAddress.HasValue ? IpV6Address.SizeOf : 0)); }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionBindingIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.BindingId, BindingId, Endianity.Big);
@@ -2921,6 +3217,13 @@ namespace PcapDotNet.Packets.IpV6
             IpV4CareOfAddress = ipV4CareOfAddress;
             IpV6CareOfAddress = ipV6CareOfAddress;
         }
+
+        private bool EqualsData(IpV6MobilityOptionBindingIdentifier other)
+        {
+            return other != null &&
+                   BindingId == other.BindingId && Status == other.Status && SimultaneousHomeAndForeignBinding == other.SimultaneousHomeAndForeignBinding &&
+                   Priority == other.Priority && IpV4CareOfAddress.Equals(other.IpV4CareOfAddress) && IpV6CareOfAddress.Equals(other.IpV6CareOfAddress);
+        }
     }
 
     /// <summary>
@@ -2939,7 +3242,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressRequest)]
-    public class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex
     {
         public const byte MaxPrefixLength = 0x3F;
 
@@ -2997,6 +3300,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4HomeAddressRequest);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.PrefixLength, (byte)(PrefixLength << Shift.PrefixLength));
@@ -3007,6 +3315,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV4HomeAddressRequest()
             : this(0, IpV4Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4HomeAddressRequest other)
+        {
+            return other != null &&
+                   PrefixLength == other.PrefixLength && HomeAddress.Equals(other.HomeAddress);
         }
     }
 
@@ -3062,7 +3376,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressReply)]
-    public class IpV6MobilityOptionIpV4HomeAddressReply : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4HomeAddressReply : IpV6MobilityOptionComplex
     {
         public const byte MaxPrefixLength = 0x3F;
 
@@ -3129,6 +3443,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4HomeAddressReply);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Status, (byte)Status);
@@ -3140,6 +3459,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV4HomeAddressReply()
             : this(IpV6IpV4HomeAddressReplyStatus.Success, 0, IpV4Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4HomeAddressReply other)
+        {
+            return other != null &&
+                   Status == other.Status && PrefixLength == other.PrefixLength && HomeAddress.Equals(other.HomeAddress);
         }
     }
 
@@ -3159,44 +3484,25 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4DefaultRouterAddress)]
-    public class IpV6MobilityOptionIpV4DefaultRouterAddress : IpV6MobilityOptionComplex
+    public class IpV6MobilityOptionIpV4DefaultRouterAddress : IpV6MobilityOptionIpV4Address
     {
-        private static class Offset
-        {
-            public const int DefaultRouterAddress = sizeof(ushort);
-        }
-
-        public const int OptionDataLength = Offset.DefaultRouterAddress + IpV4Address.SizeOf;
-
         public IpV6MobilityOptionIpV4DefaultRouterAddress(IpV4Address defaultRouterAddress)
-            : base(IpV6MobilityOptionType.IpV4DefaultRouterAddress)
+            : base(IpV6MobilityOptionType.IpV4DefaultRouterAddress, defaultRouterAddress)
         {
-            DefaultRouterAddress = defaultRouterAddress;
         }
 
         /// <summary>
         /// The mobile node's default router address.
         /// </summary>
-        public IpV4Address DefaultRouterAddress { get; private set; }
+        public IpV4Address DefaultRouterAddress { get { return Address; } }
 
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
-            if (data.Length != OptionDataLength)
+            IpV4Address defaultRouterAddress;
+            if (!Read(data, out defaultRouterAddress))
                 return null;
 
-            IpV4Address defaultRouterAddress = data.ReadIpV4Address(Offset.DefaultRouterAddress, Endianity.Big);
             return new IpV6MobilityOptionIpV4DefaultRouterAddress(defaultRouterAddress);
-        }
-
-        internal override int DataLength
-        {
-            get { return OptionDataLength; }
-        }
-
-        internal override void WriteData(byte[] buffer, ref int offset)
-        {
-            buffer.Write(offset + Offset.DefaultRouterAddress, DefaultRouterAddress, Endianity.Big);
-            offset += OptionDataLength;
         }
 
         private IpV6MobilityOptionIpV4DefaultRouterAddress()
@@ -3218,7 +3524,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4DhcpSupportMode)]
-    public class IpV6MobilityOptionIpV4DhcpSupportMode : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4DhcpSupportMode : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -3259,6 +3565,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionIpV4DhcpSupportMode);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             if (IsServer)
@@ -3269,6 +3580,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionIpV4DhcpSupportMode() 
             : this(false)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionIpV4DhcpSupportMode other)
+        {
+            return other != null &&
+                   IsServer == other.IsServer;
         }
     }
 
@@ -3345,7 +3662,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ContextRequest)]
-    public class IpV6MobilityOptionContextRequest : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionContextRequest : IpV6MobilityOptionComplex
     {
         public IpV6MobilityOptionContextRequest(params IpV6MobilityOptionContextRequestEntry[] requests)
             : this(requests.AsReadOnly())
@@ -3398,6 +3715,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return _dataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionContextRequest);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (var request in Requests)
@@ -3407,6 +3729,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionContextRequest()
             : this(new IpV6MobilityOptionContextRequestEntry[0])
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionContextRequest other)
+        {
+            return other != null &&
+                   Requests.SequenceEqual(other.Requests);
         }
 
         private readonly int _dataLength;
@@ -3445,7 +3773,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.LocalMobilityAnchorAddress)]
-    public class IpV6MobilityOptionLocalMobilityAnchorAddress : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionLocalMobilityAnchorAddress : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -3529,6 +3857,11 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionLocalMobilityAnchorAddress);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Code, (byte)Code);
@@ -3552,6 +3885,13 @@ namespace PcapDotNet.Packets.IpV6
             : this(IpV6Address.Zero)
         {
         }
+
+        private bool EqualsData(IpV6MobilityOptionLocalMobilityAnchorAddress other)
+        {
+            return other != null &&
+                   Code == other.Code && LocalMobilityAnchorAddressIpV4.Equals(other.LocalMobilityAnchorAddressIpV4) &&
+                   LocalMobilityAnchorAddressIpV6.Equals(other.LocalMobilityAnchorAddressIpV6);
+        }
     }
 
     /// <summary>
@@ -3572,7 +3912,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNodeLinkLocalAddressInterfaceIdentifier)]
-    public class IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -3606,6 +3946,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.InterfaceIdentifier, InterfaceIdentifier, Endianity.Big);
@@ -3615,6 +3960,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier()
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier other)
+        {
+            return other != null &&
+                   InterfaceIdentifier == other.InterfaceIdentifier;
         }
     }
 
@@ -3631,7 +3982,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.TransientBinding)]
-    public class IpV6MobilityOptionTransientBinding : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionTransientBinding : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -3680,6 +4031,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionTransientBinding);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             if (LatePathSwitch)
@@ -3691,6 +4047,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionTransientBinding()
             : this(false, 0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionTransientBinding other)
+        {
+            return other != null &&
+                   LatePathSwitch == other.LatePathSwitch && Lifetime == other.Lifetime;
         }
     }
 
@@ -3708,7 +4070,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.FlowSummary)]
-    public class IpV6MobilityOptionFlowSummary : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionFlowSummary : IpV6MobilityOptionComplex
     {
         public const int OptionDataMinimumLength = sizeof(ushort);
 
@@ -3757,6 +4119,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return FlowIdentifiers.Count * sizeof(ushort); }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionFlowSummary);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (ushort flowIdentifier in FlowIdentifiers)
@@ -3766,6 +4133,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionFlowSummary()
             : this(new ushort[1])
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionFlowSummary other)
+        {
+            return other != null &&
+                   FlowIdentifiers.SequenceEqual(other.FlowIdentifiers);
         }
     }
 
@@ -3813,12 +4186,17 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 6089.
     /// </summary>
-    public abstract class IpV6FlowIdentificationSubOption : Option
+    public abstract class IpV6FlowIdentificationSubOption : Option, IEquatable<IpV6FlowIdentificationSubOption>
     {
         /// <summary>
         /// The type of the option.
         /// </summary>
         public IpV6FlowIdentificationSubOptionType OptionType { get; private set; }
+
+        public override int Length
+        {
+            get { return sizeof(byte); }
+        }
 
         internal abstract IpV6FlowIdentificationSubOption CreateInstance(DataSegment data);
 
@@ -3827,14 +4205,22 @@ namespace PcapDotNet.Packets.IpV6
             OptionType = type;
         }
 
+        public override sealed bool Equals(Option other)
+        {
+            return Equals(other as IpV6FlowIdentificationSubOption);
+        }
+
+        public bool Equals(IpV6FlowIdentificationSubOption other)
+        {
+            return other != null &&
+                   OptionType == other.OptionType && Length == other.Length && EqualsData(other);
+        }
+
+        internal abstract bool EqualsData(IpV6FlowIdentificationSubOption other);
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             buffer[offset++] = (byte)OptionType;
-        }
-
-        public override int Length
-        {
-            get { return sizeof(byte); }
         }
     }
 
@@ -3858,6 +4244,11 @@ namespace PcapDotNet.Packets.IpV6
         public override sealed int Length
         {
             get { return base.Length; }
+        }
+
+        internal override sealed bool EqualsData(IpV6FlowIdentificationSubOption other)
+        {
+            return true;
         }
 
         internal override sealed void Write(byte[] buffer, ref int offset)
@@ -3938,7 +4329,7 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 6089.
     /// </summary>
-    public class IpV6FlowIdentificationSubOptions : V6Options<IpV6FlowIdentificationSubOption>
+    public sealed class IpV6FlowIdentificationSubOptions : V6Options<IpV6FlowIdentificationSubOption>
     {
         /// <summary>
         /// Creates options from a list of options.
@@ -4063,7 +4454,7 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6FlowIdentificationSubOptionType OptionType { get; private set; }
     }
 
-    public class IpV6FlowIdentificationSubOptionPad1 : IpV6FlowIdentificationSubOptionSimple
+    public sealed class IpV6FlowIdentificationSubOptionPad1 : IpV6FlowIdentificationSubOptionSimple
     {
         public const int OptionLength = sizeof(byte);
 
@@ -4089,7 +4480,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6FlowIdentificationSubOptionTypeRegistration(IpV6FlowIdentificationSubOptionType.PadN)]
-    public class IpV6FlowIdentificationSubOptionPadN : IpV6FlowIdentificationSubOptionComplex
+    public sealed class IpV6FlowIdentificationSubOptionPadN : IpV6FlowIdentificationSubOptionComplex
     {
         public IpV6FlowIdentificationSubOptionPadN(int paddingDataLength)
             : base(IpV6FlowIdentificationSubOptionType.PadN)
@@ -4107,6 +4498,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override int DataLength
         {
             get { return PaddingDataLength; }
+        }
+
+        internal override bool EqualsData(IpV6FlowIdentificationSubOption other)
+        {
+            return true;
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
@@ -4133,7 +4529,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6FlowIdentificationSubOptionUnknown : IpV6FlowIdentificationSubOptionComplex
+    public sealed class IpV6FlowIdentificationSubOptionUnknown : IpV6FlowIdentificationSubOptionComplex
     {
         public IpV6FlowIdentificationSubOptionUnknown(IpV6FlowIdentificationSubOptionType type, DataSegment data)
             : base(type)
@@ -4153,9 +4549,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return Data.Length; }
         }
 
+        internal override bool EqualsData(IpV6FlowIdentificationSubOption other)
+        {
+            return EqualsData(other as IpV6FlowIdentificationSubOptionUnknown);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(IpV6FlowIdentificationSubOptionUnknown other)
+        {
+            return other != null &&
+                   Data.Equals(other.Data);
         }
     }
     
@@ -4173,7 +4580,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6FlowIdentificationSubOptionTypeRegistration(IpV6FlowIdentificationSubOptionType.BindingReference)]
-    public class IpV6FlowIdentificationSubOptionBindingReference : IpV6FlowIdentificationSubOptionComplex
+    public sealed class IpV6FlowIdentificationSubOptionBindingReference : IpV6FlowIdentificationSubOptionComplex
     {
         public IpV6FlowIdentificationSubOptionBindingReference(IList<ushort> bindingIds)
             : this(bindingIds.AsReadOnly())
@@ -4218,6 +4625,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return BindingIds.Count * sizeof(ushort); }
         }
 
+        internal override bool EqualsData(IpV6FlowIdentificationSubOption other)
+        {
+            return EqualsData(other as IpV6FlowIdentificationSubOptionBindingReference);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (ushort bindingId in BindingIds)
@@ -4227,6 +4639,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6FlowIdentificationSubOptionBindingReference()
             : this(new ushort[0])
         {
+        }
+
+        private bool EqualsData(IpV6FlowIdentificationSubOptionBindingReference other)
+        {
+            return other != null &&
+                   BindingIds.SequenceEqual(other.BindingIds);
         }
     }
 
@@ -4262,7 +4680,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6FlowIdentificationSubOptionTypeRegistration(IpV6FlowIdentificationSubOptionType.TrafficSelector)]
-    public class IpV6FlowIdentificationSubOptionTrafficSelector : IpV6FlowIdentificationSubOptionComplex
+    public sealed class IpV6FlowIdentificationSubOptionTrafficSelector : IpV6FlowIdentificationSubOptionComplex
     {
         private static class Offset
         {
@@ -4304,6 +4722,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + TrafficSelector.Length; }
         }
 
+        internal override bool EqualsData(IpV6FlowIdentificationSubOption other)
+        {
+            return EqualsData(other as IpV6FlowIdentificationSubOptionTrafficSelector);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.TrafficSelectorFormat, (byte)TrafficSelectorFormat);
@@ -4314,6 +4737,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6FlowIdentificationSubOptionTrafficSelector()
             : this(IpV6FlowIdentificationTrafficSelectorFormat.IpV4Binary, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6FlowIdentificationSubOptionTrafficSelector other)
+        {
+            return other != null &&
+                   TrafficSelectorFormat == other.TrafficSelectorFormat && TrafficSelector.Equals(other.TrafficSelector);
         }
     }
 
@@ -4337,7 +4766,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.FlowIdentification)]
-    public class IpV6MobilityOptionFlowIdentification : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionFlowIdentification : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -4409,6 +4838,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + SubOptions.BytesLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionFlowIdentification);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.FlowIdentifier, FlowIdentifier, Endianity.Big);
@@ -4418,11 +4852,17 @@ namespace PcapDotNet.Packets.IpV6
             offset += DataLength;
         }
 
-        private IpV6MobilityOptionFlowIdentification() 
+        private IpV6MobilityOptionFlowIdentification()
             : this(0, 0, IpV6FlowIdentificationStatus.FlowBindingSuccessful, IpV6FlowIdentificationSubOptions.None)
         {
         }
-}
+
+        private bool EqualsData(IpV6MobilityOptionFlowIdentification other)
+        {
+            return other != null &&
+                   FlowIdentifier == other.FlowIdentifier && Priority == other.Priority && Status == other.Status && SubOptions.Equals(other.SubOptions);
+        }
+    }
 
     /// <summary>
     /// RFC 6463.
@@ -4437,7 +4877,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.RedirectCapability)]
-    public class IpV6MobilityOptionRedirectCapability : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionRedirectCapability : IpV6MobilityOptionComplex
     {
         public const int OptionDataLength = sizeof(ushort);
 
@@ -4457,6 +4897,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override int DataLength
         {
             get { return OptionDataLength; }
+        }
+
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return true;
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
@@ -4482,7 +4927,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.Redirect)]
-    public class IpV6MobilityOptionRedirect : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionRedirect : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -4557,6 +5002,11 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionRedirect);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             if (LocalMobilityAddressIpV4.HasValue)
@@ -4582,6 +5032,12 @@ namespace PcapDotNet.Packets.IpV6
             : this(IpV6Address.Zero)
         {
         }
+
+        private bool EqualsData(IpV6MobilityOptionRedirect other)
+        {
+            return other != null &&
+                   LocalMobilityAddressIpV4.Equals(other.LocalMobilityAddressIpV4) && LocalMobilityAddressIpV6.Equals(other.LocalMobilityAddressIpV6);
+        }
     }
 
     /// <summary>
@@ -4603,7 +5059,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.LoadInformation)]
-    public class IpV6MobilityOptionLoadInformation : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionLoadInformation : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -4673,6 +5129,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionLoadInformation);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Priority, Priority, Endianity.Big);
@@ -4686,6 +5147,13 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionLoadInformation()
             : this(0, 0, 0, 0, 0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionLoadInformation other)
+        {
+            return other != null &&
+                   Priority == other.Priority && SessionsInUse == other.SessionsInUse && MaximumSessions == other.MaximumSessions &&
+                   UsedCapacity == other.UsedCapacity && MaximumCapacity == other.MaximumCapacity;
         }
     }
 
@@ -4703,7 +5171,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.AlternateIpV4CareOfAddress)]
-    public class IpV6MobilityOptionAlternateIpV4CareOfAddress : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionAlternateIpV4CareOfAddress : IpV6MobilityOptionComplex
     {
         public const int OptionDataLength = IpV4Address.SizeOf;
 
@@ -4732,6 +5200,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionAlternateIpV4CareOfAddress);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, AlternateCareOfAddress, Endianity.Big);
@@ -4740,6 +5213,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionAlternateIpV4CareOfAddress()
             : this(IpV4Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionAlternateIpV4CareOfAddress other)
+        {
+            return other != null &&
+                   AlternateCareOfAddress.Equals(other.AlternateCareOfAddress);
         }
     }
 
@@ -4770,7 +5249,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNodeGroupIdentifier)]
-    public class IpV6MobilityOptionMobileNodeGroupIdentifier : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionMobileNodeGroupIdentifier : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -4816,6 +5295,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionMobileNodeGroupIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.SubType, (byte)SubType);
@@ -4826,6 +5310,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionMobileNodeGroupIdentifier()
             : this(IpV6MobileNodeGroupIdentifierSubType.BulkBindingUpdateGroup, 0)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionMobileNodeGroupIdentifier other)
+        {
+            return other != null &&
+                   SubType == other.SubType && MobileNodeGroupIdentifier == other.MobileNodeGroupIdentifier;
         }
     }
 
@@ -4851,7 +5341,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileAccessGatewayIpV6Address)]
-    public class IpV6MobilityOptionMobileAccessGatewayIpV6Address : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionMobileAccessGatewayIpV6Address : IpV6MobilityOptionComplex
     {
         public const byte AddressLength = 128;
 
@@ -4890,6 +5380,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionMobileAccessGatewayIpV6Address);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.AddressLength, AddressLength);
@@ -4900,6 +5395,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionMobileAccessGatewayIpV6Address()
             : this(IpV6Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionMobileAccessGatewayIpV6Address other)
+        {
+            return other != null &&
+                   Address.Equals(other.Address);
         }
     }
 
@@ -4917,7 +5418,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.AccessNetworkIdentifier)]
-    public class IpV6MobilityOptionAccessNetworkIdentifier : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionAccessNetworkIdentifier : IpV6MobilityOptionComplex
     {
         public IpV6MobilityOptionAccessNetworkIdentifier(IpV6AccessNetworkIdentifierSubOptions subOptions)
             : base(IpV6MobilityOptionType.AccessNetworkIdentifier)
@@ -4940,6 +5441,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return SubOptions.BytesLength; }
         }
 
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return EqualsData(other as IpV6MobilityOptionAccessNetworkIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             SubOptions.Write(buffer, offset);
@@ -4949,6 +5455,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6MobilityOptionAccessNetworkIdentifier()
             : this(IpV6AccessNetworkIdentifierSubOptions.None)
         {
+        }
+
+        private bool EqualsData(IpV6MobilityOptionAccessNetworkIdentifier other)
+        {
+            return other != null &&
+                   SubOptions.Equals(other.SubOptions);
         }
     }
 
@@ -5101,7 +5613,7 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 6757.
     /// </summary>
-    public abstract class IpV6AccessNetworkIdentifierSubOption : Option
+    public abstract class IpV6AccessNetworkIdentifierSubOption : Option, IEquatable<IpV6AccessNetworkIdentifierSubOption>
     {
         /// <summary>
         /// The type of the option.
@@ -5120,7 +5632,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return sizeof(byte) + sizeof(byte) + DataLength; }
         }
 
+        public bool Equals(IpV6AccessNetworkIdentifierSubOption other)
+        {
+            return other != null &&
+                   OptionType == other.OptionType && Length == other.Length && EqualsData(other);
+        }
+
+        public override sealed bool Equals(Option other)
+        {
+            return Equals(other as IpV6AccessNetworkIdentifierSubOption);
+        }
+
         internal abstract int DataLength { get; }
+
+        internal abstract bool EqualsData(IpV6AccessNetworkIdentifierSubOption other);
 
         internal override void Write(byte[] buffer, ref int offset)
         {
@@ -5157,7 +5682,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6AccessNetworkIdentifierSubOptionTypeRegistration(IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier)]
-    public class IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier : IpV6AccessNetworkIdentifierSubOption
+    public sealed class IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier : IpV6AccessNetworkIdentifierSubOption
     {
         private static class Offset
         {
@@ -5239,6 +5764,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + NetworkName.Length + AccessPointName.Length; }
         }
 
+        internal override bool EqualsData(IpV6AccessNetworkIdentifierSubOption other)
+        {
+            return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             if (IsNetworkNameUtf8)
@@ -5257,6 +5787,12 @@ namespace PcapDotNet.Packets.IpV6
             : this(false, DataSegment.Empty, DataSegment.Empty)
         {
         }
+
+        private bool EqualsData(IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier other)
+        {
+            return other != null &&
+                   IsNetworkNameUtf8 == other.IsNetworkNameUtf8 && NetworkName.Equals(other.NetworkName) && AccessPointName.Equals(other.AccessPointName);
+        }
     }
 
     /// <summary>
@@ -5272,7 +5808,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------+
     /// </pre>
     /// </summary>
-    public class IpV6AccessNetworkIdentifierSubOptionUnknown : IpV6AccessNetworkIdentifierSubOption
+    public sealed class IpV6AccessNetworkIdentifierSubOptionUnknown : IpV6AccessNetworkIdentifierSubOption
     {
         public IpV6AccessNetworkIdentifierSubOptionUnknown(IpV6AccessNetworkIdentifierSubOptionType type, DataSegment data)
             : base(type)
@@ -5292,9 +5828,20 @@ namespace PcapDotNet.Packets.IpV6
             get { return Data.Length; }
         }
 
+        internal override bool EqualsData(IpV6AccessNetworkIdentifierSubOption other)
+        {
+            return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionUnknown);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(IpV6AccessNetworkIdentifierSubOptionUnknown other)
+        {
+            return other != null &&
+                   Data.Equals(other.Data);
         }
     }
 
@@ -5319,7 +5866,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6AccessNetworkIdentifierSubOptionTypeRegistration(IpV6AccessNetworkIdentifierSubOptionType.GeoLocation)]
-    public class IpV6AccessNetworkIdentifierSubOptionGeoLocation : IpV6AccessNetworkIdentifierSubOption
+    public sealed class IpV6AccessNetworkIdentifierSubOptionGeoLocation : IpV6AccessNetworkIdentifierSubOption
     {
         private static class Offset
         {
@@ -5382,6 +5929,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6AccessNetworkIdentifierSubOption other)
+        {
+            return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionGeoLocation);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.LatitudeDegrees, LatitudeDegrees, Endianity.Big);
@@ -5401,6 +5953,12 @@ namespace PcapDotNet.Packets.IpV6
             int fractionPart = twosComplementFixedPointWith9WholeBits & 0x007FFF;
             return (isPositive ? 1 : -1) *
                    (integerPart + (((double)fractionPart) / (1 << 15)));
+        }
+
+        private bool EqualsData(IpV6AccessNetworkIdentifierSubOptionGeoLocation other)
+        {
+            return other != null &&
+                   LatitudeDegrees == other.LatitudeDegrees && LongitudeDegrees == other.LongitudeDegrees;
         }
     }
 
@@ -5445,7 +6003,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6AccessNetworkIdentifierSubOptionTypeRegistration(IpV6AccessNetworkIdentifierSubOptionType.OperatorIdentifier)]
-    public class IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier : IpV6AccessNetworkIdentifierSubOption
+    public sealed class IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier : IpV6AccessNetworkIdentifierSubOption
     {
         private static class Offset
         {
@@ -5489,6 +6047,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + Identifier.Length; }
         }
 
+        internal override bool EqualsData(IpV6AccessNetworkIdentifierSubOption other)
+        {
+            return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.IdentifierType, (byte)IdentifierType);
@@ -5499,6 +6062,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier()
             : this(IpV6AccessNetworkIdentifierOperatorIdentifierType.PrivateEnterpriseNumber, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier other)
+        {
+            return other != null &&
+                   IdentifierType == other.IdentifierType && Identifier.Equals(other.Identifier);
         }
     }
 }

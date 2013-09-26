@@ -58,9 +58,9 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// Checks if the two options are exactly the same - including type and value.
         /// </summary>
-        public sealed override bool Equals(object obj)
+        public sealed override bool  Equals(Option other)
         {
-            return Equals(obj as TcpOption);
+            return Equals(other as TcpOption);
         }
 
         /// <summary>
