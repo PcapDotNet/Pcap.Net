@@ -120,13 +120,13 @@ namespace PcapDotNet.Packets.IpV6
                 case IpV6TaggerIdType.IpV4:
                     if (taggerIdLength != IpV4Address.SizeOf)
                         return null;
-                    IpV4Address ipV4Address = data.ReadIpV4Address(0, Endianity.Big);
+                    IpV4Address ipV4Address = data.ReadIpV4Address(Offset.TaggerId, Endianity.Big);
                     return new IpV6OptionSmfDpdIpV4(ipV4Address, identifier);
 
                 case IpV6TaggerIdType.IpV6:
                     if (taggerIdLength != IpV6Address.SizeOf)
                         return null;
-                    IpV6Address ipV6Address = data.ReadIpV6Address(0, Endianity.Big);
+                    IpV6Address ipV6Address = data.ReadIpV6Address(Offset.TaggerId, Endianity.Big);
                     return new IpV6OptionSmfDpdIpV6(ipV6Address, identifier);
 
                 default:
