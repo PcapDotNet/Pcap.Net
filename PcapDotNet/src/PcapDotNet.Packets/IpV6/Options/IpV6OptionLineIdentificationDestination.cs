@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.LineIdentification)]
-    public class IpV6OptionLineIdentificationDestination : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionLineIdentificationDestination : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -68,6 +68,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + LineIdentification.Length; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionLineIdentificationDestination);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (byte)LineIdentification.Length);
@@ -77,6 +82,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionLineIdentificationDestination()
             : this(DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6OptionLineIdentificationDestination other)
+        {
+            return other != null &&
+                   LineIdentification.Equals(other.LineIdentification);
         }
     }
 }

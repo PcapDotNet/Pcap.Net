@@ -20,7 +20,12 @@ namespace PcapDotNet.Packets.IpV6
 
         public override sealed int Length
         {
-            get { return base.Length; }
+            get { return sizeof(byte); }
+        }
+
+        internal sealed override bool EqualsData(IpV6Option other)
+        {
+            return true;
         }
 
         internal override sealed void Write(byte[] buffer, ref int offset)

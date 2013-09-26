@@ -120,7 +120,7 @@ namespace PcapDotNet.Packets.IpV6
         }
     }
 
-    public abstract class V6Options<T> : Options<T> where T : Option
+    public abstract class V6Options<T> : Options<T> where T : Option, IEquatable<T>
     {
         public V6Options(IList<T> options, bool isValid) 
             : base(options, isValid, null)

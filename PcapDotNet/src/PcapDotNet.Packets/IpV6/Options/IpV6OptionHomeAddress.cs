@@ -50,6 +50,10 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataLength; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionHomeAddress);
+        }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
@@ -59,6 +63,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionHomeAddress()
             : this(IpV6Address.Zero)
         {
+        }
+
+        private bool EqualsData(IpV6OptionHomeAddress other)
+        {
+            return other != null &&
+                   HomeAddress.Equals(other.HomeAddress);
         }
     }
 }

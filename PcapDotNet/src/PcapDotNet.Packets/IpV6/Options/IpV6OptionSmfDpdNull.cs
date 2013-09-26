@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
-    public class IpV6OptionSmfDpdNull : IpV6OptionSmfDpdSequenceBased
+    public sealed class IpV6OptionSmfDpdNull : IpV6OptionSmfDpdSequenceBased
     {
         public IpV6OptionSmfDpdNull(DataSegment identifier)
             : base(identifier)
@@ -41,6 +41,11 @@ namespace PcapDotNet.Packets.IpV6
         public override IpV6TaggerIdType TaggerIdType
         {
             get { return IpV6TaggerIdType.Null; }
+        }
+
+        internal override bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other)
+        {
+            return true;
         }
 
         internal override void WriteTaggerId(byte[] buffer, ref int offset)

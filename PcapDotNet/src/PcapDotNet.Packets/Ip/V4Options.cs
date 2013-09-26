@@ -5,7 +5,7 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Ip
 {
-    public abstract class V4Options<T> : Options<T> where T : V4Option
+    public abstract class V4Options<T> : Options<T> where T : V4Option, IEquatable<T>
     {
         internal V4Options(byte[] buffer, int offset, int length, T end)
             : this(Read(buffer, offset, length, end), length)

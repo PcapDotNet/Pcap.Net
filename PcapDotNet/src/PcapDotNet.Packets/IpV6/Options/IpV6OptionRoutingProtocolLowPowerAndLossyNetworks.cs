@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.RplOption)]
-    public class IpV6OptionRoutingProtocolLowPowerAndLossyNetworks : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionRoutingProtocolLowPowerAndLossyNetworks : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -109,6 +109,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + SubTlvs.Length; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionRoutingProtocolLowPowerAndLossyNetworks);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             byte flags = (byte)((Down ? Mask.Down : 0) | (RankError ? Mask.RankError : 0) | (ForwardingError ? Mask.ForwardingError : 0));
@@ -121,6 +126,13 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionRoutingProtocolLowPowerAndLossyNetworks()
             : this(false, false, false, 0, 0, DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6OptionRoutingProtocolLowPowerAndLossyNetworks other)
+        {
+            return other != null &&
+                   Down == other.Down && RankError == other.RankError && ForwardingError == other.ForwardingError && RplInstanceId == other.RplInstanceId &&
+                   SenderRank == other.SenderRank && SubTlvs.Equals(SubTlvs);
         }
     }
 }

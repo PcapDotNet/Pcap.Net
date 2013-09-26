@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PcapDotNet.Packets.Ip
     /// Represents a list of options (either IPv4 options, IPv6 options or TCP options).
     /// </summary>
     /// <typeparam name="T">The Option type this collection contains.</typeparam>
-    public abstract class Options<T> where T : Option
+    public abstract class Options<T> where T : Option, IEquatable<T>
     {
         /// <summary>
         /// Returns the collection of options.

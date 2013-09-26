@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.IlnpNonce)]
-    public class IpV6OptionIlnpNonce : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionIlnpNonce : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         public IpV6OptionIlnpNonce(DataSegment nonce)
             : base(IpV6OptionType.IlnpNonce)
@@ -39,6 +39,11 @@ namespace PcapDotNet.Packets.IpV6
             get { return Nonce.Length; }
         }
 
+        internal override bool EqualsData(IpV6Option other)
+        {
+            return EqualsData(other as IpV6OptionIlnpNonce);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Nonce);
@@ -47,6 +52,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionIlnpNonce()
             : this(DataSegment.Empty)
         {
+        }
+
+        private bool EqualsData(IpV6OptionIlnpNonce other)
+        {
+            return other != null &&
+                   Nonce.Equals(other.Nonce);
         }
     }
 }

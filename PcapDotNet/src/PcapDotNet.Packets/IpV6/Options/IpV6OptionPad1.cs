@@ -27,13 +27,18 @@ namespace PcapDotNet.Packets.IpV6
     /// | 0   | 0   |
     /// +-----+-----+
     /// </summary>
-    public class IpV6MobilityOptionPad1 : IpV6MobilityOption
+    public sealed class IpV6MobilityOptionPad1 : IpV6MobilityOption
     {
         public const int OptionLength = sizeof(byte);
 
         public IpV6MobilityOptionPad1()
             : base(IpV6MobilityOptionType.Pad1)
         {
+        }
+
+        internal override bool EqualsData(IpV6MobilityOption other)
+        {
+            return true;
         }
 
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
