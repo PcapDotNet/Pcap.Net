@@ -701,7 +701,8 @@ namespace PcapDotNet.Packets
         /// <param name="endianity">The endianity to use when converting the value to bytes.</param>
         public static void Write(this byte[] buffer, ref int offset, ulong value, Endianity endianity)
         {
-            buffer.Write(offset, (long)value, endianity);
+            buffer.Write(offset, value, endianity);
+            offset += sizeof(ulong);
         }
 
         /// <summary>

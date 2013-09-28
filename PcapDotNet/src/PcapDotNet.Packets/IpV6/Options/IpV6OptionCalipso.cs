@@ -37,15 +37,16 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         public const int OptionDataMinimumLength = Offset.CompartmentBitmap;
+        public const int CompartmentBitmapMaxLength = byte.MaxValue - OptionDataMinimumLength;
 
         public IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, ushort checksum, DataSegment compartmentBitmap)
             : base(IpV6OptionType.Calipso)
         {
             if (compartmentBitmap.Length % sizeof(int) != 0)
                 throw new ArgumentException(string.Format("Compartment Bitmap length must divide by {0}.", sizeof(int)), "compartmentBitmap");
-            if (compartmentBitmap.Length / sizeof(int) > byte.MaxValue)
+            if (compartmentBitmap.Length > CompartmentBitmapMaxLength)
             {
-                throw new ArgumentOutOfRangeException(string.Format("Compartment Bitmap length must not be bigger than {0}.", byte.MaxValue * sizeof(int)),
+                throw new ArgumentOutOfRangeException(string.Format("Compartment Bitmap length must not be bigger than {0}.", CompartmentBitmapMaxLength),
                                                       "compartmentBitmap");
             }
 

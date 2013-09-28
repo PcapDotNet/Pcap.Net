@@ -854,8 +854,8 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             ushort careOfNonceIndex = messageData.ReadUShort(MessageDataOffset.CareOfNonceIndex, Endianity.Big);
-            ushort careOfInitCookie = messageData.ReadUShort(MessageDataOffset.CareOfInitCookie, Endianity.Big);
-            ushort careOfKeygenToken = messageData.ReadUShort(MessageDataOffset.CareOfKeygenToken, Endianity.Big);
+            ulong careOfInitCookie = messageData.ReadULong(MessageDataOffset.CareOfInitCookie, Endianity.Big);
+            ulong careOfKeygenToken = messageData.ReadULong(MessageDataOffset.CareOfKeygenToken, Endianity.Big);
             IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
             return new IpV6ExtensionHeaderMobilityCareOfTest(nextHeader, checksum, careOfNonceIndex, careOfInitCookie, careOfKeygenToken, options);
         }
@@ -2950,9 +2950,12 @@ namespace PcapDotNet.Packets.IpV6
         internal override sealed void WriteMessageData(byte[] buffer, int offset)
         {
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
+            WriteMessageDataBetweenSequenceNumberAndLifetime(buffer, offset);
             buffer.Write(offset + MessageDataOffset.Lifetime, Lifetime, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
         }
+
+        internal abstract void WriteMessageDataBetweenSequenceNumberAndLifetime(byte[] buffer, int offset);
 
         private bool EqualsMessageData(IpV6ExtensionHeaderMobilityLocalizedRouting other)
         {
@@ -3016,6 +3019,10 @@ namespace PcapDotNet.Packets.IpV6
         {
             return true;
         }
+
+        internal override void WriteMessageDataBetweenSequenceNumberAndLifetime(byte[] buffer, int offset)
+        {
+        }
     }
 
     /// <summary>
@@ -3046,6 +3053,7 @@ namespace PcapDotNet.Packets.IpV6
         private static class MessageDataOffset
         {
             public const int Unsolicited = sizeof(ushort);
+            public const int Status = Unsolicited + sizeof(byte);
         }
 
         private static class MessageDataMask
@@ -3053,10 +3061,11 @@ namespace PcapDotNet.Packets.IpV6
             public const byte Unsolicited = 0x80;
         }
 
-        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited,
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited, IpV6MobilityLocalizedRoutingAcknowledgementStatus status,
                                                                           ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, sequenceNumber, lifetime, options)
         {
+            Status = status;
             Unsolicited = unsolicited;
         }
 
@@ -3066,6 +3075,8 @@ namespace PcapDotNet.Packets.IpV6
         /// The MAG must wait for the regular LRI message to confirm that the request is acceptable to the LMA.
         /// </summary>
         public bool Unsolicited { get; private set; }
+
+        public IpV6MobilityLocalizedRoutingAcknowledgementStatus Status { get; private set; }
 
         /// <summary>
         /// Identifies the particular mobility message in question.
@@ -3085,8 +3096,9 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             bool unsolicited = messageData.ReadBool(MessageDataOffset.Unsolicited, MessageDataMask.Unsolicited);
+            IpV6MobilityLocalizedRoutingAcknowledgementStatus status = (IpV6MobilityLocalizedRoutingAcknowledgementStatus)messageData[MessageDataOffset.Status];
 
-            return new IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(nextHeader, checksum, sequenceNumber, unsolicited, lifetime, options);
+            return new IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(nextHeader, checksum, sequenceNumber, unsolicited, status, lifetime, options);
         }
 
         internal override bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRouting other)
@@ -3094,10 +3106,38 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsMessageDataLocalizedRoutingExtraFields(other as IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement);
         }
 
+        internal override void WriteMessageDataBetweenSequenceNumberAndLifetime(byte[] buffer, int offset)
+        {
+            if (Unsolicited)
+                buffer.Write(offset + MessageDataOffset.Unsolicited, MessageDataMask.Unsolicited);
+            buffer.Write(offset + MessageDataOffset.Status, (byte)Status);
+        }
+
         private bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement other)
         {
             return other != null &&
-                   Unsolicited == other.Unsolicited;
+                   Unsolicited == other.Unsolicited && Status == other.Status;
         }
+    }
+
+    /// <summary>
+    /// RFC-ietf-netext-pmip-lr-10.
+    /// </summary>
+    public enum IpV6MobilityLocalizedRoutingAcknowledgementStatus : byte
+    {
+        /// <summary>
+        /// Success.
+        /// </summary>
+        Success = 0,
+
+        /// <summary>
+        /// Localized Routing Not Allowed.
+        /// </summary>
+        LocalizedRoutingNotAllowed = 128,
+
+        /// <summary>
+        /// MN not attached.
+        /// </summary>
+        MobileNodeNotAttached = 129,
     }
 }

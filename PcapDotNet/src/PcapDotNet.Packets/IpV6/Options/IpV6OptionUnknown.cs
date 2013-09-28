@@ -3698,7 +3698,7 @@ namespace PcapDotNet.Packets.IpV6
                     return null;
                 byte requestLength = data[offset++];
 
-                if (offset + requestLength >= data.Length)
+                if (offset + requestLength > data.Length)
                     return null;
 
                 DataSegment requestOption = data.Subsegment(offset, requestLength);
