@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.IpV6
 
             Addresses = addresses.AsReadOnly();
 
-            PadSize = (byte)((8 - RoutingDataLength % 8) % 8);
+            PadSize = (byte)((8 - Length % 8) % 8);
         }
 
         public override IpV6RoutingType RoutingType
