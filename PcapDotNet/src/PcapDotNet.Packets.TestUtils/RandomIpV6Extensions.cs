@@ -206,6 +206,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IpV6MobilityHeaderType.LocalizedRoutingAcknowledgement: // 18
                     return new IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(nextHeader, checksum, random.NextUShort(), random.NextBool(),
+                                                                                          random.NextEnum<IpV6MobilityLocalizedRoutingAcknowledgementStatus>(),
                                                                                           random.NextUShort(), random.NextIpV6MobilityOptions());
 
                 default:
@@ -246,7 +247,7 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IpV6OptionType.Calipso:
                     return new IpV6OptionCalipso(random.NextEnum<IpV6CalipsoDomainOfInterpretation>(), random.NextByte(), random.NextUShort(),
-                                                 random.NextDataSegment(random.NextByte() * sizeof(int)));
+                                                 random.NextDataSegment(random.NextInt(0, IpV6OptionCalipso.CompartmentBitmapMaxLength + 1) / 4 * sizeof(int)));
 
                 case IpV6OptionType.SmfDpd:
                     if (random.NextBool())

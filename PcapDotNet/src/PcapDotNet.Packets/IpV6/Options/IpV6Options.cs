@@ -179,7 +179,9 @@ namespace PcapDotNet.Packets.IpV6
         {
             if (paddingSize == 0)
                 return this;
-            return new IpV6MobilityOptions(OptionsCollection.Concat(paddingSize == 1 ? (IpV6MobilityOption)new IpV6MobilityOptionPad1() : new IpV6MobilityOptionPadN(paddingSize - 2)));
+            return new IpV6MobilityOptions(
+                OptionsCollection.Concat(paddingSize == 1 ? (IpV6MobilityOption)new IpV6MobilityOptionPad1() : new IpV6MobilityOptionPadN(paddingSize - 2)),
+                IsValid);
         }
 
         private IpV6MobilityOptions(Tuple<IList<IpV6MobilityOption>, bool> optionsAndIsValid)
@@ -187,7 +189,12 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        internal static Tuple<IList<IpV6MobilityOption>, bool> Read(DataSegment data)
+        private IpV6MobilityOptions(IEnumerable<IpV6MobilityOption> options, bool isValid)
+            : this(new Tuple<IList<IpV6MobilityOption>, bool>(options.ToList(), isValid))
+        {
+        }
+
+        private static Tuple<IList<IpV6MobilityOption>, bool> Read(DataSegment data)
         {
             int offset = 0;
             List<IpV6MobilityOption> options = new List<IpV6MobilityOption>();
@@ -235,8 +242,6 @@ namespace PcapDotNet.Packets.IpV6
             return prototype.CreateInstance(data);
         }
 
-        private static readonly Dictionary<IpV6MobilityOptionType, IpV6MobilityOption> _prototypes = InitializePrototypes();
-
         private static Dictionary<IpV6MobilityOptionType, IpV6MobilityOption> InitializePrototypes()
         {
             var prototypes =
@@ -261,6 +266,7 @@ namespace PcapDotNet.Packets.IpV6
             return registraionAttributes.First();
         }
 
+        private static readonly Dictionary<IpV6MobilityOptionType, IpV6MobilityOption> _prototypes = InitializePrototypes();
         private static readonly IpV6MobilityOptions _none = new IpV6MobilityOptions();
     }
 }

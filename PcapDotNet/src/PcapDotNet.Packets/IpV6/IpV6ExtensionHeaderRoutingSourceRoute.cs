@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.IpV6
             if ((routingData.Length - RoutingDataMinimumLength) % IpV6Address.SizeOf != 0)
                 return null;
 
-            int numAddresses = (routingData.Length - RoutingDataMinimumLength) / 8;
+            int numAddresses = (routingData.Length - RoutingDataMinimumLength) / IpV6Address.SizeOf;
             IpV6Address[] addresses = new IpV6Address[numAddresses];
             for (int i = 0; i != numAddresses; ++i)
                 addresses[i] = routingData.ReadIpV6Address(RoutingDataOffset.Addresses + i * IpV6Address.SizeOf, Endianity.Big);
