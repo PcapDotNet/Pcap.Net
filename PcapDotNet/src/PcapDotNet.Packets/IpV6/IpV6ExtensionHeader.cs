@@ -50,6 +50,9 @@ namespace PcapDotNet.Packets.IpV6
         {
             buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);
             int length = Length;
+            // TODO: Remove this check.
+            if (length % 8 != 0)
+                throw new InvalidOperationException("Must be divided by 8.");
             buffer.Write(offset + Offset.HeaderExtensionLength, (byte)((length / 8) - 1));
             WriteData(buffer, offset + Offset.Data);
             offset += length;

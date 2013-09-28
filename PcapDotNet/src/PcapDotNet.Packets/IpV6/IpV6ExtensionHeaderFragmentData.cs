@@ -262,12 +262,15 @@ namespace PcapDotNet.Packets.IpV6
         {
             if (messageDataMobilityOptionsOffset.HasValue)
             {
-                int mobilityOptionsExtraBytes = (messageDataMobilityOptionsOffset.Value - 2) % 8;
+                int mobilityOptionsExtraBytes = (8 - (messageDataMobilityOptionsOffset.Value + 6) % 8) % 8;
                 if (mobilityOptions.BytesLength % 8 != mobilityOptionsExtraBytes)
                     mobilityOptions = mobilityOptions.Pad((8 + mobilityOptionsExtraBytes - (mobilityOptions.BytesLength % 8)) % 8);
             }
             Checksum = checksum;
             MobilityOptions = mobilityOptions;
+            // TODO: Remove this.
+            if (Length % 8 != 0)
+                throw new InvalidOperationException("Must divide by 8");
         }
 
         /// <summary>
@@ -1834,7 +1837,7 @@ namespace PcapDotNet.Packets.IpV6
     /// | 16  | MH Type     | Reserved                |
     /// +-----+-------------+-------------------------+
     /// | 32  | Checksum                              |
-    /// +-----+-------------+-------------------------+
+    /// +-----+---------------------------------------+
     /// | 48  | Mobility Options                      |
     /// | ... |                                       |
     /// +-----+---------------------------------------+
