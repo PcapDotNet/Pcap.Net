@@ -16,9 +16,19 @@ namespace PcapDotNet.Packets.TestUtils
             return new IpV6Address(random.NextUInt128());
         }
 
+        public static IpV6Address NextIpV6AddressWithLeadingZeroBytes(this Random random, int numLeadingZeros)
+        {
+            return new IpV6Address(random.NextUInt128() >> (8 * numLeadingZeros));
+        }
+
         public static IpV6Address[] NextIpV6AddressArray(this Random random, int count)
         {
             return ((Func<IpV6Address>)(random.NextIpV6Address)).GenerateArray(count);
+        }
+
+        public static IpV6Address[] NextIpV6AddressWithLeadingZeroBytesArray(this Random random, int numLeadingZeros, int count)
+        {
+            return ((Func<IpV6Address>)(() => random.NextIpV6AddressWithLeadingZeroBytes(numLeadingZeros))).GenerateArray(count);
         }
 
         public static IpV6Layer NextIpV6Layer(this Random random)
@@ -73,10 +83,14 @@ namespace PcapDotNet.Packets.TestUtils
                             return new IpV6ExtensionHeaderRoutingHomeAddress(nextHeader, random.NextByte(), random.NextIpV6Address());
 
                         case IpV6RoutingType.RplSourceRouteHeader:
-                            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, random.NextByte(),
-                                                                     random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1),
-                                                                     random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1),
-                                                                     random.NextIpV6AddressArray(random.NextInt(0, 10)));
+                            byte commonPrefixLengthForNonLastAddresses = random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1);
+                            byte commonPrefixLengthForLastAddress = random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1);
+                            IpV6Address[] addresses = random.NextIpV6AddressWithLeadingZeroBytesArray(commonPrefixLengthForNonLastAddresses,
+                                                                                                      random.NextInt(0, 10));
+                            if (addresses.Any() || random.NextBool())
+                                addresses = addresses.Concat(random.NextIpV6AddressWithLeadingZeroBytes(commonPrefixLengthForLastAddress)).ToArray();
+                            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, random.NextByte(), commonPrefixLengthForNonLastAddresses,
+                                                                     commonPrefixLengthForLastAddress, addresses);
 
                         default:
                             throw new InvalidOperationException(string.Format("Invalid routingType value {0}", routingType));
@@ -155,7 +169,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6ExtensionHeaderMobilityFastNeighborAdvertisement(nextHeader, checksum, random.NextIpV6MobilityOptions());
 
                 case IpV6MobilityHeaderType.Experimental: // 11
-                    return new IpV6ExtensionHeaderMobilityExperimental(nextHeader, checksum, random.NextDataSegment(random.Next(100)));
+                    return new IpV6ExtensionHeaderMobilityExperimental(nextHeader, checksum, random.NextDataSegment(2 + random.Next(10) * 8));
 
                 case IpV6MobilityHeaderType.HomeAgentSwitchMessage: // 12
                     return new IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(nextHeader, checksum, random.NextIpV6AddressArray(random.NextInt(0, 10)),
@@ -260,7 +274,7 @@ namespace PcapDotNet.Packets.TestUtils
                             return new IpV6OptionSmfDpdNull(identifier);
 
                         case IpV6TaggerIdType.Default:
-                            return new IpV6OptionSmfDpdDefault(random.NextDataSegment(random.NextInt(0, 100)), identifier);
+                            return new IpV6OptionSmfDpdDefault(random.NextDataSegment(random.NextInt(1, 17)), identifier);
 
                         case IpV6TaggerIdType.IpV4:
                             return new IpV6OptionSmfDpdIpV4(random.NextIpV4Address(), identifier);
@@ -447,7 +461,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return
                         new IpV6MobilityOptionContextRequest(
                             ((Func<IpV6MobilityOptionContextRequestEntry>)(() => new IpV6MobilityOptionContextRequestEntry(
-                                                                                     random.NextByte(), random.NextDataSegment(random.NextInt(0, 100))))).
+                                                                                     random.NextByte(), random.NextDataSegment(random.NextInt(0, 25))))).
                                 GenerateArray(random.NextInt(0, 10)));
 
                 case IpV6MobilityOptionType.LocalMobilityAnchorAddress:
@@ -516,7 +530,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6FlowIdentificationSubOptionBindingReference(((Func<ushort>)(random.NextUShort)).GenerateArray(random.NextInt(0, 10)));
 
                 case IpV6FlowIdentificationSubOptionType.TrafficSelector:
-                    return new IpV6FlowIdentificationSubOptionTrafficSelector(random.NextEnum<IpV6FlowIdentificationTrafficSelectorFormat>(), random.NextDataSegment(random.NextInt(0, 100)));
+                    return new IpV6FlowIdentificationSubOptionTrafficSelector(random.NextEnum<IpV6FlowIdentificationTrafficSelectorFormat>(), random.NextDataSegment(random.NextInt(0, 50)));
 
                 default:
                     throw new InvalidOperationException(string.Format("Invalid optionType value {0}", optionType));
@@ -525,7 +539,18 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IpV6AccessNetworkIdentifierSubOptions NextIpV6AccessNetworkIdentifierSubOptions(this Random random)
         {
-            return new IpV6AccessNetworkIdentifierSubOptions(((Func<IpV6AccessNetworkIdentifierSubOption>)(random.NextIpV6AccessNetworkIdentifierSubOption)).GenerateArray(random.NextInt(0, 10)));
+            List<IpV6AccessNetworkIdentifierSubOption> subOptions = new List<IpV6AccessNetworkIdentifierSubOption>();
+            int numOptions = random.NextInt(0, 10);
+            int optionsBytesLength = 0;
+            for (int i = 0; i != numOptions; ++i)
+            {
+                IpV6AccessNetworkIdentifierSubOption subOption = random.NextIpV6AccessNetworkIdentifierSubOption();
+                if (optionsBytesLength + subOption.Length > byte.MaxValue - 2)
+                    break;
+                subOptions.Add(subOption);
+                optionsBytesLength += subOption.Length;
+            }
+            return new IpV6AccessNetworkIdentifierSubOptions(subOptions);
         }
 
         public static IpV6AccessNetworkIdentifierSubOption NextIpV6AccessNetworkIdentifierSubOption(this Random random)

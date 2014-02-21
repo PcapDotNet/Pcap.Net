@@ -268,9 +268,6 @@ namespace PcapDotNet.Packets.IpV6
             }
             Checksum = checksum;
             MobilityOptions = mobilityOptions;
-            // TODO: Remove this.
-            if (Length % 8 != 0)
-                throw new InvalidOperationException("Must divide by 8");
         }
 
         /// <summary>
@@ -746,8 +743,8 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             ushort homeNonceIndex = messageData.ReadUShort(MessageDataOffset.HomeNonceIndex, Endianity.Big);
-            ushort homeInitCookie = messageData.ReadUShort(MessageDataOffset.HomeInitCookie, Endianity.Big);
-            ushort homeKeygenToken = messageData.ReadUShort(MessageDataOffset.HomeKeygenToken, Endianity.Big);
+            ulong homeInitCookie = messageData.ReadULong(MessageDataOffset.HomeInitCookie, Endianity.Big);
+            ulong homeKeygenToken = messageData.ReadULong(MessageDataOffset.HomeKeygenToken, Endianity.Big);
             IpV6MobilityOptions options = new IpV6MobilityOptions(messageData.Subsegment(MessageDataOffset.Options, messageData.Length - MessageDataOffset.Options));
             return new IpV6ExtensionHeaderMobilityHomeTest(nextHeader, checksum, homeNonceIndex, homeInitCookie, homeKeygenToken, options);
         }
@@ -1892,7 +1889,7 @@ namespace PcapDotNet.Packets.IpV6
     }
 
     /// <summary>
-    /// RFCs 5096.
+    /// RFC 5096.
     /// <pre>
     /// +-----+-------------+-------------------------+
     /// | Bit | 0-7         | 8-15                    |
@@ -1913,8 +1910,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
             : base(nextHeader, checksum, IpV6MobilityOptions.None, null)
         {
-            if (messageData.Length % 8 != 4)
-                throw new ArgumentException("Message data size must be an integral product of 8 bytes plus 4 bytes", "messageData");
+            if (messageData.Length % 8 != 2)
+                throw new ArgumentException("Message data size must be an integral product of 8 bytes plus 2 bytes", "messageData");
             MessageData = messageData;
         }
 

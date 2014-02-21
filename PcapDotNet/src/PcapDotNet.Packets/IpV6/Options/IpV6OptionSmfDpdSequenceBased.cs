@@ -26,6 +26,8 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6OptionSmfDpdSequenceBased : IpV6OptionSmfDpd
     {
+        internal const int TaggerIdMaxLength = 0xF + 1;
+
         private static class Offset
         {
             public const int TaggerIdType = 0;
@@ -138,7 +140,6 @@ namespace PcapDotNet.Packets.IpV6
         {
             return other != null &&
                    Identifier.Equals(other.Identifier) && TaggerIdType == other.TaggerIdType && EqualsTaggerId(other);
-
         }
     }
 }

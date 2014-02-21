@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.Test
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 if (greLayer.Checksum == null &&
-                    !new[] { EthernetType.IpV4, EthernetType.Arp, EthernetType.VLanTaggedFrame }.Contains(packet.Ethernet.IpV4.Gre.ProtocolType))
+                    !new[] { EthernetType.IpV4, EthernetType.IpV6, EthernetType.Arp, EthernetType.VLanTaggedFrame }.Contains(packet.Ethernet.IpV4.Gre.ProtocolType))
                 {
                     Assert.IsTrue(packet.IsValid, "IsValid, ProtocolType=" + packet.Ethernet.IpV4.Gre.ProtocolType);
                 }
@@ -222,7 +222,7 @@ namespace PcapDotNet.Packets.Test
                 PacketBuilder packetBuilder = new PacketBuilder(ethernetLayer, ipV4Layer, greLayer);
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 Assert.IsTrue(packet.IsValid ||
-                              new[] {EthernetType.IpV4, EthernetType.Arp, EthernetType.VLanTaggedFrame}.Contains(greLayer.ProtocolType),
+                              new[] { EthernetType.IpV4, EthernetType.IpV6, EthernetType.Arp, EthernetType.VLanTaggedFrame }.Contains(greLayer.ProtocolType),
                               "IsValid. ProtoclType=" + greLayer.ProtocolType);
 
                 GreDatagram gre = packet.Ethernet.IpV4.Gre;

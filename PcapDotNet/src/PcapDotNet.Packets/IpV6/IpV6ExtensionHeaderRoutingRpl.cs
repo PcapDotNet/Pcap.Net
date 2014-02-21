@@ -80,14 +80,37 @@ namespace PcapDotNet.Packets.IpV6
             }
             CommonPrefixLengthForLastAddress = commonPrefixLengthForLastAddress;
 
+            if (addresses.Any())
+            {
+                if (commonPrefixLengthForNonLastAddresses != 0)
+                {
+                    for (int i = 0; i != addresses.Length - 1; ++i)
+                        ValidateCommonPrefixForAddress(addresses, i, commonPrefixLengthForNonLastAddresses);
+                }
+
+                if (commonPrefixLengthForLastAddress != 0)
+                    ValidateCommonPrefixForAddress(addresses, addresses.Length - 1, commonPrefixLengthForLastAddress);
+            }
+
             Addresses = addresses.AsReadOnly();
 
             PadSize = (byte)((8 - Length % 8) % 8);
         }
 
+        private static void ValidateCommonPrefixForAddress(IpV6Address[] addresses, int addressIndex, byte commonPrefixLength)
+        {
+            IpV6Address address = addresses[addressIndex];
+            if (address.ToValue() >> (8 * (IpV6Address.SizeOf - commonPrefixLength)) != 0)
+            {
+                throw new ArgumentOutOfRangeException("addresses", address,
+                                                      string.Format("When an address has {0} common bytes, it should start with {0} zero bytes.",
+                                                                    commonPrefixLength));
+            }
+        }
+
         public override IpV6RoutingType RoutingType
         {
-            get { return IpV6RoutingType.SourceRoute; }
+            get { return IpV6RoutingType.RplSourceRouteHeader; }
         }
 
         /// <summary>
@@ -129,7 +152,7 @@ namespace PcapDotNet.Packets.IpV6
             byte commonPrefixLengthForNonLastAddresses =
                 (byte)((routingData[RoutingDataOffset.CommonPrefixLengthForNonLastAddresses] & RoutingDataMask.CommonPrefixLengthForNonLastAddresses) >>
                        RoutingDataShift.CommonPrefixLengthForNonLastAddresses);
-            if (commonPrefixLengthForNonLastAddresses >= MaxCommonPrefixLength)
+            if (commonPrefixLengthForNonLastAddresses > MaxCommonPrefixLength)
                 return null;
 
             byte commonPrefixLengthForLastAddress =
@@ -141,8 +164,11 @@ namespace PcapDotNet.Packets.IpV6
             if (padSize > MaxPadSize)
                 return null;
 
-            int numAddresses = (routingData.Length - RoutingDataOffset.Addresses - padSize - (IpV6Address.SizeOf - commonPrefixLengthForLastAddress)) /
-                               (IpV6Address.SizeOf - commonPrefixLengthForNonLastAddresses) + 1;
+            int addressesLength = routingData.Length - RoutingDataOffset.Addresses - padSize;
+            int numAddresses = addressesLength == 0
+                                   ? 0
+                                   : (addressesLength - (IpV6Address.SizeOf - commonPrefixLengthForLastAddress)) /
+                                     (IpV6Address.SizeOf - commonPrefixLengthForNonLastAddresses) + 1;
             if (numAddresses < 0)
                 return null;
 
@@ -154,16 +180,16 @@ namespace PcapDotNet.Packets.IpV6
                 {
                     DataSegment addressSegment =
                         routingData.Subsegment(RoutingDataOffset.Addresses + i * (IpV6Address.SizeOf - commonPrefixLengthForNonLastAddresses),
-                                               commonPrefixLengthForNonLastAddresses);
-                    addressSegment.Write(addressBytes, 0);
+                                               IpV6Address.SizeOf - commonPrefixLengthForNonLastAddresses);
+                    addressSegment.Write(addressBytes, commonPrefixLengthForNonLastAddresses);
                     addresses[i] = addressBytes.ReadIpV6Address(0, Endianity.Big);
                 }
 
                 addressBytes = new byte[IpV6Address.SizeOf];
                 DataSegment lastAddressSegment =
                     routingData.Subsegment(RoutingDataOffset.Addresses + (numAddresses - 1) * (IpV6Address.SizeOf - commonPrefixLengthForNonLastAddresses),
-                                           commonPrefixLengthForLastAddress);
-                lastAddressSegment.Write(addressBytes, 0);
+                                           IpV6Address.SizeOf - commonPrefixLengthForLastAddress);
+                lastAddressSegment.Write(addressBytes, commonPrefixLengthForLastAddress);
                 addresses[numAddresses - 1] = addressBytes.ReadIpV6Address(0, Endianity.Big);
             }
             return new IpV6ExtensionHeaderRoutingRpl(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress,

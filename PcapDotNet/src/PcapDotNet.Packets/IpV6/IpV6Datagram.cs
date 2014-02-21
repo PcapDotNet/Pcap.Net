@@ -248,12 +248,11 @@ namespace PcapDotNet.Packets.IpV6
 
         protected override bool CalculateIsValid()
         {
-            _isValid = true;
             ParseExtensionHeaders();
             return _isValid;
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;
-        private bool _isValid;
+        private bool _isValid = true;
     }
 }
