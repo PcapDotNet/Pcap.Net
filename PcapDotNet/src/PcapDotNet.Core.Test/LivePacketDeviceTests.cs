@@ -81,12 +81,15 @@ namespace PcapDotNet.Core.Test
 
                 DateTime endSendingTime = DateTime.Now;
 
-                result = communicator.ReceivePacket(out packet);
+                for (int i = 0; i != NumPacketsToSend; ++i)
+                {
+                    result = communicator.ReceivePacket(out packet);
 
-                Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
+                    Assert.AreEqual(sentPacket.Length, packet.Length);
+                    MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
+                }
                 Assert.AreEqual<uint>(NumPacketsToSend, communicator.TotalStatistics.PacketsCaptured);
-                Assert.AreEqual(sentPacket.Length, packet.Length);
-                MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
             }
         }
 
