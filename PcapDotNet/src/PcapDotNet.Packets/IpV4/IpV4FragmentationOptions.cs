@@ -22,7 +22,5 @@ namespace PcapDotNet.Packets.IpV4
         /// Don't Fragment.
         /// </summary>
         DoNotFragment = 0x2 << 13
-
-        //        Reserved =      0x4 << 13,
     }
 }
