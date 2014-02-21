@@ -110,5 +110,27 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(new IpV4Address(null));
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void TryParseTest()
+        {
+            IpV4Address actual;
+            Assert.IsTrue(IpV4Address.TryParse("1.2.3.4", out actual));
+            Assert.AreEqual(new IpV4Address("1.2.3.4"), actual);
+
+            Assert.IsFalse(IpV4Address.TryParse(null, out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.3", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.3.", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.3.a", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("a.2.3.4", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.a.3.4", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.a.4", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("1.2.3.a", out actual));
+            Assert.IsFalse(IpV4Address.TryParse("256.2.3.4", out actual));
+        }
     }
 }
