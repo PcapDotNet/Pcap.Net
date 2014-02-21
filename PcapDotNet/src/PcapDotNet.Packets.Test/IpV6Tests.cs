@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
@@ -59,7 +60,7 @@ namespace PcapDotNet.Packets.Test
                                                   EtherType = EthernetType
                                               };
 
-            Random random = new Random(1);
+            Random random = new Random();
 
             for (int i = 0; i != 1000; ++i)
             {
@@ -67,7 +68,10 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.NextInt(0, 50 * 1024));
 
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV6Layer, payloadLayer);
+                List<ILayer> layers = new List<ILayer> {ethernetLayer, ipV6Layer};
+                if (ipV6Layer.ExtensionHeaders.LastHeader != IpV4Protocol.EncapsulatingSecurityPayload)
+                    layers.Add(payloadLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, layers);
 
                 Assert.IsTrue(packet.IsValid, string.Format("IsValid ({0}...{1})", ipV6Layer.NextHeader, ipV6Layer.ExtensionHeaders.NextHeader));
 

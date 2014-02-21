@@ -67,11 +67,16 @@ namespace PcapDotNet.Packets.IpV6
             get { return base.Length + sizeof(byte) + DataLength; }
         }
 
+        internal const int MaxDataLength = byte.MaxValue - sizeof(byte) - sizeof(byte);
+
         internal abstract int DataLength { get; }
 
         internal override sealed void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
+            // TODO: Remove this check.
+            if (DataLength > byte.MaxValue)
+                throw new InvalidOperationException("DataLength is too big.");
             buffer[offset++] = (byte)DataLength;
             WriteData(buffer, ref offset);
         }

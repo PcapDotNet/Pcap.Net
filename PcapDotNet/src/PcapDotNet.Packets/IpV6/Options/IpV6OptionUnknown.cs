@@ -158,7 +158,7 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionBindingRefreshAdvice(ushort refreshInterval)
             : base(IpV6MobilityOptionType.BindingRefreshAdvice)
         {
-            refreshInterval = refreshInterval;
+            RefreshInterval = refreshInterval;
         }
 
         /// <summary>
@@ -2634,7 +2634,7 @@ namespace PcapDotNet.Packets.IpV6
             public const int RefreshTime = UdpEncapsulationRequired + sizeof(ushort);
         }
 
-        public const int OptionDataLength = Offset.RefreshTime + sizeof(ushort);
+        public const int OptionDataLength = Offset.RefreshTime + sizeof(uint);
 
         private static class Mask
         {
@@ -3602,7 +3602,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------+
     /// </pre>
     /// </summary>
-    public class IpV6MobilityOptionContextRequestEntry
+    public sealed class IpV6MobilityOptionContextRequestEntry : IEquatable<IpV6MobilityOptionContextRequestEntry>
     {
         public IpV6MobilityOptionContextRequestEntry(byte requestType, DataSegment option)
         {
@@ -3644,6 +3644,16 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, OptionLength);
             Option.Write(buffer, ref offset);
         }
+
+        public bool Equals(IpV6MobilityOptionContextRequestEntry other)
+        {
+            return (other != null && RequestType.Equals(other.RequestType) && Option.Equals(other.Option));
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IpV6MobilityOptionContextRequestEntry);
+        }
     }
 
     /// <summary>
@@ -3679,6 +3689,8 @@ namespace PcapDotNet.Packets.IpV6
         {
             Requests = requests;
             _dataLength = Requests.Sum(request => request.Length);
+            if (_dataLength > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("requests", requests, string.Format("requests length is too large. Takes over {0}>{1} bytes.", _dataLength, byte.MaxValue));
         }
 
         /// <summary>
@@ -4782,6 +4794,12 @@ namespace PcapDotNet.Packets.IpV6
                                                     IpV6FlowIdentificationSubOptions subOptions)
             : base(IpV6MobilityOptionType.FlowIdentification)
         {
+            if (Offset.SubOptions + subOptions.BytesLength > byte.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("subOptions", subOptions,
+                                                      string.Format("Sub Options take {0} bytes, which is more than the maximum length of {1} bytes",
+                                                                    subOptions.BytesLength, (byte.MaxValue - Offset.SubOptions)));
+            }
             FlowIdentifier = flowIdentifier;
             Priority = priority;
             Status = status;
@@ -5116,10 +5134,10 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             ushort priority = data.ReadUShort(Offset.Priority, Endianity.Big);
-            uint sessionsInUse = data.ReadUShort(Offset.SessionsInUse, Endianity.Big);
-            uint maximumSessions = data.ReadUShort(Offset.MaximumSessions, Endianity.Big);
-            uint usedCapacity = data.ReadUShort(Offset.UsedCapacity, Endianity.Big);
-            uint maximumCapacity = data.ReadUShort(Offset.MaximumCapacity, Endianity.Big);
+            uint sessionsInUse = data.ReadUInt(Offset.SessionsInUse, Endianity.Big);
+            uint maximumSessions = data.ReadUInt(Offset.MaximumSessions, Endianity.Big);
+            uint usedCapacity = data.ReadUInt(Offset.UsedCapacity, Endianity.Big);
+            uint maximumCapacity = data.ReadUInt(Offset.MaximumCapacity, Endianity.Big);
 
             return new IpV6MobilityOptionLoadInformation(priority, sessionsInUse, maximumSessions, usedCapacity, maximumCapacity);
         }
@@ -5423,6 +5441,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionAccessNetworkIdentifier(IpV6AccessNetworkIdentifierSubOptions subOptions)
             : base(IpV6MobilityOptionType.AccessNetworkIdentifier)
         {
+            if (subOptions.BytesLength > MaxDataLength)
+                throw new ArgumentOutOfRangeException("subOptions", subOptions, string.Format("SubOptions take more than {0} bytes", MaxDataLength));
             SubOptions = subOptions;
         }
 
@@ -5650,6 +5670,9 @@ namespace PcapDotNet.Packets.IpV6
         internal override void Write(byte[] buffer, ref int offset)
         {
             buffer[offset++] = (byte)OptionType;
+            // TODO: Remove this check.
+            if (DataLength > byte.MaxValue)
+                throw new InvalidOperationException("Option length is too long.");
             buffer[offset++] = (byte)DataLength;
             WriteData(buffer, ref offset);
         }
@@ -5701,6 +5724,11 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier(bool isNetworkNameUtf8, DataSegment networkName, DataSegment accessPointName)
             : base(IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier)
         {
+            if (networkName.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("networkName", networkName, string.Format("Network Name cannot be longer than {0} bytes.", byte.MaxValue));
+            if (accessPointName.Length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException("accessPointName", accessPointName, string.Format("Access Point Name cannot be longer than {0} bytes.", byte.MaxValue));
+
             IsNetworkNameUtf8 = isNetworkNameUtf8;
             NetworkName = networkName;
             AccessPointName = accessPointName;
@@ -5774,7 +5802,7 @@ namespace PcapDotNet.Packets.IpV6
             if (IsNetworkNameUtf8)
                 buffer.Write(offset + Offset.IsNetworkNameUtf8, Mask.IsNetworkNameUtf8);
             buffer.Write(offset + Offset.NetworkNameLength, (byte)NetworkName.Length);
-            NetworkName.Write(buffer, offset + Offset.NetworkNameLength);
+            NetworkName.Write(buffer, offset + Offset.NetworkName);
             buffer.Write(offset + AccessPointNameLengthOffset, (byte)AccessPointName.Length);
             AccessPointName.Write(buffer, offset + AccessPointNameOffset);
             offset += DataLength;

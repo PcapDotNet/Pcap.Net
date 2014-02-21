@@ -244,6 +244,15 @@ namespace PcapDotNet.Packets.IpV6
     {
         public IpV6ExtensionHeaders(ReadOnlyCollection<IpV6ExtensionHeader> extensionHeaders)
         {
+            for (int i = 0; i < extensionHeaders.Count; ++i)
+            {
+                if (extensionHeaders[i].Protocol == IpV4Protocol.EncapsulatingSecurityPayload && i != extensionHeaders.Count - 1)
+                {
+                    throw new ArgumentException(
+                        string.Format("EncapsulatingSecurityPayload can only be the last extension header. However it is the {0} out of {1}.", (i + 1),
+                                      extensionHeaders.Count), "extensionHeaders");
+                }
+            }
             Headers = extensionHeaders;
             IsValid = true;
         }
@@ -288,6 +297,16 @@ namespace PcapDotNet.Packets.IpV6
                 if (!Headers.Any()) 
                     return null;
                 return Headers[0].Protocol;
+            }
+        }
+
+        public IpV4Protocol? LastHeader
+        {
+            get
+            {
+                if (!Headers.Any())
+                    return null;
+                return Headers[Headers.Count - 1].Protocol;
             }
         }
 
