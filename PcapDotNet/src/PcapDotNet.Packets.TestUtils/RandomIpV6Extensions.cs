@@ -366,7 +366,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6MobilityOptionPermanentHomeKeygenToken(random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6MobilityOptionType.CareOfTestInit:
-                    return new IpV6MobilityOptionCareOfTest(random.NextULong());
+                    return new IpV6MobilityOptionCareOfTestInit();
 
                 case IpV6MobilityOptionType.CareOfTest:
                     return new IpV6MobilityOptionCareOfTest(random.NextULong());
