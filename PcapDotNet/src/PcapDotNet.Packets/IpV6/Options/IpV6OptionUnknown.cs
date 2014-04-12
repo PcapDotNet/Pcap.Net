@@ -1203,7 +1203,7 @@ namespace PcapDotNet.Packets.IpV6
     public abstract class IpV6MobilityOptionSingleDataSegmentField : IpV6MobilityOptionComplex
     {
         public IpV6MobilityOptionSingleDataSegmentField(IpV6MobilityOptionType type, DataSegment value)
-            : base(IpV6MobilityOptionType.CgaParameters)
+            : base(type)
         {
             Value = value;
         }
@@ -1727,7 +1727,7 @@ namespace PcapDotNet.Packets.IpV6
     public sealed class IpV6MobilityOptionServiceSelection : IpV6MobilityOptionSingleDataSegmentField
     {
         public IpV6MobilityOptionServiceSelection(DataSegment data)
-            : base(IpV6MobilityOptionType.Experimental, data)
+            : base(IpV6MobilityOptionType.ServiceSelection, data)
         {
         }
 
