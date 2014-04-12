@@ -3,7 +3,7 @@ using System;
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
-    /// RFC 2460.
+    /// RFC 6275.
     /// <pre>
     /// +-----+-------------+--------------+
     /// | Bit | 0-7         | 8-15         |
@@ -15,26 +15,28 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
-    public abstract class IpV6OptionComplex : IpV6Option
+    public abstract class IpV6MobilityOptionComplex : IpV6MobilityOption
     {
-        protected IpV6OptionComplex(IpV6OptionType type) 
+        protected IpV6MobilityOptionComplex(IpV6MobilityOptionType type)
             : base(type)
         {
         }
 
         public override sealed int Length
         {
-            get { return sizeof(byte) + sizeof (byte) + DataLength; }
+            get { return base.Length + sizeof(byte) + DataLength; }
         }
+
+        internal const int MaxDataLength = byte.MaxValue - sizeof(byte) - sizeof(byte);
 
         internal abstract int DataLength { get; }
 
         internal override sealed void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            // TODO: Get rid of this.
+            // TODO: Remove this check.
             if (DataLength > byte.MaxValue)
-                throw new InvalidOperationException("DataLength is " + DataLength);
+                throw new InvalidOperationException("DataLength is too big.");
             buffer[offset++] = (byte)DataLength;
             WriteData(buffer, ref offset);
         }
