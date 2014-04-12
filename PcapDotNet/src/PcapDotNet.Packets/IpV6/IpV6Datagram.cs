@@ -173,24 +173,6 @@ namespace PcapDotNet.Packets.IpV6
             }
             _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
             _isValid = _isValid && _extensionHeaders.IsValid;
-/*
-            int extendedHeaderLength = HeaderLength;
-            IpV4Protocol? nextHeader = NextHeader;
-            while (extendedHeaderLength + 8 <= RealPayloadLength && nextHeader.HasValue && IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value))
-            {
-                int numBytesRead;
-                IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader.Value,
-                                                                                         Subsegment(extendedHeaderLength, Length - extendedHeaderLength),
-                                                                                         out numBytesRead);
-                if (extensionHeader == null)
-                    break;
-                nextHeader = extensionHeader.NextHeader;
-                extendedHeaderLength += numBytesRead;
-            }
-            _extensionHeadersLength = extendedHeaderLength - HeaderLength;
-            _extensionHeaders = extensionHeaders.AsReadOnly();
-            _isValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value));
- */
         }
 
         /// <summary>
