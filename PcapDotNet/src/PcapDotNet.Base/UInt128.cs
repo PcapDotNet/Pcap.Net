@@ -95,8 +95,6 @@ namespace PcapDotNet.Base
         /// <returns>The 64 bit value converted from the 128 bit value.</returns>
         public static explicit operator ulong(UInt128 value)
         {
-            if (value._mostSignificant != 0)
-                throw new OverflowException("Value was too large for a UInt64.");
             return value._leastSignificant;
         }
 
