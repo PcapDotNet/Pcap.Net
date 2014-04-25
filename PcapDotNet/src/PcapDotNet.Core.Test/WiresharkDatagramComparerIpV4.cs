@@ -22,38 +22,66 @@ namespace PcapDotNet.Core.Test
             {
                 case "ip.version":
                     field.AssertShowDecimal(ipV4Datagram.Version);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.hdr_len":
                     field.AssertShowDecimal(ipV4Datagram.HeaderLength);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.dsfield":
                     field.AssertShowDecimal((int)ipV4Datagram.TypeOfService);
+                    // TODO: Parse TypeOfService to Differentiated Services and ECN.
                     break;
 
                 case "ip.len":
                     field.AssertShowDecimal(ipV4Datagram.TotalLength);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.id":
                     field.AssertShowHex(ipV4Datagram.Identification);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.flags":
                     field.AssertShowHex((byte)((ushort)ipV4Datagram.Fragmentation.Options >> 13));
+                    foreach (XElement subfield in field.Fields())
+                    {
+                        subfield.AssertNoFields();
+                        switch (subfield.Name())
+                        {
+                            case "ip.flags.rb":
+                                break;
+
+                            case "ip.flags.df":
+                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.DoNotFragment) == IpV4FragmentationOptions.DoNotFragment);
+                                break;
+
+                            case "ip.flags.mf":
+                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.MoreFragments) == IpV4FragmentationOptions.MoreFragments);
+                                break;
+
+                            default:
+                                throw new InvalidOperationException(string.Format("Invalid ip flags subfield {0}", subfield.Name()));
+                        }
+                    }
                     break;
 
                 case "ip.frag_offset":
                     field.AssertShowDecimal(ipV4Datagram.Fragmentation.Offset);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.ttl":
                     field.AssertShowDecimal(ipV4Datagram.Ttl);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.proto":
                     field.AssertShowDecimal((byte)ipV4Datagram.Protocol);
+                    field.AssertNoFields();
                     break;
 
                 case "ip.checksum":
@@ -64,6 +92,7 @@ namespace PcapDotNet.Core.Test
                         {
                             case "ip.checksum_good":
                                 checksumField.AssertShowDecimal(ipV4Datagram.IsHeaderChecksumCorrect);
+                                checksumField.AssertNoFields();
                                 break;
 
                             case "ip.checksum_bad":
@@ -72,6 +101,7 @@ namespace PcapDotNet.Core.Test
                                     break;
 
                                 checksumField.AssertShowDecimal(!ipV4Datagram.IsHeaderChecksumCorrect);
+                                checksumField.AssertNoFields();
                                 break;
                         }
                     }
@@ -80,6 +110,7 @@ namespace PcapDotNet.Core.Test
                 case "ip.src":
                 case "ip.src_host":
                     field.AssertShow(ipV4Datagram.Source.ToString());
+                    field.AssertNoFields();
                     break;
 
                 case "ip.dst":
@@ -92,6 +123,7 @@ namespace PcapDotNet.Core.Test
                                       string.Format("Expected destination: {0}. Destination: {1}. Current destination: {2}.", field.Show(),
                                                     ipV4Datagram.Destination, ipV4Datagram.CurrentDestination));
                     }
+                    field.AssertNoFields();
                     break;
 
                 case "ip.addr":
@@ -105,6 +137,7 @@ namespace PcapDotNet.Core.Test
                                        ? string.Format("Source: {0}. Destination: {1}. Current destination: {2}.", ipV4Datagram.Source,
                                                        ipV4Datagram.Destination, ipV4Datagram.CurrentDestination)
                                        : ""));
+                    field.AssertNoFields();
                     break;
 
                 case "":
@@ -112,7 +145,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 default:
-                    throw new InvalidOperationException("Invalid ip field " + field.Name());
+                    throw new InvalidOperationException(string.Format("Invalid ip field {0}", field.Name()));
             }
 
             return true;
