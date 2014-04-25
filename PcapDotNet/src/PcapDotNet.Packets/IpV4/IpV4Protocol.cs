@@ -221,7 +221,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         IntegratedNetLayerSecurityProtocol = 0x34,
         /// <summary>
-        /// IP with Encryption   
+        /// IP with Encryption.
         /// </summary>
         Swipe = 0x35,
         /// <summary>

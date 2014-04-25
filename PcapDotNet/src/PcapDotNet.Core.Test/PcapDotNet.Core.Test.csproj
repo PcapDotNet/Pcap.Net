@@ -85,6 +85,9 @@
     <Compile Include="WiresharkDatagramComparerIcmp.cs" />
     <Compile Include="WiresharkDatagramComparerIgmp.cs" />
     <Compile Include="WiresharkDatagramComparerIpV4.cs" />
+    <Compile Include="WiresharkDatagramComparerIpV6.cs" />
+    <Compile Include="WiresharkDatagramComparerIpV6AuthenticationHeader.cs" />
+    <Compile Include="WiresharkDatagramComparerIpV6MobilityHeader.cs" />
     <Compile Include="WiresharkDatagramComparerSimple.cs" />
     <Compile Include="WiresharkDatagramComparerTcp.cs" />
     <Compile Include="WiresharkDatagramComparerUdp.cs" />

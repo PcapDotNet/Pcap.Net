@@ -14,6 +14,7 @@ using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
@@ -233,7 +234,7 @@ namespace PcapDotNet.Core.Test
             }
 
             ethernetBaseLayer.EtherType = EthernetType.None;
-            switch (random.NextInt(0, 5))
+            switch (random.NextInt(0, 7))
             {
                 case 0: // VLanTaggedFrame.
                 case 1:
@@ -253,7 +254,14 @@ namespace PcapDotNet.Core.Test
                 case 4:
                     IpV4Layer ipV4Layer = random.NextIpV4Layer();
                     layers.Add(ipV4Layer);
-                    CreateRandomIpV4Payload(random, ipV4Layer, layers);
+                    CreateRandomIpPayload(random, ipV4Layer, layers);
+                    return;
+
+                case 5: // IPv6
+                case 6:
+                    IpV6Layer ipV6Layer = random.NextIpV6Layer();
+                    layers.Add(ipV6Layer);
+                    CreateRandomIpPayload(random, ipV6Layer, layers);
                     return;
 
                 default:
@@ -261,8 +269,16 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        private static void CreateRandomIpV4Payload(Random random, IpV4Layer ipV4Layer, List<ILayer> layers)
+        private static void CreateRandomIpPayload(Random random, Layer ipLayer, List<ILayer> layers)
         {
+            IpV6Layer ipV6Layer = ipLayer as IpV6Layer;
+            if (ipV6Layer != null)
+            {
+                var headers = ipV6Layer.ExtensionHeaders.Headers;
+                if (headers.Any() && headers.Last().Protocol == IpV4Protocol.EncapsulatingSecurityPayload)
+                    return;
+            }
+
             if (random.NextBool(20))
             {
                 // Finish with payload.
@@ -271,44 +287,55 @@ namespace PcapDotNet.Core.Test
                 return;
             }
 
-            ipV4Layer.Protocol = null;
-            if (random.NextBool())
-                ipV4Layer.Fragmentation = IpV4Fragmentation.None;
+            IpV4Layer ipV4Layer = ipLayer as IpV4Layer;
+            if (ipV4Layer != null)
+            {
+                ipV4Layer.Protocol = null;
+                if (random.NextBool())
+                    ipV4Layer.Fragmentation = IpV4Fragmentation.None;
+            }
 
-            switch (random.Next(0, 9))
+            switch (random.Next(0, 11))
             {
                 case 0: // IpV4.
                 case 1:
                     IpV4Layer innerIpV4Layer = random.NextIpV4Layer();
                     layers.Add(innerIpV4Layer);
-                    CreateRandomIpV4Payload(random, innerIpV4Layer, layers);
+                    CreateRandomIpPayload(random, innerIpV4Layer, layers);
                     return;
 
-                case 2: // Igmp.
+                case 2: // IpV6.
+                case 3:
+                    IpV6Layer innerIpV6Layer = random.NextIpV6Layer();
+                    layers.Add(innerIpV6Layer);
+                    CreateRandomIpPayload(random, innerIpV6Layer, layers);
+                    return;
+
+                case 4: // Igmp.
                     layers.Add(random.NextIgmpLayer());
                     return;
 
-                case 3: // Icmp.
+                case 5: // Icmp.
                     IcmpLayer icmpLayer = random.NextIcmpLayer();
                     layers.Add(icmpLayer);
                     layers.AddRange(random.NextIcmpPayloadLayers(icmpLayer));
                     return;
 
-                case 4: // Gre.
+                case 6: // Gre.
                     GreLayer greLayer = random.NextGreLayer();
                     layers.Add(greLayer);
                     CreateRandomEthernetPayload(random, greLayer, layers);
                     return;
                     
-                case 5: // Udp.
-                case 6:
+                case 7: // Udp.
+                case 8:
                     UdpLayer udpLayer = random.NextUdpLayer();
                     layers.Add(udpLayer);
                     CreateRandomUdpPayload(random, udpLayer, layers);
                     return;
 
-                case 7: // Tcp.
-                case 8:
+                case 9: // Tcp.
+                case 10:
                     TcpLayer tcpLayer = random.NextTcpLayer();
                     layers.Add(tcpLayer);
                     CreateRandomTcpPayload(random, tcpLayer, layers);
@@ -438,7 +465,7 @@ namespace PcapDotNet.Core.Test
 
             try
             {
-                Compare(XDocument.Load(fixedDocumentFilename,LoadOptions.None), packets);
+                Compare(XDocument.Load(fixedDocumentFilename, LoadOptions.None), packets);
             }
             catch (AssertFailedException exception)
             {
@@ -482,14 +509,20 @@ namespace PcapDotNet.Core.Test
         private static void ComparePacket(Packet packet, XElement documentPacket)
         {
             object currentDatagram = packet;
-            CompareProtocols(currentDatagram, documentPacket);
+            CompareProtocols(currentDatagram, documentPacket, true);
         }
 
-        internal static void CompareProtocols(object currentDatagram, XElement layersContainer)
+        internal static void CompareProtocols(object currentDatagram, XElement layersContainer, bool parentLayerSuccess)
         {
+            Dictionary<string, int> layerNameToCount = new Dictionary<string, int>();
             foreach (var layer in layersContainer.Protocols())
             {
-                switch (layer.Name())
+                string layerName = layer.Name();
+                if (!layerNameToCount.ContainsKey(layerName))
+                    layerNameToCount[layerName] = 1;
+                else
+                    ++layerNameToCount[layerName];
+                switch (layerName)
                 {
                     case "geninfo":
                     case "raw":
@@ -500,7 +533,7 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     default:
-                        var comparer = WiresharkDatagramComparer.GetComparer(layer.Name());
+                        var comparer = WiresharkDatagramComparer.GetComparer(layer.Name(), layerNameToCount[layerName], parentLayerSuccess);
                         if (comparer == null)
                             return;
                         currentDatagram = comparer.Compare(layer, currentDatagram);

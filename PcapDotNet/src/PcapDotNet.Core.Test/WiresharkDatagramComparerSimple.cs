@@ -10,6 +10,6 @@ namespace PcapDotNet.Core.Test
             return CompareField(field, datagram);
         }
 
-        protected abstract bool CompareField(XElement field, Datagram parentDatagram);
+        protected abstract bool CompareField(XElement field, Datagram datagram);
     }
 }

@@ -143,6 +143,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override string ToString()
         {
+            return ToString(CultureInfo.InvariantCulture);
             string valueString = _value.ToString("X33", CultureInfo.InvariantCulture).Substring(1);
             StringBuilder stringBuilder = new StringBuilder(39);
             for (int i = 0; i != 8; ++i)
@@ -150,6 +151,31 @@ namespace PcapDotNet.Packets.IpV6
                 if (i != 0)
                     stringBuilder.Append(':');
                 stringBuilder.Append(valueString.Substring(i * 4, 4));
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public string ToString(string format)
+        {
+            return ToString(format, CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            return ToString("X4", CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(string format, IFormatProvider provider)
+        {
+            StringBuilder stringBuilder = new StringBuilder(39);
+            for (int i = 0; i != 8; ++i)
+            {
+                if (i != 0)
+                    stringBuilder.Append(':');
+                ushort part = (ushort)(_value >> (16 * (7 - i)));
+                stringBuilder.Append(part.ToString(format, provider));
+
             }
 
             return stringBuilder.ToString();

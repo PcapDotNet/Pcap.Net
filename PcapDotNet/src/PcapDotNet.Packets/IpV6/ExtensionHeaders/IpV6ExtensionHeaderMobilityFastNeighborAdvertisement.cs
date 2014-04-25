@@ -15,7 +15,9 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-------------+-------------------------+
     /// | 32  | Checksum                              |
     /// +-----+---------------------------------------+
-    /// | 48  | Mobility Options                      |
+    /// | 48  | Reserved                              |
+    /// +-----+---------------------------------------+
+    /// | 64  | Mobility Options                      |
     /// | ... |                                       |
     /// +-----+---------------------------------------+
     /// </pre>
@@ -24,7 +26,7 @@ namespace PcapDotNet.Packets.IpV6
     {
         private static class MessageDataOffset
         {
-            public const int Options = 0;
+            public const int Options = sizeof(ushort);
         }
 
         public const int MinimumMessageDataLength = MessageDataOffset.Options;

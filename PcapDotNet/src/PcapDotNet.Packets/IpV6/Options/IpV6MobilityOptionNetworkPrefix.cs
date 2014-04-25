@@ -25,8 +25,8 @@ namespace PcapDotNet.Packets.IpV6
     {
         private static class Offset
         {
-            public const int PrefixLength = sizeof(ushort);
-            public const int NetworkPrefix = PrefixLength + sizeof(ushort);
+            public const int PrefixLength = sizeof(byte);
+            public const int NetworkPrefix = PrefixLength + sizeof(byte);
         }
 
         public const int OptionDataLength = Offset.NetworkPrefix + IpV6Address.SizeOf;
