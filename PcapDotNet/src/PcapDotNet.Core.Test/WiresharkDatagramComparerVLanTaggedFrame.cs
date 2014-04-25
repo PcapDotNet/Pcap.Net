@@ -42,7 +42,7 @@ namespace PcapDotNet.Core.Test
                     if (
                         !new[] {(EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)30, (EthernetType)43, (EthernetType)50}.Contains(
                             vLanTaggedFrameDatagram.EtherType))
-                        field.AssertValue(vLanTaggedFrameDatagram.Trailer);
+                        field.AssertValue(vLanTaggedFrameDatagram.TrailerWithFrameCheckSequence);
                     break;
 
                 default:

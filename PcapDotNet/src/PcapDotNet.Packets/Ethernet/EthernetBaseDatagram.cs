@@ -34,17 +34,31 @@ namespace PcapDotNet.Packets.Ethernet
         /// If we don't know how to calculate the actual payload length <see langword="null"/> will be returned.
         /// The trailer doesn't include the <see cref="FrameCheckSequence"/> if it exists.
         /// </summary>
-        public Datagram Trailer
+        public DataSegment Trailer
         {
             get
             {
-                Datagram payloadByEtherType = PayloadByEtherType;
+                DataSegment trailerWithFrameCheckSequence = TrailerWithFrameCheckSequence;
+                if (trailerWithFrameCheckSequence == null)
+                    return null;
+
+                DataSegment frameCheckSequence = FrameCheckSequence;
+                if (frameCheckSequence == null)
+                    return trailerWithFrameCheckSequence;
+                return trailerWithFrameCheckSequence.Subsegment(0, trailerWithFrameCheckSequence.Length - frameCheckSequence.Length);
+            }
+        }
+
+        public DataSegment TrailerWithFrameCheckSequence
+        {
+            get
+            {
+                DataSegment payloadByEtherType = PayloadByEtherType;
                 if (payloadByEtherType == null)
                     return null;
 
                 int payloadLength = PayloadByEtherType.Length;
-                Datagram fcs = FrameCheckSequence;
-                return new Datagram(Buffer, StartOffset + HeaderLength + payloadLength, Length - HeaderLength - payloadLength - (fcs == null ? 0 : fcs.Length));
+                return new DataSegment(Buffer, StartOffset + HeaderLength + payloadLength, Length - HeaderLength - payloadLength);
             }
         }
 
@@ -54,16 +68,19 @@ namespace PcapDotNet.Packets.Ethernet
         /// We assume they exist when we see that the Ethernet padding pads to 68 bytes or more.
         /// If the padding isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
         /// </summary>
-        public Datagram FrameCheckSequence
+        public DataSegment FrameCheckSequence
         {
             get
             {
-                Datagram payloadByEtherType = PayloadByEtherType;
-                if (payloadByEtherType == null)
+                if (Length < 68)
                     return null;
 
-                if (Length - HeaderLength - payloadByEtherType.Length >= 4 && Length >= 68)
-                    return new Datagram(Buffer, Length - 4, 4);
+                DataSegment trailerWithFrameCheckSequence = TrailerWithFrameCheckSequence;
+                if (trailerWithFrameCheckSequence == null)
+                    return null;
+
+                if (trailerWithFrameCheckSequence.Length >= 4)
+                    return trailerWithFrameCheckSequence.Subsegment(trailerWithFrameCheckSequence.Length - 4, 4);
                 return null;
             }
         }
