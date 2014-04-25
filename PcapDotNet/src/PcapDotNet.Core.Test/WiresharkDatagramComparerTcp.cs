@@ -184,7 +184,8 @@ namespace PcapDotNet.Core.Test
                     Assert.IsTrue(
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
                         field.Show().Contains("bytes says option goes past end of options") ||
-                        field.Show().Contains(") (with too-short option length = "),
+                        field.Show().Contains(") (with too-short option length = ") ||
+                        field.Show().EndsWith(" (length byte past end of options)"),
                         "Options show: " + field.Show());
                     Assert.AreEqual(options.Count, currentOptionIndex, "Options Count");
                     return;
