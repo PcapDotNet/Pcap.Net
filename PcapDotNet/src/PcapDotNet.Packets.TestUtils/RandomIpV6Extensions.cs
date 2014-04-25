@@ -143,13 +143,14 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IpV6MobilityHeaderType.BindingUpdate: // 5
                     return new IpV6ExtensionHeaderMobilityBindingUpdate(nextHeader, checksum, random.NextUShort(), random.NextBool(), random.NextBool(),
-                                                                        random.NextBool(), random.NextBool(), random.NextUShort(),
-                                                                        random.NextIpV6MobilityOptions());
+                                                                        random.NextBool(), random.NextBool(), random.NextBool(), random.NextBool(),
+                                                                        random.NextBool(), random.NextBool(), random.NextBool(), random.NextBool(),
+                                                                        random.NextUShort(), random.NextIpV6MobilityOptions());
 
                 case IpV6MobilityHeaderType.BindingAcknowledgement: // 6
                     return new IpV6ExtensionHeaderMobilityBindingAcknowledgement(nextHeader, checksum, random.NextEnum<IpV6BindingAcknowledgementStatus>(),
-                                                                                 random.NextBool(), random.NextUShort(), random.NextUShort(),
-                                                                                 random.NextIpV6MobilityOptions());
+                                                                                 random.NextBool(), random.NextBool(), random.NextBool(), random.NextBool(),
+                                                                                 random.NextUShort(), random.NextUShort(), random.NextIpV6MobilityOptions());
 
                 case IpV6MobilityHeaderType.BindingError: // 7
                     return new IpV6ExtensionHeaderMobilityBindingError(nextHeader, checksum, random.NextEnum<IpV6BindingErrorStatus>(), random.NextIpV6Address(),
@@ -343,8 +344,11 @@ namespace PcapDotNet.Packets.TestUtils
                                                                   random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6MobilityOptionType.MobileNodeIdentifier:
-                    return new IpV6MobilityOptionMobileNodeIdentifier(random.NextEnum<IpV6MobileNodeIdentifierSubtype>(),
-                                                                      random.NextDataSegment(random.NextInt(0, 100)));
+                    IpV6MobileNodeIdentifierSubtype mobileNodeIdentifierSubtype = random.NextEnum<IpV6MobileNodeIdentifierSubtype>();
+                    return new IpV6MobilityOptionMobileNodeIdentifier(
+                        mobileNodeIdentifierSubtype,
+                        random.NextDataSegment(random.NextInt(mobileNodeIdentifierSubtype == IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier ? 1 : 0,
+                                                              100)));
 
                 case IpV6MobilityOptionType.Authentication:
                     return new IpV6MobilityOptionAuthentication(random.NextEnum<IpV6AuthenticationSubtype>(), random.NextUInt(),
@@ -382,7 +386,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6MobilityOptionVendorSpecific(random.NextUInt(), random.NextByte(), random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6MobilityOptionType.ServiceSelection:
-                    return new IpV6MobilityOptionServiceSelection(random.NextDataSegment(random.NextInt(0, 100)));
+                    return new IpV6MobilityOptionServiceSelection(random.NextDataSegment(random.NextInt(1, 100)));
 
                 case IpV6MobilityOptionType.BindingAuthorizationDataForFmIpV6:
                     return new IpV6MobilityOptionBindingAuthorizationDataForFmIpV6(random.NextUInt(), random.NextDataSegment(random.NextInt(0, 100)));
@@ -530,7 +534,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6FlowIdentificationSubOptionBindingReference(((Func<ushort>)(random.NextUShort)).GenerateArray(random.NextInt(0, 10)));
 
                 case IpV6FlowIdentificationSubOptionType.TrafficSelector:
-                    return new IpV6FlowIdentificationSubOptionTrafficSelector(random.NextEnum<IpV6FlowIdentificationTrafficSelectorFormat>(), random.NextDataSegment(random.NextInt(0, 50)));
+                    return new IpV6FlowIdentificationSubOptionTrafficSelector(random.NextEnum<IpV6FlowIdentificationTrafficSelectorFormat>(), random.NextDataSegment(random.NextInt(0, 40)));
 
                 default:
                     throw new InvalidOperationException(string.Format("Invalid optionType value {0}", optionType));

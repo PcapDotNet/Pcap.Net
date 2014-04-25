@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -16,9 +18,16 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ServiceSelection)]
     public sealed class IpV6MobilityOptionServiceSelection : IpV6MobilityOptionSingleDataSegmentField
     {
+        public const int MinIdentifierLength = 1;
+        public const int MaxIdentifierLength = 255;
+
         public IpV6MobilityOptionServiceSelection(DataSegment data)
             : base(IpV6MobilityOptionType.ServiceSelection, data)
         {
+            if (data.Length < MinIdentifierLength || data.Length > MaxIdentifierLength)
+                throw new ArgumentOutOfRangeException("data", data,
+                                                      string.Format("Identifier length must be at least {0} bytes long and at most {1} bytes long.",
+                                                                    MinIdentifierLength, MaxIdentifierLength));
         }
 
         /// <summary>
@@ -37,11 +46,14 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
+            if (data.Length < MinIdentifierLength || data.Length > MaxIdentifierLength)
+                return null;
+
             return new IpV6MobilityOptionServiceSelection(data);
         }
 
         private IpV6MobilityOptionServiceSelection()
-            : this(DataSegment.Empty)
+            : this(new DataSegment(new byte[1]))
         {
         }
     }

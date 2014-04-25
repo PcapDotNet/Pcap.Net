@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressReply)]
-    public sealed class IpV6MobilityOptionIpV4HomeAddressReply : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4HomeAddressReply : IpV6MobilityOptionComplex, IIpV6MobilityOptionIpV4HomeAddress
     {
         public const byte MaxPrefixLength = 0x3F;
 

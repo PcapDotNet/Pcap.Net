@@ -84,7 +84,7 @@ namespace PcapDotNet.Packets.IpV6
             {
                 if (!Headers.Any())
                     return null;
-                return Headers[Headers.Count - 1].Protocol;
+                return Headers[Headers.Count - 1].NextHeader;
             }
         }
 

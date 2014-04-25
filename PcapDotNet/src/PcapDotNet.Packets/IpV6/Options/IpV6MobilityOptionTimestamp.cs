@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -33,6 +35,22 @@ namespace PcapDotNet.Packets.IpV6
             get { return Value; }
         }
 
+        public double TimestampSeconds
+        {
+            get { return (Timestamp >> 16) + (Timestamp & 0xFFFF) / 65536.0; }
+        }
+
+        public DateTime TimestampDateTime
+        {
+            get
+            {
+                double seconds = TimestampSeconds;
+                if (seconds >= MaxSecondsSinceEpcohTimeForDateTime)
+                    return DateTime.MaxValue;
+                return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(seconds);
+            }
+        }
+
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
             ulong timestamp;
@@ -46,5 +64,7 @@ namespace PcapDotNet.Packets.IpV6
             : this(0)
         {
         }
+
+        private static readonly double MaxSecondsSinceEpcohTimeForDateTime = (DateTime.MaxValue - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
     }
 }

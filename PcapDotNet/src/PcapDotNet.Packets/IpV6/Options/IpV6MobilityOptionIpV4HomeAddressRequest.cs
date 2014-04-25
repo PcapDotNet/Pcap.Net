@@ -5,6 +5,15 @@ namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
     /// RFC 5844.
+    /// </summary>
+    public interface IIpV6MobilityOptionIpV4HomeAddress
+    {
+        byte PrefixLength { get; }
+        IpV4Address HomeAddress { get; }
+    }
+
+    /// <summary>
+    /// RFC 5844.
     /// <pre>
     /// +-----+------------+-----+--------------+
     /// | Bit | 0-5        | 6-7 | 8-15         |
@@ -19,7 +28,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressRequest)]
-    public sealed class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex, IIpV6MobilityOptionIpV4HomeAddress
     {
         public const byte MaxPrefixLength = 0x3F;
 

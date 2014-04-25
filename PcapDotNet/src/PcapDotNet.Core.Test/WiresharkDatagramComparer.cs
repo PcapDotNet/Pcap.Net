@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Xml.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
@@ -9,11 +10,20 @@ namespace PcapDotNet.Core.Test
     {
         public Datagram Compare(XElement layer, object datagramParent)
         {
-            PropertyInfo property = datagramParent.GetType().GetProperty(PropertyName);
-            if (property == null)
-                return null;
+            Datagram datagram;
+            if (PropertyName == "")
+            {
+                datagram = (Datagram)datagramParent;
+                datagramParent = null;
+            }
+            else
+            {
+                PropertyInfo property = datagramParent.GetType().GetProperty(PropertyName);
+                if (property == null)
+                    return null;
 
-            Datagram datagram = (Datagram)property.GetValue(datagramParent);
+                datagram = (Datagram)property.GetValue(datagramParent);
+            }
             if (Ignore(datagram))
                 return null;
 
@@ -32,16 +42,20 @@ namespace PcapDotNet.Core.Test
 
         protected void CompareDatagram(XElement layer, Datagram parentDatagram, Datagram datagram)
         {
-            foreach (var field in layer.Fields())
+            bool success = true;
+            foreach (var element in layer.Fields())
             {
-                if (!CompareField(field, parentDatagram, datagram))
+                if (!CompareField(element, parentDatagram, datagram))
+                {
+                    success = false;
                     break;
+                }
             }
 
-            WiresharkCompareTests.CompareProtocols(datagram, layer);
+            WiresharkCompareTests.CompareProtocols(datagram, layer, success);
         }
 
-        public static WiresharkDatagramComparer GetComparer(string name)
+        public static WiresharkDatagramComparer GetComparer(string name, int count, bool parentLayerSuccess)
         {
             switch (name)
             {
@@ -56,6 +70,17 @@ namespace PcapDotNet.Core.Test
 
                 case "ip":
                     return new WiresharkDatagramComparerIpV4();
+
+                case "ipv6":
+                    return new WiresharkDatagramComparerIpV6();
+
+                case "ah":
+                    if (parentLayerSuccess)
+                        return new WiresharkDatagramComparerIpV6AuthenticationHeader(count);
+                    return null;
+
+                case "mipv6":
+                    return new WiresharkDatagramComparerIpV6MobilityHeader();
 
                 case "igmp":
                     return new WiresharkDatagramComparerIgmp();

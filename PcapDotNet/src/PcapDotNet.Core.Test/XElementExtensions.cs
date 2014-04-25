@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -167,6 +168,11 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(expectedValue, element.Value(), message ?? element.Name());
         }
 
+        public static void AssertValueInRange(this XElement element, string expectedMinimumValue, string expectedMaximumValue)
+        {
+            MoreAssert.IsInRange(expectedMinimumValue, expectedMaximumValue, element.Value());
+        }
+
         public static void AssertValue(this XElement element, IEnumerable<byte> expectedValue, string message = null)
         {
             element.AssertValue(expectedValue.BytesSequenceToHexadecimalString(), message);
@@ -187,9 +193,19 @@ namespace PcapDotNet.Core.Test
             element.AssertValue(expectedValue.ToString("x8"));
         }
 
+        public static void AssertValueInRange(this XElement element, uint expectedMinimumValue, uint expectedMaximumValue)
+        {
+            element.AssertValueInRange(expectedMinimumValue.ToString("x8"), expectedMaximumValue.ToString("x8"));
+        }
+
         public static void AssertValue(this XElement element, UInt48 expectedValue)
         {
             element.AssertValue(expectedValue.ToString("x12"));
+        }
+
+        public static void AssertValue(this XElement element, ulong expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x16"));
         }
 
         public static void AssertValue(this XElement element, SerialNumber32 expectedValue)

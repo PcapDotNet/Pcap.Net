@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -20,6 +22,8 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNodeIdentifier)]
     public sealed class IpV6MobilityOptionMobileNodeIdentifier : IpV6MobilityOptionComplex
     {
+        public const int MinNetworkAccessIdentifierLength = 1;
+
         private static class Offset
         {
             public const int Subtype = 0;
@@ -31,6 +35,10 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype subtype, DataSegment identifier)
             : base(IpV6MobilityOptionType.MobileNodeIdentifier)
         {
+            if (subtype == IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier && identifier.Length < MinNetworkAccessIdentifierLength)
+                throw new ArgumentOutOfRangeException("identifier", identifier,
+                                                      string.Format("Network Access Identifier must be at least {0} bytes long.",
+                                                                    MinNetworkAccessIdentifierLength));
             Subtype = subtype;
             Identifier = identifier;
         }
@@ -52,6 +60,8 @@ namespace PcapDotNet.Packets.IpV6
 
             IpV6MobileNodeIdentifierSubtype subtype = (IpV6MobileNodeIdentifierSubtype)data[Offset.Subtype];
             DataSegment identifier = data.Subsegment(Offset.Identifier, data.Length - Offset.Identifier);
+            if (subtype == IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier && identifier.Length < MinNetworkAccessIdentifierLength)
+                return null;
 
             return new IpV6MobilityOptionMobileNodeIdentifier(subtype, identifier);
         }
@@ -74,7 +84,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6MobilityOptionMobileNodeIdentifier()
-            : this(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier, DataSegment.Empty)
+            : this(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier, new DataSegment(new byte[1]))
         {
         }
 
