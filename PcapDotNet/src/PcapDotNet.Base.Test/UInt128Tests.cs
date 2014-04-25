@@ -89,22 +89,21 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException), AllowDerivedTypes = false)]
         public void CastToULongOverflow()
         {
             Random random = new Random();
             UInt128 value;
+            ulong overflow = random.NextULong(ulong.MaxValue);
             try
             {
-                 value = (UInt128)(((BigInteger)ulong.MaxValue) + random.NextULong(ulong.MaxValue) + 1);
+                value = (UInt128)(((BigInteger)ulong.MaxValue) + overflow + 1);
             }
             catch (Exception)
             {
                 Assert.Fail();
                 return;
             }
-            Assert.AreEqual(value, (ulong)value); 
-            Assert.Fail();
+            Assert.AreEqual(overflow, (ulong)value); 
         }
 
         [TestMethod]
