@@ -99,6 +99,8 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.IsIsOverIpV4 ||
                             protocol == IpV4Protocol.ComputerProtocolNetworkExecutive ||
                             protocol == IpV4Protocol.EncapsulationHeader ||
+                            protocol == IpV4Protocol.GatewayToGateway ||
+                            protocol == IpV4Protocol.SatMon ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 

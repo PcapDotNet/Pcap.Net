@@ -92,5 +92,28 @@ namespace PcapDotNet.Packets.Test
 //                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV6.Payload, "IP Payload");
             }
         }
+
+        [TestMethod]
+        public void AutomaticIpV6NextHeader()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer(), new UdpLayer());
+            Assert.AreEqual(IpV4Protocol.Udp, packet.Ethernet.IpV6.NextHeader);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void AutomaticIpV6NextHeaderNoNextLayer()
+        {
+            PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer());
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void AutomaticIpV6NextHeaderUnknownNextLayer()
+        {
+            PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer(), new PayloadLayer());
+            Assert.Fail();
+        }
     }
 }
