@@ -92,6 +92,13 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.Multiplexing ||
                             protocol == IpV4Protocol.Il ||
                             protocol == IpV4Protocol.MulticastTransportProtocol ||
+                            protocol == IpV4Protocol.AnyDistributedFileSystem ||
+                            protocol == IpV4Protocol.InteractiveAgentTransferProtocol ||
+                            protocol == IpV4Protocol.InternetPluribusPacketCore ||
+                            protocol == IpV4Protocol.InternetworkPacketExchangeInIp ||
+                            protocol == IpV4Protocol.IsIsOverIpV4 ||
+                            protocol == IpV4Protocol.ComputerProtocolNetworkExecutive ||
+                            protocol == IpV4Protocol.EncapsulationHeader ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 

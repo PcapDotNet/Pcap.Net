@@ -173,6 +173,8 @@ namespace PcapDotNet.Core.Test
 
                 case "ipv6.src_sa_mac":
                 case "ipv6.sa_mac":
+                case "ipv6.dst_6to4_gw_ipv4":
+                case "ipv6.dst_6to4_sla_id":
                     // TODO: Understand how these are calculated.
                     break;
 
