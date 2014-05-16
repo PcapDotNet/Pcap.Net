@@ -171,6 +171,11 @@ namespace PcapDotNet.Core.Test
                     // TODO: Fix according to https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=9996
                     return false;
 
+                case "ipv6.src_sa_mac":
+                case "ipv6.sa_mac":
+                    // TODO: Understand how these are calculated.
+                    break;
+
                 case "":
                     switch (field.Show())
                     {

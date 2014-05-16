@@ -84,7 +84,13 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.BackroomSatMon ||
                             protocol == IpV4Protocol.Iplt ||
                             protocol == IpV4Protocol.Any0HopProtocol ||
-                            protocol == IpV4Protocol.Leaf2||
+                            protocol == IpV4Protocol.Leaf2 ||
+                            protocol == IpV4Protocol.InterDomainPolicyRoutingProtocol ||
+                            protocol == IpV4Protocol.NationalScienceFoundationNetworkInteriorGatewayProtocol ||
+                            protocol == IpV4Protocol.WidebandExpak ||
+                            protocol == IpV4Protocol.Uti ||
+                            protocol == IpV4Protocol.Multiplexing ||
+                            protocol == IpV4Protocol.Il ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 
