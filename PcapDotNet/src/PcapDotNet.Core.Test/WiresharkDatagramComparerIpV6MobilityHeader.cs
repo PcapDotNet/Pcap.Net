@@ -76,6 +76,15 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.TransportLayerSecurityProtocol ||
                             protocol == IpV4Protocol.Ax25 ||
                             protocol == IpV4Protocol.CombatRadioTransportProtocol ||
+                            protocol == IpV4Protocol.PerformanceTransparencyProtocol ||
+                            protocol == IpV4Protocol.IntegratedNetLayerSecurityProtocol ||
+                            protocol == IpV4Protocol.DatagramDeliveryProtocol ||
+                            protocol == IpV4Protocol.PrivateNetworkToNetworkInterface ||
+                            protocol == IpV4Protocol.Pipe ||
+                            protocol == IpV4Protocol.BackroomSatMon ||
+                            protocol == IpV4Protocol.Iplt ||
+                            protocol == IpV4Protocol.Any0HopProtocol ||
+                            protocol == IpV4Protocol.Leaf2||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 

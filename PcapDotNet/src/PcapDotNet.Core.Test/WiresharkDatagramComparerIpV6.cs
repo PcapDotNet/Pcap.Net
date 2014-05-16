@@ -162,7 +162,8 @@ namespace PcapDotNet.Core.Test
                                                   ? ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex - 1].NextHeader.Value
                                                   : ipV6Datagram.NextHeader;
 
-                    Assert.AreEqual(IpV4Protocol.AnyHostInternal, nextHeader);
+                    Assert.IsTrue(nextHeader == IpV4Protocol.AnyHostInternal ||
+                                  nextHeader == IpV4Protocol.Shim6);
                     return false;
 
                 case "ipv6.unknown_hdr":
