@@ -91,6 +91,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.Uti ||
                             protocol == IpV4Protocol.Multiplexing ||
                             protocol == IpV4Protocol.Il ||
+                            protocol == IpV4Protocol.MulticastTransportProtocol ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 
