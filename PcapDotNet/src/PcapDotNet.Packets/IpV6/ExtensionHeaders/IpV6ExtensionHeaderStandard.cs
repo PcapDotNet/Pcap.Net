@@ -86,6 +86,7 @@ namespace PcapDotNet.Packets.IpV6
             DataSegment data = extensionHeaderData.Subsegment(Offset.Data, length - Offset.Data);
             numBytesRead = length;
 
+            // TODO: Implement Shim6.
             switch (nextHeader)
             {
                 case IpV4Protocol.IpV6HopByHopOption: // 0

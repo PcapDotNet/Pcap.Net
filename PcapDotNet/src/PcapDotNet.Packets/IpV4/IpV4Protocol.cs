@@ -567,6 +567,10 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Host Identity Protocol RFC 5201   
         /// </summary>
-        Hip = 0x8B
+        Hip = 0x8B,
+        /// <summary>
+        /// Shim6. RFC 5533.
+        /// </summary>
+        Shim6 = 0x8C,
     }
 }
