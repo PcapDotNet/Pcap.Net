@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6OptionTypeRegistration(IpV6OptionType.Calipso)]
-    public class IpV6OptionCalipso : IpV6OptionComplex, IIpV6OptionComplexFactory
+    public sealed class IpV6OptionCalipso : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
         {
@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int OptionDataMinimumLength = Offset.CompartmentBitmap;
         public const int CompartmentBitmapMaxLength = byte.MaxValue - OptionDataMinimumLength;
 
-        public IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, ushort checksum, DataSegment compartmentBitmap)
+        public IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, ushort? checksum, DataSegment compartmentBitmap)
             : base(IpV6OptionType.Calipso)
         {
             if (compartmentBitmap.Length % sizeof(int) != 0)
@@ -52,8 +52,11 @@ namespace PcapDotNet.Packets.IpV6
 
             DomainOfInterpretation = domainOfInterpretation;
             SensitivityLevel = sensitivityLevel;
-            Checksum = checksum;
             CompartmentBitmap = compartmentBitmap;
+            if (checksum.HasValue)
+                Checksum = checksum.Value;
+            else
+                Checksum = CalculateChecksum(DomainOfInterpretation, SensitivityLevel, CompartmentBitmap);
         }
 
         /// <summary>
@@ -66,7 +69,7 @@ namespace PcapDotNet.Packets.IpV6
         /// The minimum value is zero, which is used only when the information in this packet is not in any compartment.
         /// (In that situation, the CALIPSO Sensitivity Label has no need for a Compartment Bitmap).
         /// </summary>
-        public byte CompartmentLength { get { return (byte)(CompartmentLengthInBytes / sizeof(int)); } }
+        public byte CompartmentLength { get { return CalculateCompartmentLength(CompartmentBitmap); } }
 
         /// <summary>
         /// Specifies the size of the Compartment Bitmap field in bytes.
@@ -105,12 +108,7 @@ namespace PcapDotNet.Packets.IpV6
             {
                 if (_isChecksumCorrect == null)
                 {
-                    byte[] domainOfInterpretationBytes = new byte[sizeof(uint)];
-                    domainOfInterpretationBytes.Write(0, (uint)DomainOfInterpretation, Endianity.Big);
-                    ushort expectedValue =
-                        PppFrameCheckSequenceCalculator.CalculateFcs16(
-                            new byte[0].Concat((byte)OptionType, (byte)DataLength).Concat(domainOfInterpretationBytes)
-                                .Concat<byte>(CompartmentLength, SensitivityLevel, 0, 0).Concat(CompartmentBitmap));
+                    ushort expectedValue = CalculateChecksum(DomainOfInterpretation, SensitivityLevel, CompartmentBitmap);
                     _isChecksumCorrect = (Checksum == expectedValue);
                 }
 
@@ -134,11 +132,6 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment CompartmentBitmap { get; private set; }
 
-        internal override int DataLength
-        {
-            get { return OptionDataMinimumLength + CompartmentLengthInBytes; }
-        }
-
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
@@ -155,6 +148,11 @@ namespace PcapDotNet.Packets.IpV6
             DataSegment compartmentBitmap = data.Subsegment(Offset.CompartmentBitmap, compartmentLengthInBytes);
 
             return new IpV6OptionCalipso(domainOfInterpretation, sensitivityLevel, checksum, compartmentBitmap);
+        }
+
+        internal override int DataLength
+        {
+            get { return OptionDataMinimumLength + CompartmentLengthInBytes; }
         }
 
         internal override bool EqualsData(IpV6Option other)
@@ -181,6 +179,24 @@ namespace PcapDotNet.Packets.IpV6
             return other != null &&
                    DomainOfInterpretation == other.DomainOfInterpretation && CompartmentLength == other.CompartmentLength &&
                    SensitivityLevel == other.SensitivityLevel && Checksum == other.Checksum && CompartmentBitmap.Equals(CompartmentBitmap);
+        }
+
+        private static byte CalculateCompartmentLength(DataSegment compartmentBitmap)
+        {
+            return (byte)(compartmentBitmap.Length / sizeof(int));
+        }
+
+        private static ushort CalculateChecksum(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, DataSegment compartmentBitmap)
+        {
+            byte[] domainOfInterpretationBytes = new byte[sizeof(uint)];
+            domainOfInterpretationBytes.Write(0, (uint)domainOfInterpretation, Endianity.Big);
+            ushort checksum =
+                PppFrameCheckSequenceCalculator.CalculateFcs16(
+                    new byte[0].Concat((byte)IpV6OptionType.Calipso,
+                                       (byte)(OptionDataMinimumLength + compartmentBitmap.Length)).Concat(
+                                           domainOfInterpretationBytes)
+                        .Concat<byte>(CalculateCompartmentLength(compartmentBitmap), sensitivityLevel, 0, 0).Concat(compartmentBitmap));
+            return checksum;
         }
 
         private bool? _isChecksumCorrect;
