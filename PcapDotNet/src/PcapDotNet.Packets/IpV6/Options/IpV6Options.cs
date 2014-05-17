@@ -19,6 +19,11 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
+        public IpV6Options(params IpV6Option[] options)
+            : this((IList<IpV6Option>)options)
+        {
+        }
+
         public IpV6Options(DataSegment data) 
             : this(Read(data))
         {

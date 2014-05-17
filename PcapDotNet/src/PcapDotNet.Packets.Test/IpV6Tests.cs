@@ -115,5 +115,23 @@ namespace PcapDotNet.Packets.Test
             PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer(), new PayloadLayer());
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void IpV6OptionCalipsoChecksum()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer()
+                    {
+                        ExtensionHeaders = new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Udp,
+                                new IpV6Options(new IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation.Null, 0, null, DataSegment.Empty)))),
+                    },
+                new UdpLayer());
+            Assert.IsTrue(packet.IsValid);
+            Assert.IsTrue(((IpV6OptionCalipso)((IpV6ExtensionHeaderDestinationOptions)packet.Ethernet.IpV6.ExtensionHeaders[0]).Options[0]).IsChecksumCorrect);
+        }
     }
 }

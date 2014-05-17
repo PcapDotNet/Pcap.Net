@@ -93,12 +93,19 @@ namespace PcapDotNet.Packets.IpV6
             IpV4Protocol nextHeader;
             if (NextHeader == null)
             {
-                if (nextLayer == null)
-                    throw new ArgumentException("Can't determine protocol automatically from next layer because there is no next layer");
-                IIpV4NextLayer ipV4NextLayer = nextLayer as IIpV4NextLayer;
-                if (ipV4NextLayer == null)
-                    throw new ArgumentException("Can't determine protocol automatically from next layer (" + nextLayer.GetType() + ")");
-                nextHeader = ipV4NextLayer.PreviousLayerProtocol;
+                if (!ExtensionHeaders.IsNullOrEmpty())
+                {
+                    nextHeader = ExtensionHeaders[0].Protocol;
+                }
+                else
+                {
+                    if (nextLayer == null)
+                        throw new ArgumentException("Can't determine protocol automatically from next layer because there is no next layer");
+                    IIpV4NextLayer ipV4NextLayer = nextLayer as IIpV4NextLayer;
+                    if (ipV4NextLayer == null)
+                        throw new ArgumentException("Can't determine protocol automatically from next layer (" + nextLayer.GetType() + ")");
+                    nextHeader = ipV4NextLayer.PreviousLayerProtocol;
+                }
             }
             else
             {
