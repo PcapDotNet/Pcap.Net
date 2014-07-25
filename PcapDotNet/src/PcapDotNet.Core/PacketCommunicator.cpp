@@ -309,7 +309,7 @@ Packet^ PacketCommunicator::CreatePacket(const pcap_pkthdr& packetHeader, const 
     DateTime timestamp;
     PacketTimestamp::PcapTimestampToDateTime(packetHeader.ts, timestamp);
 
-    array<Byte>^ managedPacketData = MarshalingServices::UnamangedToManagedByteArray(packetData, 0, packetHeader.caplen);
+    array<Byte>^ managedPacketData = MarshalingServices::UnmanagedToManagedByteArray(packetData, 0, packetHeader.caplen);
     return gcnew Packet(managedPacketData, timestamp, dataLink);
 }
 
