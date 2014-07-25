@@ -33,7 +33,7 @@ std::wstring MarshalingServices::ManagedToUnmanagedWideString(String^ managedStr
 }
 
 // static 
-array<Byte>^ MarshalingServices::UnamangedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count)
+array<Byte>^ MarshalingServices::UnmanagedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count)
 {
     array<Byte>^ managedBytes = gcnew array<Byte>(count);
     Marshal::Copy((IntPtr)const_cast<unsigned char*>(unmanagedByteArray), managedBytes, offset, count);

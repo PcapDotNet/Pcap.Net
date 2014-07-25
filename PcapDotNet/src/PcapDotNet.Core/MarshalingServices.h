@@ -11,7 +11,7 @@ namespace PcapDotNet { namespace Core
 
         static std::wstring ManagedToUnmanagedWideString(System::String^ managedString);
 
-        static array<System::Byte>^ UnamangedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count);
+        static array<System::Byte>^ UnmanagedToManagedByteArray(const unsigned char* unmanagedByteArray, int offset, int count);
 
     private:
         [System::Diagnostics::DebuggerNonUserCode]
