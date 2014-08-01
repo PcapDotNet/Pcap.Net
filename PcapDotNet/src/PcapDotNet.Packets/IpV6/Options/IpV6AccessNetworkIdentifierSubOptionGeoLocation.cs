@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -38,6 +39,14 @@ namespace PcapDotNet.Packets.IpV6
         {
             LatitudeDegrees = latitudeDegrees;
             LongitudeDegrees = longitudeDegrees;
+
+            double latitudeDegreesReal = LatitudeDegreesReal;
+            if (latitudeDegreesReal < -90 || latitudeDegreesReal > 90)
+                throw new ArgumentOutOfRangeException("latitudeDegrees", latitudeDegrees, string.Format("LatitudeDegreesReal is {0} and must be in [-90, 90] range.", latitudeDegreesReal));
+
+            double longtitudeDegreesReal = LongitudeDegreesReal;
+            if (longtitudeDegreesReal < -180 || longtitudeDegreesReal > 180)
+                throw new ArgumentOutOfRangeException("longitudeDegrees", longitudeDegrees, string.Format("LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
         }
 
         /// <summary>

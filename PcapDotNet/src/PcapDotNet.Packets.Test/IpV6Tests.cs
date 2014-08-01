@@ -83,6 +83,50 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
                 Assert.IsNotNull(ipV6Layer.GetHashCode());
                 Assert.AreEqual(string.Format("{0} -> {1} ({2})", ipV6Layer.Source, ipV6Layer.CurrentDestination, ipV6Layer.NextHeader), ipV6Layer.ToString());
+                foreach (IpV6ExtensionHeader extensionHeader in packet.Ethernet.IpV6.ExtensionHeaders)
+                {
+                    IpV6ExtensionHeaderMobility extensionHeaderMobility = extensionHeader as IpV6ExtensionHeaderMobility;
+                    if (extensionHeaderMobility != null)
+                    {
+                        foreach (IpV6MobilityOption option in extensionHeaderMobility.MobilityOptions)
+                        {
+                            switch (option.OptionType)
+                            {
+                                case IpV6MobilityOptionType.BindingIdentifier:
+                                    IpV6MobilityOptionBindingIdentifier optionBindingIdentifier = (IpV6MobilityOptionBindingIdentifier)option;
+                                    if (optionBindingIdentifier.IpV4CareOfAddress.HasValue)
+                                        Assert.AreEqual(optionBindingIdentifier.IpV4CareOfAddress.Value, optionBindingIdentifier.CareOfAddress);
+                                    else if (optionBindingIdentifier.IpV6CareOfAddress.HasValue)
+                                        Assert.AreEqual(optionBindingIdentifier.IpV6CareOfAddress.Value, optionBindingIdentifier.CareOfAddress);
+                                    else
+                                        Assert.IsNull(optionBindingIdentifier.CareOfAddress);
+                                    break;
+
+                                case IpV6MobilityOptionType.AccessNetworkIdentifier:
+                                    IpV6MobilityOptionAccessNetworkIdentifier optionAccessNetworkIdentifier = (IpV6MobilityOptionAccessNetworkIdentifier)option;
+                                    foreach (IpV6AccessNetworkIdentifierSubOption subOption in optionAccessNetworkIdentifier.SubOptions)
+                                    {
+                                        switch (subOption.OptionType)
+                                        {
+                                            case IpV6AccessNetworkIdentifierSubOptionType.GeoLocation:
+                                                IpV6AccessNetworkIdentifierSubOptionGeoLocation subOptionGeoLocation = (IpV6AccessNetworkIdentifierSubOptionGeoLocation)subOption;
+                                                MoreAssert.IsBiggerOrEqual(-90, subOptionGeoLocation.LatitudeDegreesReal);
+                                                MoreAssert.IsSmallerOrEqual(90, subOptionGeoLocation.LatitudeDegreesReal);
+                                                MoreAssert.IsBiggerOrEqual(-180, subOptionGeoLocation.LongitudeDegreesReal);
+                                                MoreAssert.IsSmallerOrEqual(180, subOptionGeoLocation.LongitudeDegreesReal);
+                                                break;
+                                        }
+                                    }
+                                    break;
+
+                                case IpV6MobilityOptionType.Timestamp:
+                                    IpV6MobilityOptionTimestamp optionTimestamp = (IpV6MobilityOptionTimestamp)option;
+                                    MoreAssert.IsBiggerOrEqual(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc), optionTimestamp.TimestampDateTime);
+                                    break;
+                            }
+                        }
+                    }
+                }
                 /*
                 if (packet.Ethernet.IpV6.NextHeader == IpV4Protocol.Tcp)
                     Assert.IsInstanceOfType(packet.Ethernet.IpV6.Transport, typeof(TcpDatagram));
@@ -124,7 +168,7 @@ namespace PcapDotNet.Packets.Test
             Packet packet = PacketBuilder.Build(
                 DateTime.Now,
                 new EthernetLayer(),
-                new IpV6Layer()
+                new IpV6Layer
                     {
                         ExtensionHeaders = new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderDestinationOptions(
@@ -134,6 +178,90 @@ namespace PcapDotNet.Packets.Test
                 new UdpLayer());
             Assert.IsTrue(packet.IsValid);
             Assert.IsTrue(((IpV6OptionCalipso)((IpV6ExtensionHeaderDestinationOptions)packet.Ethernet.IpV6.ExtensionHeaders[0]).Options[0]).IsChecksumCorrect);
+        }
+
+        [TestMethod]
+        public void IpV6AccessNetworkIdentifierSubOptionUnknown()
+        {
+            IpV6AccessNetworkIdentifierSubOptionUnknown subOption =
+                new IpV6AccessNetworkIdentifierSubOptionUnknown((IpV6AccessNetworkIdentifierSubOptionType)100, DataSegment.Empty);
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders = new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(
+                                    new IpV6MobilityOptionAccessNetworkIdentifier(
+                                        new IpV6AccessNetworkIdentifierSubOptions(subOption)))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(subOption,
+                            ((IpV6MobilityOptionAccessNetworkIdentifier)
+                             ((IpV6ExtensionHeaderMobility)packet.Ethernet.IpV6.ExtensionHeaders[0]).MobilityOptions[0]).SubOptions[0]);
+        }
+
+        [TestMethod]
+        public void IpV6FlowIdentificationSubOptionUnknown()
+        {
+            IpV6FlowIdentificationSubOptionUnknown subOption =
+                new IpV6FlowIdentificationSubOptionUnknown((IpV6FlowIdentificationSubOptionType)100, DataSegment.Empty);
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders = new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(
+                                    new IpV6MobilityOptionFlowIdentification(0, 0, IpV6FlowIdentificationStatus.FlowIdentifierNotFound,
+                                                                             new IpV6FlowIdentificationSubOptions(subOption)))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(subOption,
+                            ((IpV6MobilityOptionFlowIdentification)
+                             ((IpV6ExtensionHeaderMobility)packet.Ethernet.IpV6.ExtensionHeaders[0]).MobilityOptions[0]).SubOptions[0]);
+        }
+
+        [TestMethod]
+        public void IpV6OptionUnknown()
+        {
+            IpV6OptionUnknown option = new IpV6OptionUnknown((IpV6OptionType)0xBB, DataSegment.Empty);
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(IpV4Protocol.Skip, new IpV6Options(option)))
+                });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(option, ((IpV6ExtensionHeaderDestinationOptions)packet.Ethernet.IpV6.ExtensionHeaders[0]).Options[0]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeaderRoutingRplCommonPrefixLengthForNonLastAddressesTooBig()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaderRoutingRpl(IpV4Protocol.Skip, 0, 16, 0, new IpV6Address[0]));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeaderRoutingRplCommonPrefixLengthForLastAddressTooBig()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaderRoutingRpl(IpV4Protocol.Skip, 0, 0, 16, new IpV6Address[0]));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeadersEncapsulatingSecurityPayloadBeforeLast()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaders(new IpV6ExtensionHeaderEncapsulatingSecurityPayload(0, 0, DataSegment.Empty),
+                                                   new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Skip, 0, false, 0)));
         }
     }
 }

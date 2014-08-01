@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace PcapDotNet.Packets.Ip
     /// Represents a list of options (either IPv4 options, IPv6 options or TCP options).
     /// </summary>
     /// <typeparam name="T">The Option type this collection contains.</typeparam>
-    public abstract class Options<T> where T : Option, IEquatable<T>
+    public abstract class Options<T> : IEnumerable<T> where T : Option, IEquatable<T>
     {
         /// <summary>
         /// Returns the collection of options.
@@ -78,6 +79,16 @@ namespace PcapDotNet.Packets.Ip
         {
             return BytesLength.GetHashCode() ^
                    OptionsCollection.SequenceGetHashCode();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return OptionsCollection.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>

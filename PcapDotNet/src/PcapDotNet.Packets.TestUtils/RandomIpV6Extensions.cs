@@ -407,7 +407,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6MobilityOptionLinkLocalAddress(random.NextIpV6Address());
 
                 case IpV6MobilityOptionType.Timestamp:
-                    return new IpV6MobilityOptionTimestamp(random.NextULong());
+                    return new IpV6MobilityOptionTimestamp(random.NextULong() % (500000000000L << 16));
 
                 case IpV6MobilityOptionType.RestartCounter:
                     return new IpV6MobilityOptionRestartCounter(random.NextUInt());
@@ -516,7 +516,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IpV6FlowIdentificationSubOptions NextIpV6FlowIdentificationSubOptions(this Random random)
         {
-            return new IpV6FlowIdentificationSubOptions(((Func<IpV6FlowIdentificationSubOption>)(random.NextIpV6FlowIdentificationSubOption)).GenerateArray(random.NextInt(0, 10)));
+            return new IpV6FlowIdentificationSubOptions(((Func<IpV6FlowIdentificationSubOption>)(random.NextIpV6FlowIdentificationSubOption)).GenerateArray(random.NextInt(0, 9)));
         }
 
         public static IpV6FlowIdentificationSubOption NextIpV6FlowIdentificationSubOption(this Random random)
@@ -567,7 +567,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                                                      random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6AccessNetworkIdentifierSubOptionType.GeoLocation:
-                    return new IpV6AccessNetworkIdentifierSubOptionGeoLocation(random.NextUInt24(), random.NextUInt24());
+                    return new IpV6AccessNetworkIdentifierSubOptionGeoLocation((UInt24)(random.NextUInt24() & 0x9FFFFF), random.NextUInt24());
 
                 case IpV6AccessNetworkIdentifierSubOptionType.OperatorIdentifier:
                     return new IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier(random.NextEnum<IpV6AccessNetworkIdentifierOperatorIdentifierType>(),
