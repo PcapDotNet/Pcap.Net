@@ -81,6 +81,8 @@ namespace PcapDotNet.Packets.Test
 
                 // IpV6
                 Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
+                Assert.IsNotNull(ipV6Layer.GetHashCode());
+                Assert.AreEqual(ipV6Layer.Source + " -> " + ipV6Layer.CurrentDestination, ipV6Layer.ToString());
                 /*
                 if (packet.Ethernet.IpV6.NextHeader == IpV4Protocol.Tcp)
                     Assert.IsInstanceOfType(packet.Ethernet.IpV6.Transport, typeof(TcpDatagram));

@@ -93,9 +93,9 @@ namespace PcapDotNet.Packets.IpV6
             IpV4Protocol nextHeader;
             if (NextHeader == null)
             {
-                if (!ExtensionHeaders.IsNullOrEmpty())
+                if (ExtensionHeaders.FirstHeader != null)
                 {
-                    nextHeader = ExtensionHeaders[0].Protocol;
+                    nextHeader = ExtensionHeaders.FirstHeader.Value;
                 }
                 else
                 {
