@@ -101,6 +101,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.EncapsulationHeader ||
                             protocol == IpV4Protocol.GatewayToGateway ||
                             protocol == IpV4Protocol.SatMon ||
+                            protocol == IpV4Protocol.VersatileMessageTransactionProtocol ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 
