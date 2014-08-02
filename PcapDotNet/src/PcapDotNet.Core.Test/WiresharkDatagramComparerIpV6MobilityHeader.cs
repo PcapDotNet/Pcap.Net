@@ -107,6 +107,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.MeritInternodalProtocol ||
                             protocol == IpV4Protocol.Skip ||
                             protocol == IpV4Protocol.Bna ||
+                            protocol == IpV4Protocol.InterDomainRoutingProtocol ||
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 
