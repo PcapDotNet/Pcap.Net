@@ -90,6 +90,7 @@ namespace PcapDotNet.Packets.Test
                     {
                         Assert.IsFalse(extensionHeaderMobility.Equals(2));
                         Assert.IsTrue(extensionHeaderMobility.Equals((object)extensionHeader));
+                        Assert.AreEqual(extensionHeaderMobility.MobilityOptions, new IpV6MobilityOptions(extensionHeaderMobility.MobilityOptions).AsEnumerable());
                         foreach (IpV6MobilityOption option in extensionHeaderMobility.MobilityOptions)
                         {
                             switch (option.OptionType)
@@ -129,6 +130,23 @@ namespace PcapDotNet.Packets.Test
                                 case IpV6MobilityOptionType.Timestamp:
                                     IpV6MobilityOptionTimestamp optionTimestamp = (IpV6MobilityOptionTimestamp)option;
                                     MoreAssert.IsBiggerOrEqual(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc), optionTimestamp.TimestampDateTime);
+                                    break;
+
+                                case IpV6MobilityOptionType.FlowIdentification:
+                                    IpV6MobilityOptionFlowIdentification optionFlowIdentification = (IpV6MobilityOptionFlowIdentification)option;
+                                    foreach (IpV6FlowIdentificationSubOption subOption in optionFlowIdentification.SubOptions)
+                                    {
+                                        switch (subOption.OptionType)
+                                        {
+                                            case IpV6FlowIdentificationSubOptionType.BindingReference:
+                                                IpV6FlowIdentificationSubOptionBindingReference subOptionBindingReference =
+                                                    (IpV6FlowIdentificationSubOptionBindingReference)subOption;
+                                                Assert.AreEqual(subOptionBindingReference,
+                                                                new IpV6FlowIdentificationSubOptionBindingReference(
+                                                                    subOptionBindingReference.BindingIds.AsEnumerable()));
+                                            break;
+                                        }
+                                    }
                                     break;
                             }
                         }
@@ -378,6 +396,34 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNull(new IpV6ExtensionHeaderRoutingRpl(IpV4Protocol.Skip, 5, 4, 4,
                                                             new IpV6Address("0000:0000:9ABC:DEF0:1234:5678:9ABC:DEF0"),
                                                             new IpV6Address("0000:0001:9ABC:DEF0:1234:5678:9ABC:DEF0")));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void IpV6OptionCalipsoCompartmentBitmapDoesntDivideBy4()
+        {
+            Assert.IsNull(new IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation.Null, 0, null, new DataSegment(new byte[6])));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6OptionCalipsoCompartmentBitmapTooLong()
+        {
+            Assert.IsNull(new IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation.Null, 0, null, new DataSegment(new byte[248])));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6OptionSmfDpdDefaultTaggerIdTooLong()
+        {
+            Assert.IsNull(new IpV6OptionSmfDpdDefault(new DataSegment(new byte[17]), DataSegment.Empty));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6OptionSmfDpdDefaultTaggerIdTooShort()
+        {
+            Assert.IsNull(new IpV6OptionSmfDpdDefault(DataSegment.Empty, DataSegment.Empty));
         }
     }
 }
