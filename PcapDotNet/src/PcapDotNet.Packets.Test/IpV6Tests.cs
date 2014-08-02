@@ -88,6 +88,8 @@ namespace PcapDotNet.Packets.Test
                     IpV6ExtensionHeaderMobility extensionHeaderMobility = extensionHeader as IpV6ExtensionHeaderMobility;
                     if (extensionHeaderMobility != null)
                     {
+                        Assert.IsFalse(extensionHeaderMobility.Equals(2));
+                        Assert.IsTrue(extensionHeaderMobility.Equals((object)extensionHeader));
                         foreach (IpV6MobilityOption option in extensionHeaderMobility.MobilityOptions)
                         {
                             switch (option.OptionType)
@@ -353,6 +355,29 @@ namespace PcapDotNet.Packets.Test
         public void IpV6AccessNetworkIdentifierSubOptionGeoLocationCreateFromRealValuesLongtitudeTooSmall()
         {
             Assert.IsNull(IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(0, -180.1));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6AccessNetworkIdentifierSubOptionNetworkIdentifierNetworkNameTooLong()
+        {
+            Assert.IsNull(new IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier(false, new DataSegment(new byte[256]), DataSegment.Empty));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6AccessNetworkIdentifierSubOptionNetworkIdentifierAccessPointNameTooLong()
+        {
+            Assert.IsNull(new IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier(false, DataSegment.Empty, new DataSegment(new byte[256])));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeaderRoutingRplCommonPrefixNotCommon()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaderRoutingRpl(IpV4Protocol.Skip, 5, 4, 4,
+                                                            new IpV6Address("0000:0000:9ABC:DEF0:1234:5678:9ABC:DEF0"),
+                                                            new IpV6Address("0000:0001:9ABC:DEF0:1234:5678:9ABC:DEF0")));
         }
     }
 }
