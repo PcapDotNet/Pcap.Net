@@ -8,7 +8,7 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
 {
-    public class IpV6ExtensionHeaders : IEnumerable<IpV6ExtensionHeader>
+    public class IpV6ExtensionHeaders : IEnumerable<IpV6ExtensionHeader>, IEquatable<IpV6ExtensionHeaders>
     {
         public IpV6ExtensionHeaders(ReadOnlyCollection<IpV6ExtensionHeader> extensionHeaders)
         {
@@ -93,6 +93,16 @@ namespace PcapDotNet.Packets.IpV6
             get { return _empty; }
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IpV6ExtensionHeaders);
+        }
+
+        public bool Equals(IpV6ExtensionHeaders other)
+        {
+            return other != null && this.SequenceEqual(other);
+        }
+
         internal IpV6ExtensionHeaders(DataSegment data, IpV4Protocol firstHeader)
         {
             IpV4Protocol? nextHeader = firstHeader;
@@ -111,12 +121,12 @@ namespace PcapDotNet.Packets.IpV6
             IsValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value)) && headers.All(header => header.IsValid);
         }
 
-        private static readonly IpV6ExtensionHeaders _empty = new IpV6ExtensionHeaders();
-
-        public void Write(byte[] buffer, int offset)
+        internal void Write(byte[] buffer, int offset)
         {
             foreach (IpV6ExtensionHeader extensionHeader in this)
                 extensionHeader.Write(buffer, ref offset);
         }
+
+        private static readonly IpV6ExtensionHeaders _empty = new IpV6ExtensionHeaders();
     }
 }

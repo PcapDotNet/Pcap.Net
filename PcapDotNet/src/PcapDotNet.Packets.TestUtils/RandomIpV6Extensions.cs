@@ -567,7 +567,9 @@ namespace PcapDotNet.Packets.TestUtils
                                                                                      random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6AccessNetworkIdentifierSubOptionType.GeoLocation:
-                    return new IpV6AccessNetworkIdentifierSubOptionGeoLocation((UInt24)(random.NextUInt24() & 0x9FFFFF), random.NextUInt24());
+                    double latitude = random.NextDouble() * 180 - 90;
+                    double longtitude = random.NextDouble() * 360 - 180;
+                    return IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(latitude, longtitude);
 
                 case IpV6AccessNetworkIdentifierSubOptionType.OperatorIdentifier:
                     return new IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier(random.NextEnum<IpV6AccessNetworkIdentifierOperatorIdentifierType>(),

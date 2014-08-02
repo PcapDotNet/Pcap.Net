@@ -49,6 +49,17 @@ namespace PcapDotNet.Packets.IpV6
                 throw new ArgumentOutOfRangeException("longitudeDegrees", longitudeDegrees, string.Format("LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
         }
 
+        public static IpV6AccessNetworkIdentifierSubOptionGeoLocation CreateFromRealValues(double latitudeDegreesReal, double longtitudeDegreesReal)
+        {
+            if (latitudeDegreesReal < -90 || latitudeDegreesReal > 90)
+                throw new ArgumentOutOfRangeException("latitudeDegreesReal", latitudeDegreesReal, string.Format("LatitudeDegreesReal is {0} and must be in [-90, 90] range.", latitudeDegreesReal));
+
+            if (longtitudeDegreesReal < -180 || longtitudeDegreesReal > 180)
+                throw new ArgumentOutOfRangeException("longtitudeDegreesReal", longtitudeDegreesReal, string.Format("LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
+
+            return new IpV6AccessNetworkIdentifierSubOptionGeoLocation(ToInteger(latitudeDegreesReal), ToInteger(longtitudeDegreesReal));
+        }
+
         /// <summary>
         /// A 24-bit latitude degree value encoded as a two's complement, fixed point number with 9 whole bits.
         /// Positive degrees correspond to the Northern Hemisphere and negative degrees correspond to the Southern Hemisphere.
@@ -76,7 +87,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public double LongitudeDegreesReal
         {
-            get { return ToReal(LatitudeDegrees); }
+            get { return ToReal(LongitudeDegrees); }
         }
 
         internal override IpV6AccessNetworkIdentifierSubOption CreateInstance(DataSegment data)
@@ -114,11 +125,14 @@ namespace PcapDotNet.Packets.IpV6
 
         private static double ToReal(UInt24 twosComplementFixedPointWith9WholeBits)
         {
-            bool isPositive = twosComplementFixedPointWith9WholeBits >> 23 == 1;
-            int integerPart = (twosComplementFixedPointWith9WholeBits & 0x7F8000) >> 15;
-            int fractionPart = twosComplementFixedPointWith9WholeBits & 0x007FFF;
-            return (isPositive ? 1 : -1) *
-                   (integerPart + (((double)fractionPart) / (1 << 15)));
+            return ((double)(-(twosComplementFixedPointWith9WholeBits >> 23) * (1 << 23)) + (twosComplementFixedPointWith9WholeBits & 0x7FFFFF)) / (1 << 15);
+        }
+
+        private static UInt24 ToInteger(double realValue)
+        {
+            if (realValue >= 0)
+                return (UInt24)((int)(realValue * (1 << 15)));
+            return (UInt24)((~ToInteger(-realValue)) + 1);
         }
 
         private bool EqualsData(IpV6AccessNetworkIdentifierSubOptionGeoLocation other)
