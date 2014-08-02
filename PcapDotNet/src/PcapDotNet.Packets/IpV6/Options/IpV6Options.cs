@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.IpV6
 {
     public sealed class IpV6Options : Options<IpV6Option>
     {
+        public static IpV6Options Empty { get { return _empty; } }
+
         public IpV6Options(IList<IpV6Option> options)
             : base(options, true, null)
         {
@@ -94,18 +96,16 @@ namespace PcapDotNet.Packets.IpV6
             return factory.CreateInstance(data);
         }
 
-        private static readonly Dictionary<IpV6OptionType, IIpV6OptionComplexFactory> _factories = InitializeFactories();
-
         private static Dictionary<IpV6OptionType, IIpV6OptionComplexFactory> InitializeFactories()
         {
             var prototypes =
                 from type in Assembly.GetExecutingAssembly().GetTypes()
                 where GetRegistrationAttribute(type) != null
                 select new
-                           {
-                               GetRegistrationAttribute(type).OptionType,
-                               Option = (IIpV6OptionComplexFactory)Activator.CreateInstance(type, true)
-                           };
+                {
+                    GetRegistrationAttribute(type).OptionType,
+                    Option = (IIpV6OptionComplexFactory)Activator.CreateInstance(type, true)
+                };
 
             return prototypes.ToDictionary(option => option.OptionType, option => option.Option);
         }
@@ -118,5 +118,8 @@ namespace PcapDotNet.Packets.IpV6
 
             return registraionAttributes.First();
         }
+
+        private static readonly IpV6Options _empty = new IpV6Options();
+        private static readonly Dictionary<IpV6OptionType, IIpV6OptionComplexFactory> _factories = InitializeFactories();
     }
 }

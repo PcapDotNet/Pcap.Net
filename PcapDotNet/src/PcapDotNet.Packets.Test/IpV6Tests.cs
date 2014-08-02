@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -83,7 +84,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
                 Assert.IsNotNull(ipV6Layer.GetHashCode());
                 Assert.AreEqual(string.Format("{0} -> {1} ({2})", ipV6Layer.Source, ipV6Layer.CurrentDestination, ipV6Layer.NextHeader), ipV6Layer.ToString());
-                foreach (IpV6ExtensionHeader extensionHeader in packet.Ethernet.IpV6.ExtensionHeaders)
+                foreach (IpV6ExtensionHeader extensionHeader in (IEnumerable)packet.Ethernet.IpV6.ExtensionHeaders)
                 {
                     IpV6ExtensionHeaderOptions extensionHeaderOptions = extensionHeader as IpV6ExtensionHeaderOptions;
                     if (extensionHeaderOptions != null)
@@ -450,6 +451,55 @@ namespace PcapDotNet.Packets.Test
         public void IpV6MobilityOptionBindingIdentifierPriorityTooBig()
         {
             Assert.IsNull(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.AcceptedBut, false, 0x80));
+        }
+
+        [TestMethod]
+        public void IpV6ExtensionHeaderTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(IpV4Protocol.Skip, IpV6Options.Empty))
+                });
+            Assert.IsTrue(packet.IsValid);
+            Packet invalidPacket = new Packet(packet.Buffer.Take(packet.Length - 1).ToArray(), DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6ExtensionHeaderAuthenticationTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderAuthentication(IpV4Protocol.Skip, 0, 0, DataSegment.Empty))
+                });
+            Assert.IsTrue(packet.IsValid);
+            Packet invalidPacket = new Packet(packet.Buffer.Take(packet.Length - 1).ToArray(), DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6ExtensionHeaderAuthenticationBadPayloadLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderAuthentication(IpV4Protocol.Skip, 0, 0, new DataSegment(new byte[12])))
+                });
+            Assert.IsTrue(packet.IsValid);
+            ++packet.Buffer[14 + 40 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
         }
     }
 }
