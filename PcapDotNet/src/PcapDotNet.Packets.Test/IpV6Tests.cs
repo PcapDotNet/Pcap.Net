@@ -85,6 +85,20 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(string.Format("{0} -> {1} ({2})", ipV6Layer.Source, ipV6Layer.CurrentDestination, ipV6Layer.NextHeader), ipV6Layer.ToString());
                 foreach (IpV6ExtensionHeader extensionHeader in packet.Ethernet.IpV6.ExtensionHeaders)
                 {
+                    IpV6ExtensionHeaderOptions extensionHeaderOptions = extensionHeader as IpV6ExtensionHeaderOptions;
+                    if (extensionHeaderOptions != null)
+                    {
+                        foreach (IpV6Option option in extensionHeaderOptions.Options)
+                        {
+                            switch (option.OptionType)
+                            {
+                                case IpV6OptionType.SmfDpd:
+                                    IpV6OptionSmfDpd optionSmfDpd = (IpV6OptionSmfDpd)option;
+                                    Assert.AreEqual(optionSmfDpd is IpV6OptionSmfDpdSequenceHashAssistValue, optionSmfDpd.HashIndicator);
+                                    break;
+                            }
+                        }
+                    }
                     IpV6ExtensionHeaderMobility extensionHeaderMobility = extensionHeader as IpV6ExtensionHeaderMobility;
                     if (extensionHeaderMobility != null)
                     {
@@ -152,15 +166,6 @@ namespace PcapDotNet.Packets.Test
                         }
                     }
                 }
-                /*
-                if (packet.Ethernet.IpV6.NextHeader == IpV4Protocol.Tcp)
-                    Assert.IsInstanceOfType(packet.Ethernet.IpV6.Transport, typeof(TcpDatagram));
-                else if (packet.Ethernet.IpV6.NextHeader == IpV4Protocol.Udp)
-                    Assert.IsInstanceOfType(packet.Ethernet.IpV6.Transport, typeof(UdpDatagram));
-                else
-                    Assert.IsNull(packet.Ethernet.IpV6.Transport);
-                */
-//                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV6.Payload, "IP Payload");
             }
         }
 
@@ -424,6 +429,27 @@ namespace PcapDotNet.Packets.Test
         public void IpV6OptionSmfDpdDefaultTaggerIdTooShort()
         {
             Assert.IsNull(new IpV6OptionSmfDpdDefault(DataSegment.Empty, DataSegment.Empty));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionMobileNodeIdentifierIdentifierTooShort()
+        {
+            Assert.IsNull(new IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier, DataSegment.Empty));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionContextRequestEntryOptionLengthTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionContextRequestEntry(0, new DataSegment(new byte[256])));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionBindingIdentifierPriorityTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.AcceptedBut, false, 0x80));
         }
     }
 }
