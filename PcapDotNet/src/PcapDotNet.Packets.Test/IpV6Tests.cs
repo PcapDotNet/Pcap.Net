@@ -603,6 +603,44 @@ namespace PcapDotNet.Packets.Test
         {
             Assert.IsNull(new IpV6MobilityOptionIpV4AddressAcknowledgement(IpV6AddressAcknowledgementStatus.Success, 0x40, IpV4Address.Zero));
         }
-        
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionIpV4HomeAddressPrefixLengthTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionIpV4HomeAddress(0x40, false, IpV4Address.Zero));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionIpV4HomeAddressReplyPrefixLengthTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionIpV4HomeAddressReply(IpV6IpV4HomeAddressReplyStatus.Success, 0x40, IpV4Address.Zero));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionIpV4HomeAddressRequestPrefixLengthTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionIpV4HomeAddressRequest(0x40, IpV4Address.Zero));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionIpV6AddressPrefixPrefixLengthTooBig()
+        {
+            Assert.IsNull(new IpV6MobilityOptionIpV6AddressPrefix(IpV6MobilityIpV6AddressPrefixCode.NewCareOfAddress, 129, IpV6Address.Zero));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionAccessNetworkIdentifierSubOptionsTooLong()
+        {
+            Assert.IsNull(
+                new IpV6MobilityOptionAccessNetworkIdentifier(
+                    new IpV6AccessNetworkIdentifierSubOptions(
+                        new IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier(IpV6AccessNetworkIdentifierOperatorIdentifierType.PrivateEnterpriseNumber,
+                                                                                   new DataSegment(new byte[254])))));
+        }
     }
 }
