@@ -23,18 +23,6 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6MobilityOptionType OptionType { get; private set; }
 
-        internal abstract IpV6MobilityOption CreateInstance(DataSegment data);
-
-        protected IpV6MobilityOption(IpV6MobilityOptionType type)
-        {
-            OptionType = type;
-        }
-
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            buffer[offset++] = (byte)OptionType;
-        }
-
         public override int Length
         {
             get { return sizeof(byte); }
@@ -49,6 +37,20 @@ namespace PcapDotNet.Packets.IpV6
         {
             return other != null &&
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
+        }
+
+        public virtual bool IsValid { get { return true; } }
+
+        protected IpV6MobilityOption(IpV6MobilityOptionType type)
+        {
+            OptionType = type;
+        }
+
+        internal abstract IpV6MobilityOption CreateInstance(DataSegment data);
+
+        internal override void Write(byte[] buffer, ref int offset)
+        {
+            buffer[offset++] = (byte)OptionType;
         }
 
         internal abstract bool EqualsData(IpV6MobilityOption other);

@@ -101,6 +101,9 @@ namespace PcapDotNet.Packets.IpV6
                     break;
                 }
 
+                if (!option.IsValid)
+                    isValid = false;
+
                 options.Add(option);
             }
 
