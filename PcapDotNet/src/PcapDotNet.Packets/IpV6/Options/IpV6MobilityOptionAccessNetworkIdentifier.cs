@@ -31,6 +31,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6AccessNetworkIdentifierSubOptions SubOptions { get; private set; }
 
+        public override bool IsValid
+        {
+            get { return SubOptions.IsValid; }
+        }
+
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
             return new IpV6MobilityOptionAccessNetworkIdentifier(new IpV6AccessNetworkIdentifierSubOptions(data));

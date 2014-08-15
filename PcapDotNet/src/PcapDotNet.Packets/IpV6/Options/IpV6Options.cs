@@ -35,7 +35,9 @@ namespace PcapDotNet.Packets.IpV6
         {
             if (paddingSize == 0)
                 return this;
-            return new IpV6Options(OptionsCollection.Concat(paddingSize == 1 ? (IpV6Option)new IpV6OptionPad1() : new IpV6OptionPadN(paddingSize - 2)));
+            IEnumerable<IpV6Option> paddedOptions =
+                OptionsCollection.Concat(paddingSize == 1 ? (IpV6Option)new IpV6OptionPad1() : new IpV6OptionPadN(paddingSize - 2));
+            return new IpV6Options(new Tuple<IList<IpV6Option>, bool>(paddedOptions.ToList(), IsValid));
         }
 
         internal static Tuple<IList<IpV6Option>, bool> Read(DataSegment data) 
