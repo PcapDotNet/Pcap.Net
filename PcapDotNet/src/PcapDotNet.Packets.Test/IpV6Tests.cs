@@ -813,6 +813,40 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void IpV6ExtensionHeaderRoutingParseDataNimrod()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol.Skip, 0, IpV6Address.Zero))
+                    });
+            packet.Buffer[14 + 40 + 2] = (byte)IpV6RoutingType.Nimrod;
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6ExtensionHeaderRoutingParseDataUnknownRoutingType()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol.Skip, 0, IpV6Address.Zero))
+                });
+            packet.Buffer[14 + 40 + 2] = 0x55;
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IpV6ExtensionHeaderFragmentDataFragmentOffsetTooBig()
         {
@@ -1035,6 +1069,95 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(2, options.Count);
             Assert.AreEqual(new IpV6OptionPad1(), options[0]);
             Assert.AreEqual(new IpV6OptionPad1(), options[1]);
+        }
+
+        [TestMethod]
+        public void IpV6OptionSmfDpdSequenceBasedDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Skip, new IpV6Options(new IpV6OptionSmfDpdIpV4(IpV4Address.Zero, DataSegment.Empty))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 2 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionSmfDpdSequenceBasedIpV4TaggerIdWrongLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(
+                            IpV4Protocol.Skip, new IpV6Options(new IpV6OptionSmfDpdIpV4(IpV4Address.Zero, DataSegment.Empty))))
+                });
+            Assert.IsTrue(packet.IsValid);
+            packet.Buffer[14 + 40 + 2 + 2] &= 0xF0;
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionSmfDpdSequenceBasedIpV6TaggerIdWrongLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(
+                            IpV4Protocol.Skip, new IpV6Options(new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty))))
+                });
+            Assert.IsTrue(packet.IsValid);
+            packet.Buffer[14 + 40 + 2 + 2] &= 0xF0;
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionSmfDpdSequenceBasedUnknownTaggerIdType()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(
+                            IpV4Protocol.Skip, new IpV6Options(new IpV6OptionSmfDpdIpV4(IpV4Address.Zero, DataSegment.Empty))))
+                });
+            Assert.IsTrue(packet.IsValid);
+            packet.Buffer[14 + 40 + 2 + 2] |= 0x70;
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionSmfDpdSequenceBasedEqualsData()
+        {
+            Assert.AreEqual(new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty),
+                            new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty));
+            Assert.AreNotEqual(new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty),
+                               new IpV6OptionSmfDpdIpV4(IpV4Address.Zero, new DataSegment(new byte[12])));
+            Assert.AreNotEqual(new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty),
+                               new IpV6OptionSmfDpdSequenceHashAssistValue(new DataSegment(new byte[17])));
+            Assert.AreNotEqual(new IpV6OptionSmfDpdDefault(new DataSegment(new byte[16]), DataSegment.Empty),
+                               new IpV6OptionSmfDpdIpV6(IpV6Address.Zero, DataSegment.Empty));
         }
     }
 }
