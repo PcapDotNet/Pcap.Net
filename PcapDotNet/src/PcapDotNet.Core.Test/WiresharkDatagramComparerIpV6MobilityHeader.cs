@@ -111,6 +111,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.ActiveNetworks ||
                             protocol == IpV4Protocol.SpectraLinkRadioProtocol ||
                             protocol == IpV4Protocol.MobileAdHocNetwork ||
+                            protocol == IpV4Protocol.Shim6 ||  // TODO: Implement Shim6.
                             protocol == IpV4Protocol.RemoteVirtualDiskProtocol))
                 return false;
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -21,6 +23,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionCgaParameters(DataSegment cgaParameters)
             : base(IpV6MobilityOptionType.CgaParameters, cgaParameters)
         {
+            if (cgaParameters.Length > OptionDataMaxLength)
+                throw new ArgumentOutOfRangeException("cgaParameters", cgaParameters, string.Format("Must not exceed {0} bytes.", OptionDataMaxLength));
         }
 
         /// <summary>
