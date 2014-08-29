@@ -32,9 +32,6 @@ namespace PcapDotNet.Packets.IpV6
         internal override sealed void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            // TODO: Get rid of this.
-            if (DataLength > byte.MaxValue)
-                throw new InvalidOperationException("DataLength is " + DataLength);
             buffer[offset++] = (byte)DataLength;
             WriteData(buffer, ref offset);
         }
