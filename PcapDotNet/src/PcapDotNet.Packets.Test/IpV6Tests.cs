@@ -1293,5 +1293,68 @@ namespace PcapDotNet.Packets.Test
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
             Assert.IsFalse(invalidPacket.IsValid);
         }
+
+        [TestMethod]
+        public void IpV6MobilityOptionAlternateCareOfAddressDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderMobilityBindingError(
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            new IpV6MobilityOptions(new IpV6MobilityOptionAlternateCareOfAddress(IpV6Address.Zero))))
+
+                });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionMobileAccessGatewayIpV6AddressDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderMobilityBindingError(
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
+
+                });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionMobileAccessGatewayIpV6AddressWrongAddressLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders =
+                        new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderMobilityBindingError(
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
+
+                });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 3];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
     }
 }
