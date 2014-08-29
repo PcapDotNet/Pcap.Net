@@ -41,7 +41,7 @@ namespace PcapDotNet.Core.Test
                 case "vlan.trailer":
                     if (!new[]
                              {
-                                 (EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)29, (EthernetType)30, (EthernetType)43, (EthernetType)50
+                                 (EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)29, (EthernetType)30, (EthernetType)43, (EthernetType)50, EthernetType.ReverseArp, 
                              }.Contains(
                                  vLanTaggedFrameDatagram.EtherType))
                         field.AssertValue(vLanTaggedFrameDatagram.TrailerWithFrameCheckSequence);

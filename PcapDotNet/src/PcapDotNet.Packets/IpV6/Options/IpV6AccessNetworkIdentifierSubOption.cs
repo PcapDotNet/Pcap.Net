@@ -43,9 +43,6 @@ namespace PcapDotNet.Packets.IpV6
         internal override void Write(byte[] buffer, ref int offset)
         {
             buffer[offset++] = (byte)OptionType;
-            // TODO: Remove this check.
-            if (DataLength > byte.MaxValue)
-                throw new InvalidOperationException("Option length is too long.");
             buffer[offset++] = (byte)DataLength;
             WriteData(buffer, ref offset);
         }
