@@ -198,7 +198,8 @@ namespace PcapDotNet.Packets.Test
                                     break;
 
                                 case IpV6MobilityOptionType.PermanentHomeKeygenToken:
-                                    IpV6MobilityOptionPermanentHomeKeygenToken optionPermanentHomeKeygenToken = (IpV6MobilityOptionPermanentHomeKeygenToken)option;
+                                    IpV6MobilityOptionPermanentHomeKeygenToken optionPermanentHomeKeygenToken =
+                                        (IpV6MobilityOptionPermanentHomeKeygenToken)option;
                                     Assert.IsNotNull(optionPermanentHomeKeygenToken.PermanentHomeKeygenToken);
                                     break;
 
@@ -1217,14 +1218,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTest(0))))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTest(0))))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1238,14 +1239,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionIpV4CareOfAddress(IpV4Address.Zero))))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionIpV4CareOfAddress(IpV4Address.Zero))))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1259,14 +1260,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionReplayProtection(0))))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionReplayProtection(0))))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1280,14 +1281,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTestInit())))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTestInit())))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             ++packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1301,14 +1302,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionAlternateCareOfAddress(IpV6Address.Zero))))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionAlternateCareOfAddress(IpV6Address.Zero))))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1322,14 +1323,14 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
-                {
-                    ExtensionHeaders =
-                        new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
 
-                });
+                    });
             Assert.IsTrue(packet.IsValid);
             --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
@@ -1343,16 +1344,215 @@ namespace PcapDotNet.Packets.Test
                 DateTime.Now,
                 new EthernetLayer(),
                 new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
+
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 3];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionHomeNetworkPrefixDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionHomeNetworkPrefix(0, IpV6Address.Zero))))
+
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionLineIdentificationDestinationDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Skip, new IpV6Options(new IpV6OptionLineIdentificationDestination(DataSegment.Empty))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 2 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionLineIdentificationDestinationWrongLineIdentificationLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Skip, new IpV6Options(new IpV6OptionLineIdentificationDestination(DataSegment.Empty))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            ++packet.Buffer[14 + 40 + 2 + 2];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionEndpointIdentificationDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Skip, new IpV6Options(new IpV6OptionEndpointIdentification(DataSegment.Empty, DataSegment.Empty))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 2 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6OptionEndpointIdentificationWrongSourceLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(
+                                IpV4Protocol.Skip, new IpV6Options(new IpV6OptionEndpointIdentification(DataSegment.Empty, DataSegment.Empty))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            ++packet.Buffer[14 + 40 + 2 + 2];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionFlowSummaryDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionFlowSummary(new ushort[1]))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionBindingIdentifierDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.InsufficientResources, false,
+                                                                                                0))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionBindingIdentifierDataBadLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.InsufficientResources, false,
+                                                                                                0, IpV6Address.Zero))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionContextRequestDataTooShort()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders =
+                            new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderMobilityBindingError(
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                new IpV6MobilityOptions(new IpV6MobilityOptionContextRequest(new IpV6MobilityOptionContextRequestEntry(0, DataSegment.Empty)))))
+                    });
+            Assert.IsTrue(packet.IsValid);
+            --packet.Buffer[14 + 40 + 24 + 1];
+            Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        public void IpV6MobilityOptionContextRequestDataTooShortForRequestLength()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
                 {
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
                             IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                            new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
-
+                            new IpV6MobilityOptions(new IpV6MobilityOptionContextRequest(new IpV6MobilityOptionContextRequestEntry(0, new DataSegment(new byte[10]))))))
                 });
             Assert.IsTrue(packet.IsValid);
-            --packet.Buffer[14 + 40 + 24 + 3];
+            --packet.Buffer[14 + 40 + 24 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
             Assert.IsFalse(invalidPacket.IsValid);
         }
