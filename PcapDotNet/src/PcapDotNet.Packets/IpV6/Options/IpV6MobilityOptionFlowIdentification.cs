@@ -81,6 +81,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6FlowIdentificationSubOptions SubOptions { get; private set; }
 
+        public override bool IsValid
+        {
+            get { return SubOptions.IsValid; }
+        }
+
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)
