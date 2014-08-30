@@ -2373,5 +2373,13 @@ namespace PcapDotNet.Packets.Test
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
             Assert.IsFalse(invalidPacket.IsValid);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeaderMobilityExperimentalConstructorMessageDataBadLength()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol.Pin, 0, new DataSegment(new byte[5])));
+            Assert.Fail();
+        }
     }
 }
