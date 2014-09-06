@@ -316,7 +316,7 @@ namespace PcapDotNet.Core.Test
                 }
             }
 
-            Assert.IsTrue(File.Exists(DumpFilename), "File " + DumpFilename, " doesn't exist");
+            Assert.IsTrue(File.Exists(DumpFilename), string.Format("File {0} doesn't exist", DumpFilename));
         }
 
         // TODO: Add this test once Dumping to files with Unicode filenames is supported. See http://www.winpcap.org/pipermail/winpcap-users/2011-February/004273.html
@@ -356,7 +356,20 @@ namespace PcapDotNet.Core.Test
                 }
             }
 
-            Assert.IsTrue(File.Exists(ReadUnicodeFilename), "File " + ReadUnicodeFilename, " doesn't exist");
+            Assert.IsTrue(File.Exists(ReadUnicodeFilename), string.Format("File {0} doesn't exist", ReadUnicodeFilename));
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
+        public void ReadNonExistingUnicodeFilenameTest()
+        {
+            const string ReadUnicodeFilename = "abc_non_existing_\u00F9_\u05D0\u05D1\u05D2.pcap";
+            OfflinePacketDevice device = new OfflinePacketDevice(ReadUnicodeFilename);
+            using (PacketCommunicator communicator = device.Open())
+            {
+                Assert.Fail();
+            }
         }
 
         private static void TestGetSomePackets(int numPacketsToSend, int numPacketsToGet, int numPacketsToBreakLoop,

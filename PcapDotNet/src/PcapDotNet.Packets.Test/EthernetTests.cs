@@ -86,5 +86,23 @@ namespace PcapDotNet.Packets.Test
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new TcpLayer());
             Assert.IsTrue(packet.IsValid);
         }
+
+        [TestMethod]
+        public void NoPayloadByEtherType()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer
+                                                    {
+                                                        EtherType = EthernetType.AppleTalk
+                                                    },
+                                                new PayloadLayer
+                                                    {
+                                                        Data = new Datagram(new byte[100])
+                                                    });
+            Assert.IsTrue(packet.IsValid);
+            Assert.IsNull(packet.Ethernet.TrailerWithFrameCheckSequence);
+            Assert.IsNull(packet.Ethernet.Trailer);
+            Assert.IsNull(packet.Ethernet.FrameCheckSequence);
+        }
     }
 }

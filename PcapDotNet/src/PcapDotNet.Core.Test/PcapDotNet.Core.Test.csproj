@@ -74,6 +74,7 @@
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MarshalingServicesTests.cs" />
     <Compile Include="IpV4OptionExtensions.cs" />
+    <Compile Include="NetworkInterfaceExtensionsTests.cs" />
     <Compile Include="PacketTimestampTests.cs" />
     <Compile Include="TcpOptionExtensions.cs" />
     <Compile Include="WiresharkDatagramComparer.cs" />
