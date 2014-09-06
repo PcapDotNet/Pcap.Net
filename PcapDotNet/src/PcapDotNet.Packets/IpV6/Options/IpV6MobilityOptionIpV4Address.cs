@@ -56,7 +56,7 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionIpV4Address);
         }
 
-        internal override int GetDataHashCode()
+        internal sealed override int GetDataHashCode()
         {
             return Address.GetHashCode();
         }

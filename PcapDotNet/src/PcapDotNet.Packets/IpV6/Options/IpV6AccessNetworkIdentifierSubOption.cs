@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.IpV6
             return Equals(other as IpV6AccessNetworkIdentifierSubOption);
         }
 
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return Sequence.GetHashCode(OptionType, GetDataHashCode());
         }
