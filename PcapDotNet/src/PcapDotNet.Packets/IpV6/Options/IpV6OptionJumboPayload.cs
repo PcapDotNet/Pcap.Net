@@ -47,6 +47,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionJumboPayload);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return JumboPayloadLength.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, JumboPayloadLength, Endianity.Big);

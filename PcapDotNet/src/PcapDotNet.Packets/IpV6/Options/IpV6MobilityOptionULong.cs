@@ -38,17 +38,22 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return OptionDataLength; }
         }
 
-        internal override sealed bool EqualsData(IpV6MobilityOption other)
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionULong);
         }
 
-        internal override sealed void WriteData(byte[] buffer, ref int offset)
+        internal sealed override int GetDataHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        internal sealed override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, Value, Endianity.Big);
         }

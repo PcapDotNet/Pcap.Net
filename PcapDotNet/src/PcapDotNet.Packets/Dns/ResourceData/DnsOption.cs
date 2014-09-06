@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two options are equal if they are of the same type, have the same code and have equal data.
         /// </summary>
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as DnsOption);
         }

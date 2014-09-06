@@ -52,14 +52,14 @@ namespace PcapDotNet.Packets.IpV6
             SegmentsLeft = segmentsLeft;
         }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return DataMinimumLength + RoutingDataLength; }
         }
 
         internal abstract int RoutingDataLength { get; }
 
-        internal override sealed bool EqualsData(IpV6ExtensionHeader other)
+        internal sealed override bool EqualsData(IpV6ExtensionHeader other)
         {
             return EqualsData(other as IpV6ExtensionHeaderRouting);
         }
@@ -93,7 +93,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal override sealed void WriteData(byte[] buffer, int offset)
+        internal sealed override void WriteData(byte[] buffer, int offset)
         {
             buffer.Write(offset + DataOffset.RoutingType, (byte)RoutingType);
             buffer.Write(offset + DataOffset.SegmentsLeft, SegmentsLeft);

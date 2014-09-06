@@ -86,8 +86,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
                 Assert.IsNotNull(ipV6Layer.GetHashCode());
                 Assert.AreEqual(string.Format("{0} -> {1} ({2})", ipV6Layer.Source, ipV6Layer.CurrentDestination, ipV6Layer.NextHeader), ipV6Layer.ToString());
-                foreach (IpV6ExtensionHeader extensionHeader in (IEnumerable)packet.Ethernet.IpV6.ExtensionHeaders)
+                for (int extensionHeaderIndex = 0; extensionHeaderIndex != packet.Ethernet.IpV6.ExtensionHeaders.Headers.Count; ++extensionHeaderIndex)
                 {
+                    IpV6ExtensionHeader extensionHeader = packet.Ethernet.IpV6.ExtensionHeaders[extensionHeaderIndex];
+                    IpV6ExtensionHeader layerExtensionheader = ipV6Layer.ExtensionHeaders[extensionHeaderIndex];
+                    Assert.AreEqual(extensionHeader, layerExtensionheader);
+                    // TODO: Bring it back.
+//                    Assert.AreEqual(extensionHeader.GetHashCode(), layerExtensionheader.GetHashCode());
                     IpV6ExtensionHeaderOptions extensionHeaderOptions = extensionHeader as IpV6ExtensionHeaderOptions;
                     if (extensionHeaderOptions != null)
                     {

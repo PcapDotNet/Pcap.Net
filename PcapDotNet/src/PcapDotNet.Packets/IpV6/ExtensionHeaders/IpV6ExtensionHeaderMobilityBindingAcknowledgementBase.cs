@@ -125,7 +125,7 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override sealed void WriteMessageData(byte[] buffer, int offset)
+        internal sealed override void WriteMessageData(byte[] buffer, int offset)
         {
             buffer.Write(offset + MessageDataOffset.Status, (byte)Status);
             if (KeyManagementMobilityCapability)

@@ -162,17 +162,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The hash code is the xor of the base class hash code with the following values hash code:
-        /// The identification, the combination of the outbound and return hop count, the originator address.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   Sequence.GetHashCode(Identification, BitSequence.Merge(OutboundHopCount, ReturnHopCount), OriginatorIpAddress);
-
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -190,6 +179,11 @@ namespace PcapDotNet.Packets.IpV4
             IpV4Address originatorIpAddress = buffer.ReadIpV4Address(ref offset, Endianity.Big);
 
             return new IpV4OptionTraceRoute(identification, outboundHopCount, returnHopCount, originatorIpAddress);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(Identification, BitSequence.Merge(OutboundHopCount, ReturnHopCount), OriginatorIpAddress);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

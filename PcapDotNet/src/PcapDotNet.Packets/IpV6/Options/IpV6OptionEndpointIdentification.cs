@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -67,6 +69,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6Option other)
         {
             return EqualsData(other as IpV6OptionEndpointIdentification);
+        }
+
+        internal  override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(SourceEndpointIdentifier, DestinationEndpointIdentifier);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

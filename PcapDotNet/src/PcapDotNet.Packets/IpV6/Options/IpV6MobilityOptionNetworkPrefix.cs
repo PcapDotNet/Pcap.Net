@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -48,17 +50,22 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Address NetworkPrefix { get; private set; }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return OptionDataLength; }
         }
 
-        internal override sealed bool EqualsData(IpV6MobilityOption other)
+        internal sealed override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionNetworkPrefix);
         }
 
-        internal override sealed void WriteData(byte[] buffer, ref int offset)
+        internal sealed override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(PrefixLength, NetworkPrefix);
+        }
+
+        internal sealed override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.PrefixLength, PrefixLength);
             buffer.Write(offset + Offset.NetworkPrefix, NetworkPrefix, Endianity.Big);

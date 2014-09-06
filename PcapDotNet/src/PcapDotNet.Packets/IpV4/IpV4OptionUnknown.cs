@@ -81,14 +81,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The hash code for an unknown option is the hash code for the option type xored with the hash code of the data.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Data.BytesSequenceGetHashCode();
-        }
-
-        /// <summary>
         /// Creates an unknown option from its type and by reading a buffer for its value.
         /// </summary>
         /// <param name="optionType">The type of the unknown option.</param>
@@ -106,6 +98,14 @@ namespace PcapDotNet.Packets.IpV4
             offset += valueLength;
 
             return new IpV4OptionUnknown(optionType, data);
+        }
+
+        /// <summary>
+        /// The hash code for an unknown option is the hash code for the option type xored with the hash code of the data.
+        /// </summary>
+        internal override int GetDataHashCode()
+        {
+            return Data.BytesSequenceGetHashCode();
         }
 
         internal override void Write(byte[] buffer, ref int offset)

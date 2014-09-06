@@ -55,6 +55,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionMobileNodeLinkLayerIdentifier);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return LinkLayerIdentifier.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.LinkLayerIdentifier, LinkLayerIdentifier);

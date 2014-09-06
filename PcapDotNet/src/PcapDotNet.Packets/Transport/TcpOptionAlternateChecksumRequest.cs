@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.AlternateChecksumRequest)]
-    public sealed class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumRequest>
+    public sealed class TcpOptionAlternateChecksumRequest : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -80,33 +80,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two alternate checksum request options are equal if they have the same checksum type.
-        /// </summary>
-        public bool Equals(TcpOptionAlternateChecksumRequest other)
-        {
-            if (other == null)
-                return false;
-            return ChecksumType == other.ChecksumType;
-        }
-
-        /// <summary>
-        /// Two alternate checksum request options are equal if they have the same checksum type.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionAlternateChecksumRequest);
-        }
-
-        /// <summary>
-        /// The hash code of this option is the hash code of the option type xored with hash code of the checksum type.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   ChecksumType.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -122,10 +95,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionAlternateChecksumRequest((TcpOptionAlternateChecksumType)checksumType);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionAlternateChecksumRequest);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return ChecksumType.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, (byte)ChecksumType);
+        }
+
+        private bool EqualsData(TcpOptionAlternateChecksumRequest other)
+        {
+            return other != null &&
+                   ChecksumType == other.ChecksumType;
         }
     }
 }

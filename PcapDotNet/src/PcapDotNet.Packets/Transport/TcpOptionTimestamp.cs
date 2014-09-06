@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.Timestamp)]
-    public sealed class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionTimestamp>
+    public sealed class TcpOptionTimestamp : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -87,34 +87,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two timestamp options are equal if they have the same timestamp value and echo reply.
-        /// </summary>
-        public bool Equals(TcpOptionTimestamp other)
-        {
-            if (other == null)
-                return false;
-
-            return TimestampValue == other.TimestampValue &&
-                   TimestampEchoReply == other.TimestampEchoReply;
-        }
-
-        /// <summary>
-        /// Two timestamp options are equal if they have the same timestamp value and echo reply.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionTimestamp);
-        }
-
-        /// <summary>
-        /// The hash code of the timestamp option is the hash code of the option type xored with the hash code of the timestamp echo reply.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ TimestampEchoReply.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -131,11 +103,27 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionTimestamp(timeStampValue, timeStampEchoReply);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionTimestamp);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return TimestampEchoReply.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, TimestampValue, Endianity.Big);
             buffer.Write(ref offset, TimestampEchoReply, Endianity.Big);
+        }
+
+        private bool EqualsData(TcpOptionTimestamp other)
+        {
+            return other != null &&
+                   TimestampValue == other.TimestampValue && TimestampEchoReply == other.TimestampEchoReply;
         }
     }
 }

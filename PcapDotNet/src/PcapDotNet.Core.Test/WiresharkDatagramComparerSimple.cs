@@ -5,7 +5,7 @@ namespace PcapDotNet.Core.Test
 {
     internal abstract class WiresharkDatagramComparerSimple : WiresharkDatagramComparer
     {
-        protected override sealed bool CompareField(XElement field, Datagram parentDatagram, Datagram datagram)
+        protected sealed override bool CompareField(XElement field, Datagram parentDatagram, Datagram datagram)
         {
             return CompareField(field, datagram);
         }

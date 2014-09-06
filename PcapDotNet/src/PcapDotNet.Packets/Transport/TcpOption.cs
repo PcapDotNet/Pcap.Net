@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 
@@ -48,17 +49,16 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// Checks if the two options are exactly the same - including type and value.
         /// </summary>
-        public virtual bool Equals(TcpOption other)
+        public bool Equals(TcpOption other)
         {
-            if (other == null)
-                return false;
-            return Equivalent(other);
+            return other != null &&
+                   OptionType == other.OptionType && EqualsData(other);
         }
 
         /// <summary>
         /// Checks if the two options are exactly the same - including type and value.
         /// </summary>
-        public sealed override bool  Equals(Option other)
+        public sealed override bool Equals(Option other)
         {
             return Equals(other as TcpOption);
         }
@@ -67,9 +67,9 @@ namespace PcapDotNet.Packets.Transport
         /// The hash code for a tcp option is the hash code for the option type.
         /// This should be overridden by tcp options with data.
         /// </summary>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
-            return OptionType.GetHashCode();
+            return Sequence.GetHashCode(OptionType, GetDataHashCode());
         }
 
         /// <summary>
@@ -79,6 +79,10 @@ namespace PcapDotNet.Packets.Transport
         {
             return OptionType.ToString();
         }
+
+        internal abstract bool EqualsData(TcpOption other);
+
+        internal abstract int GetDataHashCode();
 
         internal sealed override V4Option Read(byte[] buffer, ref int offset, int length)
         {

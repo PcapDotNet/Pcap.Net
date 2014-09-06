@@ -77,8 +77,7 @@ namespace PcapDotNet.Packets.Ip
         /// </summary>
         public sealed override int GetHashCode()
         {
-            return BytesLength.GetHashCode() ^
-                   OptionsCollection.SequenceGetHashCode();
+            return Sequence.GetHashCode(BytesLength, OptionsCollection.SequenceGetHashCode());
         }
 
         public IEnumerator<T> GetEnumerator()

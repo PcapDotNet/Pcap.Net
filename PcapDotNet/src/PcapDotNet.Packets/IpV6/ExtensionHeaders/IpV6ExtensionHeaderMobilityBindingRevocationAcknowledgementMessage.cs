@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Defines the type of the Binding Revocation Message.
         /// </summary>
-        public override sealed IpV6MobilityBindingRevocationType BindingRevocationType
+        public sealed override IpV6MobilityBindingRevocationType BindingRevocationType
         {
             get { return IpV6MobilityBindingRevocationType.BindingRevocationAcknowledgement; }
         }

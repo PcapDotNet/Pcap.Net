@@ -20,17 +20,17 @@ namespace PcapDotNet.Packets.IpV6
     {
         public IpV6Options Options { get; private set; }
 
-        public override sealed bool IsValid
+        public sealed override bool IsValid
         {
             get { return Options.IsValid; }
         }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return Options.BytesLength; }
         }
 
-        internal override sealed bool EqualsData(IpV6ExtensionHeader other)
+        internal sealed override bool EqualsData(IpV6ExtensionHeader other)
         {
             return EqualsData(other as IpV6ExtensionHeaderOptions);
         }

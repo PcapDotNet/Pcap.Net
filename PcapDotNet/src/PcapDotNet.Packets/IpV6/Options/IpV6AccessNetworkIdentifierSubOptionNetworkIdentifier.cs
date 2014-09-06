@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -117,6 +118,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6AccessNetworkIdentifierSubOption other)
         {
             return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(IsNetworkNameUtf8, NetworkName, AccessPointName);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

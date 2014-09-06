@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Identifies the particular mobility message in question.
         /// An unrecognized MH Type field causes an error indication to be sent.
         /// </summary>
-        public override sealed IpV6MobilityHeaderType MobilityHeaderType
+        public sealed override IpV6MobilityHeaderType MobilityHeaderType
         {
             get { return IpV6MobilityHeaderType.BindingRevocationMessage; }
         }
@@ -144,7 +144,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal override sealed void WriteMessageData(byte[] buffer, int offset)
+        internal sealed override void WriteMessageData(byte[] buffer, int offset)
         {
             buffer.Write(offset + MessageDataOffset.BindingRevocationType, (byte)BindingRevocationType);
             buffer.Write(offset + MessageDataOffset.RevocationTriggerOrStatus, RevocationTriggerOrStatus);

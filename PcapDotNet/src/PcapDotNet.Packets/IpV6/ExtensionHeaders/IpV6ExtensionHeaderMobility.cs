@@ -21,12 +21,12 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6ExtensionHeaderMobility : IpV6ExtensionHeaderStandard
     {
-        public override sealed IpV4Protocol Protocol
+        public sealed override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.MobilityHeader; }
         }
 
-        public override sealed bool IsValid
+        public sealed override bool IsValid
         {
             get { return MobilityOptions.IsValid; }
         }
@@ -164,7 +164,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal override sealed void WriteData(byte[] buffer, int offset)
+        internal sealed override void WriteData(byte[] buffer, int offset)
         {
             buffer.Write(offset + DataOffset.MobilityHeaderType, (byte)MobilityHeaderType);
             buffer.Write(offset + DataOffset.Checksum, Checksum, Endianity.Big);
@@ -173,14 +173,14 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract void WriteMessageData(byte[] buffer, int offset);
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return MinimumDataLength + MessageDataLength; }
         }
 
         internal abstract int MessageDataLength { get; }
 
-        internal override sealed bool EqualsData(IpV6ExtensionHeader other)
+        internal sealed override bool EqualsData(IpV6ExtensionHeader other)
         {
             return EqualsData(other as IpV6ExtensionHeaderMobility);
         }

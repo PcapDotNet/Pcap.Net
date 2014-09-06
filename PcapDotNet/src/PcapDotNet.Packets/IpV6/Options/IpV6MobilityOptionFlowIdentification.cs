@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -108,6 +109,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionFlowIdentification);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(FlowIdentifier, Priority), Status, SubOptions);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

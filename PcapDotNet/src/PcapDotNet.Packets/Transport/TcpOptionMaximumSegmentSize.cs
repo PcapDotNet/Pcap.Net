@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.MaximumSegmentSize)]
-    public sealed class TcpOptionMaximumSegmentSize : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMaximumSegmentSize>
+    public sealed class TcpOptionMaximumSegmentSize : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -70,34 +70,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two maximum segment size options are equal if they have the same maximum segment size.
-        /// </summary>
-        public bool Equals(TcpOptionMaximumSegmentSize other)
-        {
-            if (other == null)
-                return false;
-            return MaximumSegmentSize == other.MaximumSegmentSize;
-        }
-
-        /// <summary>
-        /// Two maximum segment size options are equal if they have the same maximum segment size.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionMaximumSegmentSize);
-        }
-
-        /// <summary>
-        /// The hash code of the option is the hash code of the option type xored with the hash code of the maximum segment size.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   MaximumSegmentSize.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -113,10 +85,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionMaximumSegmentSize(maximumSegmentSize);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionMaximumSegmentSize);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return MaximumSegmentSize.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, MaximumSegmentSize, Endianity.Big);
+        }
+
+        private bool EqualsData(TcpOptionMaximumSegmentSize other)
+        {
+            return other != null &&
+                   MaximumSegmentSize == other.MaximumSegmentSize;
         }
     }
 }

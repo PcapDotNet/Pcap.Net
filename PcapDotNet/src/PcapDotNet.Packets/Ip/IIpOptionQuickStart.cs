@@ -2,6 +2,10 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Ip
 {
+    /// <summary>
+    /// RFC 4782.
+    /// Common interface of a quick start option.
+    /// </summary>
     public interface IIpOptionQuickStart
     {
         /// <summary>

@@ -46,6 +46,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionRouterAlert);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return RouterAlertType.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (ushort)RouterAlertType, Endianity.Big);

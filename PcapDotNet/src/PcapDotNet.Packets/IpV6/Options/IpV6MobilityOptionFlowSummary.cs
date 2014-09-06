@@ -74,6 +74,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionFlowSummary);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return FlowIdentifiers.SequenceGetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (ushort flowIdentifier in FlowIdentifiers)

@@ -19,22 +19,27 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        public override sealed int Length
+        public sealed override int Length
         {
             get { return base.Length; }
         }
 
-        internal override sealed bool EqualsData(IpV6FlowIdentificationSubOption other)
+        internal sealed override bool EqualsData(IpV6FlowIdentificationSubOption other)
         {
             return true;
         }
 
-        internal override sealed void Write(byte[] buffer, ref int offset)
+        internal override object GetDataHashCode()
+        {
+            return 0;
+        }
+
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
         }
 
-        internal override sealed IpV6FlowIdentificationSubOption CreateInstance(DataSegment data)
+        internal sealed override IpV6FlowIdentificationSubOption CreateInstance(DataSegment data)
         {
             throw new InvalidOperationException("Simple options shouldn't be registered.");
         }

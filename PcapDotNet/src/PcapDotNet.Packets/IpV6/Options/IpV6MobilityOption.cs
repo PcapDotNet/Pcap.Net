@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV6
@@ -39,12 +40,19 @@ namespace PcapDotNet.Packets.IpV6
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
         }
 
+        public sealed override int GetHashCode()
+        {
+            return Sequence.GetHashCode(OptionType, GetDataHashCode());
+        }
+
         public virtual bool IsValid { get { return true; } }
 
         protected IpV6MobilityOption(IpV6MobilityOptionType type)
         {
             OptionType = type;
         }
+
+        internal abstract int GetDataHashCode();
 
         internal abstract IpV6MobilityOption CreateInstance(DataSegment data);
 

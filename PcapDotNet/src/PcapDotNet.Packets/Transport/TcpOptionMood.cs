@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.Mood)]
-    public sealed class TcpOptionMood : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMood>
+    public sealed class TcpOptionMood : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -140,33 +140,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two mood options are equal if they have the same emotion.
-        /// </summary>
-        public bool Equals(TcpOptionMood other)
-        {
-            if (other == null)
-                return false;
-
-            return Emotion == other.Emotion;
-        }
-
-        /// <summary>
-        /// Two mood options are equal if they have the same emotion.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionMood);
-        }
-
-        /// <summary>
-        /// The hash code of the echo option is the hash code of the option type xored with the hash code info.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Emotion.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -184,6 +157,16 @@ namespace PcapDotNet.Packets.Transport
                 return null;
 
             return new TcpOptionMood(emotion);
+        }
+
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionMood);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Emotion.GetHashCode();
         }
 
         internal override void Write(byte[] buffer, ref int offset)
@@ -204,6 +187,12 @@ namespace PcapDotNet.Packets.Transport
                 return emotion;
 
             return TcpOptionMoodEmotion.None;
+        }
+
+        private bool EqualsData(TcpOptionMood other)
+        {
+            return other != null &&
+                   Emotion == other.Emotion;
         }
 
         private static readonly Dictionary<string, TcpOptionMoodEmotion> _stringToEmotion = new Dictionary<string, TcpOptionMoodEmotion>

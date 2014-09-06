@@ -174,10 +174,9 @@ namespace PcapDotNet.Packets.IpV4
         /// with the hash code of the combination of the classification level, protection authority and length.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
+        internal override int GetDataHashCode()
         {
-            return base.GetHashCode() ^
-                   BitSequence.Merge((byte)ClassificationLevel, (byte)ProtectionAuthorities,(byte)Length).GetHashCode();
+            return BitSequence.Merge((byte)ClassificationLevel, (byte)ProtectionAuthorities,(byte)Length).GetHashCode();
         }
 
         /// <summary>
@@ -189,9 +188,6 @@ namespace PcapDotNet.Packets.IpV4
         /// <returns>On success - the complex option read. On failure - null.</returns>
         Option IOptionComplexFactory.CreateInstance(byte[] buffer, ref int offset, byte valueLength)
         {
-//            if (buffer == null) 
-//                throw new ArgumentNullException("buffer");
-
             if (valueLength < OptionValueMinimumLength)
                 return null;
 

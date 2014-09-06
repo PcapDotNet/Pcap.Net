@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.IpV4
     /// They must be implemented by all IP modules (host and gateways).  
     /// What is optional is their transmission in any particular datagram, not their implementation.
     /// </summary>
-    public class IpV4Options : V4Options<IpV4Option>
+    public sealed class IpV4Options : V4Options<IpV4Option>
     {
         /// <summary>
         /// The maximum number of bytes the options may take.

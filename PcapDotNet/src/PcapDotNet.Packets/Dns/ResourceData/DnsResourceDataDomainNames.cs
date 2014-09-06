@@ -24,7 +24,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two domain names resource data are equal if they are of the same type and contain the same domain names in the same order.
         /// </summary>
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataDomainNames);
         }
@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// The hash code of the resource data is based on the concrete type and domain names.
         /// </summary>
-        public override sealed int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return GetType().GetHashCode() ^ DomainNames.SequenceGetHashCode();
         }

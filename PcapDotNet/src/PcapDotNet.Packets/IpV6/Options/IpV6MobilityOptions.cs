@@ -6,6 +6,9 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// Set of Mobility options for IPv6 Mobility Extension Header.
+    /// </summary>
     public class IpV6MobilityOptions : V6Options<IpV6MobilityOption>
     {
         /// <summary>

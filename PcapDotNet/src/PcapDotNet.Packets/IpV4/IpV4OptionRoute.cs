@@ -79,14 +79,9 @@ namespace PcapDotNet.Packets.IpV4
             return Equals(other as IpV4OptionRoute);
         }
 
-        /// <summary>
-        /// The hash code of the route option is the xor of the following hash codes: base class, pointed address index and all the addresses in the route.
-        /// </summary>
-        public sealed override int GetHashCode()
+        internal override int GetDataHashCode()
         {
-            return base.GetHashCode() ^
-                   PointedAddressIndex.GetHashCode() ^
-                   Route.SequenceGetHashCode();
+            return Sequence.GetHashCode(PointedAddressIndex, Route.SequenceGetHashCode());
         }
 
         internal sealed override void Write(byte[] buffer, ref int offset)

@@ -48,6 +48,11 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
+        internal override int GetTaggerIdHashCode()
+        {
+            return 0;
+        }
+
         internal override void WriteTaggerId(byte[] buffer, ref int offset)
         {
         }

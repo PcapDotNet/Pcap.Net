@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.Transport
     /// the data receiver is permitted to later discard data which have been reported in a SACK option.  
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.SelectiveAcknowledgment)]
-    public sealed class TcpOptionSelectiveAcknowledgment : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgment>
+    public sealed class TcpOptionSelectiveAcknowledgment : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -109,33 +109,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two selective ack options are equal if they have the same selective ack blocks.
-        /// </summary>
-        public bool Equals(TcpOptionSelectiveAcknowledgment other)
-        {
-            if (other == null)
-                return false;
-
-            return Blocks.SequenceEqual(other.Blocks);
-        }
-
-        /// <summary>
-        /// Two selective ack options are equal if they have the same selective ack blocks.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionSelectiveAcknowledgment);
-        }
-
-        /// <summary>
-        /// The hash code of the selective acknowledgement option is the hash code of the option type xored with all the hash codes of the blocks.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Blocks.SequenceGetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -158,6 +131,16 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionSelectiveAcknowledgment(blocks);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionSelectiveAcknowledgment);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Blocks.SequenceGetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
@@ -166,6 +149,12 @@ namespace PcapDotNet.Packets.Transport
                 buffer.Write(ref offset, block.LeftEdge, Endianity.Big);
                 buffer.Write(ref offset, block.RightEdge, Endianity.Big);
             }
+        }
+
+        private bool EqualsData(TcpOptionSelectiveAcknowledgment other)
+        {
+            return other != null &&
+                   Blocks.SequenceEqual(other.Blocks);
         }
 
         private readonly ReadOnlyCollection<TcpOptionSelectiveAcknowledgmentBlock> _blocks;

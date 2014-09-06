@@ -55,6 +55,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionHomeAddress);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return HomeAddress.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, HomeAddress, Endianity.Big);

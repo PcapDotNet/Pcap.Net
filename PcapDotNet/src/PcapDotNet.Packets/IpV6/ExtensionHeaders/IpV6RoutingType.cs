@@ -1,5 +1,9 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// IPv6 Routing Type.
+    /// Used in Routing Extension Header.
+    /// </summary>
     public enum IpV6RoutingType : byte
     {
         /// <summary>

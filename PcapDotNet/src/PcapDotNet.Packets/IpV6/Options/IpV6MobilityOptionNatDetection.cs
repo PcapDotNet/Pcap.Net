@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -74,6 +76,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionNatDetection);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(UdpEncapsulationRequired, RefreshTime);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

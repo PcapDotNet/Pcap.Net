@@ -69,6 +69,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6FlowIdentificationSubOptionBindingReference);
         }
 
+        internal override object GetDataHashCode()
+        {
+            return BindingIds.UShortsSequenceGetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (ushort bindingId in BindingIds)

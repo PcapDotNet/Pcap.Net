@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumLength = 8;
 
-        public override sealed bool Equals(IpV6ExtensionHeader other)
+        public sealed override bool Equals(IpV6ExtensionHeader other)
         {
             return other != null &&
                    Protocol == other.Protocol && NextHeader == other.NextHeader && EqualsData(other);
@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        internal override sealed void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);
             int length = Length;
@@ -53,7 +53,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract void WriteData(byte[] buffer, int offset);
 
-        public override sealed int Length { get { return Offset.Data + DataLength; } }
+        public sealed override int Length { get { return Offset.Data + DataLength; } }
         internal abstract int DataLength { get; }
         internal static bool IsStandard(IpV4Protocol nextHeader)
         {

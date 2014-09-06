@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
 
         public abstract bool IsValid { get; }
 
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as IpV6ExtensionHeader);
         }

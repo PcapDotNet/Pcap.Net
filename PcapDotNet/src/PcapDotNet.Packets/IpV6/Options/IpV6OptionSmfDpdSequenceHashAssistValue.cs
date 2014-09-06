@@ -53,6 +53,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionSmfDpdSequenceHashAssistValue);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return HashAssistValue.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (byte)(HashAssistValue[0] | 0x80));

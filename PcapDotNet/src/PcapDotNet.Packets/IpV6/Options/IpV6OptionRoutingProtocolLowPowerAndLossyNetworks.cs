@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -112,6 +114,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6Option other)
         {
             return EqualsData(other as IpV6OptionRoutingProtocolLowPowerAndLossyNetworks);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(BitSequence.Merge(Down, RankError, ForwardingError), RplInstanceId, SenderRank), SubTlvs);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
