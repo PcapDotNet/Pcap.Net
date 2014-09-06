@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// Handover Acknowledge Code for IPv6 Mobility Handover Acknowledge Message Extension Header.
+    /// </summary>
     public enum IpV6MobilityHandoverAcknowledgeCode : byte
     {
         /// <summary>

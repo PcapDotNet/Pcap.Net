@@ -1,5 +1,9 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// RFC 5568.
+    /// A code for a Link Layer Address IPv6 option.
+    /// </summary>
     public enum IpV6MobilityLinkLayerAddressCode : byte
     {
         /// <summary>

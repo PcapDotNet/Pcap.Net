@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// The type of an IPv6 option.
+    /// </summary>
     public enum IpV6OptionType :  byte
     {
         /// <summary>
