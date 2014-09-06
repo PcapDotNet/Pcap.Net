@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// The type of the IPv6 mobility header.
+    /// </summary>
     public enum IpV6MobilityHeaderType : byte
     {
         /// <summary>
@@ -23,7 +26,7 @@ namespace PcapDotNet.Packets.IpV6
         HomeTest = 3,
 
         /// <summary>
-        /// RFC6275
+        /// RFC 6275
         /// </summary>
         CareOfTest = 4,
 
