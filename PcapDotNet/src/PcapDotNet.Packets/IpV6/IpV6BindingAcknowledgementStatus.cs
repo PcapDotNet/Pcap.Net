@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// The Binidng Acknowledgement status in an IPv6 Mobility Binding Acknowledgement extension header.
+    /// </summary>
     public enum IpV6BindingAcknowledgementStatus : byte
     {
         /// <summary>
