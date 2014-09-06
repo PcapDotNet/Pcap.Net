@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override object GetDataHashCode()
+        internal sealed override object GetDataHashCode()
         {
             return 0;
         }

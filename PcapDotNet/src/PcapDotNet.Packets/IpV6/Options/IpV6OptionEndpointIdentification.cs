@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionEndpointIdentification);
         }
 
-        internal  override int GetDataHashCode()
+        internal override int GetDataHashCode()
         {
             return Sequence.GetHashCode(SourceEndpointIdentifier, DestinationEndpointIdentifier);
         }
