@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.AlternateChecksumData)]
-    public sealed class TcpOptionAlternateChecksumData : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionAlternateChecksumData>
+    public sealed class TcpOptionAlternateChecksumData : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -86,33 +86,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two alternate checksum data options are equal if they have the same data.
-        /// </summary>
-        public bool Equals(TcpOptionAlternateChecksumData other)
-        {
-            if (other == null)
-                return false;
-            return Data.SequenceEqual(other.Data);
-        }
-
-        /// <summary>
-        /// Two alternate checksum data options are equal if they have the same data.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionAlternateChecksumData);
-        }
-
-        /// <summary>
-        /// The hash code of this option is the hash code of the option type xored with the hash code of the data.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   Data.BytesSequenceGetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -128,10 +101,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionAlternateChecksumData(data);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionAlternateChecksumData);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Data.BytesSequenceGetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(TcpOptionAlternateChecksumData other)
+        {
+            return other != null &&
+                   Data.SequenceEqual(other.Data);
         }
     }
 }

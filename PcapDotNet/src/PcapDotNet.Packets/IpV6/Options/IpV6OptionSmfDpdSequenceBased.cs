@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -80,7 +81,7 @@ namespace PcapDotNet.Packets.IpV6
             Identifier = identifier;
         }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return OptionDataMinimumLength + TaggerIdLength + Identifier.Length; }
         }
@@ -90,9 +91,16 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionSmfDpdSequenceBased);
         }
 
+        internal sealed override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(Identifier, TaggerIdType, GetTaggerIdHashCode());
+        }
+
         internal abstract bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other);
 
-        internal override sealed void WriteData(byte[] buffer, ref int offset)
+        internal abstract int GetTaggerIdHashCode();
+
+        internal sealed override void WriteData(byte[] buffer, ref int offset)
         {
             byte taggerIdInfo = (byte)(((byte)TaggerIdType << Shift.TaggerIdType) & Mask.TaggerIdType);
             if (TaggerIdType != IpV6TaggerIdType.Null)

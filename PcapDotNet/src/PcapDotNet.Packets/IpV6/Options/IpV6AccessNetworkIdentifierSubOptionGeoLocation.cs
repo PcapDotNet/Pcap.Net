@@ -111,6 +111,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6AccessNetworkIdentifierSubOptionGeoLocation);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(LongitudeDegrees, LatitudeDegrees);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.LatitudeDegrees, LatitudeDegrees, Endianity.Big);

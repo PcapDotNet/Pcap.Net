@@ -58,12 +58,9 @@ namespace PcapDotNet.Packets.IpV4
             get { return _addressesAndTimestamps; }
         }
 
-        /// <summary>
-        /// The hash of this option is the base class hash xored with the hash of each timestamp.
-        /// </summary>
-        public override int GetHashCode()
+        internal override int GetDataHashCode()
         {
-            return base.GetHashCode() ^ TimedRoute.SequenceGetHashCode();
+            return TimedRoute.SequenceGetHashCode();
         }
 
         internal static IpV4OptionTimestampAndAddress Read(IpV4OptionTimestampType timestampType, byte overflow, byte pointedIndex, byte[] buffer, ref int offset, int numValues)

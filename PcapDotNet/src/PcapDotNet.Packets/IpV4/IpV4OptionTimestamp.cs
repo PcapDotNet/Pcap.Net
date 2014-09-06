@@ -201,13 +201,9 @@ namespace PcapDotNet.Packets.IpV4
             return Equals(other as IpV4OptionTimestamp);
         }
 
-        /// <summary>
-        /// The hash code is the xor of the base class hash code, the timestamp and overflow hash code and the pointed index hash code.
-        /// </summary>
-        public override int GetHashCode()
+        internal override int GetDataHashCode()
         {
-            return base.GetHashCode() ^
-                   Sequence.GetHashCode(BitSequence.Merge((byte)TimestampType, Overflow), PointedIndex);
+            return Sequence.GetHashCode(BitSequence.Merge((byte)TimestampType, Overflow), PointedIndex);
         }
 
         internal sealed override void Write(byte[] buffer, ref int offset)

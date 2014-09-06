@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two DnsResourceDataUShortDomainName are equal iff their of the same type and their ushort values and domain names are equal.
         /// </summary>
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as DnsResourceDataUShortDomainName);
         }
@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// A hash code based on the type, ushort value and domain name.
         /// </summary>
-        public override sealed int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return Sequence.GetHashCode(GetType(), Value, DomainName);
         }

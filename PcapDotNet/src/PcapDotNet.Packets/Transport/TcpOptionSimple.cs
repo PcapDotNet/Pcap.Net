@@ -30,5 +30,20 @@ namespace PcapDotNet.Packets.Transport
             : base(optionType)
         {
         }
+
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionSimple);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return 0;
+        }
+
+        private bool EqualsData(TcpOptionSimple other)
+        {
+            return other != null;
+        }
     }
 }

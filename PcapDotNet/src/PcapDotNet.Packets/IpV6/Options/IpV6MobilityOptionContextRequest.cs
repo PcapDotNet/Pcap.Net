@@ -82,6 +82,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionContextRequest);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return Requests.SequenceGetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             foreach (var request in Requests)

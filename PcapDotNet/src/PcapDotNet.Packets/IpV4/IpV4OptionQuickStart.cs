@@ -193,16 +193,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The hash code is the xor of the base class hash code with the following values hash code:
-        /// The combination of function, rate and ttl and the nonce.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   Sequence.GetHashCode(BitSequence.Merge((byte)((byte)Function | Rate), Ttl), Nonce);
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -222,6 +212,11 @@ namespace PcapDotNet.Packets.IpV4
             offset += OptionValueLength;
 
             return new IpV4OptionQuickStart(function, rate, ttl, nonce);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge((byte)((byte)Function | Rate), Ttl), Nonce);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

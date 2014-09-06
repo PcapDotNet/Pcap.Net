@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.Echo)]
-    public sealed class TcpOptionEcho : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionEcho>
+    public sealed class TcpOptionEcho : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -73,33 +73,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two echo options are equal if they have the same info.
-        /// </summary>
-        public bool Equals(TcpOptionEcho other)
-        {
-            if (other == null)
-                return false;
-
-            return Info == other.Info;
-        }
-
-        /// <summary>
-        /// Two echo options are equal if they have the same info.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionEcho);
-        }
-
-        /// <summary>
-        /// The hash code of the echo option is the hash code of the option type xored with the hash code info.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Info.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -115,10 +88,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionEcho(info);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionEcho);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Info.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Info, Endianity.Big);
+        }
+
+        private bool EqualsData(TcpOptionEcho other)
+        {
+            return other != null &&
+                   Info == other.Info;
         }
     }
 }

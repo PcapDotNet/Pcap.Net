@@ -5,6 +5,10 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Ip
 {
+    /// <summary>
+    /// Base class for different IPv4 options.
+    /// </summary>
+    /// <typeparam name="T">The option concerete type.</typeparam>
     public abstract class V4Options<T> : Options<T> where T : V4Option, IEquatable<T>
     {
         internal V4Options(byte[] buffer, int offset, int length, T end)
@@ -19,7 +23,7 @@ namespace PcapDotNet.Packets.Ip
                 throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + maximumBytesLength, "options");
         }
 
-        internal override sealed int CalculateBytesLength(int optionsLength)
+        internal sealed override int CalculateBytesLength(int optionsLength)
         {
             if (optionsLength % 4 == 0)
                 return optionsLength;

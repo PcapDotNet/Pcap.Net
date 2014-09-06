@@ -40,6 +40,11 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
+        internal override int GetDataHashCode()
+        {
+            return 0;
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             offset += DataLength;

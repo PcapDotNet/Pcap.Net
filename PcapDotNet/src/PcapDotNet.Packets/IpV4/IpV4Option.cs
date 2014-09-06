@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV4
@@ -67,9 +68,9 @@ namespace PcapDotNet.Packets.IpV4
         /// The hash code of the option is the hash code of the option type.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
-            return OptionType.GetHashCode();
+            return Sequence.GetHashCode(OptionType, GetDataHashCode());
         }
 
         /// <summary>
@@ -79,6 +80,8 @@ namespace PcapDotNet.Packets.IpV4
         {
             return OptionType.ToString();
         }
+
+        internal abstract int GetDataHashCode();
 
         internal sealed override V4Option Read(byte[] buffer, ref int offset, int length)
         {

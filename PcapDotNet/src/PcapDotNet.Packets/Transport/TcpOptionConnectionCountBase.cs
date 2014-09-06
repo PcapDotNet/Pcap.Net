@@ -5,7 +5,7 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// The base class for connection count TCP options.
     /// </summary>
-    public abstract class TcpOptionConnectionCountBase : TcpOptionComplex, IEquatable<TcpOptionConnectionCountBase>
+    public abstract class TcpOptionConnectionCountBase : TcpOptionComplex
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -38,32 +38,14 @@ namespace PcapDotNet.Packets.Transport
             get { return true; }
         }
 
-        /// <summary>
-        /// Two connection count options are equal of they are of the same option type and have the same connection count.
-        /// </summary>
-        public bool Equals(TcpOptionConnectionCountBase other)
+        internal sealed override bool EqualsData(TcpOption other)
         {
-            if (other == null)
-                return false;
-
-            return OptionType == other.OptionType &&
-                   ConnectionCount == other.ConnectionCount;
+            return EqualsData(other as TcpOptionConnectionCountBase);
         }
 
-        /// <summary>
-        /// Two connection count options are equal of they are of the same option type and have the same connection count.
-        /// </summary>
-        public sealed override bool Equals(TcpOption other)
+        internal sealed override int GetDataHashCode()
         {
-            return Equals(other as TcpOptionConnectionCountBase);
-        }
-
-        /// <summary>
-        /// The hash code of the connection count option is the hash code of the option type xored with the hash code of the connection count.
-        /// </summary>
-        public sealed override int GetHashCode()
-        {
-            return base.GetHashCode() ^ ConnectionCount.GetHashCode();
+            return ConnectionCount.GetHashCode();
         }
 
         internal sealed override void Write(byte[] buffer, ref int offset)
@@ -99,6 +81,12 @@ namespace PcapDotNet.Packets.Transport
 
             connectionCount = buffer.ReadUInt(ref offset, Endianity.Big);
             return true;
+        }
+
+        private bool EqualsData(TcpOptionConnectionCountBase other)
+        {
+            return other != null &&
+                   OptionType == other.OptionType && ConnectionCount == other.ConnectionCount;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.Md5Signature)]
-    public sealed class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionMd5Signature>
+    public sealed class TcpOptionMd5Signature: TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -84,33 +84,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two MD5 signature options are equal if they have the same signature value.
-        /// </summary>
-        public bool Equals(TcpOptionMd5Signature other)
-        {
-            if (other == null)
-                return false;
-
-            return Data.SequenceEqual(other.Data);
-        }
-
-        /// <summary>
-        /// Two MD5 signature options are equal if they have the same signature value.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionMd5Signature);
-        }
-
-        /// <summary>
-        /// The hash code of the MD5 signature option is the hash code of the option type xored with the hash code of the signature.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Data.BytesSequenceGetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -126,10 +99,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionMd5Signature(data);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionMd5Signature);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Data.BytesSequenceGetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(TcpOptionMd5Signature other)
+        {
+            return other != null &&
+                   Data.SequenceEqual(other.Data);
         }
     }
 }

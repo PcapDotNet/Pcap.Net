@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -99,6 +100,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionIpV4HomeAddress);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(PrefixLength, RequestPrefix.ToByte()), HomeAddress);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

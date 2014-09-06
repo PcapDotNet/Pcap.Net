@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.PartialOrderServiceProfile)]
-    public sealed class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionPartialOrderServiceProfile>
+    public sealed class TcpOptionPartialOrderServiceProfile : TcpOptionComplex, IOptionComplexFactory
     {
         private const byte NoFlags = 0x00;
         private const byte StartFlag = 0x80;
@@ -86,34 +86,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two partial order service profile options are equal if they agree on both IsStart and IsEnd.
-        /// </summary>
-        public bool Equals(TcpOptionPartialOrderServiceProfile other)
-        {
-            if (other == null)
-                return false;
-
-            return (IsStart == other.IsStart) &&
-                   (IsEnd == other.IsEnd);
-        }
-
-        /// <summary>
-        /// Two partial order service profile options are equal if they agree on both IsStart and IsEnd.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionPartialOrderServiceProfile);
-        }
-
-        /// <summary>
-        /// The hash code of the partial order service profile option is the hash code of the option type xored with a combination of the IsStart and IsEnd values.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ BitSequence.Merge(IsStart, IsEnd).GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -129,11 +101,27 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionPartialOrderServiceProfile((data & StartFlag) == StartFlag, (data & EndFlag) == EndFlag);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionPartialOrderServiceProfile);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return BitSequence.Merge(IsStart, IsEnd).GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             byte data = (byte)((IsStart ? StartFlag : NoFlags) | (IsEnd ? EndFlag : NoFlags));
             buffer.Write(ref offset, data);
+        }
+
+        private bool EqualsData(TcpOptionPartialOrderServiceProfile other)
+        {
+            return other != null &&
+                   IsStart == other.IsStart && IsEnd == other.IsEnd;
         }
     }
 }

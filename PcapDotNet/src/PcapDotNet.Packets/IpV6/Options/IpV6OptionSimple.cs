@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        public override sealed int Length
+        public sealed override int Length
         {
             get { return sizeof(byte); }
         }
@@ -28,7 +28,12 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override sealed void Write(byte[] buffer, ref int offset)
+        internal sealed override int GetDataHashCode()
+        {
+            return 0;
+        }
+
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
         }

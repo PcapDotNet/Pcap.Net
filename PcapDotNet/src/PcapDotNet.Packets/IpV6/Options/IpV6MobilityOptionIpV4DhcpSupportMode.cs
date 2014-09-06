@@ -59,6 +59,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionIpV4DhcpSupportMode);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return IsServer.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             if (IsServer)

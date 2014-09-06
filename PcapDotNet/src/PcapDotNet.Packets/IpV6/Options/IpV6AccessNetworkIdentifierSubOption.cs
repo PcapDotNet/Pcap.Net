@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV6
@@ -20,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
             OptionType = type;
         }
 
-        public override sealed int Length
+        public sealed override int Length
         {
             get { return sizeof(byte) + sizeof(byte) + DataLength; }
         }
@@ -31,14 +32,21 @@ namespace PcapDotNet.Packets.IpV6
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
         }
 
-        public override sealed bool Equals(Option other)
+        public sealed override bool Equals(Option other)
         {
             return Equals(other as IpV6AccessNetworkIdentifierSubOption);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(OptionType, GetDataHashCode());
         }
 
         internal abstract int DataLength { get; }
 
         internal abstract bool EqualsData(IpV6AccessNetworkIdentifierSubOption other);
+
+        internal abstract int GetDataHashCode();
 
         internal override void Write(byte[] buffer, ref int offset)
         {

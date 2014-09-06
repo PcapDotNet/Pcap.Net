@@ -30,5 +30,10 @@ namespace PcapDotNet.Packets.IpV4
             : base(optionType)
         {
         }
+
+        internal override int GetDataHashCode()
+        {
+            return 0;
+        }
     }
 }

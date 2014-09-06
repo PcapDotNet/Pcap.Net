@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -75,9 +77,14 @@ namespace PcapDotNet.Packets.IpV6
             get { return OptionDataMinimumLength + Data.Length; }
         }
 
-        internal sealed override bool EqualsData(IpV6MobilityOption other)
+        internal override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionVendorSpecific);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(VendorId, SubType, Data);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

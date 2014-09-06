@@ -51,6 +51,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionAccessNetworkIdentifier);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return SubOptions.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             SubOptions.Write(buffer, offset);

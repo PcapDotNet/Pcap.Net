@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV6
@@ -25,7 +26,7 @@ namespace PcapDotNet.Packets.IpV6
             OptionType = type;
         }
 
-        public override sealed bool Equals(Option other)
+        public sealed override bool Equals(Option other)
         {
             return Equals(other as IpV6FlowIdentificationSubOption);
         }
@@ -36,7 +37,14 @@ namespace PcapDotNet.Packets.IpV6
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
         }
 
+        public sealed override int GetHashCode()
+        {
+            return Sequence.GetHashCode(OptionType, GetDataHashCode());
+        }
+
         internal abstract bool EqualsData(IpV6FlowIdentificationSubOption other);
+
+        internal abstract object GetDataHashCode();
 
         internal override void Write(byte[] buffer, ref int offset)
         {

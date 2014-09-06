@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.IpV6
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
-        internal override sealed bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        internal sealed override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityLocalizedRouting);
         }
@@ -92,7 +92,7 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override sealed void WriteMessageData(byte[] buffer, int offset)
+        internal sealed override void WriteMessageData(byte[] buffer, int offset)
         {
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
             WriteMessageDataBetweenSequenceNumberAndLifetime(buffer, offset);

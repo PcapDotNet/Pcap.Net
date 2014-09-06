@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Transport
     /// </pre>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.SelectiveAcknowledgmentPermitted)]
-    public sealed class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionSelectiveAcknowledgmentPermitted>
+    public sealed class TcpOptionSelectiveAcknowledgmentPermitted : TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -53,22 +53,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two selective ack permitted options are always equal.
-        /// </summary>
-        public bool Equals(TcpOptionSelectiveAcknowledgmentPermitted other)
-        {
-            return other != null;
-        }
-
-        /// <summary>
-        /// Two selective ack permitted options are always equal.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionSelectiveAcknowledgmentPermitted);
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -81,6 +65,21 @@ namespace PcapDotNet.Packets.Transport
                 return null;
 
             return _instance;
+        }
+
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionSelectiveAcknowledgmentPermitted);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return 0;
+        }
+
+        private bool EqualsData(TcpOptionSelectiveAcknowledgmentPermitted other)
+        {
+            return other != null;
         }
 
         private static readonly TcpOptionSelectiveAcknowledgmentPermitted _instance = new TcpOptionSelectiveAcknowledgmentPermitted();

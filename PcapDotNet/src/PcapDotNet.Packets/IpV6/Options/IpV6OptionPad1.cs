@@ -41,6 +41,11 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
+        internal override int GetDataHashCode()
+        {
+            return 0;
+        }
+
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
             throw new InvalidOperationException("Pad1 options shouldn't be registered.");

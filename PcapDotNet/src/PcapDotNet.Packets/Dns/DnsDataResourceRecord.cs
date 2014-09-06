@@ -71,14 +71,14 @@ namespace PcapDotNet.Packets.Dns
         /// For example, SOA records are always distributed with a zero TTL to prohibit caching.  
         /// Zero values can also be used for extremely volatile data.
         /// </summary>
-        public override sealed int Ttl { get; protected set; }
+        public sealed override int Ttl { get; protected set; }
 
         /// <summary>
         /// A variable length string of octets that describes the resource.  
         /// The format of this information varies according to the TYPE and CLASS of the resource record.
         /// For example, the if the TYPE is A and the CLASS is IN, the RDATA field is a 4 octet ARPA Internet address.
         /// </summary>
-        public override sealed DnsResourceData Data { get; protected set; }
+        public sealed override DnsResourceData Data { get; protected set; }
 
         /// <summary>
         /// A string representing the resource record by concatenating its different parts.
@@ -102,7 +102,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two DnsDataResourceRecord are equal iff their domain name, dns type, dns class, ttl and data fields are equal.
         /// </summary>
-        public override sealed bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
  	        return Equals(obj as DnsDataResourceRecord);
         }
@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// A hash code of the combination of the domain name, dns type, dns class, ttl and data fields.
         /// </summary>
-        public override sealed int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return GetHashCodeBase() ^ Sequence.GetHashCode(Ttl, Data);
         }

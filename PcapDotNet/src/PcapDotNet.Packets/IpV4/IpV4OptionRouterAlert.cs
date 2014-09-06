@@ -105,15 +105,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// The hash code value is the xor of the base class hash code and the value hash code.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   Value.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -127,6 +118,11 @@ namespace PcapDotNet.Packets.IpV4
 
             ushort value = buffer.ReadUShort(ref offset, Endianity.Big);
             return new IpV4OptionRouterAlert(value);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Value.GetHashCode();
         }
 
         internal override void Write(byte[] buffer, ref int offset)

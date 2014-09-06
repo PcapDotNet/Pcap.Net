@@ -7,26 +7,44 @@ using PcapDotNet.Packets.Ip;
 
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// List of IPv6 options for some of the IPv6 extension headers.
+    /// </summary>
     public sealed class IpV6Options : Options<IpV6Option>
     {
+        /// <summary>
+        /// Empty set of options.
+        /// </summary>
         public static IpV6Options Empty { get { return _empty; } }
 
+        /// <summary>
+        /// Creates the list of options from a given IList of otpions.
+        /// </summary>
+        /// <param name="options">List of options to build the set from.</param>
         public IpV6Options(IList<IpV6Option> options)
             : base(options, true, null)
         {
         }
 
+        /// <summary>
+        /// Creates the list of options from a given IEnumerable of otpions.
+        /// </summary>
+        /// <param name="options">List of options to build the set from.</param>
         public IpV6Options(IEnumerable<IpV6Option> options)
             : this(options.ToList())
         {
         }
 
+        /// <summary>
+        /// Creates the list of options from a given array of otpions.
+        /// </summary>
+        /// <param name="options">List of options to build the set from.</param>
         public IpV6Options(params IpV6Option[] options)
             : this((IList<IpV6Option>)options)
         {
         }
 
-        public IpV6Options(DataSegment data) 
+        internal IpV6Options(DataSegment data) 
             : this(Read(data))
         {
         }

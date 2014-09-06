@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Transport
     /// </para>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.WindowScale)]
-    public sealed class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory, IEquatable<TcpOptionWindowScale>
+    public sealed class TcpOptionWindowScale: TcpOptionComplex, IOptionComplexFactory
     {
         /// <summary>
         /// The number of bytes this option take.
@@ -86,34 +86,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two window scale options are equal if they have the same scale factor.
-        /// </summary>
-        public bool Equals(TcpOptionWindowScale other)
-        {
-            if (other == null)
-                return false;
-            return ScaleFactorLog == other.ScaleFactorLog;
-        }
-
-        /// <summary>
-        /// Two window scale options are equal if they have the same scale factor.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionWindowScale);
-        }
-
-        /// <summary>
-        /// The hash code of the window scale option is the hash code of the option type xored with the hash code of the scale factor log.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^
-                   ScaleFactorLog.GetHashCode();
-        }
-
-        /// <summary>
         /// Tries to read the option from a buffer starting from the option value (after the type and length).
         /// </summary>
         /// <param name="buffer">The buffer to read the option from.</param>
@@ -129,10 +101,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionWindowScale(scaleFactorLog);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionWindowScale);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return ScaleFactorLog.GetHashCode();
+        }
+
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, ScaleFactorLog);
+        }
+
+        private bool EqualsData(TcpOptionWindowScale other)
+        {
+            return other != null &&
+                   ScaleFactorLog == other.ScaleFactorLog;
         }
     }
 }

@@ -1,5 +1,8 @@
 namespace PcapDotNet.Packets.Ip
 {
+    /// <summary>
+    /// Either an IPv4 option or a TCP option.
+    /// </summary>
     public abstract class V4Option : Option
     {
         /// <summary>

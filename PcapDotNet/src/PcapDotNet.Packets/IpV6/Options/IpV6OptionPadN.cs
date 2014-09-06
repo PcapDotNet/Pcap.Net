@@ -37,7 +37,12 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override bool EqualsData(IpV6Option other)
         {
-            return true;
+            return EqualsData(other as IpV6OptionPadN);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return PaddingDataLength.GetHashCode();
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
@@ -48,6 +53,12 @@ namespace PcapDotNet.Packets.IpV6
         private IpV6OptionPadN()
             : this(0)
         {
+        }
+
+        private bool EqualsData(IpV6OptionPadN other)
+        {
+            return other != null &&
+                   PaddingDataLength == other.PaddingDataLength;
         }
     }
 }

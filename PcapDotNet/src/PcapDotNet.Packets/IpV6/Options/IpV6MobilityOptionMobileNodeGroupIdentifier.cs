@@ -1,3 +1,5 @@
+using PcapDotNet.Base;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -65,6 +67,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6MobilityOption other)
         {
             return EqualsData(other as IpV6MobilityOptionMobileNodeGroupIdentifier);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(SubType, MobileNodeGroupIdentifier);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)

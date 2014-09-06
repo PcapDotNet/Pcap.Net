@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
-        public override sealed int Length
+        public sealed override int Length
         {
             get { return base.Length + sizeof(byte) + DataLength; }
         }
@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract int DataLength { get; }
 
-        internal override sealed void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer[offset++] = (byte)DataLength;

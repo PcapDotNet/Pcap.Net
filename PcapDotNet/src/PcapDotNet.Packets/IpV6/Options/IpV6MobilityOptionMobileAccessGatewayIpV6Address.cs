@@ -66,6 +66,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionMobileAccessGatewayIpV6Address);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return Address.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.AddressLength, AddressLength);

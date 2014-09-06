@@ -160,6 +160,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6OptionCalipso);
         }
 
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(DomainOfInterpretation, BitSequence.Merge(CompartmentLength, SensitivityLevel, Checksum), CompartmentBitmap);
+        }
+
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, (uint)DomainOfInterpretation, Endianity.Big);

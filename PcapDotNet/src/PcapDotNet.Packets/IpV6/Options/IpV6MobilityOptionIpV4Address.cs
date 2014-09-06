@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override sealed int DataLength
+        internal sealed override int DataLength
         {
             get { return OptionDataLength; }
         }
@@ -56,7 +56,12 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6MobilityOptionIpV4Address);
         }
 
-        internal override sealed void WriteData(byte[] buffer, ref int offset)
+        internal override int GetDataHashCode()
+        {
+            return Address.GetHashCode();
+        }
+
+        internal sealed override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.Address, Address, Endianity.Big);
             offset += OptionDataLength;

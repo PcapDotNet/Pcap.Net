@@ -10,7 +10,7 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// An unknown TCP option.
     /// </summary>
-    public sealed class TcpOptionUnknown : TcpOptionComplex, IOptionUnknownFactory<TcpOptionType>, IEquatable<TcpOptionUnknown>
+    public sealed class TcpOptionUnknown : TcpOptionComplex, IOptionUnknownFactory<TcpOptionType>
     {
         /// <summary>
         /// The minimum number of bytes this option take.
@@ -61,34 +61,6 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
-        /// Two unknown options are equal iff they are of equal type and equal data.
-        /// </summary>
-        public bool Equals(TcpOptionUnknown other)
-        {
-            if (other == null)
-                return false;
-
-            return OptionType == other.OptionType &&
-                   Data.SequenceEqual(other.Data);
-        }
-
-        /// <summary>
-        /// Two unknown options are equal iff they are of equal type and equal data.
-        /// </summary>
-        public override bool Equals(TcpOption other)
-        {
-            return Equals(other as TcpOptionUnknown);
-        }
-
-        /// <summary>
-        /// The hash code for an unknown option is the hash code for the option type xored with the hash code of the data.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() ^ Data.BytesSequenceGetHashCode();
-        }
-
-        /// <summary>
         /// Creates an unknown option from its type and by reading a buffer for its value.
         /// </summary>
         /// <param name="optionType">The type of the unknown option.</param>
@@ -105,10 +77,26 @@ namespace PcapDotNet.Packets.Transport
             return new TcpOptionUnknown(optionType, data);
         }
 
+        internal override bool EqualsData(TcpOption other)
+        {
+            return EqualsData(other as TcpOptionUnknown);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Data.BytesSequenceGetHashCode();
+        }
+    
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Data);
+        }
+
+        private bool EqualsData(TcpOptionUnknown other)
+        {
+            return other != null &&
+                   Data.SequenceEqual(other.Data);
         }
     }
 }

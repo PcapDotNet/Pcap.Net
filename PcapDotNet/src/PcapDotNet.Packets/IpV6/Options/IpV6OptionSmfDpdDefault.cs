@@ -67,6 +67,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsTaggerId(other as IpV6OptionSmfDpdDefault);
         }
 
+        internal override int GetTaggerIdHashCode()
+        {
+            return TaggerId.GetHashCode();
+        }
+
         internal override void WriteTaggerId(byte[] buffer, ref int offset)
         {
             buffer.Write(ref offset, TaggerId);
