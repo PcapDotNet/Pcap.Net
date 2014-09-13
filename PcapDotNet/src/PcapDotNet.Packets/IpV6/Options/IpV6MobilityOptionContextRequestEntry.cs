@@ -17,6 +17,11 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6MobilityOptionContextRequestEntry : IEquatable<IpV6MobilityOptionContextRequestEntry>
     {
+        /// <summary>
+        /// Creates a context request entry according to the given request type and option.
+        /// </summary>
+        /// <param name="requestType">The type value for the requested option.</param>
+        /// <param name="option">The optional data to uniquely identify the requested context for the requested option.</param>
         public IpV6MobilityOptionContextRequestEntry(byte requestType, DataSegment option)
         {
             if (option.Length > byte.MaxValue)

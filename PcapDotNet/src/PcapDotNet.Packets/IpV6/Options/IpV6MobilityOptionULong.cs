@@ -16,9 +16,12 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6MobilityOptionULong : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(ulong);
 
-        public IpV6MobilityOptionULong(IpV6MobilityOptionType type, ulong value)
+        internal IpV6MobilityOptionULong(IpV6MobilityOptionType type, ulong value)
             : base(type)
         {
             Value = value;

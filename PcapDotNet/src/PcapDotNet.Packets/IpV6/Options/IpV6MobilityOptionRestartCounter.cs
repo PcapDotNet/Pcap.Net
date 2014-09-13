@@ -16,8 +16,15 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.RestartCounter)]
     public sealed class IpV6MobilityOptionRestartCounter : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(uint);
 
+        /// <summary>
+        /// Creates an option from the given restart counter.
+        /// </summary>
+        /// <param name="restartCounter">Indicates the current Restart Counter value.</param>
         public IpV6MobilityOptionRestartCounter(uint restartCounter)
             : base(IpV6MobilityOptionType.RestartCounter)
         {

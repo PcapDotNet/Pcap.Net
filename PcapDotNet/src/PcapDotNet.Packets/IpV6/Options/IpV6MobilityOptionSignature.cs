@@ -16,6 +16,10 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.Signature)]
     public sealed class IpV6MobilityOptionSignature : IpV6MobilityOptionSingleDataSegmentField
     {
+        /// <summary>
+        /// Creates an option from the given signature.
+        /// </summary>
+        /// <param name="signature">Contains the mobile or correspondent node's signature, generated with the mobile or correspondent node's private key.</param>
         public IpV6MobilityOptionSignature(DataSegment signature)
             : base(IpV6MobilityOptionType.Signature, signature)
         {

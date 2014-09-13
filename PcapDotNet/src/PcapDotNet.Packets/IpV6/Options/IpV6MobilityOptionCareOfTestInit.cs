@@ -13,6 +13,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CareOfTestInit)]
     public sealed class IpV6MobilityOptionCareOfTestInit : IpV6MobilityOptionEmpty
     {
+        /// <summary>
+        /// Creates an instance.
+        /// </summary>
         public IpV6MobilityOptionCareOfTestInit()
             : base(IpV6MobilityOptionType.CareOfTestInit)
         {

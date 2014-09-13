@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6MobilityOptionSingleDataSegmentField : IpV6MobilityOptionComplex
     {
-        public IpV6MobilityOptionSingleDataSegmentField(IpV6MobilityOptionType type, DataSegment value)
+        internal IpV6MobilityOptionSingleDataSegmentField(IpV6MobilityOptionType type, DataSegment value)
             : base(type)
         {
             Value = value;

@@ -13,6 +13,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CgaParametersRequest)]
     public sealed class IpV6MobilityOptionCgaParametersRequest : IpV6MobilityOptionEmpty
     {
+        /// <summary>
+        /// Creates an instance.
+        /// </summary>
         public IpV6MobilityOptionCgaParametersRequest()
             : base(IpV6MobilityOptionType.CgaParametersRequest)
         {

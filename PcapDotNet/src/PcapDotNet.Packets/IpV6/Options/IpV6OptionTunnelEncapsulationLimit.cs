@@ -15,8 +15,15 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6OptionTypeRegistration(IpV6OptionType.TunnelEncapsulationLimit)]
     public sealed class IpV6OptionTunnelEncapsulationLimit : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(byte);
 
+        /// <summary>
+        /// Creates an option from the given tunnel encapsulation limit.
+        /// </summary>
+        /// <param name="tunnelEncapsulationLimit">How many further levels of encapsulation are permitted for the packet.</param>
         public IpV6OptionTunnelEncapsulationLimit(byte tunnelEncapsulationLimit)
             : base(IpV6OptionType.TunnelEncapsulationLimit)
         {

@@ -15,13 +15,12 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.HandoffIndicator)]
     public sealed class IpV6MobilityOptionHandoffIndicator : IpV6MobilityOptionReservedByteValueByte
     {
+        /// <summary>
+        /// Creates an instance from the given handoff indicator.
+        /// </summary>
+        /// <param name="handoffIndicator">Specifies the type of handoff.</param>
         public IpV6MobilityOptionHandoffIndicator(IpV6HandoffIndicator handoffIndicator)
             : base(IpV6MobilityOptionType.HandoffIndicator, (byte)handoffIndicator)
-        {
-        }
-
-        private IpV6MobilityOptionHandoffIndicator() 
-            : this(IpV6HandoffIndicator.AttachmentOverNewInterface)
         {
         }
 
@@ -40,6 +39,11 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             return new IpV6MobilityOptionHandoffIndicator((IpV6HandoffIndicator)value);
+        }
+
+        private IpV6MobilityOptionHandoffIndicator()
+            : this(IpV6HandoffIndicator.AttachmentOverNewInterface)
+        {
         }
     }
 }
