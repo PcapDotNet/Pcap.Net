@@ -353,6 +353,7 @@
     <Compile Include="IpV6\ExtensionHeaders\IpV6MobilityHandoverAcknowledgeCode.cs" />
     <Compile Include="IpV6\ExtensionHeaders\IpV6MobilityHeaderType.cs" />
     <Compile Include="IpV6\ExtensionHeaders\IpV6MobilityLocalizedRoutingAcknowledgementStatus.cs" />
+    <Compile Include="IpV6\Options\IIpV6MobilityOptionIpV4HomeAddress.cs" />
     <Compile Include="IpV6\Options\IIpV6OptionComplexFactory.cs" />
     <Compile Include="IpV6\Options\IpV6AccessNetworkIdentifierOperatorIdentifierType.cs" />
     <Compile Include="IpV6\Options\IpV6AccessNetworkIdentifierSubOption.cs" />
@@ -447,6 +448,7 @@
     <Compile Include="IpV6\Options\IpV6MobilityOptionNatDetection.cs" />
     <Compile Include="IpV6\Options\IpV6MobilityOptionNetworkPrefix.cs" />
     <Compile Include="IpV6\Options\IpV6MobilityOptionNonceIndices.cs" />
+    <Compile Include="IpV6\Options\IpV6MobilityOptionPad1.cs" />
     <Compile Include="IpV6\Options\IpV6MobilityOptionPadN.cs" />
     <Compile Include="IpV6\Options\IpV6MobilityOptionPermanentHomeKeygenToken.cs" />
     <Compile Include="IpV6\Options\IpV6MobilityOptionRedirect.cs" />

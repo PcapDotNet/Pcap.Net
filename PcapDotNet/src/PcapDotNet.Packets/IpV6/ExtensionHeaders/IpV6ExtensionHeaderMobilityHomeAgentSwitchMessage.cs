@@ -74,6 +74,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage);
         }
 
+        internal override int GetMessageDataHashCode()
+        {
+            return HomeAgentAddresses.SequenceGetHashCode();
+        }
+
         internal static IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)

@@ -35,7 +35,14 @@ namespace PcapDotNet.Packets.IpV6
                    Protocol == other.Protocol && NextHeader == other.NextHeader && EqualsData(other);
         }
 
+        public sealed override int GetHashCode()
+        {
+            return Sequence.GetHashCode(Protocol, NextHeader, GetDataHashCode());
+        }
+
         internal abstract bool EqualsData(IpV6ExtensionHeader other);
+
+        internal abstract int GetDataHashCode();
 
         internal IpV6ExtensionHeaderStandard(IpV4Protocol nextHeader) 
             : base(nextHeader)

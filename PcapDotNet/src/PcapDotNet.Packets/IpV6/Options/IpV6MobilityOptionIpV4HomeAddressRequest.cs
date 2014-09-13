@@ -6,15 +6,6 @@ namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
     /// RFC 5844.
-    /// </summary>
-    public interface IIpV6MobilityOptionIpV4HomeAddress
-    {
-        byte PrefixLength { get; }
-        IpV4Address HomeAddress { get; }
-    }
-
-    /// <summary>
-    /// RFC 5844.
     /// <pre>
     /// +-----+------------+-----+--------------+
     /// | Bit | 0-5        | 6-7 | 8-15         |
@@ -67,7 +58,7 @@ namespace PcapDotNet.Packets.IpV6
         public byte PrefixLength { get; private set; }
 
         /// <summary>
-        /// Containing the IPv4 home address that is being requested.
+        /// Contains the IPv4 home address that is being requested.
         /// The value of 0.0.0.0 is used to request that the local mobility anchor perform the address allocation.
         /// </summary>
         public IpV4Address HomeAddress { get; private set; }

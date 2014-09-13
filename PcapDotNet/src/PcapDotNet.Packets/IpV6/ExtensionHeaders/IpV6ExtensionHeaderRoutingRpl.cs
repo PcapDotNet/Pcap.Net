@@ -201,6 +201,12 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingRpl);
         }
 
+        internal override int GetRoutingDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(CommonPrefixLengthForNonLastAddresses, CommonPrefixLengthForLastAddress, PadSize),
+                                        Addresses.SequenceGetHashCode());
+        }
+
         internal override void WriteRoutingData(byte[] buffer, int offset)
         {
             buffer.Write(offset + RoutingDataOffset.CommonPrefixLengthForNonLastAddresses,

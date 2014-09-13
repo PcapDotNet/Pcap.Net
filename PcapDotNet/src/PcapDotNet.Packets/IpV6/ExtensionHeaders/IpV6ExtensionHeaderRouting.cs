@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -65,6 +66,13 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         internal abstract bool EqualsRoutingData(IpV6ExtensionHeaderRouting other);
+
+        internal sealed override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge((byte)RoutingType, SegmentsLeft), GetRoutingDataHashCode());
+        }
+
+        internal abstract int GetRoutingDataHashCode();
 
         internal static IpV6ExtensionHeaderRouting ParseData(IpV4Protocol nextHeader, DataSegment data)
         {

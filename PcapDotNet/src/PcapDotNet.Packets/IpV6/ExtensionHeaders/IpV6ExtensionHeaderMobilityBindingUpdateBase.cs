@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -106,20 +107,18 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Lifetime { get; private set; }
 
-        internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
+        internal sealed override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingUpdateBase);
         }
 
-        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingUpdateBase other)
+        internal sealed override int GetMessageDataHashCode()
         {
-            return other != null &&
-                   SequenceNumber == other.SequenceNumber && Acknowledge == other.Acknowledge && HomeRegistration == other.HomeRegistration &&
-                   LinkLocalAddressCompatibility == other.LinkLocalAddressCompatibility &&
-                   KeyManagementMobilityCapability == other.KeyManagementMobilityCapability && Lifetime == other.Lifetime;
+            return Sequence.GetHashCode(BitSequence.Merge(SequenceNumber, Lifetime),
+                                        BitSequence.Merge(Acknowledge, HomeRegistration, LinkLocalAddressCompatibility, KeyManagementMobilityCapability));
         }
 
-        internal override int MessageDataLength
+        internal sealed override int MessageDataLength
         {
             get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
@@ -151,7 +150,7 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
-        internal override void WriteMessageData(byte[] buffer, int offset)
+        internal sealed override void WriteMessageData(byte[] buffer, int offset)
         {
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
 
@@ -169,5 +168,14 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.Lifetime, Lifetime, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
         }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingUpdateBase other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && Acknowledge == other.Acknowledge && HomeRegistration == other.HomeRegistration &&
+                   LinkLocalAddressCompatibility == other.LinkLocalAddressCompatibility &&
+                   KeyManagementMobilityCapability == other.KeyManagementMobilityCapability && Lifetime == other.Lifetime;
+        }
+
     }
 }

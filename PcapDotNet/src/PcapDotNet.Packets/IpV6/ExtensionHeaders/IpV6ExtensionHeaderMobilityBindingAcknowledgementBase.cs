@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -99,6 +100,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingAcknowledgementBase);
+        }
+
+        internal override int GetMessageDataHashCode()
+        {
+            return BitSequence.Merge(BitSequence.Merge((byte)Status, KeyManagementMobilityCapability.ToByte()), SequenceNumber, Lifetime).GetHashCode();
         }
 
         internal static bool ParseMessageDataFields(DataSegment messageData, out IpV6BindingAcknowledgementStatus status,

@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -79,10 +80,9 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingError);
         }
 
-        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingError other)
+        internal override int GetMessageDataHashCode()
         {
-            return other != null &&
-                   Status == other.Status && HomeAddress == other.HomeAddress;
+            return Sequence.GetHashCode(Status, HomeAddress);
         }
 
         internal static IpV6ExtensionHeaderMobilityBindingError ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
@@ -101,6 +101,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.Status, (byte)Status);
             buffer.Write(offset + MessageDataOffset.HomeAddress, HomeAddress, Endianity.Big);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityBindingError other)
+        {
+            return other != null &&
+                   Status == other.Status && HomeAddress == other.HomeAddress;
         }
     }
 }

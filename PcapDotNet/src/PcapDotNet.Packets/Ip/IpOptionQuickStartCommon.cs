@@ -3,14 +3,17 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Ip
 {
+    /// <summary>
+    /// Contains common QuickStart option parameters.
+    /// </summary>
     public static class IpOptionQuickStartCommon
     {
-        internal const int DataLength = 6;
-
         /// <summary>
         /// The maximum value for the rate field.
         /// </summary>
         public const byte RateMaximumValue = 0x0F;
+
+        internal const int DataLength = 6;
 
         private static class Offset
         {

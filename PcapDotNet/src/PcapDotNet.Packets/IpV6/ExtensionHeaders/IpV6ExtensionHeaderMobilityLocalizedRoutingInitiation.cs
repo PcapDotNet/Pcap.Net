@@ -58,6 +58,11 @@ namespace PcapDotNet.Packets.IpV6
             return true;
         }
 
+        internal override int GetMessageDataLocalizedRoutingExtraFieldsHashCode()
+        {
+            return 0;
+        }
+
         internal override void WriteMessageDataBetweenSequenceNumberAndLifetime(byte[] buffer, int offset)
         {
         }

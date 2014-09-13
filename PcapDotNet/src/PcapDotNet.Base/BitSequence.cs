@@ -297,6 +297,19 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
+        /// Merges a uint and 2 ushorts to a ulong.
+        /// values should be arranged from the most significant to the least.
+        /// </summary>
+        /// <param name="value1">Bits 0-31 of the ulong.</param>
+        /// <param name="value2">Bits 32-47 of the ulong.</param>
+        /// <param name="value3">Bits 48-63 of the ulong.</param>
+        /// <returns>A ulong whose bits are determined by the input.</returns>
+        public static ulong Merge(uint value1, ushort value2, ushort value3)
+        {
+            return Merge(value1, Merge(value2, value3));
+        }
+
+        /// <summary>
         /// Merges 2 uints to a ulong.
         /// uints should be arranged from the most significant to the least.
         /// </summary>

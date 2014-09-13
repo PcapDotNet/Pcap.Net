@@ -55,6 +55,11 @@ namespace PcapDotNet.Packets.IpV6
             return other != null;
         }
 
+        internal override int GetMessageDataHashCode()
+        {
+            return 0;
+        }
+
         internal static IpV6ExtensionHeaderMobilityFastNeighborAdvertisement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)
