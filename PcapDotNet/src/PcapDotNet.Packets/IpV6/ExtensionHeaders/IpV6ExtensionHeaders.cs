@@ -8,8 +8,17 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
 {
+    /// <summary>
+    /// List of IPv6 extension headers.
+    /// </summary>
     public class IpV6ExtensionHeaders : IEnumerable<IpV6ExtensionHeader>, IEquatable<IpV6ExtensionHeaders>
     {
+        /// <summary>
+        /// Create an object from a ReadOnlyCollection of extension headers.
+        /// Verifies that there's at most one Encapsulating Security Payload extension header and that it is the last extension header.
+        /// Assumes the collection won't be modified.
+        /// </summary>
+        /// <param name="extensionHeaders">The extension headers.</param>
         public IpV6ExtensionHeaders(ReadOnlyCollection<IpV6ExtensionHeader> extensionHeaders)
         {
             for (int i = 0; i < extensionHeaders.Count; ++i)
@@ -93,7 +102,7 @@ namespace PcapDotNet.Packets.IpV6
             get { return _empty; }
         }
 
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             return Equals(obj as IpV6ExtensionHeaders);
         }
@@ -101,6 +110,11 @@ namespace PcapDotNet.Packets.IpV6
         public bool Equals(IpV6ExtensionHeaders other)
         {
             return other != null && this.SequenceEqual(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.SequenceGetHashCode();
         }
 
         internal IpV6ExtensionHeaders(DataSegment data, IpV4Protocol firstHeader)

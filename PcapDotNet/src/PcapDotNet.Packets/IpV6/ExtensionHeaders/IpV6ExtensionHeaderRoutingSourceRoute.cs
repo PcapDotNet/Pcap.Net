@@ -84,6 +84,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingSourceRoute);
         }
 
+        internal override int GetRoutingDataHashCode()
+        {
+            return Addresses.SequenceGetHashCode();
+        }
+
         internal override void WriteRoutingData(byte[] buffer, int offset)
         {
             for (int i = 0; i != Addresses.Count; ++i)

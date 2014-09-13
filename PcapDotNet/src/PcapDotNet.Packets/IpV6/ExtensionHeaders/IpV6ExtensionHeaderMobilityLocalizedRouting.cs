@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -75,6 +76,13 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         internal abstract bool EqualsMessageDataLocalizedRoutingExtraFields(IpV6ExtensionHeaderMobilityLocalizedRouting other);
+
+        internal sealed override int GetMessageDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(SequenceNumber, Lifetime), GetMessageDataLocalizedRoutingExtraFieldsHashCode());
+        }
+
+        internal abstract int GetMessageDataLocalizedRoutingExtraFieldsHashCode();
 
         internal static bool ParseMessageDataToFields(DataSegment messageData, out ushort sequenceNumber, out ushort lifetime, out IpV6MobilityOptions options)
         {

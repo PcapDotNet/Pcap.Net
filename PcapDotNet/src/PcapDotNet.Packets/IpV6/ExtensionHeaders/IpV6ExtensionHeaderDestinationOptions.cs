@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderDestinationOptions : IpV6ExtensionHeaderOptions
+    public sealed class IpV6ExtensionHeaderDestinationOptions : IpV6ExtensionHeaderOptions
     {
         public IpV6ExtensionHeaderDestinationOptions(IpV4Protocol nextHeader, IpV6Options options)
             : base(nextHeader, options)

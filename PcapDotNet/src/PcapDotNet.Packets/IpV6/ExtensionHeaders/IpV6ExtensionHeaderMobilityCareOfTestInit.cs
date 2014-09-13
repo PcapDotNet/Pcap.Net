@@ -66,6 +66,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityCareOfTestInit);
         }
 
+        internal override int GetMessageDataHashCode()
+        {
+            return CareOfInitCookie.GetHashCode();
+        }
+
         internal static IpV6ExtensionHeaderMobilityCareOfTestInit ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {
             if (messageData.Length < MinimumMessageDataLength)

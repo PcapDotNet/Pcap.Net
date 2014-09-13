@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -20,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderAuthentication : IpV6ExtensionHeader, IEquatable<IpV6ExtensionHeaderAuthentication>
+    public sealed class IpV6ExtensionHeaderAuthentication : IpV6ExtensionHeader, IEquatable<IpV6ExtensionHeaderAuthentication>
     {
         private static class Offset
         {
@@ -152,6 +153,11 @@ namespace PcapDotNet.Packets.IpV6
             return other != null &&
                    NextHeader == other.NextHeader && SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
                    AuthenticationData.Equals(other.AuthenticationData);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(NextHeader, SecurityParametersIndex, SequenceNumber, AuthenticationData);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

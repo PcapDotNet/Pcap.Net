@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -84,6 +85,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHomeTest);
+        }
+
+        internal override int GetMessageDataHashCode()
+        {
+            return Sequence.GetHashCode(HomeNonceIndex, HomeInitCookie, HomeKeygenToken);
         }
 
         internal static IpV6ExtensionHeaderMobilityHomeTest ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)

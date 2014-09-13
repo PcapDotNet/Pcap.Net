@@ -38,27 +38,21 @@ namespace PcapDotNet.Base.Test
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void GetHashCodeNullValue1Test()
         {
-            Assert.IsNotNull(Sequence.GetHashCode(null, 1));
-            Assert.Fail();
+            Assert.AreEqual(1.GetHashCode(), Sequence.GetHashCode(null, 1));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void GetHashCodeNullValue2Test()
         {
-            Assert.IsNotNull(Sequence.GetHashCode(1, null));
-            Assert.Fail();
+            Assert.AreEqual(1.GetHashCode(), Sequence.GetHashCode(1, null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void GetHashCodeNullValue3Test()
         {
-            Assert.IsNotNull(Sequence.GetHashCode(1, 2, null));
-            Assert.Fail();
+            Assert.AreEqual(Sequence.GetHashCode(1, 2), Sequence.GetHashCode(1, 2, null));
         }
 
         [TestMethod]

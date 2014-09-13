@@ -32,6 +32,8 @@ namespace PcapDotNet.Packets.IpV6
 
         public abstract bool Equals(IpV6ExtensionHeader other);
 
+        public abstract override int GetHashCode();
+
         internal static bool IsExtensionHeader(IpV4Protocol nextHeader)
         {
             if (IpV6ExtensionHeaderStandard.IsStandard(nextHeader))

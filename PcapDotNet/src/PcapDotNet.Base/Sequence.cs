@@ -12,10 +12,10 @@ namespace PcapDotNet.Base
         /// </summary>
         public static int GetHashCode(object value1, object value2)
         {
-            if (value1 == null) 
-                throw new ArgumentNullException("value1");
+            if (value1 == null)
+                return value2.GetHashCode();
             if (value2 == null)
-                throw new ArgumentNullException("value2");
+                return value1.GetHashCode();
 
             return value1.GetHashCode() ^ value2.GetHashCode();
         }
@@ -25,10 +25,11 @@ namespace PcapDotNet.Base
         /// </summary>
         public static int GetHashCode(object value1, object value2, object value3)
         {
+            int result = GetHashCode(value1, value2);
             if (value3 == null)
-                throw new ArgumentNullException("value3");
+                return result;
 
-            return GetHashCode(value1, value2) ^ value3.GetHashCode();
+            return result ^ value3.GetHashCode();
         }
 
         /// <summary>
@@ -40,8 +41,11 @@ namespace PcapDotNet.Base
                 throw new ArgumentNullException("values");
 
             int result = 0;
-            for (int i = 0; i != values.Length; ++i)
-                result ^= values[i].GetHashCode();
+            foreach (object value in values)
+            {
+                if (value != null)
+                    result ^= value.GetHashCode();
+            }
 
             return result;
         }

@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -90,6 +91,11 @@ namespace PcapDotNet.Packets.IpV6
             return other != null &&
                    SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
                    EncryptedDataAndAuthenticationData.Equals(other.EncryptedDataAndAuthenticationData);
+        }
+
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(SecurityParametersIndex, SequenceNumber, EncryptedDataAndAuthenticationData);
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
+    public sealed class IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage : IpV6ExtensionHeaderMobilityBindingRevocationMessage
     {
         public IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage(IpV4Protocol nextHeader, ushort checksum,
                                                                                   Ipv6MobilityBindingRevocationStatus status, ushort sequenceNumber,

@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -15,7 +16,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderFragmentData : IpV6ExtensionHeaderStandard
+    public sealed class IpV6ExtensionHeaderFragmentData : IpV6ExtensionHeaderStandard
     {
         private static class DataOffset
         {
@@ -97,6 +98,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsData(IpV6ExtensionHeader other)
         {
             return EqualsData(other as IpV6ExtensionHeaderFragmentData);
+        }
+
+        internal override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(FragmentOffset, MoreFragments.ToByte()), Identification);
         }
 
         internal override void WriteData(byte[] buffer, int offset)

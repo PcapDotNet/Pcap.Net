@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -185,7 +186,14 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6ExtensionHeaderMobility);
         }
 
+        internal sealed override int GetDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(Checksum, (byte)MobilityHeaderType), MobilityOptions, GetMessageDataHashCode());
+        }
+
         internal abstract bool EqualsMessageData(IpV6ExtensionHeaderMobility other);
+
+        internal abstract int GetMessageDataHashCode();
 
         private bool EqualsData(IpV6ExtensionHeaderMobility other)
         {

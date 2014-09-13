@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    public class IpV6ExtensionHeaderMobilityBindingRefreshRequest : IpV6ExtensionHeaderMobility
+    public sealed class IpV6ExtensionHeaderMobilityBindingRefreshRequest : IpV6ExtensionHeaderMobility
     {
         private static class MessageDataOffset
         {
@@ -66,6 +66,11 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return other != null;
+        }
+
+        internal override int GetMessageDataHashCode()
+        {
+            return 0;
         }
     }
 }

@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -112,6 +113,12 @@ namespace PcapDotNet.Packets.IpV6
         internal override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityBindingRevocationMessage);
+        }
+
+        internal override int GetMessageDataHashCode()
+        {
+            return Sequence.GetHashCode(BitSequence.Merge(SequenceNumber, (byte)BindingRevocationType, RevocationTriggerOrStatus),
+                                        BitSequence.Merge(ProxyBinding, IpV4HomeAddressBindingOnly, Global));
         }
 
         internal static IpV6ExtensionHeaderMobilityBindingRevocationMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)

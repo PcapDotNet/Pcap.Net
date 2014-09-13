@@ -1,3 +1,4 @@
+using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -72,10 +73,9 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsMessageData(other as IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage);
         }
 
-        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage other)
+        internal override int GetMessageDataHashCode()
         {
-            return other != null &&
-                   SequenceNumber == other.SequenceNumber && Code == other.Code;
+            return BitSequence.Merge(SequenceNumber, (byte)Code).GetHashCode();
         }
 
         internal static IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
@@ -94,6 +94,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + MessageDataOffset.SequenceNumber, SequenceNumber, Endianity.Big);
             buffer.Write(offset + MessageDataOffset.Code, (byte)Code);
             MobilityOptions.Write(buffer, offset + MessageDataOffset.Options);
+        }
+
+        private bool EqualsMessageData(IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage other)
+        {
+            return other != null &&
+                   SequenceNumber == other.SequenceNumber && Code == other.Code;
         }
     }
 }

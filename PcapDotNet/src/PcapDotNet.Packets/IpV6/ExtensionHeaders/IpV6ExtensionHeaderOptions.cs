@@ -35,6 +35,11 @@ namespace PcapDotNet.Packets.IpV6
             return EqualsData(other as IpV6ExtensionHeaderOptions);
         }
 
+        internal sealed override int GetDataHashCode()
+        {
+            return Options.GetHashCode();
+        }
+
         internal override void WriteData(byte[] buffer, int offset)
         {
             Options.Write(buffer, offset);
