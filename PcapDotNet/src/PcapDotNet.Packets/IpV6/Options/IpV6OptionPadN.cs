@@ -18,13 +18,25 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6OptionTypeRegistration(IpV6OptionType.PadN)]
     public sealed class IpV6OptionPadN : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
+        /// <summary>
+        /// Creates an option from padding data length.
+        /// </summary>
+        /// <param name="paddingDataLength">The size of the padding in bytes.</param>
         public IpV6OptionPadN(int paddingDataLength) : base(IpV6OptionType.PadN)
         {
             PaddingDataLength = paddingDataLength;
         }
 
+        /// <summary>
+        /// The size of the padding in bytes.
+        /// </summary>
         public int PaddingDataLength { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             return new IpV6OptionPadN(data.Length);

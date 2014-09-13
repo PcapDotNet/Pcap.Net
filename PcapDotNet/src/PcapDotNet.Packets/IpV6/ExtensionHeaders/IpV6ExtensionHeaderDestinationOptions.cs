@@ -18,11 +18,19 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6ExtensionHeaderDestinationOptions : IpV6ExtensionHeaderOptions
     {
+        /// <summary>
+        /// Creates an instance from next header and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="options">Extension header options.</param>
         public IpV6ExtensionHeaderDestinationOptions(IpV4Protocol nextHeader, IpV6Options options)
             : base(nextHeader, options)
         {
         }
 
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.IpV6Opts; }

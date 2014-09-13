@@ -17,14 +17,17 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6OptionComplex : IpV6Option
     {
-        protected IpV6OptionComplex(IpV6OptionType type) 
-            : base(type)
-        {
-        }
-
+        /// <summary>
+        /// The number of bytes the option takes.
+        /// </summary>
         public sealed override int Length
         {
             get { return sizeof(byte) + sizeof (byte) + DataLength; }
+        }
+
+        internal IpV6OptionComplex(IpV6OptionType type)
+            : base(type)
+        {
         }
 
         internal abstract int DataLength { get; }

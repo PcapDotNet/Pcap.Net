@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets
     {
         /// <summary>
         /// Creates a packet from a string that represents bytes in a hexadecimal format.
-        /// <returns></returns>
+        /// </summary>
         public static Packet FromHexadecimalString(string value, DateTime timestamp, DataLinkKind dataLink)
         {
             return FromHexadecimalString(value, timestamp, new DataLink(dataLink));

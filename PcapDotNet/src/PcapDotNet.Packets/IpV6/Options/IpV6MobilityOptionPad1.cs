@@ -25,6 +25,11 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
+        public override int Length
+        {
+            get { return sizeof(byte); }
+        }
+
         internal override bool EqualsData(IpV6MobilityOption other)
         {
             return true;

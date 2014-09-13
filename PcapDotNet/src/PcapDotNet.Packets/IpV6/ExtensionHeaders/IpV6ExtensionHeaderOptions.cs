@@ -18,6 +18,9 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6ExtensionHeaderOptions : IpV6ExtensionHeaderStandard
     {
+        /// <summary>
+        /// Extension header options.
+        /// </summary>
         public IpV6Options Options { get; private set; }
 
         public sealed override bool IsValid

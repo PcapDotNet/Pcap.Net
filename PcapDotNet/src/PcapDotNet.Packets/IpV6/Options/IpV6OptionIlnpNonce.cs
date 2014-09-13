@@ -18,6 +18,10 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6OptionTypeRegistration(IpV6OptionType.IlnpNonce)]
     public sealed class IpV6OptionIlnpNonce : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
+        /// <summary>
+        /// Creates an instance from nonce.
+        /// </summary>
+        /// <param name="nonce">An unpredictable cryptographically random value used to prevent off-path attacks on an ILNP session.</param>
         public IpV6OptionIlnpNonce(DataSegment nonce)
             : base(IpV6OptionType.IlnpNonce)
         {
@@ -29,6 +33,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment Nonce { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             return new IpV6OptionIlnpNonce(data);
