@@ -18,6 +18,10 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.AccessNetworkIdentifier)]
     public sealed class IpV6MobilityOptionAccessNetworkIdentifier : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// Creates an instance from sub options.
+        /// </summary>
+        /// <param name="subOptions">Sub options.</param>
         public IpV6MobilityOptionAccessNetworkIdentifier(IpV6AccessNetworkIdentifierSubOptions subOptions)
             : base(IpV6MobilityOptionType.AccessNetworkIdentifier)
         {

@@ -17,11 +17,19 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6MobilityOptionUnknown : IpV6MobilityOptionSingleDataSegmentField
     {
+        /// <summary>
+        /// Creates an instance from type and data.
+        /// </summary>
+        /// <param name="type">The type of the option.</param>
+        /// <param name="data">The data of the option.</param>
         public IpV6MobilityOptionUnknown(IpV6MobilityOptionType type, DataSegment data)
             : base(type, data)
         {
         }
 
+        /// <summary>
+        /// The data of the option.
+        /// </summary>
         public DataSegment Data
         {
             get { return Value; }

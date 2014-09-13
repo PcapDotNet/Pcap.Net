@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -63,14 +64,19 @@ namespace PcapDotNet.Packets.IpV6
             Option.Write(buffer, ref offset);
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IpV6MobilityOptionContextRequestEntry);
+        }
+
         public bool Equals(IpV6MobilityOptionContextRequestEntry other)
         {
             return (other != null && RequestType.Equals(other.RequestType) && Option.Equals(other.Option));
         }
 
-        public override bool Equals(object obj)
+        public override int GetHashCode()
         {
-            return Equals(obj as IpV6MobilityOptionContextRequestEntry);
+            return Sequence.GetHashCode(RequestType, Option);
         }
     }
 }

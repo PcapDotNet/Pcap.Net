@@ -17,14 +17,17 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6MobilityOptionComplex : IpV6MobilityOption
     {
-        protected IpV6MobilityOptionComplex(IpV6MobilityOptionType type)
-            : base(type)
-        {
-        }
-
+        /// <summary>
+        /// The number of bytes the option takes.
+        /// </summary>
         public sealed override int Length
         {
-            get { return base.Length + sizeof(byte) + DataLength; }
+            get { return sizeof(byte) + sizeof(byte) + DataLength; }
+        }
+
+        internal IpV6MobilityOptionComplex(IpV6MobilityOptionType type)
+            : base(type)
+        {
         }
 
         internal const int MaxDataLength = byte.MaxValue - sizeof(byte) - sizeof(byte);

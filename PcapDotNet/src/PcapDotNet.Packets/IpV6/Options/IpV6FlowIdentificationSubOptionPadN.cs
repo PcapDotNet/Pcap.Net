@@ -18,12 +18,19 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6FlowIdentificationSubOptionTypeRegistration(IpV6FlowIdentificationSubOptionType.PadN)]
     public sealed class IpV6FlowIdentificationSubOptionPadN : IpV6FlowIdentificationSubOptionComplex
     {
+        /// <summary>
+        /// Creates an instance from padding data length.
+        /// </summary>
+        /// <param name="paddingDataLength">The size of the padding in bytes.</param>
         public IpV6FlowIdentificationSubOptionPadN(int paddingDataLength)
             : base(IpV6FlowIdentificationSubOptionType.PadN)
         {
             PaddingDataLength = paddingDataLength;
         }
 
+        /// <summary>
+        /// The size of the padding in bytes.
+        /// </summary>
         public int PaddingDataLength { get; private set; }
 
         internal override IpV6FlowIdentificationSubOption CreateInstance(DataSegment data)

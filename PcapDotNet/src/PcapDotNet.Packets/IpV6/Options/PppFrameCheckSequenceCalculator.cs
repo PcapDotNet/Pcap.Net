@@ -10,13 +10,16 @@ namespace PcapDotNet.Packets.IpV6
         private const ushort InitialValue = 0xffff;
 
         /// <summary>
-        /// Calculate FCS16.
+        /// Calculates FCS16.
         /// </summary>
         public static ushort CalculateFcs16(IEnumerable<byte> values)
         {
             return CalculateFcs16(InitialValue, values);
         }
 
+        /// <summary>
+        /// Calculates FCS16.
+        /// </summary>
         public static ushort CalculateFcs16(ushort fcs, IEnumerable<byte> values)
         {
             foreach (byte value in values)

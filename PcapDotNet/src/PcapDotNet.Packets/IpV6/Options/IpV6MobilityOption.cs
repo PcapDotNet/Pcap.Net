@@ -24,11 +24,6 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6MobilityOptionType OptionType { get; private set; }
 
-        public override int Length
-        {
-            get { return sizeof(byte); }
-        }
-
         public sealed override bool Equals(Option option)
         {
             return Equals(option as IpV6MobilityOption);

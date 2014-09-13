@@ -18,6 +18,10 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ReplayProtection)]
     public sealed class IpV6MobilityOptionReplayProtection : IpV6MobilityOptionULong
     {
+        /// <summary>
+        /// Creates an instance from timestamp.
+        /// </summary>
+        /// <param name="timestamp">64 bit timestamp.</param>
         public IpV6MobilityOptionReplayProtection(ulong timestamp)
             : base(IpV6MobilityOptionType.ReplayProtection, timestamp)
         {

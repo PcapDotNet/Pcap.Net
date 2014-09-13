@@ -17,12 +17,20 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6AccessNetworkIdentifierSubOptionUnknown : IpV6AccessNetworkIdentifierSubOption
     {
+        /// <summary>
+        /// Creates an instance from type and data.
+        /// </summary>
+        /// <param name="type">The type of the option.</param>
+        /// <param name="data">The data of the option.</param>
         public IpV6AccessNetworkIdentifierSubOptionUnknown(IpV6AccessNetworkIdentifierSubOptionType type, DataSegment data)
             : base(type)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// The data of the option.
+        /// </summary>
         public DataSegment Data { get; private set; }
 
         internal override IpV6AccessNetworkIdentifierSubOption CreateInstance(DataSegment data)
