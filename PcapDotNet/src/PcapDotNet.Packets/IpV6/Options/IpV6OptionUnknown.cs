@@ -15,12 +15,20 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6OptionUnknown : IpV6OptionComplex
     {
+        /// <summary>
+        /// Creates an unknown option according to the given type and data.
+        /// </summary>
+        /// <param name="type">The type of the IP option.</param>
+        /// <param name="data">The data of the IP option.</param>
         public IpV6OptionUnknown(IpV6OptionType type, DataSegment data)
             : base(type)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// The data of the option.
+        /// </summary>
         public DataSegment Data { get; private set; }
 
         internal override int DataLength

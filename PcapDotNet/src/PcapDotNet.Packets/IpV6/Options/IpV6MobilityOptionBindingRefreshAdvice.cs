@@ -15,8 +15,18 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.BindingRefreshAdvice)]
     public sealed class IpV6MobilityOptionBindingRefreshAdvice : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(ushort);
 
+        /// <summary>
+        /// Creates an option from the given refresh interval.
+        /// </summary>
+        /// <param name="refreshInterval">
+        /// Measured in units of four seconds, and indicates remaining time until the mobile node should send a new home registration to the home agent.
+        /// The Refresh Interval must be set to indicate a smaller time interval than the Lifetime value of the Binding Acknowledgement.
+        /// </param>
         public IpV6MobilityOptionBindingRefreshAdvice(ushort refreshInterval)
             : base(IpV6MobilityOptionType.BindingRefreshAdvice)
         {

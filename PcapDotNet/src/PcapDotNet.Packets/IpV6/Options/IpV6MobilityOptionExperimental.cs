@@ -16,6 +16,10 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.Experimental)]
     public sealed class IpV6MobilityOptionExperimental : IpV6MobilityOptionSingleDataSegmentField
     {
+        /// <summary>
+        /// Creates an option from the given data.
+        /// </summary>
+        /// <param name="data">Data related to the experimental protocol extension.</param>
         public IpV6MobilityOptionExperimental(DataSegment data)
             : base(IpV6MobilityOptionType.Experimental, data)
         {

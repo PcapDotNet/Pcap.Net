@@ -15,8 +15,14 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.RedirectCapability)]
     public sealed class IpV6MobilityOptionRedirectCapability : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(ushort);
 
+        /// <summary>
+        /// Creates an instance.
+        /// </summary>
         public IpV6MobilityOptionRedirectCapability()
             : base(IpV6MobilityOptionType.RedirectCapability)
         {

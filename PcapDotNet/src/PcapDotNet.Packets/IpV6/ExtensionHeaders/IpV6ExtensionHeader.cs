@@ -12,26 +12,50 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6ExtensionHeader : IEquatable<IpV6ExtensionHeader>
     {
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public abstract IpV4Protocol Protocol { get; }
 
+        /// <summary>
+        /// Identifies the type of header immediately following this extension header.
+        /// </summary>
         public IpV4Protocol? NextHeader { get; private set; }
 
+        /// <summary>
+        /// The number of bytes this extension header takes.
+        /// </summary>
         public abstract int Length { get; }
 
+        /// <summary>
+        /// List of all extension header protocols.
+        /// </summary>
         public static ReadOnlyCollection<IpV4Protocol> ExtensionHeaders
         {
             get { return _extensionHeaders; }
         }
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public abstract bool IsValid { get; }
 
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
         public sealed override bool Equals(object obj)
         {
             return Equals(obj as IpV6ExtensionHeader);
         }
 
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
         public abstract bool Equals(IpV6ExtensionHeader other);
 
+        /// <summary>
+        /// Returns a hash code of the extension header.
+        /// </summary>
         public abstract override int GetHashCode();
 
         internal static bool IsExtensionHeader(IpV4Protocol nextHeader)

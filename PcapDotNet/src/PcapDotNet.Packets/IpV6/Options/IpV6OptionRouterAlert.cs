@@ -15,8 +15,15 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6OptionTypeRegistration(IpV6OptionType.RouterAlert)]
     public sealed class IpV6OptionRouterAlert : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = sizeof(ushort);
 
+        /// <summary>
+        /// Creates an instance according to the given router alert type.
+        /// </summary>
+        /// <param name="routerAlertType">Type of router alert.</param>
         public IpV6OptionRouterAlert(IpV6RouterAlertType routerAlertType)
             : base(IpV6OptionType.RouterAlert)
         {
@@ -28,6 +35,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6RouterAlertType RouterAlertType { get; private set; }
 
+        /// <summary>
+        /// Parses the given data to create a router alert IPv6 option.
+        /// </summary>
+        /// <param name="data">The data to parse to create the option.</param>
+        /// <returns>Router alert IPv6 option according to the data parsed.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length != OptionDataLength)

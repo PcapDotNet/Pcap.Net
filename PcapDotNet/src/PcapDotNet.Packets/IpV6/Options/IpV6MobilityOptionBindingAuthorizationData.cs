@@ -16,6 +16,13 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.BindingAuthorizationData)]
     public sealed class IpV6MobilityOptionBindingAuthorizationData : IpV6MobilityOptionSingleDataSegmentField
     {
+        /// <summary>
+        /// Creates an option from the given authenticator.
+        /// </summary>
+        /// <param name="authenticator">
+        /// Contains a cryptographic value that can be used to determine that the message in question comes from the right authority.  
+        /// Rules for calculating this value depends on the used authorization procedure.
+        /// </param>
         public IpV6MobilityOptionBindingAuthorizationData(DataSegment authenticator)
             : base(IpV6MobilityOptionType.BindingAuthorizationData, authenticator)
         {

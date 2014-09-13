@@ -15,14 +15,17 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6FlowIdentificationSubOptionComplex : IpV6FlowIdentificationSubOption
     {
-        protected IpV6FlowIdentificationSubOptionComplex(IpV6FlowIdentificationSubOptionType type)
-            : base(type)
-        {
-        }
-
+        /// <summary>
+        /// The number of bytes this option takes.
+        /// </summary>
         public sealed override int Length
         {
             get { return base.Length + sizeof(byte) + DataLength; }
+        }
+
+        internal IpV6FlowIdentificationSubOptionComplex(IpV6FlowIdentificationSubOptionType type)
+            : base(type)
+        {
         }
 
         internal abstract int DataLength { get; }

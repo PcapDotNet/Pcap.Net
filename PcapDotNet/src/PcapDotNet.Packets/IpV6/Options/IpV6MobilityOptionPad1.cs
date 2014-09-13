@@ -12,8 +12,14 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6MobilityOptionPad1 : IpV6MobilityOption
     {
+        /// <summary>
+        /// The number of bytes the option takes.
+        /// </summary>
         public const int OptionLength = sizeof(byte);
 
+        /// <summary>
+        /// Constructs an instance.
+        /// </summary>
         public IpV6MobilityOptionPad1()
             : base(IpV6MobilityOptionType.Pad1)
         {
