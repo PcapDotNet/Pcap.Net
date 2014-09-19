@@ -27,6 +27,32 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation : IpV6ExtensionHeaderMobilityLocalizedRouting
     {
+        /// <summary>
+        /// Creates an instance from next header, checksum, sequence number, lifetime and options.
+        /// </summary>
+        /// <param name="nextHeader">
+        /// Identifies the type of header immediately following this extension header.
+        /// </param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="sequenceNumber">
+        /// In initiation, a monotonically increasing integer. Set by a sending node in a request message, and used to match a reply to the request.
+        /// In acknowledgement, copied from the sequence number field of the LRI message being responded to.
+        /// </param>
+        /// <param name="lifetime">
+        /// In initiation, the requested time in seconds for which the sender wishes to have local forwarding.
+        /// A value of 0xffff (all ones) indicates an infinite lifetime.
+        /// When set to 0, indicates a request to stop localized routing.
+        /// In acknowledgement, the time in seconds for which the local forwarding is supported.
+        /// Typically copied from the corresponding field in the LRI message.
+        /// </param>
+        /// <param name="options">
+        /// Zero or more TLV-encoded mobility options.
+        /// </param>
         public IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, sequenceNumber, lifetime, options)

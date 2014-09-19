@@ -22,8 +22,11 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.BindingIdentifier)]
-    public class IpV6MobilityOptionBindingIdentifier : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionBindingIdentifier : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The maximum value for Priority.
+        /// </summary>
         public const byte MaxPriority = 0x7F;
 
         private static class Offset
@@ -35,6 +38,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int CareOfAddress = Priority + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.CareOfAddress;
 
         private static class Mask
@@ -43,18 +49,105 @@ namespace PcapDotNet.Packets.IpV6
             public const byte Priority = 0x7F;
         }
 
+        /// <summary>
+        /// Creates an instance from binding id, status, simulatneous home and foreign binding, priority and IPv4 care of address.
+        /// </summary>
+        /// <param name="bindingId">
+        /// The BID that is assigned to the binding indicated by the care-of address in the Binding Update or the Binding Identifier mobility option.
+        /// The value of zero is reserved and should not be used.
+        /// </param>
+        /// <param name="status">
+        /// When the Binding Identifier mobility option is included in a Binding Acknowledgement,
+        /// this field overwrites the Status field in the Binding Acknowledgement only for this BID.
+        /// If this field is set to zero, the receiver ignores this field and uses the registration status stored in the Binding Acknowledgement message.
+        /// The receiver must ignore this field if the Binding Identifier mobility option is not carried within either the Binding Acknowledgement
+        /// or the Care-of Test messages.
+        /// The possible status codes are the same as the status codes of the Binding Acknowledgement.
+        /// This Status field is also used to carry error information related to the care-of address test in the Care-of Test message.
+        /// </param>
+        /// <param name="simultaneousHomeAndForeignBinding">
+        /// Indicates that the mobile node registers multiple bindings to the home agent while it is attached to the home link.
+        /// This flag is valid only for a Binding Update sent to the home agent.
+        /// </param>
+        /// <param name="priority">
+        /// Places each BID to a relative priority (PRI) with other registered BIDs.
+        /// Value '0' is reserved and must not be used.
+        /// A lower number in this field indicates a higher priority, while BIDs with the same BID-PRI value have equal priority meaning that,
+        /// the BID used is an implementation issue.
+        /// This is consistent with current practice in packet classifiers.
+        /// </param>
+        /// <param name="careOfAddress">
+        /// The IPv4 care-of address for the corresponding BID.
+        /// </param>
         public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
                                                    byte priority, IpV4Address careOfAddress)
             : this(bindingId, status, simultaneousHomeAndForeignBinding, priority, careOfAddress, null)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from binding id, status, simulatneous home and foreign binding, priority and IPv6 care of address.
+        /// </summary>
+        /// <param name="bindingId">
+        /// The BID that is assigned to the binding indicated by the care-of address in the Binding Update or the Binding Identifier mobility option.
+        /// The value of zero is reserved and should not be used.
+        /// </param>
+        /// <param name="status">
+        /// When the Binding Identifier mobility option is included in a Binding Acknowledgement,
+        /// this field overwrites the Status field in the Binding Acknowledgement only for this BID.
+        /// If this field is set to zero, the receiver ignores this field and uses the registration status stored in the Binding Acknowledgement message.
+        /// The receiver must ignore this field if the Binding Identifier mobility option is not carried within either the Binding Acknowledgement
+        /// or the Care-of Test messages.
+        /// The possible status codes are the same as the status codes of the Binding Acknowledgement.
+        /// This Status field is also used to carry error information related to the care-of address test in the Care-of Test message.
+        /// </param>
+        /// <param name="simultaneousHomeAndForeignBinding">
+        /// Indicates that the mobile node registers multiple bindings to the home agent while it is attached to the home link.
+        /// This flag is valid only for a Binding Update sent to the home agent.
+        /// </param>
+        /// <param name="priority">
+        /// Places each BID to a relative priority (PRI) with other registered BIDs.
+        /// Value '0' is reserved and must not be used.
+        /// A lower number in this field indicates a higher priority, while BIDs with the same BID-PRI value have equal priority meaning that,
+        /// the BID used is an implementation issue.
+        /// This is consistent with current practice in packet classifiers.
+        /// </param>
+        /// <param name="careOfAddress">
+        /// The IPv6 care-of address for the corresponding BID.
+        /// </param>
         public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
                                                    byte priority, IpV6Address careOfAddress)
             : this(bindingId, status, simultaneousHomeAndForeignBinding, priority, null, careOfAddress)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from binding id, status, simulatneous home and foreign binding and priority.
+        /// </summary>
+        /// <param name="bindingId">
+        /// The BID that is assigned to the binding indicated by the care-of address in the Binding Update or the Binding Identifier mobility option.
+        /// The value of zero is reserved and should not be used.
+        /// </param>
+        /// <param name="status">
+        /// When the Binding Identifier mobility option is included in a Binding Acknowledgement,
+        /// this field overwrites the Status field in the Binding Acknowledgement only for this BID.
+        /// If this field is set to zero, the receiver ignores this field and uses the registration status stored in the Binding Acknowledgement message.
+        /// The receiver must ignore this field if the Binding Identifier mobility option is not carried within either the Binding Acknowledgement
+        /// or the Care-of Test messages.
+        /// The possible status codes are the same as the status codes of the Binding Acknowledgement.
+        /// This Status field is also used to carry error information related to the care-of address test in the Care-of Test message.
+        /// </param>
+        /// <param name="simultaneousHomeAndForeignBinding">
+        /// Indicates that the mobile node registers multiple bindings to the home agent while it is attached to the home link.
+        /// This flag is valid only for a Binding Update sent to the home agent.
+        /// </param>
+        /// <param name="priority">
+        /// Places each BID to a relative priority (PRI) with other registered BIDs.
+        /// Value '0' is reserved and must not be used.
+        /// A lower number in this field indicates a higher priority, while BIDs with the same BID-PRI value have equal priority meaning that,
+        /// the BID used is an implementation issue.
+        /// This is consistent with current practice in packet classifiers.
+        /// </param>
         public IpV6MobilityOptionBindingIdentifier(ushort bindingId, IpV6BindingAcknowledgementStatus status, bool simultaneousHomeAndForeignBinding,
                                                    byte priority)
             : this(bindingId, status, simultaneousHomeAndForeignBinding, priority, null, null)

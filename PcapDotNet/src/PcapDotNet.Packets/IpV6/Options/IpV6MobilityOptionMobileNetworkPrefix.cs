@@ -24,6 +24,11 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNetworkPrefix)]
     public sealed class IpV6MobilityOptionMobileNetworkPrefix : IpV6MobilityOptionNetworkPrefix
     {
+        /// <summary>
+        /// Create an instance from prefix length and mobile network prefix.
+        /// </summary>
+        /// <param name="prefixLength">Indicates the prefix length of the IPv6 prefix contained in the option.</param>
+        /// <param name="mobileNetworkPrefix">Contains the Mobile Network Prefix.</param>
         public IpV6MobilityOptionMobileNetworkPrefix(byte prefixLength, IpV6Address mobileNetworkPrefix)
             : base(IpV6MobilityOptionType.MobileNetworkPrefix, prefixLength, mobileNetworkPrefix)
         {

@@ -26,14 +26,32 @@ namespace PcapDotNet.Packets.IpV6
             public const int HomeAddress = sizeof(uint);
         }
 
+        /// <summary>
+        /// The number of bytes the routing data takes.
+        /// </summary>
         public const int ConstRoutingDataLength = RoutingDataOffset.HomeAddress + IpV6Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from next header, segments left and home address.
+        /// </summary>
+        /// <param name="nextHeader">
+        /// Identifies the type of header immediately following this extension header.
+        /// </param>
+        /// <param name="segmentsLeft">
+        /// Number of route segments remaining, i.e., number of explicitly listed intermediate nodes still to be visited before reaching the final destination.
+        /// </param>
+        /// <param name="homeAddress">
+        /// The home address of the destination mobile node.
+        /// </param>
         public IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol nextHeader, byte segmentsLeft, IpV6Address homeAddress)
             : base(nextHeader, segmentsLeft)
         {
             HomeAddress = homeAddress;
         }
 
+        /// <summary>
+        /// Identifier of a particular Routing header variant.
+        /// </summary>
         public override IpV6RoutingType RoutingType
         {
             get { return IpV6RoutingType.Type2RoutingHeader; }

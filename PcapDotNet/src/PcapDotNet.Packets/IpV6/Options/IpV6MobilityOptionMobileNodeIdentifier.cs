@@ -23,6 +23,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileNodeIdentifier)]
     public sealed class IpV6MobilityOptionMobileNodeIdentifier : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The minimum length for identifier.
+        /// </summary>
         public const int MinNetworkAccessIdentifierLength = 1;
 
         private static class Offset
@@ -31,8 +34,20 @@ namespace PcapDotNet.Packets.IpV6
             public const int Identifier = Subtype + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.Identifier;
 
+        /// <summary>
+        /// Creates an instance from subtype and identifier.
+        /// </summary>
+        /// <param name="subtype">
+        /// Defines the specific type of identifier included in the Identifier field.
+        /// </param>
+        /// <param name="identifier">
+        /// A variable length identifier of type, as specified by the Subtype field of this option.
+        /// </param>
         public IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype subtype, DataSegment identifier)
             : base(IpV6MobilityOptionType.MobileNodeIdentifier)
         {

@@ -26,8 +26,23 @@ namespace PcapDotNet.Packets.IpV6
             public const int MobileNodeGroupIdentifier = SubType + sizeof(byte) + sizeof(byte);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.MobileNodeGroupIdentifier + sizeof(uint);
 
+        /// <summary>
+        /// Creates an instance from sub type and mobile node group identifier.
+        /// </summary>
+        /// <param name="subType">
+        /// Identifies the specific mobile node's group type.
+        /// </param>
+        /// <param name="mobileNodeGroupIdentifier">
+        /// Contains the mobile node's group identifier.
+        /// The value of (0) is reserved and should not be used.
+        /// The value of (1) ALL-SESSIONS is the default group of all mobility sessions established between a given local mobility anchor and a mobile access
+        /// gateway.
+        /// </param>
         public IpV6MobilityOptionMobileNodeGroupIdentifier(IpV6MobileNodeGroupIdentifierSubType subType, uint mobileNodeGroupIdentifier)
             : base(IpV6MobilityOptionType.MobileNodeGroupIdentifier)
         {

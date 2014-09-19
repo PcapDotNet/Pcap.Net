@@ -23,8 +23,18 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6OptionTypeRegistration(IpV6OptionType.HomeAddress)]
     public class IpV6OptionHomeAddress : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = IpV6Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from home address.
+        /// </summary>
+        /// <param name="homeAddress">
+        /// The home address of the mobile node sending the packet.  
+        /// This address must be a unicast routable address.
+        /// </param>
         public IpV6OptionHomeAddress(IpV6Address homeAddress)
             : base(IpV6OptionType.HomeAddress)
         {

@@ -25,8 +25,17 @@ namespace PcapDotNet.Packets.IpV6
             public const int InterfaceIdentifier = sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.InterfaceIdentifier + sizeof(ulong);
 
+        /// <summary>
+        /// Creates an instance from interface identifier.
+        /// </summary>
+        /// <param name="interfaceIdentifier">
+        /// The Interface Identifier value used for the mobile node's IPv6 Link-local address in the P-AN.
+        /// </param>
         public IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier(ulong interfaceIdentifier)
             : base(IpV6MobilityOptionType.MobileNodeLinkLocalAddressInterfaceIdentifier)
         {
