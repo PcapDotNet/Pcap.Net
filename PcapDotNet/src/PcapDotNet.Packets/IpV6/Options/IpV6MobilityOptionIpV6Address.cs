@@ -20,9 +20,12 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6MobilityOptionIpV6Address : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = IpV6Address.SizeOf;
 
-        public IpV6MobilityOptionIpV6Address(IpV6MobilityOptionType type, IpV6Address address)
+        internal IpV6MobilityOptionIpV6Address(IpV6MobilityOptionType type, IpV6Address address)
             : base(type)
         {
             Address = address;

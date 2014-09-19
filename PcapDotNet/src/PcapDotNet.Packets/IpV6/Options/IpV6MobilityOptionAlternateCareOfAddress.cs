@@ -22,13 +22,14 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.AlternateCareOfAddress)]
     public sealed class IpV6MobilityOptionAlternateCareOfAddress : IpV6MobilityOptionIpV6Address
     {
+        /// <summary>
+        /// Creates an instance from an alternative care of address.
+        /// </summary>
+        /// <param name="alternateCareOfAddress">
+        /// Contains an address to use as the care-of address for the binding, rather than using the Source Address of the packet as the care-of address.
+        /// </param>
         public IpV6MobilityOptionAlternateCareOfAddress(IpV6Address alternateCareOfAddress)
             : base(IpV6MobilityOptionType.AlternateCareOfAddress, alternateCareOfAddress)
-        {
-        }
-
-        private IpV6MobilityOptionAlternateCareOfAddress()
-            : this(IpV6Address.Zero)
         {
         }
 
@@ -47,6 +48,11 @@ namespace PcapDotNet.Packets.IpV6
                 return null;
 
             return new IpV6MobilityOptionAlternateCareOfAddress(alternateCareOfAddress);
+        }
+
+        private IpV6MobilityOptionAlternateCareOfAddress()
+            : this(IpV6Address.Zero)
+        {
         }
     }
 }

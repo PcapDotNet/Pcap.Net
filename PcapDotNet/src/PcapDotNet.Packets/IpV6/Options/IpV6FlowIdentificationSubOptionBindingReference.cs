@@ -21,21 +21,49 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6FlowIdentificationSubOptionTypeRegistration(IpV6FlowIdentificationSubOptionType.BindingReference)]
     public sealed class IpV6FlowIdentificationSubOptionBindingReference : IpV6FlowIdentificationSubOptionComplex
     {
+        /// <summary>
+        /// Creates an instance from a list of binding ids.
+        /// </summary>
+        /// <param name="bindingIds">
+        /// Indicates the BIDs that the mobile node wants to associate with the flow identification option.
+        /// One or more BID fields can be included in this sub-option.
+        /// </param>
         public IpV6FlowIdentificationSubOptionBindingReference(IList<ushort> bindingIds)
             : this((ReadOnlyCollection<ushort>)bindingIds.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an array of binding ids.
+        /// </summary>
+        /// <param name="bindingIds">
+        /// Indicates the BIDs that the mobile node wants to associate with the flow identification option.
+        /// One or more BID fields can be included in this sub-option.
+        /// </param>
         public IpV6FlowIdentificationSubOptionBindingReference(params ushort[] bindingIds)
             : this(bindingIds.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an enumerable of binding ids.
+        /// </summary>
+        /// <param name="bindingIds">
+        /// Indicates the BIDs that the mobile node wants to associate with the flow identification option.
+        /// One or more BID fields can be included in this sub-option.
+        /// </param>
         public IpV6FlowIdentificationSubOptionBindingReference(IEnumerable<ushort> bindingIds)
             : this((IList<ushort>)bindingIds.ToList())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a collection of binding ids.
+        /// </summary>
+        /// <param name="bindingIds">
+        /// Indicates the BIDs that the mobile node wants to associate with the flow identification option.
+        /// One or more BID fields can be included in this sub-option.
+        /// </param>
         public IpV6FlowIdentificationSubOptionBindingReference(ReadOnlyCollection<ushort> bindingIds)
             : base(IpV6FlowIdentificationSubOptionType.BindingReference)
         {

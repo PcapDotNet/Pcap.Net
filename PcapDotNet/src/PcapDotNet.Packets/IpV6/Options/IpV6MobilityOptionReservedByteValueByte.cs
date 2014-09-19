@@ -19,9 +19,12 @@ namespace PcapDotNet.Packets.IpV6
             public const int Value = sizeof(byte);
         }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.Value + sizeof(byte);
 
-        public IpV6MobilityOptionReservedByteValueByte(IpV6MobilityOptionType type, byte value)
+        internal IpV6MobilityOptionReservedByteValueByte(IpV6MobilityOptionType type, byte value)
             : base(type)
         {
             Value = value;

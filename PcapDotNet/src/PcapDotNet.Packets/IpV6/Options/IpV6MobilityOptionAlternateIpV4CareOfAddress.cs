@@ -18,8 +18,18 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.AlternateIpV4CareOfAddress)]
     public sealed class IpV6MobilityOptionAlternateIpV4CareOfAddress : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = IpV4Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from the given alternative care of address.
+        /// </summary>
+        /// <param name="alternateCareOfAddress">
+        /// An IPv4 equivalent of the RFC 6275 Alternate Care-of Address option for IPv6.
+        /// In the context of PMIPv6, its semantic is equivalent to the Alternate Care-of Address option for IPv6.
+        /// </param>
         public IpV6MobilityOptionAlternateIpV4CareOfAddress(IpV4Address alternateCareOfAddress)
             : base(IpV6MobilityOptionType.AlternateIpV4CareOfAddress)
         {
