@@ -24,6 +24,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.MobileAccessGatewayIpV6Address)]
     public sealed class IpV6MobilityOptionMobileAccessGatewayIpV6Address : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The number of bytes the address field takes.
+        /// </summary>
         public const byte AddressLength = 128;
 
         private static class Offset
@@ -32,8 +35,15 @@ namespace PcapDotNet.Packets.IpV6
             public const int Address = AddressLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.Address + IpV6Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from address.
+        /// </summary>
+        /// <param name="address">Contains the MAG's IPv6 address.</param>
         public IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address address)
             : base(IpV6MobilityOptionType.MobileAccessGatewayIpV6Address)
         {

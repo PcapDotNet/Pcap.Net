@@ -24,6 +24,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int Address = sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.Address + IpV4Address.SizeOf;
 
         internal IpV6MobilityOptionIpV4Address(IpV6MobilityOptionType type, IpV4Address address) 

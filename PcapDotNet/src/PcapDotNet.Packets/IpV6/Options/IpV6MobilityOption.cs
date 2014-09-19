@@ -24,25 +24,37 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6MobilityOptionType OptionType { get; private set; }
 
+        /// <summary>
+        /// Returns true iff the given option is an equivalent option.
+        /// </summary>
         public sealed override bool Equals(Option option)
         {
             return Equals(option as IpV6MobilityOption);
         }
 
+        /// <summary>
+        /// Returns true iff the given option is an equivalent option.
+        /// </summary>
         public bool Equals(IpV6MobilityOption other)
         {
             return other != null &&
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
         }
 
+        /// <summary>
+        /// Returns a hash code for the option.
+        /// </summary>
         public sealed override int GetHashCode()
         {
             return Sequence.GetHashCode(OptionType, GetDataHashCode());
         }
 
+        /// <summary>
+        /// True iff parsing of this option didn't encounter issues.
+        /// </summary>
         public virtual bool IsValid { get { return true; } }
 
-        protected IpV6MobilityOption(IpV6MobilityOptionType type)
+        internal IpV6MobilityOption(IpV6MobilityOptionType type)
         {
             OptionType = type;
         }

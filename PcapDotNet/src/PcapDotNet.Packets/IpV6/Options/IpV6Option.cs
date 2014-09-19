@@ -24,25 +24,34 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6OptionType OptionType { get; private set; }
 
-        protected IpV6Option(IpV6OptionType type)
-        {
-            OptionType = type;
-        }
-
+        /// <summary>
+        /// True iff the option type and data are equal.
+        /// </summary>
         public sealed override bool Equals(Option other)
         {
             return Equals(other as IpV6Option);
         }
 
+        /// <summary>
+        /// True iff the option type and data are equal.
+        /// </summary>
         public bool Equals(IpV6Option other)
         {
             return other != null &&
                    OptionType == other.OptionType && Length == other.Length && EqualsData(other);
         }
 
+        /// <summary>
+        /// Returns a hash code for the option.
+        /// </summary>
         public sealed override int GetHashCode()
         {
             return Sequence.GetHashCode(OptionType, GetDataHashCode());
+        }
+
+        internal IpV6Option(IpV6OptionType type)
+        {
+            OptionType = type;
         }
 
         internal abstract bool EqualsData(IpV6Option other);

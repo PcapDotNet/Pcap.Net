@@ -25,8 +25,19 @@ namespace PcapDotNet.Packets.IpV6
             public const byte IsServer = 0x01;
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.IsServer + sizeof(byte);
 
+        /// <summary>
+        /// Creates an instance from IsServer.
+        /// </summary>
+        /// <param name="isServer">
+        /// Specifies the DHCP support mode.
+        /// This flag indicates whether the mobile access gateway should function as a DHCP Server or a DHCP Relay for the attached mobile node.
+        /// If false, the mobile access gateway should act as a DHCP Relay and if true, it should act as a DHCP Server.
+        /// </param>
         public IpV6MobilityOptionIpV4DhcpSupportMode(bool isServer)
             : base(IpV6MobilityOptionType.IpV4DhcpSupportMode)
         {

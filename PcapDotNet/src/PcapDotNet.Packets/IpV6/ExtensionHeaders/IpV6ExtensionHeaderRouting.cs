@@ -25,8 +25,14 @@ namespace PcapDotNet.Packets.IpV6
             public const int TypeSpecificData = SegmentsLeft + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the extension header data takes.
+        /// </summary>
         public const int DataMinimumLength = DataOffset.TypeSpecificData;
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public override bool IsValid
         {
             get { return true; }
@@ -42,6 +48,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public byte SegmentsLeft { get; private set; }
 
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.IpV6Route; }

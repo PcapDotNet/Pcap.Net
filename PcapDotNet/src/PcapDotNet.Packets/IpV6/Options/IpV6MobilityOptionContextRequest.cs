@@ -24,16 +24,28 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ContextRequest)]
     public sealed class IpV6MobilityOptionContextRequest : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// Creates an instance from an array of requests.
+        /// </summary>
+        /// <param name="requests">The requests types and options.</param>
         public IpV6MobilityOptionContextRequest(params IpV6MobilityOptionContextRequestEntry[] requests)
             : this(requests.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a list of requests.
+        /// </summary>
+        /// <param name="requests">The requests types and options.</param>
         public IpV6MobilityOptionContextRequest(IList<IpV6MobilityOptionContextRequestEntry> requests)
             : this(requests.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a collection of requests.
+        /// </summary>
+        /// <param name="requests">The requests types and options.</param>
         public IpV6MobilityOptionContextRequest(ReadOnlyCollection<IpV6MobilityOptionContextRequestEntry> requests)
             : base(IpV6MobilityOptionType.ContextRequest)
         {

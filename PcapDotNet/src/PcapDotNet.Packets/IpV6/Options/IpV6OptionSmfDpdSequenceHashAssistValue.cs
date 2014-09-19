@@ -25,6 +25,12 @@ namespace PcapDotNet.Packets.IpV6
             public const int HashAssistValue = 0;
         }
 
+        /// <summary>
+        /// Creates an instance from data.
+        /// </summary>
+        /// <param name="data">
+        /// The first bit of the data is ignored, and the rest are considered to be the Hash assist value (HAV) used to facilitate H-DPD operation.
+        /// </param>
         public IpV6OptionSmfDpdSequenceHashAssistValue(DataSegment data)
         {
             byte[] hashAssistValueBuffer = new byte[data.Length - Offset.HashAssistValue];
@@ -38,6 +44,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment HashAssistValue { get; private set; }
 
+        /// <summary>
+        /// True since the hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
+        /// </summary>
         public override bool HashIndicator
         {
             get { return true; }

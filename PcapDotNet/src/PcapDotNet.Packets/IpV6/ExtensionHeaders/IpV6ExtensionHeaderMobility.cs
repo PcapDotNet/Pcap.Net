@@ -22,11 +22,17 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public abstract class IpV6ExtensionHeaderMobility : IpV6ExtensionHeaderStandard
     {
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public sealed override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.MobilityHeader; }
         }
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public sealed override bool IsValid
         {
             get { return MobilityOptions.IsValid; }
@@ -39,20 +45,10 @@ namespace PcapDotNet.Packets.IpV6
             public const int MessageData = Checksum + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this extension header takes.
+        /// </summary>
         public const int MinimumDataLength = DataOffset.MessageData;
-
-        public IpV6ExtensionHeaderMobility(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions, int? messageDataMobilityOptionsOffset)
-            : base(nextHeader)
-        {
-            if (messageDataMobilityOptionsOffset.HasValue)
-            {
-                int mobilityOptionsExtraBytes = (8 - (messageDataMobilityOptionsOffset.Value + 6) % 8) % 8;
-                if (mobilityOptions.BytesLength % 8 != mobilityOptionsExtraBytes)
-                    mobilityOptions = mobilityOptions.Pad((8 + mobilityOptionsExtraBytes - (mobilityOptions.BytesLength % 8)) % 8);
-            }
-            Checksum = checksum;
-            MobilityOptions = mobilityOptions;
-        }
 
         /// <summary>
         /// Identifies the particular mobility message in question.
@@ -91,6 +87,19 @@ namespace PcapDotNet.Packets.IpV6
         /// Zero or more TLV-encoded mobility options.
         /// </summary>
         public IpV6MobilityOptions MobilityOptions { get; private set; }
+
+        internal IpV6ExtensionHeaderMobility(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions, int? messageDataMobilityOptionsOffset)
+            : base(nextHeader)
+        {
+            if (messageDataMobilityOptionsOffset.HasValue)
+            {
+                int mobilityOptionsExtraBytes = (8 - (messageDataMobilityOptionsOffset.Value + 6) % 8) % 8;
+                if (mobilityOptions.BytesLength % 8 != mobilityOptionsExtraBytes)
+                    mobilityOptions = mobilityOptions.Pad((8 + mobilityOptionsExtraBytes - (mobilityOptions.BytesLength % 8)) % 8);
+            }
+            Checksum = checksum;
+            MobilityOptions = mobilityOptions;
+        }
 
         internal static IpV6ExtensionHeaderMobility ParseData(IpV4Protocol nextHeader, DataSegment data)
         {

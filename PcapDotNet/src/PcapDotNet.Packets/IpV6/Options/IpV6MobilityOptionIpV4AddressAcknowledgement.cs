@@ -22,6 +22,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4AddressAcknowledgement)]
     public sealed class IpV6MobilityOptionIpV4AddressAcknowledgement : IpV6MobilityOptionComplex, IIpV6MobilityOptionIpV4HomeAddress
     {
+        /// <summary>
+        /// Maximum value for Prefix Length.
+        /// </summary>
         public const byte MaxPrefixLength = 0x3F;
 
         private static class Offset
@@ -41,8 +44,31 @@ namespace PcapDotNet.Packets.IpV6
             public const int PrefixLength = 2;
         }
 
+        /// <summary>
+        /// Number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.HomeAddress + IpV4Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from status, Prefix Length and Home Address.
+        /// </summary>
+        /// <param name="status">
+        /// Indicates success or failure for the IPv4 home address binding.
+        /// Values from 0 to 127 indicate success.
+        /// Higher values indicate failure.
+        /// </param>
+        /// <param name="prefixLength">
+        /// The prefix length of the address allocated.
+        /// This field is only valid in case of success and must be set to zero and ignored in case of failure.
+        /// This field overrides what the mobile node requested (if not equal to the requested length).
+        /// </param>
+        /// <param name="homeAddress">
+        /// The IPv4 home address that the home agent will use in the binding cache entry.
+        /// This could be a public or private address.
+        /// This field must contain the mobile node's IPv4 home address.
+        /// If the address were dynamically allocated, the home agent will add the address to inform the mobile node.
+        /// Otherwise, if the address is statically allocated to the mobile node, the home agent will copy it from the binding update message.
+        /// </param>
         public IpV6MobilityOptionIpV4AddressAcknowledgement(IpV6AddressAcknowledgementStatus status, byte prefixLength, IpV4Address homeAddress)
             : base(IpV6MobilityOptionType.IpV4AddressAcknowledgement)
         {

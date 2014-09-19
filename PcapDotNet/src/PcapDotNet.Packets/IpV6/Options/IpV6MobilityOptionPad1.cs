@@ -25,6 +25,9 @@ namespace PcapDotNet.Packets.IpV6
         {
         }
 
+        /// <summary>
+        /// The number of bytes this option will take.
+        /// </summary>
         public override int Length
         {
             get { return sizeof(byte); }

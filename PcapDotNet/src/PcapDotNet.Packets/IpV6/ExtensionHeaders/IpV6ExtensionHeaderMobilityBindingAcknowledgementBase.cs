@@ -44,17 +44,6 @@ namespace PcapDotNet.Packets.IpV6
 
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
-        public IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
-                                                                     bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
-                                                                     IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options, MessageDataOffset.Options)
-        {
-            Status = status;
-            KeyManagementMobilityCapability = keyManagementMobilityCapability;
-            SequenceNumber = sequenceNumber;
-            Lifetime = lifetime;
-        }
-
         /// <summary>
         /// Indicating the disposition of the Binding Update.
         /// Values of the Status field less than 128 indicate that the Binding Update was accepted by the receiving node.
@@ -91,6 +80,17 @@ namespace PcapDotNet.Packets.IpV6
         /// </para>
         /// </summary>
         public ushort Lifetime { get; private set; }
+
+        internal IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+                                                                       bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
+                                                                       IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
+        {
+            Status = status;
+            KeyManagementMobilityCapability = keyManagementMobilityCapability;
+            SequenceNumber = sequenceNumber;
+            Lifetime = lifetime;
+        }
 
         internal override int MessageDataLength
         {

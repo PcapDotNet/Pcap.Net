@@ -23,6 +23,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Options Options { get; private set; }
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public sealed override bool IsValid
         {
             get { return Options.IsValid; }

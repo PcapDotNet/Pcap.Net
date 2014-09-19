@@ -26,6 +26,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int TrafficSelector = TrafficSelectorFormat + sizeof(byte) + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.TrafficSelector;
 
         public IpV6FlowIdentificationSubOptionTrafficSelector(IpV6FlowIdentificationTrafficSelectorFormat trafficSelectorFormat, DataSegment trafficSelector)

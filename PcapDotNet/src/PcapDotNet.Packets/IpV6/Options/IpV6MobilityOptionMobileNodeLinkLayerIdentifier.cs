@@ -23,8 +23,17 @@ namespace PcapDotNet.Packets.IpV6
             public const int LinkLayerIdentifier = sizeof(ushort);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.LinkLayerIdentifier;
 
+        /// <summary>
+        /// Creates an instance from link layer identifier.
+        /// </summary>
+        /// <param name="linkLayerIdentifier">
+        /// Contains the mobile node's link-layer identifier.
+        /// </param>
         public IpV6MobilityOptionMobileNodeLinkLayerIdentifier(DataSegment linkLayerIdentifier)
             : base(IpV6MobilityOptionType.MobileNodeLinkLayerIdentifier)
         {

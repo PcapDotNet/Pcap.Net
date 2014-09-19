@@ -48,16 +48,6 @@ namespace PcapDotNet.Packets.IpV6
             public const byte Global = 0x20;
         }
 
-        public IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
-                                                                   bool ipV4HomeAddressBindingOnly, bool global, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options, MessageDataOffset.Options)
-        {
-            SequenceNumber = sequenceNumber;
-            ProxyBinding = proxyBinding;
-            IpV4HomeAddressBindingOnly = ipV4HomeAddressBindingOnly;
-            Global = global;
-        }
-
         /// <summary>
         /// Identifies the particular mobility message in question.
         /// An unrecognized MH Type field causes an error indication to be sent.
@@ -102,6 +92,16 @@ namespace PcapDotNet.Packets.IpV6
         /// In acknowledgement, set if it is set in the corresponding Binding Revocation Indication message.
         /// </summary>
         public bool Global { get; private set; }
+
+        internal IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
+                                                                     bool ipV4HomeAddressBindingOnly, bool global, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
+        {
+            SequenceNumber = sequenceNumber;
+            ProxyBinding = proxyBinding;
+            IpV4HomeAddressBindingOnly = ipV4HomeAddressBindingOnly;
+            Global = global;
+        }
 
         internal abstract byte RevocationTriggerOrStatus { get; }
 

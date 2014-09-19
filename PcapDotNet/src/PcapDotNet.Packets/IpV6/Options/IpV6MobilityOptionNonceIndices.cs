@@ -25,8 +25,21 @@ namespace PcapDotNet.Packets.IpV6
             public const int CareOfNonceIndex = HomeNonceIndex + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.CareOfNonceIndex + sizeof(ushort);
 
+        /// <summary>
+        /// Creates an instance from home nounce index and care of nonce index.
+        /// </summary>
+        /// <param name="homeNonceIndex">
+        /// Tells the correspondent node which nonce value to use when producing the home keygen token.
+        /// </param>
+        /// <param name="careOfNonceIndex">
+        /// Ignored in requests to delete a binding.
+        /// Otherwise, it tells the correspondent node which nonce value to use when producing the care-of keygen token.
+        /// </param>
         public IpV6MobilityOptionNonceIndices(ushort homeNonceIndex, ushort careOfNonceIndex)
             : base(IpV6MobilityOptionType.NonceIndices)
         {

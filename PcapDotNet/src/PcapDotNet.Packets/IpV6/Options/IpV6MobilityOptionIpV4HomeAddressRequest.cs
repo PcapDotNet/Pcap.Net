@@ -22,6 +22,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4HomeAddressRequest)]
     public sealed class IpV6MobilityOptionIpV4HomeAddressRequest : IpV6MobilityOptionComplex, IIpV6MobilityOptionIpV4HomeAddress
     {
+        /// <summary>
+        /// The maximum value for Prefix Length.
+        /// </summary>
         public const byte MaxPrefixLength = 0x3F;
 
         private static class Offset
@@ -30,6 +33,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int HomeAddress = PrefixLength + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.HomeAddress + IpV4Address.SizeOf;
 
         private static class Mask
@@ -42,6 +48,16 @@ namespace PcapDotNet.Packets.IpV6
             public const int PrefixLength = 2;
         }
 
+        /// <summary>
+        /// Creates an instance from Prefix Length and Home Address.
+        /// </summary>
+        /// <param name="prefixLength">
+        /// Indicates the prefix length of the mobile node's IPv4 home network corresponding to the IPv4 home address contained in the option.
+        /// </param>
+        /// <param name="homeAddress">
+        /// Contains the IPv4 home address that is being requested.
+        /// The value of 0.0.0.0 is used to request that the local mobility anchor perform the address allocation.
+        /// </param>
         public IpV6MobilityOptionIpV4HomeAddressRequest(byte prefixLength, IpV4Address homeAddress)
             : base(IpV6MobilityOptionType.IpV4HomeAddressRequest)
         {

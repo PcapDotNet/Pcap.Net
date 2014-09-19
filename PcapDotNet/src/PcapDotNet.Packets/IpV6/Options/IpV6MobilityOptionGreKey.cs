@@ -23,8 +23,19 @@ namespace PcapDotNet.Packets.IpV6
             public const int GreKeyIdentifier = sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.GreKeyIdentifier + sizeof(uint);
 
+        /// <summary>
+        /// Creates an instance from GRE key identifier.
+        /// </summary>
+        /// <param name="greKeyIdentifier">
+        /// Contains the downlink or the uplink GRE key.
+        /// This field is present in the GRE Key option only if the GRE keys are being exchanged using the Proxy Binding Update and Proxy Binding
+        /// Acknowledgement messages.
+        /// </param>
         public IpV6MobilityOptionGreKey(uint greKeyIdentifier)
             : base(IpV6MobilityOptionType.GreKey)
         {
