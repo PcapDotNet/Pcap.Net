@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Ip
             if (rate == 0)
                 return 0;
 
-            return 40*(1 << rate);
+            return 40 * (1 << rate);
         }
 
         internal static void ReadData(DataSegment data, out IpV4OptionQuickStartFunction function, out byte rate, out byte ttl, out uint nonce)

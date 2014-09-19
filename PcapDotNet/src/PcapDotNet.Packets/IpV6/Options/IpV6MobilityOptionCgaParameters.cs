@@ -18,8 +18,23 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CgaParameters)]
     public sealed class IpV6MobilityOptionCgaParameters : IpV6MobilityOptionSingleDataSegmentField
     {
+        /// <summary>
+        /// The maximum option data length in bytes.
+        /// </summary>
         public const int OptionDataMaxLength = 255;
 
+        /// <summary>
+        /// Creates an instance from the given CGA parameters.
+        /// </summary>
+        /// <param name="cgaParameters">
+        /// Contains up to 255 bytes of the CGA Parameters data structure defined in RFC 3972.
+        /// The concatenation of all CGA Parameters options in the order they appear in the Binding Update message 
+        /// must result in the original CGA Parameters data structure.
+        /// All CGA Parameters options in the Binding Update message except the last one must contain exactly 255 bytes in the CGA Parameters field,
+        /// and the Option Length field must be set to 255 accordingly.
+        /// All CGA Parameters options must appear directly one after another, that is, 
+        /// a mobility option of a different type must not be placed in between two CGA Parameters options.
+        /// </param>
         public IpV6MobilityOptionCgaParameters(DataSegment cgaParameters)
             : base(IpV6MobilityOptionType.CgaParameters, cgaParameters)
         {

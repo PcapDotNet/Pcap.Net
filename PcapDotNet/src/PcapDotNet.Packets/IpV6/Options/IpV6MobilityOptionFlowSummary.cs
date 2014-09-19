@@ -22,23 +22,54 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.FlowSummary)]
     public sealed class IpV6MobilityOptionFlowSummary : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = sizeof(ushort);
 
+        /// <summary>
+        /// Creates an instance from an array of flow identifiers.
+        /// </summary>
+        /// <param name="flowIdentifiers">
+        /// Indicating a registered FID.
+        /// One or more FID fields can be included in this option.
+        /// </param>
         public IpV6MobilityOptionFlowSummary(params ushort[] flowIdentifiers)
             : this(flowIdentifiers.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an enumerable of flow identifiers.
+        /// </summary>
+        /// <param name="flowIdentifiers">
+        /// Indicating a registered FID.
+        /// One or more FID fields can be included in this option.
+        /// </param>
         public IpV6MobilityOptionFlowSummary(IEnumerable<ushort> flowIdentifiers)
             : this((IList<ushort>)flowIdentifiers.ToList())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a list of flow identifiers.
+        /// </summary>
+        /// <param name="flowIdentifiers">
+        /// Indicating a registered FID.
+        /// One or more FID fields can be included in this option.
+        /// </param>
         public IpV6MobilityOptionFlowSummary(IList<ushort> flowIdentifiers)
             : this(flowIdentifiers.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a collection of flow identifiers.
+        /// </summary>
+        /// <param name="flowIdentifiers">
+        /// Indicating a registered FID.
+        /// One or more FID fields can be included in this option.
+        /// </param>
         public IpV6MobilityOptionFlowSummary(ReadOnlyCollection<ushort> flowIdentifiers)
             : base(IpV6MobilityOptionType.FlowSummary)
         {

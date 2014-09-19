@@ -22,6 +22,21 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6ExtensionHeaderMobilityExperimental : IpV6ExtensionHeaderMobility
     {
+        /// <summary>
+        /// Creates an instance from next header, checksum and message data.
+        /// </summary>
+        /// <param name="nextHeader">
+        /// Identifies the type of header immediately following this extension header.
+        /// </param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="messageData">
+        /// Carries the data specific to the experimental protocol extension.
+        /// </param>
         public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
             : base(nextHeader, checksum, IpV6MobilityOptions.None, null)
         {

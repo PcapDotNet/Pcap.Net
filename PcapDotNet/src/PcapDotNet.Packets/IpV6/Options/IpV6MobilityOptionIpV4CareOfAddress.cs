@@ -20,6 +20,13 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4CareOfAddress)]
     public sealed class IpV6MobilityOptionIpV4CareOfAddress : IpV6MobilityOptionIpV4Address
     {
+        /// <summary>
+        /// Creates an instance from a care-of address.
+        /// </summary>
+        /// <param name="careOfAddress">
+        /// Contains the mobile node's IPv4 care-of address.
+        /// The IPv4 care-of address is used when the mobile node is located in an IPv4-only network.
+        /// </param>
         public IpV6MobilityOptionIpV4CareOfAddress(IpV4Address careOfAddress)
             : base(IpV6MobilityOptionType.IpV4CareOfAddress, careOfAddress)
         {

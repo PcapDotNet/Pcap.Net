@@ -20,6 +20,9 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.NatDetection)]
     public sealed class IpV6MobilityOptionNatDetection : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// Recommended value for Refresh Time.
+        /// </summary>
         public const uint RecommendedRefreshTime = 110;
 
         private static class Offset
@@ -28,6 +31,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int RefreshTime = UdpEncapsulationRequired + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.RefreshTime + sizeof(uint);
 
         private static class Mask
@@ -35,6 +41,21 @@ namespace PcapDotNet.Packets.IpV6
             public const byte UdpEncapsulationRequired = 0x80;
         }
 
+        /// <summary>
+        /// Creates an instance from UDP encapsulated required and refresh time.
+        /// </summary>
+        /// <param name="udpEncapsulationRequired">
+        /// Indicates to the mobile node that UDP encapsulation is required.
+        /// When set, this flag indicates that the mobile node must use UDP encapsulation even if a NAT is not located between the mobile node and home agent.
+        /// This flag should not be set when the mobile node is assigned an IPv6 care-of address with some exceptions.
+        /// </param>
+        /// <param name="refreshTime">
+        /// A suggested time (in seconds) for the mobile node to refresh the NAT binding.
+        /// If set to zero, it is ignored.
+        /// If this field is set to uint.MaxValue, it means that keepalives are not needed, i.e., no NAT was detected.
+        /// The home agent must be configured with a default value for the refresh time.
+        /// The recommended value is RecommendedRefreshTime.
+        /// </param>
         public IpV6MobilityOptionNatDetection(bool udpEncapsulationRequired, uint refreshTime)
             : base(IpV6MobilityOptionType.NatDetection)
         {

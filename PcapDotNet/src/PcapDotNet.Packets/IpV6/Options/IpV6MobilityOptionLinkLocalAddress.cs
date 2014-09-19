@@ -22,6 +22,12 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.LinkLocalAddress)]
     public sealed class IpV6MobilityOptionLinkLocalAddress : IpV6MobilityOptionIpV6Address
     {
+        /// <summary>
+        /// Creates an instance from link local address.
+        /// </summary>
+        /// <param name="linkLocalAddress">
+        /// Contains the link-local address.
+        /// </param>
         public IpV6MobilityOptionLinkLocalAddress(IpV6Address linkLocalAddress)
             : base(IpV6MobilityOptionType.LinkLocalAddress, linkLocalAddress)
         {

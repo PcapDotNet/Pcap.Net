@@ -20,6 +20,14 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.Timestamp)]
     public sealed class IpV6MobilityOptionTimestamp : IpV6MobilityOptionULong
     {
+        /// <summary>
+        /// Creates an instance from timestamp.
+        /// </summary>
+        /// <param name="timestamp">
+        /// Timestamp.  
+        /// The value indicates the number of seconds since January 1, 1970, 00:00 UTC, by using a fixed point format.
+        /// In this format, the integer number of seconds is contained in the first 48 bits of the field, and the remaining 16 bits indicate the number of 1/65536 fractions of a second.
+        /// </param>
         public IpV6MobilityOptionTimestamp(ulong timestamp)
             : base(IpV6MobilityOptionType.Timestamp, timestamp)
         {
@@ -35,11 +43,19 @@ namespace PcapDotNet.Packets.IpV6
             get { return Value; }
         }
 
+        /// <summary>
+        /// Timestamp.  
+        /// The value indicates the number of seconds since January 1, 1970, 00:00 UTC calculated from the ulong Timestamp field.
+        /// </summary>
         public double TimestampSeconds
         {
             get { return (Timestamp >> 16) + (Timestamp & 0xFFFF) / 65536.0; }
         }
 
+        /// <summary>
+        /// Timestamp.  
+        /// The value indicates the Timestamp date calculated from the Timestamp ulong field.
+        /// </summary>
         public DateTime TimestampDateTime
         {
             get

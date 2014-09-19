@@ -20,12 +20,19 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.PadN)]
     public sealed class IpV6MobilityOptionPadN : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// Creates an instance from padding data length.
+        /// </summary>
+        /// <param name="paddingDataLength"></param>
         public IpV6MobilityOptionPadN(int paddingDataLength)
             : base(IpV6MobilityOptionType.PadN)
         {
             PaddingDataLength = paddingDataLength;
         }
 
+        /// <summary>
+        /// The number of bytes the option data takes.
+        /// </summary>
         public int PaddingDataLength { get; private set; }
 
         internal override IpV6MobilityOption CreateInstance(DataSegment data)

@@ -22,8 +22,18 @@ namespace PcapDotNet.Packets.IpV6
             ExtensionHeaders = IpV6ExtensionHeaders.Empty;
         }
 
+        /// <summary>
+        /// Available for use by originating nodes and/or forwarding routers to identify and distinguish between different classes or priorities of 
+        /// IPv6 packets.
+        /// </summary>
         public byte TrafficClass { get; set; }
 
+        /// <summary>
+        /// May be used by a source to label sequences of packets for which it requests special handling by the IPv6 routers, 
+        /// such as non-default quality of service or "real-time" service.
+        /// Hosts or routers that do not support the functions of the Flow Label field are required to set the field to zero when originating a packet,
+        /// pass the field on unchanged when forwarding a packet, and ignore the field when receiving a packet.
+        /// </summary>
         public int FlowLabel { get; set; }
 
         /// <summary>
@@ -33,6 +43,10 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV4Protocol? NextHeader { get; set; }
 
+        /// <summary>
+        /// Decremented by 1 by each node that forwards the packet.
+        /// The packet is discarded if Hop Limit is decremented to zero.
+        /// </summary>
         public byte HopLimit { get; set; }
 
         /// <summary>

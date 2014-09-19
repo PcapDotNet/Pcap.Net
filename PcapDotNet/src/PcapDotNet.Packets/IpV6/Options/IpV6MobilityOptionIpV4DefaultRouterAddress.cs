@@ -20,6 +20,12 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV4DefaultRouterAddress)]
     public class IpV6MobilityOptionIpV4DefaultRouterAddress : IpV6MobilityOptionIpV4Address
     {
+        /// <summary>
+        /// Creates an instance from default router address.
+        /// </summary>
+        /// <param name="defaultRouterAddress">
+        /// The mobile node's default router address.
+        /// </param>
         public IpV6MobilityOptionIpV4DefaultRouterAddress(IpV4Address defaultRouterAddress)
             : base(IpV6MobilityOptionType.IpV4DefaultRouterAddress, defaultRouterAddress)
         {
