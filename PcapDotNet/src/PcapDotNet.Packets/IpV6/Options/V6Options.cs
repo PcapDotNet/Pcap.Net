@@ -10,14 +10,9 @@ namespace PcapDotNet.Packets.IpV6
     /// <typeparam name="T">The option concrete type.</typeparam>
     public abstract class V6Options<T> : Options<T> where T : Option, IEquatable<T>
     {
-        internal V6Options(IList<T> options, bool isValid) 
-            : base(options, isValid, null)
+        internal V6Options(IList<T> options, bool isValid)
+            : base(options, isValid, SumBytesLength(options))
         {
-        }
-
-        internal sealed override int CalculateBytesLength(int optionsLength)
-        {
-            return optionsLength;
         }
     }
 }

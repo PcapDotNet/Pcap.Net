@@ -52,7 +52,7 @@ namespace PcapDotNet.Core.Test
 
                     StringBuilder quickStartWireshark = new StringBuilder("Quick-Start: ");
 
-                    quickStartWireshark.Append(quickStart.Function == IpV4OptionQuickStartFunction.RateRequest ? "Rate request" : "Rate report");
+                    quickStartWireshark.Append(quickStart.QuickStartFunction == IpV4OptionQuickStartFunction.RateRequest ? "Rate request" : "Rate report");
 
                     quickStartWireshark.Append(", ");
 
@@ -65,7 +65,7 @@ namespace PcapDotNet.Core.Test
                     else
                         quickStartWireshark.Append(((double)quickStart.RateKbps / 1000000).ToString(CultureInfo.InvariantCulture) + " Gbit/s");
 
-                    if (quickStart.Function == IpV4OptionQuickStartFunction.RateRequest)
+                    if (quickStart.QuickStartFunction == IpV4OptionQuickStartFunction.RateRequest)
                         quickStartWireshark.Append(", QS TTL " + quickStart.Ttl);
 
                     return quickStartWireshark.ToString();

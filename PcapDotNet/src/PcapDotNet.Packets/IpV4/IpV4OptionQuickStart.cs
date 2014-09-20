@@ -56,9 +56,9 @@ namespace PcapDotNet.Packets.IpV4
         public IpV4OptionQuickStart(IpV4OptionQuickStartFunction function, byte rate, byte ttl, uint nonce)
             : base(IpV4OptionType.QuickStart)
         {
-            IpOptionQuickStartCommon.AssertValidParameters(function, rate, ttl, nonce);
+            IpOptionQuickStartCommon.AssertValidParameters(function, rate, nonce);
 
-            Function = function;
+            QuickStartFunction = function;
             Rate = rate;
             Ttl = ttl;
             Nonce = nonce;
@@ -75,7 +75,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The function of this quick start option.
         /// </summary>
-        public IpV4OptionQuickStartFunction Function { get; private set; }
+        public IpV4OptionQuickStartFunction QuickStartFunction { get; private set; }
 
         /// <summary>
         /// If function is request then this field is the rate request.
@@ -178,7 +178,7 @@ namespace PcapDotNet.Packets.IpV4
             if (other == null)
                 return false;
 
-            return Function == other.Function &&
+            return QuickStartFunction == other.QuickStartFunction &&
                    Rate == other.Rate &&
                    Ttl == other.Ttl &&
                    Nonce == other.Nonce;
@@ -216,14 +216,14 @@ namespace PcapDotNet.Packets.IpV4
 
         internal override int GetDataHashCode()
         {
-            return Sequence.GetHashCode(BitSequence.Merge((byte)((byte)Function | Rate), Ttl), Nonce);
+            return Sequence.GetHashCode(BitSequence.Merge((byte)((byte)QuickStartFunction | Rate), Ttl), Nonce);
         }
 
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
 
-            IpOptionQuickStartCommon.WriteData(buffer, ref offset, Function, Rate, Ttl, Nonce);
+            IpOptionQuickStartCommon.WriteData(buffer, ref offset, QuickStartFunction, Rate, Ttl, Nonce);
         }
     }
 }

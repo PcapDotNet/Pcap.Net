@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Ip
                 throw new ArgumentException("given options take " + BytesLength + " bytes and maximum number of bytes for options is " + maximumBytesLength, "options");
         }
 
-        internal sealed override int CalculateBytesLength(int optionsLength)
+        internal static int CalculateBytesLength(int optionsLength)
         {
             if (optionsLength % 4 == 0)
                 return optionsLength;
@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Ip
         }
 
         private V4Options(IList<T> options, bool isValid, int? length)
-            :base(options, isValid, length)
+            : base(options, isValid, length ?? CalculateBytesLength(SumBytesLength(options)))
         {
         }
 

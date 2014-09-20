@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         /// <param name="options">List of options to build the set from.</param>
         public IpV6Options(IList<IpV6Option> options)
-            : base(options, true, null)
+            : base(options, true, SumBytesLength(options))
         {
         }
 
@@ -98,13 +98,8 @@ namespace PcapDotNet.Packets.IpV6
             return new Tuple<IList<IpV6Option>, bool>(options, isValid);
         }
 
-        internal override int CalculateBytesLength(int optionsLength)
-        {
-            return optionsLength;
-        }
-
         private IpV6Options(Tuple<IList<IpV6Option>, bool> optionsAndIsValid)
-            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, null)
+            : base(optionsAndIsValid.Item1, optionsAndIsValid.Item2, SumBytesLength(optionsAndIsValid.Item1))
         {
         }
         
