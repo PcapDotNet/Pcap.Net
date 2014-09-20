@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -70,7 +71,8 @@ namespace PcapDotNet.Packets.IpV6
             if (authenticationData.Length % 4 != 0)
             {
                 throw new ArgumentException(
-                    string.Format("Authentication Data must be an integral multiple of 4 byte in length, and not {0}.", authenticationData.Length),
+                    string.Format(CultureInfo.InvariantCulture, "Authentication Data must be an integral multiple of 4 byte in length, and not {0}.",
+                                  authenticationData.Length),
                     "authenticationData");
             }
             SecurityParametersIndex = securityParametersIndex;

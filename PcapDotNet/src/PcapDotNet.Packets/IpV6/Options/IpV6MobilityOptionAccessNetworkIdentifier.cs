@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -26,7 +27,8 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.AccessNetworkIdentifier)
         {
             if (subOptions.BytesLength > MaxDataLength)
-                throw new ArgumentOutOfRangeException("subOptions", subOptions, string.Format("SubOptions take more than {0} bytes", MaxDataLength));
+                throw new ArgumentOutOfRangeException("subOptions", subOptions,
+                                                      string.Format(CultureInfo.InvariantCulture, "SubOptions take more than {0} bytes", MaxDataLength));
             SubOptions = subOptions;
         }
 

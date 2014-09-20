@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -45,7 +46,8 @@ namespace PcapDotNet.Packets.IpV6
         {
             if (identifier.Length < MinIdentifierLength || identifier.Length > MaxIdentifierLength)
                 throw new ArgumentOutOfRangeException("identifier", identifier,
-                                                      string.Format("Identifier length must be at least {0} bytes long and at most {1} bytes long.",
+                                                      string.Format(CultureInfo.InvariantCulture,
+                                                                    "Identifier length must be at least {0} bytes long and at most {1} bytes long.",
                                                                     MinIdentifierLength, MaxIdentifierLength));
         }
 

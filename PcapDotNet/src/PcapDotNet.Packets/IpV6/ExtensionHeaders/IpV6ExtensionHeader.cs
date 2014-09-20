@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
@@ -117,7 +118,7 @@ namespace PcapDotNet.Packets.IpV6
                     break;
 
                 default:
-                    throw new InvalidOperationException(string.Format("Invalid nextHeader value {0}", nextHeader));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid nextHeader value {0}", nextHeader));
             }
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
@@ -26,7 +27,8 @@ namespace PcapDotNet.Packets.IpV6
                 if (extensionHeaders[i].Protocol == IpV4Protocol.EncapsulatingSecurityPayload && i != extensionHeaders.Count - 1)
                 {
                     throw new ArgumentException(
-                        string.Format("EncapsulatingSecurityPayload can only be the last extension header. However it is the {0} out of {1}.", (i + 1),
+                        string.Format(CultureInfo.InvariantCulture,
+                                      "EncapsulatingSecurityPayload can only be the last extension header. However it is the {0} out of {1}.", (i + 1),
                                       extensionHeaders.Count), "extensionHeaders");
                 }
             }

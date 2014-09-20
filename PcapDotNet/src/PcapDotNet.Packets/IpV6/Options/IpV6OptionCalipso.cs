@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -86,11 +87,13 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6OptionType.Calipso)
         {
             if (compartmentBitmap.Length % sizeof(int) != 0)
-                throw new ArgumentException(string.Format("Compartment Bitmap length must divide by {0}.", sizeof(int)), "compartmentBitmap");
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Compartment Bitmap length must divide by {0}.", sizeof(int)),
+                                            "compartmentBitmap");
             if (compartmentBitmap.Length > CompartmentBitmapMaxLength)
             {
-                throw new ArgumentOutOfRangeException(string.Format("Compartment Bitmap length must not be bigger than {0}.", CompartmentBitmapMaxLength),
-                                                      "compartmentBitmap");
+                throw new ArgumentOutOfRangeException(
+                    string.Format(CultureInfo.InvariantCulture, "Compartment Bitmap length must not be bigger than {0}.", CompartmentBitmapMaxLength),
+                    "compartmentBitmap");
             }
 
             DomainOfInterpretation = domainOfInterpretation;

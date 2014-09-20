@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -288,7 +289,7 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.BindingIdentifier)
         {
             if (priority > MaxPriority)
-                throw new ArgumentOutOfRangeException("priority", priority, string.Format("Must not exceed {0}", MaxPriority));
+                throw new ArgumentOutOfRangeException("priority", priority, string.Format(CultureInfo.InvariantCulture, "Must not exceed {0}", MaxPriority));
             BindingId = bindingId;
             Status = status;
             SimultaneousHomeAndForeignBinding = simultaneousHomeAndForeignBinding;

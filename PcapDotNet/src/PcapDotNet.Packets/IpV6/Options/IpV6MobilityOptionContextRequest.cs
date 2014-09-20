@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 
@@ -52,7 +53,9 @@ namespace PcapDotNet.Packets.IpV6
             Requests = requests;
             _dataLength = Requests.Sum(request => request.Length);
             if (_dataLength > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("requests", requests, string.Format("requests length is too large. Takes over {0}>{1} bytes.", _dataLength, byte.MaxValue));
+                throw new ArgumentOutOfRangeException("requests", requests,
+                                                      string.Format(CultureInfo.InvariantCulture, "requests length is too large. Takes over {0}>{1} bytes.",
+                                                                    _dataLength, byte.MaxValue));
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
@@ -96,14 +97,14 @@ namespace PcapDotNet.Packets.IpV6
             if (commonPrefixLengthForNonLastAddresses > MaxCommonPrefixLength)
             {
                 throw new ArgumentOutOfRangeException("commonPrefixLengthForNonLastAddresses", commonPrefixLengthForNonLastAddresses,
-                                                      string.Format("Maximum value is {0}", MaxCommonPrefixLength));
+                                                      string.Format(CultureInfo.InvariantCulture, "Maximum value is {0}", MaxCommonPrefixLength));
             }
             CommonPrefixLengthForNonLastAddresses = commonPrefixLengthForNonLastAddresses;
 
             if (commonPrefixLengthForLastAddress > MaxCommonPrefixLength)
             {
                 throw new ArgumentOutOfRangeException("commonPrefixLengthForLastAddress", commonPrefixLengthForLastAddress,
-                                                      string.Format("Maximum value is {0}", MaxCommonPrefixLength));
+                                                      string.Format(CultureInfo.InvariantCulture, "Maximum value is {0}", MaxCommonPrefixLength));
             }
             CommonPrefixLengthForLastAddress = commonPrefixLengthForLastAddress;
 
@@ -130,7 +131,8 @@ namespace PcapDotNet.Packets.IpV6
             if (address.ToValue() >> (8 * (IpV6Address.SizeOf - commonPrefixLength)) != 0)
             {
                 throw new ArgumentOutOfRangeException("addresses", address,
-                                                      string.Format("When an address has {0} common bytes, it should start with {0} zero bytes.",
+                                                      string.Format(CultureInfo.InvariantCulture,
+                                                                    "When an address has {0} common bytes, it should start with {0} zero bytes.",
                                                                     commonPrefixLength));
             }
         }

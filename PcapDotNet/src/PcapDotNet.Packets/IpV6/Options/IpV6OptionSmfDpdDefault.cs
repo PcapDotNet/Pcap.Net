@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -47,13 +48,14 @@ namespace PcapDotNet.Packets.IpV6
             if (taggerId.Length > TaggerIdMaxLength)
             {
                 throw new ArgumentOutOfRangeException("taggerId", taggerId,
-                                                      string.Format("Length is {0} but it must not be longer than {1} bytes.", taggerId.Length,
-                                                                    TaggerIdMaxLength));
+                                                      string.Format(CultureInfo.InvariantCulture, "Length is {0} but it must not be longer than {1} bytes.",
+                                                                    taggerId.Length, TaggerIdMaxLength));
             }
             if (taggerId.Length == 0)
             {
                 throw new ArgumentOutOfRangeException("taggerId", taggerId,
-                                                      string.Format("Length is {0} but it must be longer than 0 bytes.", taggerId.Length));
+                                                      string.Format(CultureInfo.InvariantCulture, "Length is {0} but it must be longer than 0 bytes.",
+                                                                    taggerId.Length));
             }
             TaggerId = taggerId;
         }
