@@ -40,15 +40,10 @@ namespace PcapDotNet.Packets.IpV6
             public const int Options = Lifetime + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
-
-        public IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
-                                                           IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options, MessageDataOffset.Options)
-        {
-            SequenceNumber = sequenceNumber;
-            Lifetime = lifetime;
-        }
 
         /// <summary>
         /// In initiation, a monotonically increasing integer. Set by a sending node in a request message, and used to match a reply to the request.
@@ -64,6 +59,14 @@ namespace PcapDotNet.Packets.IpV6
         /// Typically copied from the corresponding field in the LRI message.
         /// </summary>
         public ushort Lifetime { get; private set; }
+
+        internal IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
+                                                           IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
+        {
+            SequenceNumber = sequenceNumber;
+            Lifetime = lifetime;
+        }
 
         internal override int MessageDataLength
         {

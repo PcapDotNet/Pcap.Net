@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public abstract IpV6TaggerIdType TaggerIdType { get; }
 
-        protected IpV6OptionSmfDpdSequenceBased(DataSegment identifier)
+        internal IpV6OptionSmfDpdSequenceBased(DataSegment identifier)
         {
             Identifier = identifier;
         }

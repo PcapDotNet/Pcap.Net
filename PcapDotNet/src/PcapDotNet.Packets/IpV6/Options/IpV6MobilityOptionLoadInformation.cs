@@ -32,8 +32,24 @@ namespace PcapDotNet.Packets.IpV6
             public const int MaximumCapacity = UsedCapacity + sizeof(uint);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.MaximumCapacity + sizeof(uint);
 
+        /// <summary>
+        /// Creates an instance from priority, sessions in use, maximum sessions, used capacity and maximum capacity.
+        /// </summary>
+        /// <param name="priority">
+        /// Represents the priority of an LMA.
+        /// The lower value, the higher the priority.
+        /// The priority only has meaning among a group of LMAs under the same administration, for example, determined by a common LMA FQDN, a domain name,
+        /// or a realm.
+        /// </param>
+        /// <param name="sessionsInUse">Represents the number of parallel mobility sessions the LMA has in use.</param>
+        /// <param name="maximumSessions">Represents the maximum number of parallel mobility sessions the LMA is willing to accept.</param>
+        /// <param name="usedCapacity">Represents the used bandwidth/throughput capacity of the LMA in kilobytes per second.</param>
+        /// <param name="maximumCapacity">Represents the maximum bandwidth/throughput capacity in kilobytes per second the LMA is willing to accept.</param>
         public IpV6MobilityOptionLoadInformation(ushort priority, uint sessionsInUse, uint maximumSessions, uint usedCapacity, uint maximumCapacity)
             : base(IpV6MobilityOptionType.LoadInformation)
         {

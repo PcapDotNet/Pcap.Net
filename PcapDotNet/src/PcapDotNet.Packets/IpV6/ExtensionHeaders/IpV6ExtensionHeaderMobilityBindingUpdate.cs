@@ -47,6 +47,73 @@ namespace PcapDotNet.Packets.IpV6
             public const byte BulkBindingUpdate = 0x40;
         }
 
+        /// <summary>
+        /// Creates an instance from next header, checksum, sequence number, acknowledge, home registration, link local address compatibility,
+        /// key management mobiltiy capability, map registration, mobile router, proxy registration flag, forcing UDP encapsulation, TLV header format,
+        /// bulk binding update, lifetime and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="sequenceNumber">
+        /// Used by the receiving node to sequence Binding Updates and by the sending node to match a returned Binding Acknowledgement with this Binding Update.
+        /// </param>
+        /// <param name="acknowledge">
+        /// Set by the sending mobile node to request a Binding Acknowledgement be returned upon receipt of the Binding Update.
+        /// For Fast Binding Update this must be set to one to request that PAR send a Fast Binding Acknowledgement message.
+        /// </param>
+        /// <param name="homeRegistration">
+        /// Set by the sending mobile node to request that the receiving node should act as this node's home agent.
+        /// The destination of the packet carrying this message must be that of a router sharing the same subnet prefix as the home address 
+        /// of the mobile node in the binding.
+        /// For Fast Binding Update this must be set to one.
+        /// </param>
+        /// <param name="linkLocalAddressCompatibility">
+        /// Set when the home address reported by the mobile node has the same interface identifier as the mobile node's link-local address.
+        /// </param>
+        /// <param name="keyManagementMobilityCapability">
+        /// If this is cleared, the protocol used for establishing the IPsec security associations between the mobile node and the home agent 
+        /// does not survive movements.
+        /// It may then have to be rerun. (Note that the IPsec security associations themselves are expected to survive movements.)
+        /// If manual IPsec configuration is used, the bit must be cleared.
+        /// </param>
+        /// <param name="mapRegistration">
+        /// Indicates MAP registration.
+        /// When a mobile node registers with the MAP, the MapRegistration and Acknowledge must be set to distinguish this registration
+        /// from a Binding Update being sent to the Home Agent or a correspondent node.
+        /// </param>
+        /// <param name="mobileRouter">
+        /// Indicates to the Home Agent that the Binding Update is from a Mobile Router.
+        /// If false, the Home Agent assumes that the Mobile Router is behaving as a Mobile Node,
+        /// and it must not forward packets destined for the Mobile Network to the Mobile Router.
+        /// </param>
+        /// <param name="proxyRegistrationFlag">
+        /// Indicates to the local mobility anchor that the Binding Update message is a proxy registration.
+        /// Must be true for proxy registrations and must be false direct registrations sent by a mobile node.
+        /// </param>
+        /// <param name="forcingUdpEncapsulation">
+        /// Indicates a request for forcing UDP encapsulation regardless of whether a NAT is present on the path between the mobile node and the home agent.
+        /// May be set by the mobile node if it is required to use UDP encapsulation regardless of the presence of a NAT.
+        /// </param>
+        /// <param name="tlvHeaderFormat">
+        /// Indicates that the mobile access gateway requests the use of the TLV header for encapsulating IPv6 or IPv4 packets in IPv4.
+        /// </param>
+        /// <param name="bulkBindingUpdate">
+        /// If true, it informs the local mobility anchor to enable bulk binding update support for the mobility session associated with this message.
+        /// If false, the local mobility anchor must exclude the mobility session associated with this message from any bulk-binding-related operations
+        /// and any binding update, or binding revocation operations with bulk-specific scope will not be relevant to that mobility session.
+        /// This flag is relevant only for Proxy Mobile IPv6 and therefore must be set to false when the ProxyRegistrationFlag is false.
+        /// </param>
+        /// <param name="lifetime">
+        /// The number of time units remaining before the binding must be considered expired.
+        /// A value of zero indicates that the Binding Cache entry for the mobile node must be deleted.
+        /// One time unit is 4 seconds for Binding Update and 1 second for Fast Binding Update.
+        /// </param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
                                                         bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability, bool mapRegistration,
                                                         bool mobileRouter, bool proxyRegistrationFlag, bool forcingUdpEncapsulation, bool tlvHeaderFormat,

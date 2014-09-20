@@ -39,8 +39,31 @@ namespace PcapDotNet.Packets.IpV6
             public const byte Unsolicited = 0x80;
         }
 
-        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited, IpV6MobilityLocalizedRoutingAcknowledgementStatus status,
-                                                                          ushort lifetime, IpV6MobilityOptions options)
+        /// <summary>
+        /// Creates an instance from next header, checksum, sequence number, unsolicited, status, lifetime and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="sequenceNumber">Copied from the sequence number field of the LRI message being responded to.</param>
+        /// <param name="unsolicited">
+        /// When true, the LRA message is sent unsolicited.
+        /// The Lifetime field indicates a new requested value.
+        /// The MAG must wait for the regular LRI message to confirm that the request is acceptable to the LMA.
+        /// </param>
+        /// <param name="status">The acknowledgement status.</param>
+        /// <param name="lifetime">
+        /// The time in seconds for which the local forwarding is supported.
+        /// Typically copied from the corresponding field in the LRI message.
+        /// </param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited,
+                                                                          IpV6MobilityLocalizedRoutingAcknowledgementStatus status, ushort lifetime,
+                                                                          IpV6MobilityOptions options)
             : base(nextHeader, checksum, sequenceNumber, lifetime, options)
         {
             Status = status;
@@ -54,6 +77,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public bool Unsolicited { get; private set; }
 
+        /// <summary>
+        /// The acknowledgement status.
+        /// </summary>
         public IpV6MobilityLocalizedRoutingAcknowledgementStatus Status { get; private set; }
 
         /// <summary>

@@ -42,8 +42,39 @@ namespace PcapDotNet.Packets.IpV6
             public const byte IsNetworkNameUtf8 = 0x80;
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.NetworkName + sizeof(byte);
 
+        /// <summary>
+        /// Creates an instance from is network name UTF8, network name and access point name.
+        /// </summary>
+        /// <param name="isNetworkNameUtf8">
+        /// Indicates whether the Network Name is encoded in UTF-8.
+        /// If true, then the Network Name is encoded using UTF-8.
+        /// If false, this indicates that the encoding is undefined and is determined by out-of-band mechanisms.
+        /// </param>
+        /// <param name="networkName">
+        /// The name of the access network to which the mobile node is attached.
+        /// The type of the Network Name is dependent on the access technology to which the mobile node is attached.
+        /// If it is 802.11 access, the Network Name must be the SSID of the network.
+        /// If the access network is 3GPP access, the Network Name is the PLMN Identifier of the network.
+        /// If the access network is 3GPP2 access, the Network Name is the Access Network Identifier.
+        /// 
+        /// When encoding the PLMN Identifier, both the Mobile Network Code (MNC) and Mobile Country Code (MCC) must be 3 digits.
+        /// If the MNC in use only has 2 digits, then it must be preceded with a '0'.
+        /// Encoding must be UTF-8.
+        /// </param>
+        /// <param name="accessPointName">
+        /// The name of the access point (physical device name) to which the mobile node is attached.
+        /// This is the identifier that uniquely identifies the access point.
+        /// While Network Name (e.g., SSID) identifies the operator's access network,
+        /// Access-Point Name identifies a specific network device in the network to which the mobile node is attached.
+        /// In some deployments, the Access-Point Name can be set to the Media Access Control (MAC) address of the device or some unique identifier
+        /// that can be used by the policy systems in the operator network to unambiguously identify the device.
+        /// The string is carried in UTF-8 representation.
+        /// </param>
         public IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier(bool isNetworkNameUtf8, DataSegment networkName, DataSegment accessPointName)
             : base(IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier)
         {

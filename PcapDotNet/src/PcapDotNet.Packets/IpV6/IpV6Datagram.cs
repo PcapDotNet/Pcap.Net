@@ -39,6 +39,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public const int HeaderLength = 40;
 
+        /// <summary>
+        /// Maximum flow label value.
+        /// </summary>
         public const int MaxFlowLabel = 0xFFFFF;
 
         private static class Offset
@@ -65,6 +68,7 @@ namespace PcapDotNet.Packets.IpV6
             public const int Version = 4;
             public const int TrafficClass = 4;
         }
+
         /// <summary>
         /// The version (6).
         /// </summary>
@@ -107,6 +111,9 @@ namespace PcapDotNet.Packets.IpV6
             get { return ReadUShort(Offset.PayloadLength, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The actual payload length 
+        /// </summary>
         public ushort RealPayloadLength
         {
             get
@@ -151,6 +158,9 @@ namespace PcapDotNet.Packets.IpV6
             get { return ReadIpV6Address(Offset.DestinationAddress, Endianity.Big); }
         }
 
+        /// <summary>
+        /// The IPv6 extension headers.
+        /// </summary>
         public IpV6ExtensionHeaders ExtensionHeaders
         {
             get
@@ -192,6 +202,14 @@ namespace PcapDotNet.Packets.IpV6
             };
         }
 
+        /// <summary>
+        /// The default validity check always returns true.
+        /// </summary>
+        protected override bool CalculateIsValid()
+        {
+            ParseExtensionHeaders();
+            return _isValid;
+        }
 
         internal IpV6Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
@@ -226,12 +244,6 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + Offset.SourceAddress, source, Endianity.Big);
             buffer.Write(offset + Offset.DestinationAddress, currentDestination, Endianity.Big);
             extensionHeaders.Write(buffer, offset + HeaderLength);
-        }
-
-        protected override bool CalculateIsValid()
-        {
-            ParseExtensionHeaders();
-            return _isValid;
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;

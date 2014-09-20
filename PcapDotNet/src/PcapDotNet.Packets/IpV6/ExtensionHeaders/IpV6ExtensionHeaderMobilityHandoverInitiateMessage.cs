@@ -41,11 +41,35 @@ namespace PcapDotNet.Packets.IpV6
             public const byte Buffer = 0x40;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
+        /// <summary>
+        /// Creates an instance from next header, checksum, sequence number, assigned address configuration, buffer, code and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="sequenceNumber">Must be set by the sender so replies can be matched to this message.</param>
+        /// <param name="assignedAddressConfiguration">
+        /// Assigned address configuration flag.  
+        /// When set to true, this message requests a new CoA to be returned by the destination.
+        /// May be set when Code = 0. Must be false when Code = 1.
+        /// </param>
+        /// <param name="buffer">
+        /// When set, the destination should buffer any packets toward the node indicated in the options of this message.
+        /// Used when Code = 0, should be set to false when Code = 1.
+        /// </param>
+        /// <param name="code">Describes whether the source ip address is a previous care of address.</param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityHandoverInitiateMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool assignedAddressConfiguration,
-                                                                  bool buffer, IpV6HandoverInitiateMessageCode code,
-                                                                  IpV6MobilityOptions options)
+                                                                  bool buffer, IpV6HandoverInitiateMessageCode code, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             SequenceNumber = sequenceNumber;

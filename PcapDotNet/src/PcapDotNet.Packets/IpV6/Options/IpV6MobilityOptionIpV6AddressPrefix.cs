@@ -25,8 +25,11 @@ namespace PcapDotNet.Packets.IpV6
     /// </pre>
     /// </summary>
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.IpV6AddressPrefix)]
-    public class IpV6MobilityOptionIpV6AddressPrefix : IpV6MobilityOptionComplex
+    public sealed class IpV6MobilityOptionIpV6AddressPrefix : IpV6MobilityOptionComplex
     {
+        /// <summary>
+        /// The maximum value for prefix length.
+        /// </summary>
         public const byte MaxPrefixLength = 128;
 
         private static class Offset
@@ -36,8 +39,20 @@ namespace PcapDotNet.Packets.IpV6
             public const int AddressOrPrefix = PrefixLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.AddressOrPrefix + IpV6Address.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from code, prefix length and address or prefix.
+        /// </summary>
+        /// <param name="code">Describes the kind of the address or the prefix.</param>
+        /// <param name="prefixLength">
+        /// Indicates the length of the IPv6 Address Prefix.
+        /// The value ranges from 0 to 128.
+        /// </param>
+        /// <param name="addressOrPrefix">The IP address/prefix defined by the Option-Code field.</param>
         public IpV6MobilityOptionIpV6AddressPrefix(IpV6MobilityIpV6AddressPrefixCode code, byte prefixLength, IpV6Address addressOrPrefix)
             : base(IpV6MobilityOptionType.IpV6AddressPrefix)
         {

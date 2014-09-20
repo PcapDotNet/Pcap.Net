@@ -42,6 +42,9 @@ namespace PcapDotNet.Packets.IpV6
             public const byte KeyManagementMobilityCapability = 0x80;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         /// <summary>

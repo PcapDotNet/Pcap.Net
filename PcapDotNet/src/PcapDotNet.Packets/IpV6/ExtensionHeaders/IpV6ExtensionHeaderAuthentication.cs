@@ -32,8 +32,38 @@ namespace PcapDotNet.Packets.IpV6
             public const int AuthenticationData = SequenceNumber + sizeof(uint);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the extension header takes.
+        /// </summary>
         public const int MinimumLength = Offset.AuthenticationData;
 
+        /// <summary>
+        /// Creates an instance from next header, security parameter index, sequence number and authenticator.
+        /// </summary>
+        /// <param name="nextHeader">
+        /// Identifies the type of header immediately following this extension header.
+        /// </param>
+        /// <param name="securityParametersIndex">
+        /// The SPI is an arbitrary 32-bit value that, in combination with the destination IP address and security protocol (AH),
+        /// uniquely identifies the Security Association for this datagram.
+        /// The set of SPI values in the range 1 through 255 are reserved by the Internet Assigned Numbers Authority (IANA) for future use;
+        /// a reserved SPI value will not normally be assigned by IANA unless the use of the assigned SPI value is specified in an RFC.
+        /// It is ordinarily selected by the destination system upon establishment of an SA.
+        /// </param>
+        /// <param name="sequenceNumber">
+        /// Contains a monotonically increasing counter value (sequence number).
+        /// It is mandatory and is always present even if the receiver does not elect to enable the anti-replay service for a specific SA.
+        /// Processing of the Sequence Number field is at the discretion of the receiver, i.e., the sender must always transmit this field,
+        /// but the receiver need not act upon it.
+        /// </param>
+        /// <param name="authenticationData">
+        /// This is a variable-length field that contains the Integrity Check Value (ICV) for this packet.
+        /// The field must be an integral multiple of 32 bits in length.
+        /// This field may include explicit padding.
+        /// This padding is included to ensure that the length of the AH header is an integral multiple of 32 bits (IPv4) or 64 bits (IPv6).
+        /// All implementations must support such padding.
+        /// The authentication algorithm specification must specify the length of the ICV and the comparison rules and processing steps for validation.
+        /// </param>
         public IpV6ExtensionHeaderAuthentication(IpV4Protocol nextHeader, uint securityParametersIndex, uint sequenceNumber, DataSegment authenticationData)
             : base(nextHeader)
         {
@@ -92,6 +122,56 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment AuthenticationData { get; private set; }
 
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
+        public override IpV4Protocol Protocol
+        {
+            get { return IpV4Protocol.AuthenticationHeader; }
+        }
+
+        /// <summary>
+        /// The number of bytes this extension header takes.
+        /// </summary>
+        public override int Length
+        {
+            get { return MinimumLength + AuthenticationData.Length; }
+        }
+
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
+        public override bool IsValid
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
+        public override bool Equals(IpV6ExtensionHeader other)
+        {
+            return Equals(other as IpV6ExtensionHeaderAuthentication);
+        }
+
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
+        public bool Equals(IpV6ExtensionHeaderAuthentication other)
+        {
+            return other != null &&
+                   NextHeader == other.NextHeader && SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
+                   AuthenticationData.Equals(other.AuthenticationData);
+        }
+
+        /// <summary>
+        /// Returns a hash code of the extension header.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return Sequence.GetHashCode(NextHeader, SecurityParametersIndex, SequenceNumber, AuthenticationData);
+        }
+
         internal static IpV6ExtensionHeaderAuthentication CreateInstance(DataSegment extensionHeaderData, out int numBytesRead)
         {
             if (extensionHeaderData.Length < MinimumLength)
@@ -115,7 +195,7 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderAuthentication(nextHeader, securityParametersIndex, sequenceNumber, authenticationData);
         }
 
-        public static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
+        internal static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
         {
             if (extensionHeader.Length < MinimumLength)
             {
@@ -126,38 +206,6 @@ namespace PcapDotNet.Packets.IpV6
 
             nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
             extensionHeaderLength = (extensionHeader[Offset.PayloadLength] + 2) * 4;
-        }
-
-        public override IpV4Protocol Protocol
-        {
-            get { return IpV4Protocol.AuthenticationHeader; }
-        }
-
-        public override int Length
-        {
-            get { return MinimumLength + AuthenticationData.Length; }
-        }
-
-        public override bool IsValid
-        {
-            get { return true; }
-        }
-
-        public override bool Equals(IpV6ExtensionHeader other)
-        {
-            return Equals(other as IpV6ExtensionHeaderAuthentication);
-        }
-
-        public bool Equals(IpV6ExtensionHeaderAuthentication other)
-        {
-            return other != null &&
-                   NextHeader == other.NextHeader && SecurityParametersIndex == other.SecurityParametersIndex && SequenceNumber == other.SequenceNumber &&
-                   AuthenticationData.Equals(other.AuthenticationData);
-        }
-
-        public override int GetHashCode()
-        {
-            return Sequence.GetHashCode(NextHeader, SecurityParametersIndex, SequenceNumber, AuthenticationData);
         }
 
         internal override void Write(byte[] buffer, ref int offset)

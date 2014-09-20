@@ -27,18 +27,32 @@ namespace PcapDotNet.Packets.IpV6
             public const int Data = HeaderExtensionLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the extension header takes.
+        /// </summary>
         public const int MinimumLength = 8;
 
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
         public sealed override bool Equals(IpV6ExtensionHeader other)
         {
             return other != null &&
                    Protocol == other.Protocol && NextHeader == other.NextHeader && EqualsData(other);
         }
 
+        /// <summary>
+        /// Returns a hash code of the extension header.
+        /// </summary>
         public sealed override int GetHashCode()
         {
             return Sequence.GetHashCode(Protocol, NextHeader, GetDataHashCode());
         }
+
+        /// <summary>
+        /// The number of bytes this extension header takes.
+        /// </summary>
+        public sealed override int Length { get { return Offset.Data + DataLength; } }
 
         internal abstract bool EqualsData(IpV6ExtensionHeader other);
 
@@ -60,8 +74,8 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract void WriteData(byte[] buffer, int offset);
 
-        public sealed override int Length { get { return Offset.Data + DataLength; } }
         internal abstract int DataLength { get; }
+
         internal static bool IsStandard(IpV4Protocol nextHeader)
         {
             switch (nextHeader)
@@ -77,6 +91,7 @@ namespace PcapDotNet.Packets.IpV6
                     return false;
             }
         }
+
         internal static IpV6ExtensionHeader CreateInstanceStandard(IpV4Protocol nextHeader, DataSegment extensionHeaderData, out int numBytesRead)
         {
             numBytesRead = 0;

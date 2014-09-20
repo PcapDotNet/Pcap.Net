@@ -32,8 +32,22 @@ namespace PcapDotNet.Packets.IpV6
             public const int SourceEndpointIdentifier = DestinationEndpointIdentifierLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.SourceEndpointIdentifier;
 
+        /// <summary>
+        /// Creates an instance from source endpoint identifier and destination endpoint identifier.
+        /// </summary>
+        /// <param name="sourceEndpointIdentifier">
+        /// The endpoint identifier of the source.
+        /// Nimrod EIDs begin with the five bits 00100.
+        /// </param>
+        /// <param name="destinationEndpointIdentifier">
+        /// The endpoint identifier of the destination.
+        /// Nimrod EIDs begin with the five bits 00100.
+        /// </param>
         public IpV6OptionEndpointIdentification(DataSegment sourceEndpointIdentifier, DataSegment destinationEndpointIdentifier)
             : base(IpV6OptionType.EndpointIdentification)
         {
@@ -41,10 +55,23 @@ namespace PcapDotNet.Packets.IpV6
             DestinationEndpointIdentifier = destinationEndpointIdentifier;
         }
 
+        /// <summary>
+        /// The endpoint identifier of the source.
+        /// Nimrod EIDs begin with the five bits 00100.
+        /// </summary>
         public DataSegment SourceEndpointIdentifier { get; private set; }
 
+        /// <summary>
+        /// The endpoint identifier of the destination.
+        /// Nimrod EIDs begin with the five bits 00100.
+        /// </summary>
         public DataSegment DestinationEndpointIdentifier { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)

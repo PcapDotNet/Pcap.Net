@@ -30,8 +30,19 @@ namespace PcapDotNet.Packets.IpV6
             public const int LineIdentification = LineIdentificationLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.LineIdentification;
 
+        /// <summary>
+        /// Creates an instance from line identification.
+        /// </summary>
+        /// <param name="lineIdentification">
+        /// Variable length data inserted by the AN describing the subscriber agent circuit identifier 
+        /// corresponding to the logical access loop port of the AN from which the RS was initiated. 
+        /// The line identification must be unique across all the ANs that share a link to the edge router.
+        /// </param>
         public IpV6OptionLineIdentificationDestination(DataSegment lineIdentification)
             : base(IpV6OptionType.LineIdentification)
         {
@@ -50,6 +61,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment LineIdentification { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)

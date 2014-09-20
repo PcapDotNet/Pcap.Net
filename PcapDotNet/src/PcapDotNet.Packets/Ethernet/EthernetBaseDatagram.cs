@@ -49,6 +49,9 @@ namespace PcapDotNet.Packets.Ethernet
             }
         }
 
+        /// <summary>
+        /// A sequence of bytes that includes the trailer bytes and the framce check sequence bytes.
+        /// </summary>
         public DataSegment TrailerWithFrameCheckSequence
         {
             get

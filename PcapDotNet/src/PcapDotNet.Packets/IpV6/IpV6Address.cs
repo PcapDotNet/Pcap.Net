@@ -144,28 +144,27 @@ namespace PcapDotNet.Packets.IpV6
         public override string ToString()
         {
             return ToString(CultureInfo.InvariantCulture);
-            string valueString = _value.ToString("X33", CultureInfo.InvariantCulture).Substring(1);
-            StringBuilder stringBuilder = new StringBuilder(39);
-            for (int i = 0; i != 8; ++i)
-            {
-                if (i != 0)
-                    stringBuilder.Append(':');
-                stringBuilder.Append(valueString.Substring(i * 4, 4));
-            }
-
-            return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Translates the address to a string given the format.
+        /// </summary>
         public string ToString(string format)
         {
             return ToString(format, CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Translates the address to a string given the format provider.
+        /// </summary>
         public string ToString(IFormatProvider provider)
         {
             return ToString("X4", CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Translates the address to a string given the format and format provider.
+        /// </summary>
         public string ToString(string format, IFormatProvider provider)
         {
             StringBuilder stringBuilder = new StringBuilder(39);

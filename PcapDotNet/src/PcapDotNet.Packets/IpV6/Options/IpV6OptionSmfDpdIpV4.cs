@@ -29,12 +29,28 @@ namespace PcapDotNet.Packets.IpV6
     /// </summary>
     public sealed class IpV6OptionSmfDpdIpV4 : IpV6OptionSmfDpdSequenceBased
     {
+        /// <summary>
+        /// Creates an instance from tagger id and identifier.
+        /// </summary>
+        /// <param name="taggerId">
+        /// Used to differentiate multiple ingressing border gateways that may commonly apply the SMF_DPD option header to packets from a particular source.
+        /// </param>
+        /// <param name="identifier">
+        /// DPD packet Identifier.
+        /// When the TaggerId field is present, the Identifier can be considered a unique packet identifier 
+        /// in the context of the TaggerId:srcAddr:dstAddr tuple.
+        /// When the TaggerId field is not present, then it is assumed that the source applied the SMF_DPD option 
+        /// and the Identifier can be considered unique in the context of the IPv6 packet header srcAddr:dstAddr tuple.
+        /// </param>
         public IpV6OptionSmfDpdIpV4(IpV4Address taggerId, DataSegment identifier)
             : base(identifier)
         {
             TaggerId = taggerId;
         }
 
+        /// <summary>
+        /// Used to differentiate multiple ingressing border gateways that may commonly apply the SMF_DPD option header to packets from a particular source.
+        /// </summary>
         public IpV4Address TaggerId { get; private set; }
 
         /// <summary>

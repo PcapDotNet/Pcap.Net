@@ -35,6 +35,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6AccessNetworkIdentifierSubOptions SubOptions { get; private set; }
 
+        /// <summary>
+        /// True iff parsing of this option didn't encounter issues.
+        /// </summary>
         public override bool IsValid
         {
             get { return SubOptions.IsValid; }

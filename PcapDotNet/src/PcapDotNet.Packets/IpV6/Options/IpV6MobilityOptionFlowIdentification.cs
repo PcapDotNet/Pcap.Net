@@ -33,8 +33,35 @@ namespace PcapDotNet.Packets.IpV6
             public const int SubOptions = Status + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.SubOptions;
 
+        /// <summary>
+        /// Creates an instance from flow identifier, priority, status and sub options.
+        /// </summary>
+        /// <param name="flowIdentifier">
+        /// Includes the unique identifier for the flow binding.
+        /// This field is used to refer to an existing flow binding or to create a new flow binding.
+        /// The value of this field is set by the mobile node.
+        /// FID = 0 is reserved and must not be used.
+        /// </param>
+        /// <param name="priority">
+        /// Indicates the priority of a particular option.
+        /// This field is needed in cases where two different flow descriptions in two different options overlap.
+        /// The priority field decides which policy should be executed in those cases.
+        /// A lower number in this field indicates a higher priority.
+        /// Value '0' is reserved and must not be used.
+        /// Must be unique to each of the flows pertaining to a given MN.
+        /// In other words, two FIDs must not be associated with the same priority value.
+        /// </param>
+        /// <param name="status">
+        /// indicates the success or failure of the flow binding operation for the particular flow in the option.
+        /// This field is not relevant to the binding update message as a whole or to other flow identification options.
+        /// This field is only relevant when included in the Binding Acknowledgement message and must be ignored in the binding update message.
+        /// </param>
+        /// <param name="subOptions">Zero or more sub-options.</param>
         public IpV6MobilityOptionFlowIdentification(ushort flowIdentifier, ushort priority, IpV6FlowIdentificationStatus status,
                                                     IpV6FlowIdentificationSubOptions subOptions)
             : base(IpV6MobilityOptionType.FlowIdentification)
@@ -82,6 +109,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6FlowIdentificationSubOptions SubOptions { get; private set; }
 
+        /// <summary>
+        /// True iff parsing of this option didn't encounter issues.
+        /// </summary>
         public override bool IsValid
         {
             get { return SubOptions.IsValid; }

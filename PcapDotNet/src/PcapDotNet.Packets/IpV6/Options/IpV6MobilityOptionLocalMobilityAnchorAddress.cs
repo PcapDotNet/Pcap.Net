@@ -28,25 +28,26 @@ namespace PcapDotNet.Packets.IpV6
             public const int LocalMobilityAnchorAddress = Code + sizeof(byte) + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.LocalMobilityAnchorAddress;
 
-        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6LocalMobilityAnchorAddressCode code, IpV4Address localMobilityAnchorAddress)
-            : this(code, localMobilityAnchorAddress, null)
-        {
-        }
-
-        public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6LocalMobilityAnchorAddressCode code, IpV6Address localMobilityAnchorAddress)
-            : this(code, null, localMobilityAnchorAddress)
-        {
-        }
-
+        /// <summary>
+        /// Creates an instance from IPv4 local mobility anchor address with IPv4 code.
+        /// </summary>
+        /// <param name="localMobilityAnchorAddress">The LMA IPv4 address (IPv4-LMA).</param>
         public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV4Address localMobilityAnchorAddress)
-            : this(IpV6LocalMobilityAnchorAddressCode.IpV4, localMobilityAnchorAddress)
+            : this(IpV6LocalMobilityAnchorAddressCode.IpV4, localMobilityAnchorAddress, null)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from IPv6 local mobility anchor address with IPv6 code.
+        /// </summary>
+        /// <param name="localMobilityAnchorAddress">The LMA IPv6 address (LMAA).</param>
         public IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6Address localMobilityAnchorAddress)
-            : this(IpV6LocalMobilityAnchorAddressCode.IpV6, localMobilityAnchorAddress)
+            : this(IpV6LocalMobilityAnchorAddressCode.IpV6, null, localMobilityAnchorAddress)
         {
         }
 

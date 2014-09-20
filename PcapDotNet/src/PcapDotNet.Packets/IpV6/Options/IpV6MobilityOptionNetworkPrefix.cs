@@ -31,14 +31,10 @@ namespace PcapDotNet.Packets.IpV6
             public const int NetworkPrefix = PrefixLength + sizeof(byte);
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.NetworkPrefix + IpV6Address.SizeOf;
-
-        public IpV6MobilityOptionNetworkPrefix(IpV6MobilityOptionType type, byte prefixLength, IpV6Address networkPrefix)
-            : base(type)
-        {
-            PrefixLength = prefixLength;
-            NetworkPrefix = networkPrefix;
-        }
 
         /// <summary>
         /// Indicates the prefix length of the IPv6 prefix contained in the option.
@@ -49,6 +45,13 @@ namespace PcapDotNet.Packets.IpV6
         /// Contains the Network Prefix.
         /// </summary>
         public IpV6Address NetworkPrefix { get; private set; }
+
+        internal IpV6MobilityOptionNetworkPrefix(IpV6MobilityOptionType type, byte prefixLength, IpV6Address networkPrefix)
+            : base(type)
+        {
+            PrefixLength = prefixLength;
+            NetworkPrefix = networkPrefix;
+        }
 
         internal sealed override int DataLength
         {

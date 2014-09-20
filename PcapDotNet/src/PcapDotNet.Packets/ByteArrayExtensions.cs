@@ -62,6 +62,13 @@ namespace PcapDotNet.Packets
             return array.Compare(offset, other, otherOffset, count) == 0;
         }
 
+        /// <summary>
+        /// Creates a DataSegment of the given byte array starting from a given offset in the segment taking a given number of bytes.
+        /// </summary>
+        /// <param name="array">The array to build the data segment on.</param>
+        /// <param name="offset">The offset in the array to start taking.</param>
+        /// <param name="length">The number of bytes to take from the array.</param>
+        /// <returns>A new DataSegment that is part of the given array.</returns>
         public static DataSegment SubSegment(this byte[] array, int offset, int length)
         {
             return new DataSegment(array, offset, length);

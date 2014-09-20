@@ -35,13 +35,24 @@ namespace PcapDotNet.Packets.IpV6
             public const byte IsIpV4 = 0x40;
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.LocalMobilityAddress;
 
+        /// <summary>
+        /// Creates an instance from an IPv4 local mobility address.
+        /// </summary>
+        /// <param name="localMobilityAddress">The IPv4 address of the r2LMA.</param>
         public IpV6MobilityOptionRedirect(IpV4Address localMobilityAddress)
             : this(localMobilityAddress, null)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an IPv6 local mobility address.
+        /// </summary>
+        /// <param name="localMobilityAddress">The unicast IPv6 address of the r2LMA.</param>
         public IpV6MobilityOptionRedirect(IpV6Address localMobilityAddress)
             : this(null, localMobilityAddress)
         {

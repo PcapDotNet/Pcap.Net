@@ -40,8 +40,35 @@ namespace PcapDotNet.Packets.IpV6
             public const byte ForwardingError = 0x20;
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.SubTlvs;
 
+        /// <summary>
+        /// Creates an instance from down, rank error, forwarding error, RPL instance id, sender rank and sub TLVs.
+        /// </summary>
+        /// <param name="down">
+        /// Indicating whether the packet is expected to progress Up or Down.
+        /// A router sets the Down flag when the packet is expected to progress Down (using DAO routes), 
+        /// and clears it when forwarding toward the DODAG root (to a node with a lower Rank).
+        /// A host or RPL leaf node must set the Down flag to 0.
+        /// </param>
+        /// <param name="rankError">
+        /// Indicating whether a Rank error was detected.
+        /// A Rank error is detected when there is a mismatch in the relative Ranks and the direction as indicated in the Down flag.
+        /// A host or RPL leaf node must set the Rank Error flag to 0.
+        /// </param>
+        /// <param name="forwardingError">
+        /// Indicating that this node cannot forward the packet further towards the destination.
+        /// The Forward Error flag might be set by a child node that does not have a route to destination for a packet with the Down flag set.
+        /// A host or RPL leaf node must set the Forwarding error flag to 0.
+        /// </param>
+        /// <param name="rplInstanceId">Indicating the DODAG instance along which the packet is sent.</param>
+        /// <param name="senderRank">Set to zero by the source and to DAGRank(rank) by a router that forwards inside the RPL network.</param>
+        /// <param name="subTlvs">
+        /// A RPL device must skip over any unrecognized sub-TLVs and attempt to process any additional sub-TLVs that may appear after.
+        /// </param>
         public IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(bool down, bool rankError, bool forwardingError, byte rplInstanceId, ushort senderRank,
                                                                  DataSegment subTlvs)
             : base(IpV6OptionType.RplOption)
@@ -91,6 +118,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment SubTlvs { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)

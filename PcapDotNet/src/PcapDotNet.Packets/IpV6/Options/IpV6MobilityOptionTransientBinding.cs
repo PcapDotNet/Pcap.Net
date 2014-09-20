@@ -28,8 +28,22 @@ namespace PcapDotNet.Packets.IpV6
             public const int LatePathSwitch = 0x01;
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.Lifetime + sizeof(byte);
 
+        /// <summary>
+        /// Creates an instance from late path switch and lifetime.
+        /// </summary>
+        /// <param name="latePathSwitch">
+        /// Indicates that the Local Mobility Anchor (LMA) applies late path switch according to the transient BCE state.
+        /// If true, the LMA continues to forward downlink packets towards the pMAG.
+        /// Different setting of this flag may be for future use.
+        /// </param>
+        /// <param name="lifetime">
+        /// Maximum lifetime of a Transient-L state in multiple of 100 ms.
+        /// </param>
         public IpV6MobilityOptionTransientBinding(bool latePathSwitch, byte lifetime)
             : base(IpV6MobilityOptionType.TransientBinding)
         {

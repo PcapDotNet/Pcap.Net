@@ -40,15 +40,12 @@ namespace PcapDotNet.Packets.IpV6
         /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
         /// </param>
         /// <param name="sequenceNumber">
-        /// In initiation, a monotonically increasing integer. Set by a sending node in a request message, and used to match a reply to the request.
-        /// In acknowledgement, copied from the sequence number field of the LRI message being responded to.
+        /// A monotonically increasing integer. Set by a sending node in a request message, and used to match a reply to the request.
         /// </param>
         /// <param name="lifetime">
-        /// In initiation, the requested time in seconds for which the sender wishes to have local forwarding.
+        /// The requested time in seconds for which the sender wishes to have local forwarding.
         /// A value of 0xffff (all ones) indicates an infinite lifetime.
         /// When set to 0, indicates a request to stop localized routing.
-        /// In acknowledgement, the time in seconds for which the local forwarding is supported.
-        /// Typically copied from the corresponding field in the LRI message.
         /// </param>
         /// <param name="options">
         /// Zero or more TLV-encoded mobility options.

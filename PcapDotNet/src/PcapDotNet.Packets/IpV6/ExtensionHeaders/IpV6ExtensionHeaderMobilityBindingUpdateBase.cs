@@ -47,20 +47,10 @@ namespace PcapDotNet.Packets.IpV6
             public const byte KeyManagementMobilityCapability = 0x10;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
-
-        public IpV6ExtensionHeaderMobilityBindingUpdateBase(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge,
-                                                            bool homeRegistration, bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability,
-                                                            ushort lifetime, IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options, MessageDataOffset.Options)
-        {
-            SequenceNumber = sequenceNumber;
-            Acknowledge = acknowledge;
-            HomeRegistration = homeRegistration;
-            LinkLocalAddressCompatibility = linkLocalAddressCompatibility;
-            KeyManagementMobilityCapability = keyManagementMobilityCapability;
-            Lifetime = lifetime;
-        }
 
         /// <summary>
         /// Used by the receiving node to sequence Binding Updates and by the sending node to match a returned Binding Acknowledgement with this Binding Update.
@@ -106,6 +96,19 @@ namespace PcapDotNet.Packets.IpV6
         /// One time unit is 4 seconds for Binding Update and 1 second for Fast Binding Update.
         /// </summary>
         public ushort Lifetime { get; private set; }
+
+        internal IpV6ExtensionHeaderMobilityBindingUpdateBase(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge,
+                                                              bool homeRegistration, bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability,
+                                                              ushort lifetime, IpV6MobilityOptions options)
+            : base(nextHeader, checksum, options, MessageDataOffset.Options)
+        {
+            SequenceNumber = sequenceNumber;
+            Acknowledge = acknowledge;
+            HomeRegistration = homeRegistration;
+            LinkLocalAddressCompatibility = linkLocalAddressCompatibility;
+            KeyManagementMobilityCapability = keyManagementMobilityCapability;
+            Lifetime = lifetime;
+        }
 
         internal sealed override bool EqualsMessageData(IpV6ExtensionHeaderMobility other)
         {
