@@ -253,10 +253,10 @@ namespace PcapDotNet.Packets.IpV6
                 for (int i = 0; i != Addresses.Count - 1; ++i)
                 {
                     addressBytes.Write(0, Addresses[i], Endianity.Big);
-                    addressBytes.SubSegment(CommonPrefixLengthForNonLastAddresses, IpV6Address.SizeOf - CommonPrefixLengthForNonLastAddresses).Write(buffer, ref addressOffset);
+                    addressBytes.Subsegment(CommonPrefixLengthForNonLastAddresses, IpV6Address.SizeOf - CommonPrefixLengthForNonLastAddresses).Write(buffer, ref addressOffset);
                 }
                 addressBytes.Write(0, Addresses[Addresses.Count - 1], Endianity.Big);
-                addressBytes.SubSegment(CommonPrefixLengthForLastAddress, IpV6Address.SizeOf - CommonPrefixLengthForLastAddress).Write(buffer, ref addressOffset);
+                addressBytes.Subsegment(CommonPrefixLengthForLastAddress, IpV6Address.SizeOf - CommonPrefixLengthForLastAddress).Write(buffer, ref addressOffset);
             }
         }
 

@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Ip
         /// <summary>
         /// The function of this quick start option.
         /// </summary>
-        IpV4OptionQuickStartFunction Function { get; }
+        IpV4OptionQuickStartFunction QuickStartFunction { get; }
 
         /// <summary>
         /// If function is request then this field is the rate request.

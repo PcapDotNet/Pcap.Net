@@ -48,9 +48,9 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6OptionQuickStart(IpV4OptionQuickStartFunction function, byte rate, byte ttl, uint nonce)
             : base(IpV6OptionType.QuickStart)
         {
-            IpOptionQuickStartCommon.AssertValidParameters(function, rate, ttl, nonce);
+            IpOptionQuickStartCommon.AssertValidParameters(function, rate, nonce);
 
-            Function = function;
+            QuickStartFunction = function;
             Rate = rate;
             Ttl = ttl;
             Nonce = nonce;
@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Function field.
         /// </summary>
-        public IpV4OptionQuickStartFunction Function { get; private set; }
+        public IpV4OptionQuickStartFunction QuickStartFunction { get; private set; }
 
         /// <summary>
         /// For rate request, this is the Rate Request field.
@@ -123,12 +123,12 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override int GetDataHashCode()
         {
-            return Sequence.GetHashCode(BitSequence.Merge((byte)Function, Rate, Ttl), Nonce);
+            return Sequence.GetHashCode(BitSequence.Merge((byte)QuickStartFunction, Rate, Ttl), Nonce);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
-            IpOptionQuickStartCommon.WriteData(buffer, ref offset, Function, Rate, Ttl, Nonce);
+            IpOptionQuickStartCommon.WriteData(buffer, ref offset, QuickStartFunction, Rate, Ttl, Nonce);
         }
 
         private IpV6OptionQuickStart()
@@ -139,7 +139,7 @@ namespace PcapDotNet.Packets.IpV6
         private bool EqualsData(IpV6OptionQuickStart other)
         {
             return other != null &&
-                   Function == other.Function && Rate == other.Rate && Ttl == other.Ttl && Nonce == other.Nonce;
+                   QuickStartFunction == other.QuickStartFunction && Rate == other.Rate && Ttl == other.Ttl && Nonce == other.Nonce;
         }
     }
 }

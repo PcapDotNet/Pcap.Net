@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets
         /// <param name="offset">The offset in the array to start taking.</param>
         /// <param name="length">The number of bytes to take from the array.</param>
         /// <returns>A new DataSegment that is part of the given array.</returns>
-        public static DataSegment SubSegment(this byte[] array, int offset, int length)
+        public static DataSegment Subsegment(this byte[] array, int offset, int length)
         {
             return new DataSegment(array, offset, length);
         }

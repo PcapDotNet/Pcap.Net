@@ -12,12 +12,12 @@ namespace PcapDotNet.Base
         /// </summary>
         public static int GetHashCode(object value1, object value2)
         {
-            if (value1 == null)
-                return value2.GetHashCode();
-            if (value2 == null)
-                return value1.GetHashCode();
-
-            return value1.GetHashCode() ^ value2.GetHashCode();
+            int hashCode = 0;
+            if (value1 != null)
+                hashCode ^= value1.GetHashCode();
+            if (value2 != null)
+                hashCode ^= value2.GetHashCode();
+            return hashCode;
         }
 
         /// <summary>

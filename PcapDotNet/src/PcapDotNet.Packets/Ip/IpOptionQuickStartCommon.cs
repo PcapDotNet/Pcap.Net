@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.Ip
             public const byte Rate = 0x0F;
         }
 
-        internal static void AssertValidParameters(IpV4OptionQuickStartFunction function, byte rate, byte ttl, uint nonce)
+        internal static void AssertValidParameters(IpV4OptionQuickStartFunction function, byte rate, uint nonce)
         {
             if (function != IpV4OptionQuickStartFunction.RateRequest &&
                 function != IpV4OptionQuickStartFunction.RateReport)

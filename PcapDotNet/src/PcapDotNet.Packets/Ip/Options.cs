@@ -123,24 +123,17 @@ namespace PcapDotNet.Packets.Ip
                 buffer[offset++] = 0;
         }
 
-        internal Options(IList<T> options, bool isValid, int? length)
+        internal Options(IList<T> options, bool isValid, int length)
         {
             _options = options.AsReadOnly();
-
             IsValid = isValid;
-
-            if (length.HasValue)
-                BytesLength = length.Value;
-            else
-                BytesLength = CalculateBytesLength(SumBytesLength(OptionsCollection));
+            BytesLength = length;
         }
 
         internal static int SumBytesLength(IEnumerable<T> options)
         {
             return options.Sum(option => option.Length);
         }
-
-        internal abstract int CalculateBytesLength(int optionsLength);
 
         private readonly ReadOnlyCollection<T> _options;
     }
