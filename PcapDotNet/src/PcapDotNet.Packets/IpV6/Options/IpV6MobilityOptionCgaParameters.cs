@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -39,7 +40,8 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.CgaParameters, cgaParameters)
         {
             if (cgaParameters.Length > OptionDataMaxLength)
-                throw new ArgumentOutOfRangeException("cgaParameters", cgaParameters, string.Format("Must not exceed {0} bytes.", OptionDataMaxLength));
+                throw new ArgumentOutOfRangeException("cgaParameters", cgaParameters,
+                                                      string.Format(CultureInfo.InvariantCulture, "Must not exceed {0} bytes.", OptionDataMaxLength));
         }
 
         /// <summary>

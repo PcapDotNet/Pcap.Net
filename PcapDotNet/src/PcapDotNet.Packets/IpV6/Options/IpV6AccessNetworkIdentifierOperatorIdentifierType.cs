@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6AccessNetworkIdentifierOperatorIdentifierType : byte
     {
         /// <summary>
+        /// Undefined value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Operator-Identifier as a variable-length Private Enterprise Number (PEN) encoded in a network-byte order.
         /// The maximum PEN value depends on the ANI Length and is calculated using the formula: maximum PEN = 2^((ANI_length-1)*8)-1.
         /// For example, the ANI Length of 4 allows for encoding PENs from 0 to 2^24-1, i.e., from 0 to 16777215,

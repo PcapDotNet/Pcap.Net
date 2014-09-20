@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -53,7 +54,7 @@ namespace PcapDotNet.Packets.IpV6
         {
             if (subtype == IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier && identifier.Length < MinNetworkAccessIdentifierLength)
                 throw new ArgumentOutOfRangeException("identifier", identifier,
-                                                      string.Format("Network Access Identifier must be at least {0} bytes long.",
+                                                      string.Format(CultureInfo.InvariantCulture, "Network Access Identifier must be at least {0} bytes long.",
                                                                     MinNetworkAccessIdentifierLength));
             Subtype = subtype;
             Identifier = identifier;

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -69,7 +70,8 @@ namespace PcapDotNet.Packets.IpV6
             if (Offset.SubOptions + subOptions.BytesLength > byte.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("subOptions", subOptions,
-                                                      string.Format("Sub Options take {0} bytes, which is more than the maximum length of {1} bytes",
+                                                      string.Format(CultureInfo.InvariantCulture,
+                                                                    "Sub Options take {0} bytes, which is more than the maximum length of {1} bytes",
                                                                     subOptions.BytesLength, (byte.MaxValue - Offset.SubOptions)));
             }
             FlowIdentifier = flowIdentifier;

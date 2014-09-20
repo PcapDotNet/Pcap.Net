@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -79,9 +80,12 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier)
         {
             if (networkName.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("networkName", networkName, string.Format("Network Name cannot be longer than {0} bytes.", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("networkName", networkName,
+                                                      string.Format(CultureInfo.InvariantCulture, "Network Name cannot be longer than {0} bytes.", byte.MaxValue));
             if (accessPointName.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("accessPointName", accessPointName, string.Format("Access Point Name cannot be longer than {0} bytes.", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("accessPointName", accessPointName,
+                                                      string.Format(CultureInfo.InvariantCulture, "Access Point Name cannot be longer than {0} bytes.",
+                                                                    byte.MaxValue));
 
             IsNetworkNameUtf8 = isNetworkNameUtf8;
             NetworkName = networkName;

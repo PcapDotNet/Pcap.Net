@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -62,7 +63,8 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.IpV4HomeAddressRequest)
         {
             if (prefixLength > MaxPrefixLength)
-                throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max prefix length is {0}", MaxPrefixLength));
+                throw new ArgumentOutOfRangeException("prefixLength", prefixLength,
+                                                      string.Format(CultureInfo.InvariantCulture, "Max prefix length is {0}", MaxPrefixLength));
 
             PrefixLength = prefixLength;
             HomeAddress = homeAddress;

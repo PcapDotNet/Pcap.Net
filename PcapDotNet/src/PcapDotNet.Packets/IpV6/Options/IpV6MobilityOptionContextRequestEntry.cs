@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -26,7 +27,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionContextRequestEntry(byte requestType, DataSegment option)
         {
             if (option.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException("option", option, string.Format("Option length must not exceed {0}", byte.MaxValue));
+                throw new ArgumentOutOfRangeException("option", option,
+                                                      string.Format(CultureInfo.InvariantCulture, "Option length must not exceed {0}", byte.MaxValue));
             RequestType = requestType;
             Option = option;
         }

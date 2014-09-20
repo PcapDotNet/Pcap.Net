@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.IpV6
 {
@@ -49,7 +50,7 @@ namespace PcapDotNet.Packets.IpV6
             if (lineIdentification.Length > byte.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("lineIdentification", lineIdentification,
-                                                      string.Format("Cannot be longer than {0} bytes.", byte.MaxValue));
+                                                      string.Format(CultureInfo.InvariantCulture, "Cannot be longer than {0} bytes.", byte.MaxValue));
             }
             LineIdentification = lineIdentification;
         }

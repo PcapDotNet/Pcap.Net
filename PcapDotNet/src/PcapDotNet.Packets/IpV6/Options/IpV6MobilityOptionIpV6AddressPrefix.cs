@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -57,7 +58,8 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.IpV6AddressPrefix)
         {
             if (prefixLength > MaxPrefixLength)
-                throw new ArgumentOutOfRangeException("prefixLength", prefixLength, string.Format("Max value is {0}", MaxPrefixLength));
+                throw new ArgumentOutOfRangeException("prefixLength", prefixLength,
+                                                      string.Format(CultureInfo.InvariantCulture, "Max value is {0}", MaxPrefixLength));
 
             Code = code;
             PrefixLength = prefixLength;
