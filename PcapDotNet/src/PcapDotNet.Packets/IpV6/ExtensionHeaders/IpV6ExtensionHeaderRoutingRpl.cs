@@ -58,10 +58,37 @@ namespace PcapDotNet.Packets.IpV6
             public const int PadSize = 4;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the routing data takes.
+        /// </summary>
         public const int RoutingDataMinimumLength = RoutingDataOffset.Addresses;
+
+        /// <summary>
+        /// The maximum common prefix length.
+        /// </summary>
         public const byte MaxCommonPrefixLength = IpV6Address.SizeOf - 1;
+
+        /// <summary>
+        /// The maximum padding size.
+        /// </summary>
         public const byte MaxPadSize = IpV6Address.SizeOf - 1;
 
+        /// <summary>
+        /// Creates an instance from next header, segments left, common prefix length for non last addresses, common prefix length for last address and addresses.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="segmentsLeft">
+        /// Number of route segments remaining, i.e., number of explicitly listed intermediate nodes still to be visited before reaching the final destination.
+        /// </param>
+        /// <param name="commonPrefixLengthForNonLastAddresses">
+        /// Number of prefix octets from each segment, except than the last segment, (i.e., segments 1 through n-1) that are elided.
+        /// For example, a header carrying full IPv6 addresses in Addresses[1..n-1] sets this to 0.
+        /// </param>
+        /// <param name="commonPrefixLengthForLastAddress">
+        /// Number of prefix octets from the last segment (i.e., segment n) that are elided.  
+        /// For example, a header carrying a full IPv6 address in Addresses[n] sets this to 0. 
+        /// </param>
+        /// <param name="addresses">Routing addresses.</param>
         public IpV6ExtensionHeaderRoutingRpl(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
                                              byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
@@ -108,6 +135,9 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        /// <summary>
+        /// Identifier of a particular Routing header variant.
+        /// </summary>
         public override IpV6RoutingType RoutingType
         {
             get { return IpV6RoutingType.RplSourceRouteHeader; }
@@ -130,6 +160,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public byte PadSize { get; private set; }
 
+        /// <summary>
+        /// Routing addresses.
+        /// </summary>
         public ReadOnlyCollection<IpV6Address> Addresses { get; private set; }
 
         internal override int RoutingDataLength

@@ -28,8 +28,19 @@ namespace PcapDotNet.Packets.IpV6
             public const int Identifier = IdentifierType + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.Identifier;
 
+        /// <summary>
+        /// Creates an instance from identifier type and identifier.
+        /// </summary>
+        /// <param name="identifierType">Indicates the type of the Operator-Identifier.</param>
+        /// <param name="identifier">
+        /// Up to 253 octets of the Operator-Identifier.
+        /// The encoding of the identifier depends on the used Operator-Identifier Type.
+        /// </param>
         public IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier(IpV6AccessNetworkIdentifierOperatorIdentifierType identifierType, DataSegment identifier)
             : base(IpV6AccessNetworkIdentifierSubOptionType.OperatorIdentifier)
         {

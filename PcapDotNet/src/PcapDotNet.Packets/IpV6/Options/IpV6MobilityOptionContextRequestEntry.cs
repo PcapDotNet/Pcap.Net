@@ -64,16 +64,25 @@ namespace PcapDotNet.Packets.IpV6
             Option.Write(buffer, ref offset);
         }
 
+        /// <summary>
+        /// Two entries are equal iff their type and option are equal.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return Equals(obj as IpV6MobilityOptionContextRequestEntry);
         }
 
+        /// <summary>
+        /// Two entries are equal iff their request type and option are equal.
+        /// </summary>
         public bool Equals(IpV6MobilityOptionContextRequestEntry other)
         {
             return (other != null && RequestType.Equals(other.RequestType) && Option.Equals(other.Option));
         }
 
+        /// <summary>
+        /// A hash code based on the request type and option.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(RequestType, Option);

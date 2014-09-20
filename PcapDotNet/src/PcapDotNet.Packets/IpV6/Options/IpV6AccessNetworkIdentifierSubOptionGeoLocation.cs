@@ -32,8 +32,24 @@ namespace PcapDotNet.Packets.IpV6
             public const int LongitudeDegrees = LatitudeDegrees + UInt24.SizeOf;
         }
 
+        /// <summary>
+        /// The number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataLength = Offset.LongitudeDegrees + UInt24.SizeOf;
 
+        /// <summary>
+        /// Creates an instance from latitude and longtitude degrees using integer numbers encoded as a two's complement, fixed point number with 9 whole bits.
+        /// See <see cref="IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues"/> for using real numbers for the degrees.
+        /// </summary>
+        /// <param name="latitudeDegrees">
+        /// A 24-bit latitude degree value encoded as a two's complement, fixed point number with 9 whole bits.
+        /// Positive degrees correspond to the Northern Hemisphere and negative degrees correspond to the Southern Hemisphere.
+        /// The value ranges from -90 to +90 degrees.
+        /// </param>
+        /// <param name="longitudeDegrees">
+        /// A 24-bit longitude degree value encoded as a two's complement, fixed point number with 9 whole bits.
+        /// The value ranges from -180 to +180 degrees.
+        /// </param>
         public IpV6AccessNetworkIdentifierSubOptionGeoLocation(UInt24 latitudeDegrees, UInt24 longitudeDegrees)
             : base(IpV6AccessNetworkIdentifierSubOptionType.GeoLocation)
         {
@@ -49,6 +65,17 @@ namespace PcapDotNet.Packets.IpV6
                 throw new ArgumentOutOfRangeException("longitudeDegrees", longitudeDegrees, string.Format("LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
         }
 
+        /// <summary>
+        /// Creates an instance from latitude and longtitude degrees using real numbers.
+        /// </summary>
+        /// <param name="latitudeDegreesReal">
+        /// Positive degrees correspond to the Northern Hemisphere and negative degrees correspond to the Southern Hemisphere.
+        /// The value ranges from -90 to +90 degrees.
+        /// </param>
+        /// <param name="longtitudeDegreesReal">
+        /// The value ranges from -180 to +180 degrees.
+        /// </param>
+        /// <returns>An instance created from the given real degrees values.</returns>
         public static IpV6AccessNetworkIdentifierSubOptionGeoLocation CreateFromRealValues(double latitudeDegreesReal, double longtitudeDegreesReal)
         {
             if (latitudeDegreesReal < -90 || latitudeDegreesReal > 90)

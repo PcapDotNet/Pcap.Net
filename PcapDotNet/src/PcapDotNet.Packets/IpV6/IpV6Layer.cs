@@ -59,6 +59,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6Address CurrentDestination { get; set; }
 
+        /// <summary>
+        /// The IPv6 extension headers.
+        /// </summary>
         public IpV6ExtensionHeaders ExtensionHeaders { get; set; }
 
         /// <summary>

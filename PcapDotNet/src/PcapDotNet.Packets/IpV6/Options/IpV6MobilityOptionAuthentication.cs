@@ -34,8 +34,22 @@ namespace PcapDotNet.Packets.IpV6
             public const int AuthenticationData = MobilitySecurityParameterIndex + sizeof(uint);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.AuthenticationData;
 
+        /// <summary>
+        /// Creates an instance from subtype, mobility security parameter index and authentication data.
+        /// </summary>
+        /// <param name="subtype">A number assigned to identify the entity and/or mechanism to be used to authenticate the message.</param>
+        /// <param name="mobilitySecurityParameterIndex">
+        /// A number in the range [0-4294967296] used to index into the shared-key-based mobility security associations.
+        /// </param>
+        /// <param name="authenticationData">
+        /// Has the information to authenticate the relevant mobility entity.
+        /// This protects the message beginning at the Mobility Header up to and including the mobility SPI field.
+        /// </param>
         public IpV6MobilityOptionAuthentication(IpV6AuthenticationSubtype subtype, uint mobilitySecurityParameterIndex, DataSegment authenticationData)
             : base(IpV6MobilityOptionType.Authentication)
         {

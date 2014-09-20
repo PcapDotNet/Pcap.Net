@@ -36,10 +36,32 @@ namespace PcapDotNet.Packets.IpV6
             public const int FragmentOffset = 3;
         }
 
+        /// <summary>
+        /// The number of bytes the extension header data takes.
+        /// </summary>
         public const int ExtensionHeaderDataLength = DataOffset.Identification + sizeof(uint);
 
+        /// <summary>
+        /// The maximum value for the fragment offset.
+        /// </summary>
         public const ushort MaxFragmentOffset = 0x1FFF;
 
+        /// <summary>
+        /// Creates an instance from next header, fragment offset, more fragments and identification.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="fragmentOffset">
+        /// The offset, in 8-octet units, of the data following this header, relative to the start of the Fragmentable Part of the original packet.
+        /// </param>
+        /// <param name="moreFragments">
+        /// True - more fragments.
+        /// False - last fragment.
+        /// </param>
+        /// <param name="identification">
+        /// For every packet that is to be fragmented, the source node generates an Identification value. 
+        /// The Identification must be different than that of any other fragmented packet sent recently with the same Source Address and Destination Address.
+        /// If a Routing header is present, the Destination Address of concern is that of the final destination.
+        /// </param>
         public IpV6ExtensionHeaderFragmentData(IpV4Protocol nextHeader, ushort fragmentOffset, bool moreFragments, uint identification)
             : base(nextHeader)
         {
@@ -68,11 +90,17 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public uint Identification { get; private set; }
 
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.FragmentHeaderForIpV6; }
         }
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public override bool IsValid
         {
             get { return true; }

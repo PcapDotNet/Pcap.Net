@@ -39,6 +39,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int Options = Global + sizeof(byte) + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
         private static class MessageDataMask

@@ -29,8 +29,26 @@ namespace PcapDotNet.Packets.IpV6
             public const int Options = sizeof(ushort);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
+        /// <summary>
+        /// Creates an instance from next header, checksum and options.
+        /// </summary>
+        /// <param name="nextHeader">
+        /// Identifies the type of header immediately following this extension header.
+        /// </param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="options">
+        /// Zero or more TLV-encoded mobility options.
+        /// </param>
         public IpV6ExtensionHeaderMobilityFastNeighborAdvertisement(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

@@ -31,6 +31,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public const int OptionDataMinimumLength = Offset.TrafficSelector;
 
+        /// <summary>
+        /// Creates an instance from traffic selector format and traffic selector.
+        /// </summary>
+        /// <param name="trafficSelectorFormat">Indicates the Traffic Selector Format.</param>
+        /// <param name="trafficSelector">The traffic selector formatted according to TrafficSelectorFormat.</param>
         public IpV6FlowIdentificationSubOptionTrafficSelector(IpV6FlowIdentificationTrafficSelectorFormat trafficSelectorFormat, DataSegment trafficSelector)
             : base(IpV6FlowIdentificationSubOptionType.TrafficSelector)
         {

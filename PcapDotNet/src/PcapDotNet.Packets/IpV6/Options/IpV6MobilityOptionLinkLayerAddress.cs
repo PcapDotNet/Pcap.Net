@@ -28,8 +28,16 @@ namespace PcapDotNet.Packets.IpV6
             public const int LinkLayerAddress = OptionCode + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.LinkLayerAddress;
 
+        /// <summary>
+        /// Creates an instance from code and link layer address.
+        /// </summary>
+        /// <param name="code">The type of link layer address option.</param>
+        /// <param name="linkLayerAddress">Variable-length link-layer address.</param>
         public IpV6MobilityOptionLinkLayerAddress(IpV6MobilityLinkLayerAddressCode code, DataSegment linkLayerAddress)
             : base(IpV6MobilityOptionType.LinkLayerAddress)
         {
@@ -37,6 +45,9 @@ namespace PcapDotNet.Packets.IpV6
             LinkLayerAddress = linkLayerAddress;
         }
 
+        /// <summary>
+        /// The type of link layer address option.
+        /// </summary>
         public IpV6MobilityLinkLayerAddressCode Code { get; private set; }
 
         /// <summary>

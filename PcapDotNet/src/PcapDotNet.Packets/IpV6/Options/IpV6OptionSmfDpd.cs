@@ -29,12 +29,10 @@ namespace PcapDotNet.Packets.IpV6
             public const int HashIndicator = 0x80;
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.HashIndicator + sizeof(byte);
-
-        protected IpV6OptionSmfDpd()
-            : base(IpV6OptionType.SmfDpd)
-        {
-        }
 
         /// <summary>
         /// Identifying DPD marking type.
@@ -42,6 +40,11 @@ namespace PcapDotNet.Packets.IpV6
         /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
         /// </summary>
         public abstract bool HashIndicator { get; }
+
+        internal IpV6OptionSmfDpd()
+            : base(IpV6OptionType.SmfDpd)
+        {
+        }
 
         internal static IpV6Option CreateInstance(DataSegment data)
         {

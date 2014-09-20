@@ -33,8 +33,27 @@ namespace PcapDotNet.Packets.IpV6
             public const int Options = Code + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
+        /// <summary>
+        /// Creates an instance from next header, checksum, sequence number, code and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="sequenceNumber">
+        /// Copied from the corresponding field in the Handover Initiate message to which this message is a response,
+        /// to enable the receiver to match this Handover Acknowledge message with an outstanding Handover Initiate message.
+        /// </param>
+        /// <param name="code">Describes whether the handover was accepted or not and more details.</param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      IpV6MobilityHandoverAcknowledgeCode code, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)

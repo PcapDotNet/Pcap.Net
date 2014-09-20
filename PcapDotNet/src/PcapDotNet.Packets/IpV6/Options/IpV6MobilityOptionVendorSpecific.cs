@@ -34,8 +34,23 @@ namespace PcapDotNet.Packets.IpV6
             public const int Data = SubType + sizeof(byte);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.Data;
 
+        /// <summary>
+        /// Creates an instance from vendor id, subtype and data.
+        /// </summary>
+        /// <param name="vendorId">
+        /// The SMI Network Management Private Enterprise Code of the IANA- maintained Private Enterprise Numbers registry.
+        /// See http://www.iana.org/assignments/enterprise-numbers/enterprise-numbers
+        /// </param>
+        /// <param name="subType">
+        /// Indicating the type of vendor-specific information carried in the option.
+        /// The administration of the Sub-type is done by the Vendor.
+        /// </param>
+        /// <param name="data">Vendor-specific data that is carried in this message.</param>
         public IpV6MobilityOptionVendorSpecific(uint vendorId, byte subType, DataSegment data)
             : base(IpV6MobilityOptionType.VendorSpecific)
         {

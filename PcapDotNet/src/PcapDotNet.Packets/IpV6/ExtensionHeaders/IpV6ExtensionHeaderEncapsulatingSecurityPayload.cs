@@ -56,8 +56,31 @@ namespace PcapDotNet.Packets.IpV6
             public const int PayloadData = SequenceNumber + sizeof(uint);
         }
 
+        /// <summary>
+        /// The minimum number of bytes the extension header takes.
+        /// </summary>
         public const int MinimumLength = Offset.PayloadData;
 
+        /// <summary>
+        /// Creates an instance from security parameter index, sequence number and encrypted data and authentication data.
+        /// </summary>
+        /// <param name="securityParametersIndex">
+        /// The SPI is an arbitrary 32-bit value that, in combination with the destination IP address and security protocol (ESP),
+        /// uniquely identifies the Security Association for this datagram.
+        /// The set of SPI values in the range 1 through 255 are reserved by the Internet Assigned Numbers Authority (IANA) for future use;
+        /// a reserved SPI value will not normally be assigned by IANA unless the use of the assigned SPI value is specified in an RFC.
+        /// It is ordinarily selected by the destination system upon establishment of an SA (see the Security Architecture document for more details).
+        /// The SPI field is mandatory.
+        /// </param>
+        /// <param name="sequenceNumber">
+        /// Contains a monotonically increasing counter value (sequence number).
+        /// It is mandatory and is always present even if the receiver does not elect to enable the anti-replay service for a specific SA.
+        /// Processing of the Sequence Number field is at the discretion of the receiver, i.e., the sender must always transmit this field, 
+        /// but the receiver need not act upon it.
+        /// </param>
+        /// <param name="encryptedDataAndAuthenticationData">
+        /// Contains the encrypted Payload Data, Padding, Pad Length and Next Header and the Authentication Data.
+        /// </param>
         public IpV6ExtensionHeaderEncapsulatingSecurityPayload(uint securityParametersIndex, uint sequenceNumber, DataSegment encryptedDataAndAuthenticationData)
             : base(null)
         {
@@ -66,26 +89,41 @@ namespace PcapDotNet.Packets.IpV6
             EncryptedDataAndAuthenticationData = encryptedDataAndAuthenticationData;
         }
 
+        /// <summary>
+        /// Identifies the type of this extension header.
+        /// </summary>
         public override IpV4Protocol Protocol
         {
             get { return IpV4Protocol.EncapsulatingSecurityPayload; }
         }
 
+        /// <summary>
+        /// The number of bytes this extension header takes.
+        /// </summary>
         public override int Length
         {
             get { return MinimumLength + EncryptedDataAndAuthenticationData.Length; }
         }
 
+        /// <summary>
+        /// True iff the extension header parsing didn't encounter an issue.
+        /// </summary>
         public override bool IsValid
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
         public override bool Equals(IpV6ExtensionHeader other)
         {
             return Equals(other as IpV6ExtensionHeaderEncapsulatingSecurityPayload);
         }
 
+        /// <summary>
+        /// True iff the given extension header is equal to this extension header.
+        /// </summary>
         public bool Equals(IpV6ExtensionHeaderEncapsulatingSecurityPayload other)
         {
             return other != null &&
@@ -93,6 +131,9 @@ namespace PcapDotNet.Packets.IpV6
                    EncryptedDataAndAuthenticationData.Equals(other.EncryptedDataAndAuthenticationData);
         }
 
+        /// <summary>
+        /// Returns a hash code of the extension header.
+        /// </summary>
         public override int GetHashCode()
         {
             return Sequence.GetHashCode(SecurityParametersIndex, SequenceNumber, EncryptedDataAndAuthenticationData);
@@ -134,7 +175,7 @@ namespace PcapDotNet.Packets.IpV6
         public uint SequenceNumber { get; private set; }
 
         /// <summary>
-        /// Contains the encrupted Payload Data, Padding, Pad Length and Next Header and the Authentication Data.
+        /// Contains the encrypted Payload Data, Padding, Pad Length and Next Header and the Authentication Data.
         /// <para>
         /// Payload Data is a variable-length field containing data described by the Next Header field.
         /// The Payload Data field is mandatory and is an integral number of bytes in length.

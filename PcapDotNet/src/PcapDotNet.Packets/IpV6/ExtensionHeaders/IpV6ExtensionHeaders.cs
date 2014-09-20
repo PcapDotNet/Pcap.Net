@@ -14,7 +14,7 @@ namespace PcapDotNet.Packets.IpV6
     public class IpV6ExtensionHeaders : IEnumerable<IpV6ExtensionHeader>, IEquatable<IpV6ExtensionHeaders>
     {
         /// <summary>
-        /// Create an object from a ReadOnlyCollection of extension headers.
+        /// Create an instance from a ReadOnlyCollection of extension headers.
         /// Verifies that there's at most one Encapsulating Security Payload extension header and that it is the last extension header.
         /// Assumes the collection won't be modified.
         /// </summary>
@@ -34,39 +34,86 @@ namespace PcapDotNet.Packets.IpV6
             IsValid = true;
         }
 
+        /// <summary>
+        /// Create an instance from an array of extension headers.
+        /// Verifies that there's at most one Encapsulating Security Payload extension header and that it is the last extension header.
+        /// Assumes the collection won't be modified.
+        /// </summary>
+        /// <param name="extensionHeaders">The extension headers.</param>
         public IpV6ExtensionHeaders(params IpV6ExtensionHeader[] extensionHeaders)
             : this(extensionHeaders.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Create an instance from a list of extension headers.
+        /// Verifies that there's at most one Encapsulating Security Payload extension header and that it is the last extension header.
+        /// Assumes the collection won't be modified.
+        /// </summary>
+        /// <param name="extensionHeaders">The extension headers.</param>
         public IpV6ExtensionHeaders(IList<IpV6ExtensionHeader> extensionHeaders)
             : this(extensionHeaders.AsReadOnly())
         {
         }
 
+        /// <summary>
+        /// Create an instance from an enumerable of extension headers.
+        /// Verifies that there's at most one Encapsulating Security Payload extension header and that it is the last extension header.
+        /// Assumes the collection won't be modified.
+        /// </summary>
+        /// <param name="extensionHeaders">The extension headers.</param>
         public IpV6ExtensionHeaders(IEnumerable<IpV6ExtensionHeader> extensionHeaders)
             : this((IpV6ExtensionHeader[])extensionHeaders.ToArray())
         {
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
         public IEnumerator<IpV6ExtensionHeader> GetEnumerator()
         {
             return Headers.GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns the extension header in the 'index' place.
+        /// </summary>
+        /// <param name="index">The index of the extension header returned.</param>
+        /// <returns>The extension header in the 'index' place.</returns>
         public IpV6ExtensionHeader this[int index]
         {
             get { return Headers[index]; }
         }
 
+        /// <summary>
+        /// The extension headers.
+        /// </summary>
         public ReadOnlyCollection<IpV6ExtensionHeader> Headers { get; private set; }
+
+        /// <summary>
+        /// True iff a parsing issue wasn't encountered when parsing the extension headers.
+        /// </summary>
         public bool IsValid { get; private set; }
 
+        /// <summary>
+        /// The protocol of the first extension header or null if there are no extension headers.
+        /// </summary>
         public IpV4Protocol? FirstHeader
         {
             get
@@ -77,6 +124,9 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        /// <summary>
+        /// The protocol of the last extension header or null if there are no extension headers.
+        /// </summary>
         public IpV4Protocol? LastHeader
         {
             get
@@ -87,6 +137,9 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        /// <summary>
+        /// The next header of the last extension header or null if there are no extension headers.
+        /// </summary>
         public IpV4Protocol? NextHeader
         {
             get
@@ -97,21 +150,33 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        /// <summary>
+        /// An empty list of extension headers.
+        /// </summary>
         public static IpV6ExtensionHeaders Empty
         {
             get { return _empty; }
         }
 
+        /// <summary>
+        /// True iff all the extension headers are equal to the given extension headers instance.
+        /// </summary>
         public sealed override bool Equals(object obj)
         {
             return Equals(obj as IpV6ExtensionHeaders);
         }
 
+        /// <summary>
+        /// True iff all the extension headers are equal to the given extension headers instance.
+        /// </summary>
         public bool Equals(IpV6ExtensionHeaders other)
         {
             return other != null && this.SequenceEqual(other);
         }
 
+        /// <summary>
+        /// A hash code based on all the extension headers.
+        /// </summary>
         public override int GetHashCode()
         {
             return this.SequenceGetHashCode();

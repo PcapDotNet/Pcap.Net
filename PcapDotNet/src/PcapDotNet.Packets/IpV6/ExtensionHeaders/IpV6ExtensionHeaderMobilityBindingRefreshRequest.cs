@@ -28,16 +28,25 @@ namespace PcapDotNet.Packets.IpV6
             public const int Options = 2;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.Options;
 
+        /// <summary>
+        /// Creates an instance from next header, checksum and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityBindingRefreshRequest(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
-        }
-
-        internal override int MessageDataLength
-        {
-            get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
         /// <summary>
@@ -47,6 +56,11 @@ namespace PcapDotNet.Packets.IpV6
         public override IpV6MobilityHeaderType MobilityHeaderType
         {
             get { return IpV6MobilityHeaderType.BindingRefreshRequest; }
+        }
+
+        internal override int MessageDataLength
+        {
+            get { return MinimumMessageDataLength + MobilityOptions.BytesLength; }
         }
 
         internal static IpV6ExtensionHeaderMobilityBindingRefreshRequest ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)

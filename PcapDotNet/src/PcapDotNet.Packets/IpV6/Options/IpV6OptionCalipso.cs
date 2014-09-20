@@ -36,9 +36,52 @@ namespace PcapDotNet.Packets.IpV6
             public const int CompartmentBitmap = Checksum + sizeof(ushort);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.CompartmentBitmap;
+
+        /// <summary>
+        /// The maximum length for the compartment bitmap.
+        /// </summary>
         public const int CompartmentBitmapMaxLength = byte.MaxValue - OptionDataMinimumLength;
 
+        /// <summary>
+        /// Creates an instance from domain of interpretation, sensitivity level, checksum and compartment bitmap.
+        /// </summary>
+        /// <param name="domainOfInterpretation">Identifies the rules under which this datagram must be handled and protected.</param>
+        /// <param name="sensitivityLevel">
+        /// Contains an opaque octet whose value indicates the relative sensitivity of the data contained in this datagram in the context of the indicated DOI.
+        /// The values of this field must be ordered, with 00000000 being the lowest Sensitivity Level and 11111111 being the highest Sensitivity Level.
+        /// However, in a typical deployment, not all 256 Sensitivity Levels will be in use.
+        /// So the set of valid Sensitivity Level values depends upon the CALIPSO DOI in use.
+        /// This sensitivity ordering rule is necessary so that Intermediate Systems (e.g., routers or MLS guards) will be able to apply MAC policy
+        /// with minimal per-packet computation and minimal configuration.
+        /// </param>
+        /// <param name="checksum">
+        /// Contains the a CRC-16 checksum as defined in RFC 1662. 
+        /// The checksum is calculated over the entire CALIPSO option in this packet, including option header, zeroed-out checksum field, option contents,
+        /// and any required padding zero bits.
+        /// The checksum must always be computed on transmission and must always be verified on reception.
+        /// This checksum only provides protection against accidental corruption of the CALIPSO option in cases where neither the underlying medium 
+        /// nor other mechanisms, such as the IP Authentication Header (AH), are available to protect the integrity of this option.
+        /// Note that the checksum field is always required, even when other integrity protection mechanisms (e.g., AH) are used.
+        /// If null is given, it would be automatically calculated.
+        /// </param>
+        /// <param name="compartmentBitmap">
+        /// Each bit represents one compartment within the DOI.
+        /// Each "1" bit within an octet in the Compartment Bitmap field represents a separate compartment under whose rules the data in this packet
+        /// must be protected.
+        /// Hence, each "0" bit indicates that the compartment corresponding with that bit is not applicable to the data in this packet.
+        /// The assignment of identity to individual bits within a Compartment Bitmap for a given DOI is left to the owner of that DOI.
+        /// This specification represents a Releasability on the wire as if it were an inverted Compartment.
+        /// So the Compartment Bitmap holds the sum of both logical Releasabilities and also logical Compartments for a given DOI value.
+        /// The encoding of the Releasabilities in this field is described elsewhere in this document.
+        /// The Releasability encoding is designed to permit the Compartment Bitmap evaluation to occur without the evaluator necessarily knowing
+        /// the human semantic associated with each bit in the Compartment Bitmap.
+        /// In turn, this facilitates the implementation and configuration of Mandatory Access Controls based on the Compartment Bitmap 
+        /// within IPv6 routers or guard devices.
+        /// </param>
         public IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, ushort? checksum, DataSegment compartmentBitmap)
             : base(IpV6OptionType.Calipso)
         {
@@ -60,7 +103,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         /// <summary>
-        /// The DOI identifies the rules under which this datagram must be handled and protected.
+        /// Identifies the rules under which this datagram must be handled and protected.
         /// </summary>
         public IpV6CalipsoDomainOfInterpretation DomainOfInterpretation { get; private set; }
 
@@ -102,6 +145,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Checksum { get; private set; }
 
+        /// <summary>
+        /// True iff the checksum is correct.
+        /// </summary>
         public bool IsChecksumCorrect
         {
             get
@@ -132,6 +178,11 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment CompartmentBitmap { get; private set; }
 
+        /// <summary>
+        /// Parses an option from the given data.
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
+        /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
             if (data.Length < OptionDataMinimumLength)

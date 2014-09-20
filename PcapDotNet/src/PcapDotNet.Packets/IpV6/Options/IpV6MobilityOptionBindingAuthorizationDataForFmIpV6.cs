@@ -27,8 +27,21 @@ namespace PcapDotNet.Packets.IpV6
             public const int Authenticator = SecurityParameterIndex + sizeof(uint);
         }
 
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
         public const int OptionDataMinimumLength = Offset.Authenticator;
 
+        /// <summary>
+        /// Creates an instance from security parameter index and authenticator.
+        /// </summary>
+        /// <param name="securityParameterIndex">
+        /// SPI = 0 is reserved for the Authenticator computed using SEND-based handover keys.
+        /// </param>
+        /// <param name="authenticator">
+        /// Contains a cryptographic value that can be used to determine that the message in question comes from the right authority.  
+        /// Rules for calculating this value depends on the used authorization procedure.
+        /// </param>
         public IpV6MobilityOptionBindingAuthorizationDataForFmIpV6(uint securityParameterIndex, DataSegment authenticator)
             : base(IpV6MobilityOptionType.BindingAuthorizationDataForFmIpV6)
         {

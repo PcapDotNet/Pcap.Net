@@ -41,8 +41,29 @@ namespace PcapDotNet.Packets.IpV6
             public const byte IsResponse = 0x01;
         }
 
+        /// <summary>
+        /// The minimum number of bytes the message data takes.
+        /// </summary>
         public const int MinimumMessageDataLength = MessageDataOffset.MobilityOptions;
 
+        /// <summary>
+        /// Creates an instance from next header, checksum, is unsolicited heartbeat response, is response, sequence number and options.
+        /// </summary>
+        /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
+        /// <param name="checksum">
+        /// Contains the checksum of the Mobility Header.
+        /// The checksum is calculated from the octet string consisting of a "pseudo-header"
+        /// followed by the entire Mobility Header starting with the Payload Proto field.
+        /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
+        /// </param>
+        /// <param name="isUnsolicitedHeartbeatResponse">Set to true in Unsolicited Heartbeat Response.</param>
+        /// <param name="isResponse">
+        /// Indicates whether the message is a request or a response. 
+        /// When it's set to false, it indicates that the Heartbeat message is a request.
+        /// When it's set to true, it indicates that the Heartbeat message is a response.
+        /// </param>
+        /// <param name="sequenceNumber">Sequence number used for matching the request to the reply.</param>
+        /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityHeartbeatMessage(IpV4Protocol nextHeader, ushort checksum, bool isUnsolicitedHeartbeatResponse, bool isResponse,
                                                            uint sequenceNumber, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.MobilityOptions)
