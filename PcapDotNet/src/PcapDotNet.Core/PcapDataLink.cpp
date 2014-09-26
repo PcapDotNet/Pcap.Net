@@ -39,6 +39,9 @@ PcapDataLink::PcapDataLink(String^ name)
     throw gcnew ArgumentException("Invalid datalink name " + name, "name");
 }
 
+[System::Security::SecurityCritical]
+[System::Security::Permissions::PermissionSet(System::Security::Permissions::SecurityAction::LinkDemand, Unrestricted = true)]
+[System::Security::Permissions::PermissionSet(System::Security::Permissions::SecurityAction::InheritanceDemand, Unrestricted = true)]
 DataLinkKind PcapDataLink::Kind::get()
 {
     switch (Value)
