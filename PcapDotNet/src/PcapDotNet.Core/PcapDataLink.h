@@ -31,6 +31,9 @@ namespace PcapDotNet { namespace Core
         /// </summary>
         virtual property Packets::DataLinkKind Kind
         {
+            [System::Security::SecurityCritical]
+            [System::Security::Permissions::PermissionSet(System::Security::Permissions::SecurityAction::LinkDemand, Unrestricted = true)]
+            [System::Security::Permissions::PermissionSet(System::Security::Permissions::SecurityAction::InheritanceDemand, Unrestricted = true)]
             Packets::DataLinkKind get();
         }
 
