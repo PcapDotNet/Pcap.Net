@@ -21,16 +21,16 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Calculates FCS16.
         /// </summary>
-        public static ushort CalculateFrameCheckSequence16(ushort fcs, IEnumerable<byte> values)
+        public static ushort CalculateFrameCheckSequence16(ushort frameCheckSequence, IEnumerable<byte> values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
             foreach (byte value in values)
             {
-                ushort tableValue = _fcsTable[(fcs ^ value) & 0xff];
-                fcs = (ushort)((fcs >> 8) ^ tableValue);
+                ushort tableValue = _fcsTable[(frameCheckSequence ^ value) & 0xff];
+                frameCheckSequence = (ushort)((frameCheckSequence >> 8) ^ tableValue);
             }
-            return fcs;
+            return frameCheckSequence;
         }
 
         private static readonly ushort[] _fcsTable =
