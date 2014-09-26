@@ -28,6 +28,6 @@ namespace PcapDotNet { namespace Core
         OfflinePacketCommunicator(System::String^ fileName);
 
     private:
-        static pcap_t* OpenFile(System::String^ filename);
+        static pcap_t* OpenFile(System::String^ fileName);
     };
 }}
