@@ -159,7 +159,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public string ToString(IFormatProvider provider)
         {
-            return ToString("X4", CultureInfo.InvariantCulture);
+            return ToString("X4", provider);
         }
 
         /// <summary>

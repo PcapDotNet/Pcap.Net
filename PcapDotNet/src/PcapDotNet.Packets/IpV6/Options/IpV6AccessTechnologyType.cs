@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Reserved.
         /// </summary>
-        Reserved = 0,
+        None = 0,
 
         /// <summary>
         /// Virtual.

@@ -25,22 +25,23 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5845.
         /// </summary>
-        GreTunnelingButTlvHeaderNotSupported = 3,
+        GreTunnelingButTypeLengthValueHeaderNotSupported = 3,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaNotComplete = 4,
+        MultipleCareOfAddressesNotComplete = 4,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaReturnHomeWoNdp = 5,
+        MultipleCareOfAddressesReturnHomeWoNeighborDiscoveryProtocol = 5,
 
         /// <summary>
         /// RFC 6058.
+        /// PBU_ACCEPTED_TB_IGNORED_SETTINGSMISMATCH.
         /// </summary>
-        PbuAcceptedTbIgnoredSettingsMistmatch = 6,
+        ProxyBindingUpdateAcceptedTransientBindingIgnoredSettingsMismatch = 6,
 
         /// <summary>
         /// RFCs 5568, 6275.
@@ -132,7 +133,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 4285.
         /// </summary>
-        MIpV6MesgIdReqd = 145,
+        MIpV6MessageIdRequired = 145,
 
         /// <summary>
         /// RFC 4285.
@@ -147,7 +148,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 4866.
         /// </summary>
-        CgaAndSignatureVerificationFailed = 148,
+        CryptographicallyGeneratedAddressAndSignatureVerificationFailed = 148,
 
         /// <summary>
         /// RFC 4866.
@@ -171,13 +172,14 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 5213.
+        /// NOT_LMA_FOR_THIS_MOBILE_NODE.
         /// </summary>
-        NotLmaForThisMobileNode = 153,
+        NotLocalMobilityAnchorForThisMobileNode = 153,
 
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        MagNotAuthorizedForProxyReg = 154,
+        MobileAccessGatewayNotAuthorizedForProxyReg = 154,
 
         /// <summary>
         /// RFC 5213.
@@ -191,8 +193,9 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 5213.
+        /// TIMESTAMP_LOWER_THAN_PREV_ACCEPTED.
         /// </summary>
-        TimestampLowerThanPrevAccepted = 157,
+        TimestampLowerThanPreviousAccepted = 157,
 
         /// <summary>
         /// RFC 5213.
@@ -202,12 +205,13 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5213.
         /// </summary>
-        BcePbuPrefixSetDoNotMatch = 159,
+        BceProxyBindingUpdatePrefixSetDoNotMatch = 159,
 
         /// <summary>
         /// RFC 5213.
+        /// MISSING_MN_IDENTIFIER_OPTION.
         /// </summary>
-        MissingMnIdentifierOption = 160,
+        MissingMobileNodeIdentifierOption = 160,
 
         /// <summary>
         /// RFC 5213.
@@ -227,32 +231,32 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaMalformed = 164,
+        MultipleCareOfAddressesMalformed = 164,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaNonMcoaBindingExists = 165,
+        MultipleCareOfAddressesNonMultipleCareOfAddressesBindingExists = 165,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaProhibited = 166,
+        MultipleCareOfAddressesProhibited = 166,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaUnknownCoa = 167,
+        MultipleCareOfAddressesUnknownCareOfAddress = 167,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaBulkRegistarationProhiited = 168,
+        MultipleCareOfAddressesBulkRegistrationProhibited = 168,
 
         /// <summary>
         /// RFC 5648.
         /// </summary>
-        McoaSimultaneousHomeAndForeignProhibited = 169,
+        MultipleCareOfAddressesSimultaneousHomeAndForeignProhibited = 169,
 
         /// <summary>
         /// RFC 5844.
@@ -286,7 +290,8 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 6618.
+        /// REINIT_SA_WITH_HAC.
         /// </summary>
-        ReinitSaWithHac = 176,
+        ReinitializeSecurityAssociationWithHomeAgentController = 176,
     }
 }

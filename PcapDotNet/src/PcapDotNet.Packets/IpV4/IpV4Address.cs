@@ -63,22 +63,22 @@ namespace PcapDotNet.Packets.IpV4
         /// Converts the string representation of an IPv4 address (1.2.3.4) to its IPv4 address equivalent.
         /// A return value indicates whether the conversion succeeded.
         /// </summary>
-        /// <param name="ipV6AddressString">A string containing the IPv4 address to convert (1.2.3.4).</param>
+        /// <param name="value">A string containing the IPv4 address to convert (1.2.3.4).</param>
         /// <param name="result">
         /// When this method returns, contains the IPv4 address value equivalent of the IPv4 address contained in s, if the conversion succeeded,
         /// or zero IPv4 address if the conversion failed.
         /// The conversion fails if the s parameter is null or String.Empty or is not of the correct format. This parameter is passed uninitialized.
         /// </param>
         /// <returns>True iff parsing was successful.</returns>
-        public static bool TryParse(string ipV6AddressString, out IpV4Address result)
+        public static bool TryParse(string value, out IpV4Address result)
         {
-            if (ipV6AddressString == null)
+            if (value == null)
             {
                 result = Zero;
                 return false;
             }
 
-            string[] valuesStrings = ipV6AddressString.Split('.');
+            string[] valuesStrings = value.Split('.');
             if (valuesStrings.Length != 4)
             {
                 result = Zero;

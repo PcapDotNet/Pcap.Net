@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6MobilityOptionAccessTechnologyType()
-            : this(IpV6AccessTechnologyType.Reserved)
+            : this(IpV6AccessTechnologyType.None)
         {
         }
     }

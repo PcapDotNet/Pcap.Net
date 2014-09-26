@@ -107,12 +107,12 @@ namespace PcapDotNet.Packets.Dns
 
         internal override void WriteDataSimple(byte[] buffer, int offset)
         {
-            byte[] longtitudeBytes = Encoding.ASCII.GetBytes(Longitude);
+            byte[] longitudeBytes = Encoding.ASCII.GetBytes(Longitude);
             byte[] latitudeBytes = Encoding.ASCII.GetBytes(Latitude);
             byte[] altitudeBytes = Encoding.ASCII.GetBytes(Altitude);
 
-            buffer.Write(ref offset, (byte)longtitudeBytes.Length);
-            buffer.Write(ref offset, longtitudeBytes);
+            buffer.Write(ref offset, (byte)longitudeBytes.Length);
+            buffer.Write(ref offset, longitudeBytes);
             buffer.Write(ref offset, (byte)latitudeBytes.Length);
             buffer.Write(ref offset, latitudeBytes);
             buffer.Write(ref offset, (byte)altitudeBytes.Length);
@@ -124,11 +124,11 @@ namespace PcapDotNet.Packets.Dns
             if (data.Length < 3)
                 return null;
 
-            int longtitudeNumBytes = data[0];
-            if (data.Length < longtitudeNumBytes + 3)
+            int longitudeNumBytes = data[0];
+            if (data.Length < longitudeNumBytes + 3)
                 return null;
-            string longtitude = data.Subsegment(1, longtitudeNumBytes).Decode(Encoding.ASCII);
-            data = data.Subsegment(longtitudeNumBytes + 1, data.Length - longtitudeNumBytes - 1);
+            string longitude = data.Subsegment(1, longitudeNumBytes).Decode(Encoding.ASCII);
+            data = data.Subsegment(longitudeNumBytes + 1, data.Length - longitudeNumBytes - 1);
 
             int latitudeNumBytes = data[0];
             if (data.Length < latitudeNumBytes + 2)
@@ -141,7 +141,7 @@ namespace PcapDotNet.Packets.Dns
                 return null;
             string altitude = data.Subsegment(1, altitudeNumBytes).Decode(Encoding.ASCII);
 
-            return new DnsResourceDataGeographicalPosition(longtitude, latitude, altitude);
+            return new DnsResourceDataGeographicalPosition(longitude, latitude, altitude);
         }
     }
 }

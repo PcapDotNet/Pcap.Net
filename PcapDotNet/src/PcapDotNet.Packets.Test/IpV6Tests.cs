@@ -289,8 +289,8 @@ namespace PcapDotNet.Packets.Test
                 new IpV6Layer
                     {
                         ExtensionHeaders = new IpV6ExtensionHeaders(
-                            new IpV6ExtensionHeaderMobilityBindingError(IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
-                                                                        new IpV6MobilityOptions(option)))
+                            new IpV6ExtensionHeaderMobilityBindingError(IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue,
+                                                                        IpV6Address.Zero, new IpV6MobilityOptions(option)))
                     });
             Assert.IsTrue(packet.IsValid);
             Assert.AreEqual(option, ((IpV6ExtensionHeaderMobility)packet.Ethernet.IpV6.ExtensionHeaders[0]).MobilityOptions[0]);
@@ -308,7 +308,7 @@ namespace PcapDotNet.Packets.Test
                     {
                         ExtensionHeaders = new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(subOption)))))
@@ -331,7 +331,7 @@ namespace PcapDotNet.Packets.Test
                     {
                         ExtensionHeaders = new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionFlowIdentification(0, 0, IpV6FlowIdentificationStatus.FlowIdentifierNotFound,
                                                                              new IpV6FlowIdentificationSubOptions(subOption)))))
@@ -410,14 +410,14 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
-        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationLongtitudeIntegerTooBig()
+        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationLongitudeIntegerTooBig()
         {
             Assert.IsNull(new IpV6AccessNetworkIdentifierSubOptionGeoLocation(0, (UInt24)0x7FFFFF));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
-        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationLongtitudeIntegerTooSmall()
+        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationLongitudeIntegerTooSmall()
         {
             Assert.IsNull(new IpV6AccessNetworkIdentifierSubOptionGeoLocation(0, (UInt24)0x800000));
         }
@@ -438,14 +438,14 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
-        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationCreateFromRealValuesLongtitudeTooBig()
+        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationCreateFromRealValuesLongitudeTooBig()
         {
             Assert.IsNull(IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(0, 180.1));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
-        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationCreateFromRealValuesLongtitudeTooSmall()
+        public void IpV6AccessNetworkIdentifierSubOptionGeoLocationCreateFromRealValuesLongitudeTooSmall()
         {
             Assert.IsNull(IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(0, -180.1));
         }
@@ -475,7 +475,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(
@@ -498,7 +498,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(
@@ -521,7 +521,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(
@@ -774,7 +774,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionRedirect(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -794,7 +794,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionRedirect(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -814,7 +814,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionRedirect(IpV6Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -834,7 +834,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionRedirect(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -943,7 +943,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionLocalMobilityAnchorAddress(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -963,7 +963,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionLocalMobilityAnchorAddress(IpV6Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -983,7 +983,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionLocalMobilityAnchorAddress(IpV4Address.Zero),
                                     new IpV6MobilityOptionPadN(10))))
@@ -1005,7 +1005,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionLocalMobilityAnchorAddress(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1025,7 +1025,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionMobileNodeIdentifier((IpV6MobileNodeIdentifierSubtype)2, DataSegment.Empty))))
 
                     });
@@ -1046,7 +1046,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier,
                                                                                                    new DataSegment(new byte[1])))))
 
@@ -1227,7 +1227,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTest(0))))
 
                     });
@@ -1248,7 +1248,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionIpV4CareOfAddress(IpV4Address.Zero))))
 
                     });
@@ -1269,7 +1269,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionReplayProtection(0))))
 
                     });
@@ -1290,7 +1290,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionCareOfTestInit())))
 
                     });
@@ -1311,7 +1311,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionAlternateCareOfAddress(IpV6Address.Zero))))
 
                     });
@@ -1332,7 +1332,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
 
                     });
@@ -1353,7 +1353,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionMobileAccessGatewayIpV6Address(IpV6Address.Zero))))
 
                     });
@@ -1374,7 +1374,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionHomeNetworkPrefix(0, IpV6Address.Zero))))
 
                     });
@@ -1471,7 +1471,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionFlowSummary(new ushort[1]))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1491,7 +1491,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.InsufficientResources, false,
                                                                                                 0))))
                     });
@@ -1512,7 +1512,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionBindingIdentifier(0, IpV6BindingAcknowledgementStatus.InsufficientResources, false,
                                                                                                 0, IpV6Address.Zero))))
                     });
@@ -1533,7 +1533,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionContextRequest(new IpV6MobilityOptionContextRequestEntry(0, DataSegment.Empty)))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1553,7 +1553,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionContextRequest(new IpV6MobilityOptionContextRequestEntry(0, new DataSegment(new byte[10]))))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1611,7 +1611,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionAlternateIpV4CareOfAddress(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1631,7 +1631,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionAuthentication(IpV6AuthenticationSubtype.HomeAgent, 0, DataSegment.Empty))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1651,7 +1651,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionBindingAuthorizationDataForFmIpV6(0, DataSegment.Empty))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1671,7 +1671,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionBindingRefreshAdvice(0))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1691,7 +1691,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionDnsUpdate(IpV6DnsUpdateStatus.ReasonUnspecified, false, DataSegment.Empty))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1711,7 +1711,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionFlowIdentification(0, 0, IpV6FlowIdentificationStatus.FlowBindingSuccessful, IpV6FlowIdentificationSubOptions.None))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1731,7 +1731,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionGreKey(0))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1751,7 +1751,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionIpV4AddressAcknowledgement(IpV6AddressAcknowledgementStatus.Success, 0, IpV4Address.Zero))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1771,7 +1771,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionIpV4DhcpSupportMode(false))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1791,7 +1791,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionIpV4HomeAddress(0, false, IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1811,7 +1811,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionIpV4HomeAddressReply(IpV6IpV4HomeAddressReplyStatus.Success, 0, IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1831,7 +1831,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionIpV4HomeAddressRequest(0, IpV4Address.Zero))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1851,7 +1851,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionIpV6AddressPrefix(IpV6MobilityIpV6AddressPrefixCode.NewCareOfAddress, 0,
                                                                                                 IpV6Address.Zero))))
                     });
@@ -1872,7 +1872,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionLinkLayerAddress(IpV6MobilityLinkLayerAddressCode.MobilityNode, DataSegment.Empty))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1892,7 +1892,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionLoadInformation(0, 0, 0, 0, 0))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -1912,7 +1912,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionMobileNodeGroupIdentifier(IpV6MobileNodeGroupIdentifierSubType.BulkBindingUpdateGroup, 0))))
                     });
@@ -1933,7 +1933,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionMobileNodeLinkLayerIdentifier(DataSegment.Empty))))
                     });
@@ -1954,7 +1954,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionMobileNodeLinkLocalAddressInterfaceIdentifier(0))))
                     });
@@ -1975,7 +1975,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionNatDetection(false, 0))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -1995,7 +1995,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionNonceIndices(0, 0))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2015,7 +2015,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionAccessTechnologyType(IpV6AccessTechnologyType.Ethernet))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2035,7 +2035,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionRestartCounter(0))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -2055,7 +2055,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionServiceSelection(new DataSegment(new byte[1])))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -2075,7 +2075,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionTransientBinding(false, 0))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2095,7 +2095,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionVendorSpecific(0, 0, DataSegment.Empty))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2115,7 +2115,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionCgaParametersRequest())))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -2135,7 +2135,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionHandoffIndicator(IpV6HandoffIndicator.HandoffBetweenTwoDifferentInterfacesOfTheMobileNode))))
                     });
@@ -2156,7 +2156,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionIpV4DefaultRouterAddress(IpV4Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2176,7 +2176,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionLinkLocalAddress(IpV6Address.Zero))))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -2196,7 +2196,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionMobileNetworkPrefix(0, IpV6Address.Zero))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2216,7 +2216,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(new IpV6MobilityOptionRedirectCapability())))
                 });
             Assert.IsTrue(packet.IsValid);
@@ -2236,7 +2236,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(new IpV6MobilityOptionTimestamp(0))))
                     });
             Assert.IsTrue(packet.IsValid);
@@ -2415,7 +2415,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionFlowIdentification(
                                         0, 0, IpV6FlowIdentificationStatus.FlowBindingSuccessful,
@@ -2440,7 +2440,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(new IpV6AccessNetworkIdentifierSubOptionGeoLocation(0, 0))))))
@@ -2462,7 +2462,7 @@ namespace PcapDotNet.Packets.Test
                         ExtensionHeaders =
                             new IpV6ExtensionHeaders(
                             new IpV6ExtensionHeaderMobilityBindingError(
-                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                                IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                                 new IpV6MobilityOptions(
                                     new IpV6MobilityOptionAccessNetworkIdentifier(
                                         new IpV6AccessNetworkIdentifierSubOptions(
@@ -2486,7 +2486,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(
                                 new IpV6MobilityOptionAccessNetworkIdentifier(
                                     new IpV6AccessNetworkIdentifierSubOptions(
@@ -2510,7 +2510,7 @@ namespace PcapDotNet.Packets.Test
                     ExtensionHeaders =
                         new IpV6ExtensionHeaders(
                         new IpV6ExtensionHeaderMobilityBindingError(
-                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMhTypeValue, IpV6Address.Zero,
+                            IpV4Protocol.Skip, 0, IpV6BindingErrorStatus.UnrecognizedMobilityHeaderTypeValue, IpV6Address.Zero,
                             new IpV6MobilityOptions(
                                 new IpV6MobilityOptionAccessNetworkIdentifier(
                                     new IpV6AccessNetworkIdentifierSubOptions(

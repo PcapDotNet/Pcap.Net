@@ -559,7 +559,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IpV6AccessNetworkIdentifierSubOption NextIpV6AccessNetworkIdentifierSubOption(this Random random)
         {
-            IpV6AccessNetworkIdentifierSubOptionType optionType = random.NextEnum<IpV6AccessNetworkIdentifierSubOptionType>();
+            IpV6AccessNetworkIdentifierSubOptionType optionType = random.NextEnum(IpV6AccessNetworkIdentifierSubOptionType.None);
             switch (optionType)
             {
                 case IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier:
@@ -568,8 +568,8 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case IpV6AccessNetworkIdentifierSubOptionType.GeoLocation:
                     double latitude = random.NextDouble() * 180 - 90;
-                    double longtitude = random.NextDouble() * 360 - 180;
-                    return IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(latitude, longtitude);
+                    double longitude = random.NextDouble() * 360 - 180;
+                    return IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues(latitude, longitude);
 
                 case IpV6AccessNetworkIdentifierSubOptionType.OperatorIdentifier:
                     return new IpV6AccessNetworkIdentifierSubOptionOperatorIdentifier(random.NextEnum<IpV6AccessNetworkIdentifierOperatorIdentifierType>(),
