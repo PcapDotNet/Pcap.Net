@@ -33,17 +33,12 @@ namespace PcapDotNet.Packets.Transport
 
         internal override bool EqualsData(TcpOption other)
         {
-            return EqualsData(other as TcpOptionSimple);
+            return other is TcpOptionSimple;
         }
 
         internal override int GetDataHashCode()
         {
             return 0;
-        }
-
-        private bool EqualsData(TcpOptionSimple other)
-        {
-            return other != null;
         }
     }
 }

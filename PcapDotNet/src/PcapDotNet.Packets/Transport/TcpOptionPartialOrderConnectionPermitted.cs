@@ -65,17 +65,12 @@ namespace PcapDotNet.Packets.Transport
 
         internal override bool EqualsData(TcpOption other)
         {
-            return EqualsData(other as TcpOptionPartialOrderConnectionPermitted);
+            return (other is TcpOptionPartialOrderConnectionPermitted);
         }
 
         internal override int GetDataHashCode()
         {
             return 0;
-        }
-
-        private bool EqualsData(TcpOptionPartialOrderConnectionPermitted other)
-        {
-            return other != null;
         }
 
         private static readonly TcpOptionPartialOrderConnectionPermitted _instance = new TcpOptionPartialOrderConnectionPermitted();

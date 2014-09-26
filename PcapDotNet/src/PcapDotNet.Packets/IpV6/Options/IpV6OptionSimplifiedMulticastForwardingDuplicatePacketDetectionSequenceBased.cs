@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
-    public abstract class IpV6OptionSmfDpdSequenceBased : IpV6OptionSmfDpd
+    public abstract class IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased : IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetection
     {
         internal const int TaggerIdMaxLength = 0xF + 1;
 
@@ -63,7 +63,7 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// Identifying DPD marking type.
-        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSmfDpdSequenceBased"/>.
+        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased"/>.
         /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
         /// </summary>
         public override bool HashIndicator
@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public abstract IpV6TaggerIdType TaggerIdType { get; }
 
-        internal IpV6OptionSmfDpdSequenceBased(DataSegment identifier)
+        internal IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased(DataSegment identifier)
         {
             Identifier = identifier;
         }
@@ -88,7 +88,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal sealed override bool EqualsData(IpV6Option other)
         {
-            return EqualsData(other as IpV6OptionSmfDpdSequenceBased);
+            return EqualsData(other as IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased);
         }
 
         internal sealed override int GetDataHashCode()
@@ -96,7 +96,7 @@ namespace PcapDotNet.Packets.IpV6
             return Sequence.GetHashCode(Identifier, TaggerIdType, GetTaggerIdHashCode());
         }
 
-        internal abstract bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other);
+        internal abstract bool EqualsTaggerId(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased other);
 
         internal abstract int GetTaggerIdHashCode();
 
@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract void WriteTaggerId(byte[] buffer, ref int offset);
 
-        internal static IpV6OptionSmfDpdSequenceBased CreateSpecificInstance(DataSegment data)
+        internal static IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased CreateSpecificInstance(DataSegment data)
         {
             IpV6TaggerIdType taggerIdType = (IpV6TaggerIdType)((data[Offset.TaggerIdType] & Mask.TaggerIdType) >> Shift.TaggerIdType);
             int taggerIdLength = (taggerIdType == IpV6TaggerIdType.Null ? 0 : (data[Offset.TaggerIdLength] & Mask.TaggerIdLength) + 1);
@@ -122,29 +122,29 @@ namespace PcapDotNet.Packets.IpV6
             switch (taggerIdType)
             {
                 case IpV6TaggerIdType.Null:
-                    return new IpV6OptionSmfDpdNull(identifier);
+                    return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionNull(identifier);
                     
                 case IpV6TaggerIdType.Default:
-                    return new IpV6OptionSmfDpdDefault(data.Subsegment(Offset.TaggerId, taggerIdLength), identifier);
+                    return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault(data.Subsegment(Offset.TaggerId, taggerIdLength), identifier);
 
                 case IpV6TaggerIdType.IpV4:
                     if (taggerIdLength != IpV4Address.SizeOf)
                         return null;
                     IpV4Address ipV4Address = data.ReadIpV4Address(Offset.TaggerId, Endianity.Big);
-                    return new IpV6OptionSmfDpdIpV4(ipV4Address, identifier);
+                    return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4(ipV4Address, identifier);
 
                 case IpV6TaggerIdType.IpV6:
                     if (taggerIdLength != IpV6Address.SizeOf)
                         return null;
                     IpV6Address ipV6Address = data.ReadIpV6Address(Offset.TaggerId, Endianity.Big);
-                    return new IpV6OptionSmfDpdIpV6(ipV6Address, identifier);
+                    return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV6(ipV6Address, identifier);
 
                 default:
                     return null;
             }
         }
 
-        private bool EqualsData(IpV6OptionSmfDpdSequenceBased other)
+        private bool EqualsData(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased other)
         {
             return other != null &&
                    Identifier.Equals(other.Identifier) && TaggerIdType == other.TaggerIdType && EqualsTaggerId(other);

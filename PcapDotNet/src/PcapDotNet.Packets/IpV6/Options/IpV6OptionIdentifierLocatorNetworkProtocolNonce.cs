@@ -15,15 +15,15 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
-    [IpV6OptionTypeRegistration(IpV6OptionType.IlnpNonce)]
-    public sealed class IpV6OptionIlnpNonce : IpV6OptionComplex, IIpV6OptionComplexFactory
+    [IpV6OptionTypeRegistration(IpV6OptionType.IdentifierLocatorNetworkProtocolNonce)]
+    public sealed class IpV6OptionIdentifierLocatorNetworkProtocolNonce : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         /// <summary>
         /// Creates an instance from nonce.
         /// </summary>
         /// <param name="nonce">An unpredictable cryptographically random value used to prevent off-path attacks on an ILNP session.</param>
-        public IpV6OptionIlnpNonce(DataSegment nonce)
-            : base(IpV6OptionType.IlnpNonce)
+        public IpV6OptionIdentifierLocatorNetworkProtocolNonce(DataSegment nonce)
+            : base(IpV6OptionType.IdentifierLocatorNetworkProtocolNonce)
         {
             Nonce = nonce;
         }
@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
-            return new IpV6OptionIlnpNonce(data);
+            return new IpV6OptionIdentifierLocatorNetworkProtocolNonce(data);
         }
 
         internal override int DataLength
@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override bool EqualsData(IpV6Option other)
         {
-            return EqualsData(other as IpV6OptionIlnpNonce);
+            return EqualsData(other as IpV6OptionIdentifierLocatorNetworkProtocolNonce);
         }
 
         internal override int GetDataHashCode()
@@ -63,12 +63,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, Nonce);
         }
 
-        private IpV6OptionIlnpNonce()
+        private IpV6OptionIdentifierLocatorNetworkProtocolNonce()
             : this(DataSegment.Empty)
         {
         }
 
-        private bool EqualsData(IpV6OptionIlnpNonce other)
+        private bool EqualsData(IpV6OptionIdentifierLocatorNetworkProtocolNonce other)
         {
             return other != null &&
                    Nonce.Equals(other.Nonce);

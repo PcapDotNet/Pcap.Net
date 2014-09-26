@@ -47,6 +47,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6OptionLineIdentificationDestination(DataSegment lineIdentification)
             : base(IpV6OptionType.LineIdentification)
         {
+            if (lineIdentification == null) 
+                throw new ArgumentNullException("lineIdentification");
             if (lineIdentification.Length > byte.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("lineIdentification", lineIdentification,
@@ -69,6 +71,8 @@ namespace PcapDotNet.Packets.IpV6
         /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
+            if (data == null) 
+                throw new ArgumentNullException("data");
             if (data.Length < OptionDataMinimumLength)
                 return null;
 

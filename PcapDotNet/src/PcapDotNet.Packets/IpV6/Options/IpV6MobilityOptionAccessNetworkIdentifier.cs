@@ -26,6 +26,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionAccessNetworkIdentifier(IpV6AccessNetworkIdentifierSubOptions subOptions)
             : base(IpV6MobilityOptionType.AccessNetworkIdentifier)
         {
+            if (subOptions == null) 
+                throw new ArgumentNullException("subOptions");
             if (subOptions.BytesLength > MaxDataLength)
                 throw new ArgumentOutOfRangeException("subOptions", subOptions,
                                                       string.Format(CultureInfo.InvariantCulture, "SubOptions take more than {0} bytes", MaxDataLength));

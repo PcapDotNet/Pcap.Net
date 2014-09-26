@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Test
             for (int i = 0; i != 100; ++i)
             {
                 DataSegment data = random.NextDataSegment(random.Next(1000));
-                ushort fcs = PppFrameCheckSequenceCalculator.CalculateFcs16(data);
+                ushort fcs = PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(data);
             }
         }
 
@@ -60,7 +60,7 @@ namespace PcapDotNet.Packets.Test
             for (int fcs16Value = 0; fcs16Value <= ushort.MaxValue; ++fcs16Value)
             {
                 ushort extraValue = (ushort)(fcs16Value ^ 0xffff); // Complement.
-                Assert.AreEqual(GoodFcs16, PppFrameCheckSequenceCalculator.CalculateFcs16((ushort)fcs16Value, new[] { (byte)extraValue, (byte)(extraValue >> 8) }));
+                Assert.AreEqual(GoodFcs16, PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16((ushort)fcs16Value, new[] { (byte)extraValue, (byte)(extraValue >> 8) }));
             }
         }
     }

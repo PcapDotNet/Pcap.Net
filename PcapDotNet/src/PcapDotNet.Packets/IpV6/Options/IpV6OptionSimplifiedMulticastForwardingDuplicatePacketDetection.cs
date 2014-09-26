@@ -17,7 +17,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------+
     /// </pre>
     /// </summary>
-    public abstract class IpV6OptionSmfDpd : IpV6OptionComplex
+    public abstract class IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetection : IpV6OptionComplex
     {
         private static class Offset
         {
@@ -36,13 +36,13 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// Identifying DPD marking type.
-        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSmfDpdSequenceBased"/>.
+        /// 0 == sequence-based approach with optional TaggerId and a tuple-based sequence number. See <see cref="IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased"/>.
         /// 1 == indicates a hash assist value (HAV) field follows to aid in avoiding hash-based DPD collisions.
         /// </summary>
         public abstract bool HashIndicator { get; }
 
-        internal IpV6OptionSmfDpd()
-            : base(IpV6OptionType.SmfDpd)
+        internal IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetection()
+            : base(IpV6OptionType.SimplifiedMulticastForwardingDuplicatePacketDetection)
         {
         }
 
@@ -53,17 +53,17 @@ namespace PcapDotNet.Packets.IpV6
 
             bool hashIndicator = data.ReadBool(Offset.HashIndicator, Mask.HashIndicator);
             if (hashIndicator)
-                return new IpV6OptionSmfDpdSequenceHashAssistValue(data);
-            return IpV6OptionSmfDpdSequenceBased.CreateSpecificInstance(data);
+                return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue(data);
+            return IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased.CreateSpecificInstance(data);
         }
     }
 
-    [IpV6OptionTypeRegistration(IpV6OptionType.SmfDpd)]
+    [IpV6OptionTypeRegistration(IpV6OptionType.SimplifiedMulticastForwardingDuplicatePacketDetection)]
     internal class IpV6OptionSmfDpdFactory : IIpV6OptionComplexFactory
     {
         public IpV6Option CreateInstance(DataSegment data)
         {
-            return IpV6OptionSmfDpd.CreateInstance(data);
+            return IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetection.CreateInstance(data);
         }
     }
 }

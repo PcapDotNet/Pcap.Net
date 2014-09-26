@@ -86,14 +86,16 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6OptionCalipso(IpV6CalipsoDomainOfInterpretation domainOfInterpretation, byte sensitivityLevel, ushort? checksum, DataSegment compartmentBitmap)
             : base(IpV6OptionType.Calipso)
         {
+            if (compartmentBitmap == null) 
+                throw new ArgumentNullException("compartmentBitmap");
             if (compartmentBitmap.Length % sizeof(int) != 0)
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Compartment Bitmap length must divide by {0}.", sizeof(int)),
                                             "compartmentBitmap");
             if (compartmentBitmap.Length > CompartmentBitmapMaxLength)
             {
-                throw new ArgumentOutOfRangeException(
-                    string.Format(CultureInfo.InvariantCulture, "Compartment Bitmap length must not be bigger than {0}.", CompartmentBitmapMaxLength),
-                    "compartmentBitmap");
+                throw new ArgumentOutOfRangeException("compartmentBitmap", compartmentBitmap,
+                                                      string.Format(CultureInfo.InvariantCulture, "Compartment Bitmap length must not be bigger than {0}.",
+                                                                    CompartmentBitmapMaxLength));
             }
 
             DomainOfInterpretation = domainOfInterpretation;
@@ -188,6 +190,8 @@ namespace PcapDotNet.Packets.IpV6
         /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
+            if (data == null) 
+                throw new ArgumentNullException("data");
             if (data.Length < OptionDataMinimumLength)
                 return null;
 
@@ -250,7 +254,7 @@ namespace PcapDotNet.Packets.IpV6
             byte[] domainOfInterpretationBytes = new byte[sizeof(uint)];
             domainOfInterpretationBytes.Write(0, (uint)domainOfInterpretation, Endianity.Big);
             ushort checksum =
-                PppFrameCheckSequenceCalculator.CalculateFcs16(
+                PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(
                     new byte[0].Concat((byte)IpV6OptionType.Calipso,
                                        (byte)(OptionDataMinimumLength + compartmentBitmap.Length)).Concat(
                                            domainOfInterpretationBytes)

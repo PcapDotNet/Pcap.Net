@@ -44,6 +44,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionServiceSelection(DataSegment identifier)
             : base(IpV6MobilityOptionType.ServiceSelection, identifier)
         {
+            if (identifier == null) 
+                throw new ArgumentNullException("identifier");
             if (identifier.Length < MinIdentifierLength || identifier.Length > MaxIdentifierLength)
                 throw new ArgumentOutOfRangeException("identifier", identifier,
                                                       string.Format(CultureInfo.InvariantCulture,

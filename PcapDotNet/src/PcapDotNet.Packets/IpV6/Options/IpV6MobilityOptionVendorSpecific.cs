@@ -46,16 +46,16 @@ namespace PcapDotNet.Packets.IpV6
         /// The SMI Network Management Private Enterprise Code of the IANA- maintained Private Enterprise Numbers registry.
         /// See http://www.iana.org/assignments/enterprise-numbers/enterprise-numbers
         /// </param>
-        /// <param name="subType">
+        /// <param name="subtype">
         /// Indicating the type of vendor-specific information carried in the option.
         /// The administration of the Sub-type is done by the Vendor.
         /// </param>
         /// <param name="data">Vendor-specific data that is carried in this message.</param>
-        public IpV6MobilityOptionVendorSpecific(uint vendorId, byte subType, DataSegment data)
+        public IpV6MobilityOptionVendorSpecific(uint vendorId, byte subtype, DataSegment data)
             : base(IpV6MobilityOptionType.VendorSpecific)
         {
             VendorId = vendorId;
-            SubType = subType;
+            Subtype = subtype;
             Data = data;
         }
 
@@ -69,7 +69,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Indicating the type of vendor-specific information carried in the option.
         /// The administration of the Sub-type is done by the Vendor.
         /// </summary>
-        public byte SubType { get; private set; }
+        public byte Subtype { get; private set; }
 
         /// <summary>
         /// Vendor-specific data that is carried in this message.
@@ -99,13 +99,13 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override int GetDataHashCode()
         {
-            return Sequence.GetHashCode(VendorId, SubType, Data);
+            return Sequence.GetHashCode(VendorId, Subtype, Data);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.VendorId, VendorId, Endianity.Big);
-            buffer.Write(offset + Offset.SubType, SubType);
+            buffer.Write(offset + Offset.SubType, Subtype);
             buffer.Write(offset + Offset.Data, Data);
             offset += DataLength;
         }
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.IpV6
         private bool EqualsData(IpV6MobilityOptionVendorSpecific other)
         {
             return other != null &&
-                   VendorId == other.VendorId && SubType == other.SubType && Data.Equals(other.Data);
+                   VendorId == other.VendorId && Subtype == other.Subtype && Data.Equals(other.Data);
         }
     }
 }

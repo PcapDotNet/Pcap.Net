@@ -40,6 +40,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
             : base(nextHeader, checksum, IpV6MobilityOptions.None, null)
         {
+            if (messageData == null) 
+                throw new ArgumentNullException("messageData");
             if (messageData.Length % 8 != 2)
                 throw new ArgumentException("Message data size must be an integral product of 8 bytes plus 2 bytes", "messageData");
             MessageData = messageData;

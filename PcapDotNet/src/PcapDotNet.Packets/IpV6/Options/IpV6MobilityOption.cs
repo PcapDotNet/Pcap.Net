@@ -27,9 +27,9 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Returns true iff the given option is an equivalent option.
         /// </summary>
-        public sealed override bool Equals(Option option)
+        public sealed override bool Equals(Option other)
         {
-            return Equals(option as IpV6MobilityOption);
+            return Equals(other as IpV6MobilityOption);
         }
 
         /// <summary>

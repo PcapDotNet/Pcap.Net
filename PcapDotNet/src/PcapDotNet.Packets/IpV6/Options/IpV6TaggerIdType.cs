@@ -1,7 +1,7 @@
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
-    /// The type of the Tagger ID for <see cref="IpV6OptionSmfDpdSequenceBased"/>
+    /// The type of the Tagger ID for <see cref="IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased"/>
     /// </summary>
     public enum IpV6TaggerIdType : byte
     {

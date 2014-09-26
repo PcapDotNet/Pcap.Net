@@ -436,7 +436,7 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "mip6.bu.p_flag":
-                                        subfield.AssertShowDecimal(bindingUpdate.ProxyRegistrationFlag);
+                                        subfield.AssertShowDecimal(bindingUpdate.ProxyRegistration);
                                         break;
 
                                     case "mip6.bu.f_flag":
@@ -444,7 +444,7 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "mip6.bu.t_flag":
-                                        subfield.AssertShowDecimal(bindingUpdate.TlvHeaderFormat);
+                                        subfield.AssertShowDecimal(bindingUpdate.TypeLengthValueHeaderFormat);
                                         break;
 
                                     case "mip6.bu.lifetime":
@@ -481,7 +481,7 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "mip6.ba.t_flag":
-                                        subfield.AssertShowDecimal(bindingAcknowledgement.TlvHeaderFormat);
+                                        subfield.AssertShowDecimal(bindingAcknowledgement.TypeLengthValueHeaderFormat);
                                         break;
 
                                     case "mip6.ba.seqnr":
@@ -729,7 +729,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.vsm.subtype":
-                                                            optionSubfield.AssertShowDecimal(vendorSpecific.SubType);
+                                                            optionSubfield.AssertShowDecimal(vendorSpecific.Subtype);
                                                             break;
 
                                                         case "":
@@ -743,20 +743,20 @@ namespace PcapDotNet.Core.Test
                                                 }
                                                 break;
 
-                                            case IpV6MobilityOptionType.NonceIndices:
+                                            case IpV6MobilityOptionType.NonceIndexes:
                                                 optionField.AssertShow("Nonce Indices");
-                                                IpV6MobilityOptionNonceIndices nonceIndices = (IpV6MobilityOptionNonceIndices)option;
+                                                IpV6MobilityOptionNonceIndexes nonceIndexes = (IpV6MobilityOptionNonceIndexes)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
                                                     optionSubfield.AssertNoFields();
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.ni.hni":
-                                                            optionSubfield.AssertShowDecimal(nonceIndices.HomeNonceIndex);
+                                                            optionSubfield.AssertShowDecimal(nonceIndexes.HomeNonceIndex);
                                                             break;
 
                                                         case "mip6.ni.cni":
-                                                            optionSubfield.AssertShowDecimal(nonceIndices.CareOfNonceIndex);
+                                                            optionSubfield.AssertShowDecimal(nonceIndexes.CareOfNonceIndex);
                                                             break;
 
                                                         default:
@@ -860,7 +860,7 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case IpV6MobilityOptionType.FlowSummary:
-                                            case IpV6MobilityOptionType.CgaParametersRequest:
+                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest:
                                             case IpV6MobilityOptionType.Redirect:
                                             case IpV6MobilityOptionType.IpV4CareOfAddress:
                                             case IpV6MobilityOptionType.Signature:
@@ -868,7 +868,7 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.MobileNodeLinkLayerIdentifier:
                                             case IpV6MobilityOptionType.Authentication:
                                             case IpV6MobilityOptionType.RedirectCapability:
-                                            case IpV6MobilityOptionType.CgaParameters:
+                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters:
                                             case IpV6MobilityOptionType.ContextRequest:
                                             case IpV6MobilityOptionType.IpV6AddressPrefix:
                                             case IpV6MobilityOptionType.FlowIdentification:

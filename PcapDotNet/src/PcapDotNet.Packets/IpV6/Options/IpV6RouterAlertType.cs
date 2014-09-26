@@ -218,200 +218,200 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 0.
+        /// QualityOfService NSLP Aggregation Level 0.
         /// </summary>
-        QoSNslpAggregationLevel0 = 0x0024,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel0 = 0x0024,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 1.
+        /// QualityOfService NSLP Aggregation Level 1.
         /// </summary>
-        QoSNslpAggregationLevel1 = 0x0025,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel1 = 0x0025,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 2.
+        /// QualityOfService NSLP Aggregation Level 2.
         /// </summary>
-        QoSNslpAggregationLevel2 = 0x0026,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel2 = 0x0026,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 3.
+        /// QualityOfService NSLP Aggregation Level 3.
         /// </summary>
-        QoSNslpAggregationLevel3 = 0x0027,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel3 = 0x0027,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 4.
+        /// QualityOfService NSLP Aggregation Level 4.
         /// </summary>
-        QoSNslpAggregationLevel4 = 0x0028,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel4 = 0x0028,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 5.
+        /// QualityOfService NSLP Aggregation Level 5.
         /// </summary>
-        QoSNslpAggregationLevel5 = 0x0029,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel5 = 0x0029,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 6.
+        /// QualityOfService NSLP Aggregation Level 6.
         /// </summary>
-        QoSNslpAggregationLevel6 = 0x002A,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel6 = 0x002A,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 7.
+        /// QualityOfService NSLP Aggregation Level 7.
         /// </summary>
-        QoSNslpAggregationLevel7 = 0x002B,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel7 = 0x002B,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 8.
+        /// QualityOfService NSLP Aggregation Level 8.
         /// </summary>
-        QoSNslpAggregationLevel8 = 0x002C,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel8 = 0x002C,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 9.
+        /// QualityOfService NSLP Aggregation Level 9.
         /// </summary>
-        QoSNslpAggregationLevel9 = 0x002D,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel9 = 0x002D,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 10.
+        /// QualityOfService NSLP Aggregation Level 10.
         /// </summary>
-        QoSNslpAggregationLevel10 = 0x002E,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel10 = 0x002E,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 11.
+        /// QualityOfService NSLP Aggregation Level 11.
         /// </summary>
-        QoSNslpAggregationLevel11 = 0x002F,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel11 = 0x002F,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 12.
+        /// QualityOfService NSLP Aggregation Level 12.
         /// </summary>
-        QoSNslpAggregationLevel12 = 0x0030,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel12 = 0x0030,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 13.
+        /// QualityOfService NSLP Aggregation Level 13.
         /// </summary>
-        QoSNslpAggregationLevel13 = 0x0031,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel13 = 0x0031,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 14.
+        /// QualityOfService NSLP Aggregation Level 14.
         /// </summary>
-        QoSNslpAggregationLevel14 = 0x0032,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel14 = 0x0032,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 15.
+        /// QualityOfService NSLP Aggregation Level 15.
         /// </summary>
-        QoSNslpAggregationLevel15 = 0x0033,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel15 = 0x0033,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 16.
+        /// QualityOfService NSLP Aggregation Level 16.
         /// </summary>
-        QoSNslpAggregationLevel16 = 0x0034,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel16 = 0x0034,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 17.
+        /// QualityOfService NSLP Aggregation Level 17.
         /// </summary>
-        QoSNslpAggregationLevel17 = 0x0035,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel17 = 0x0035,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 18.
+        /// QualityOfService NSLP Aggregation Level 18.
         /// </summary>
-        QoSNslpAggregationLevel18 = 0x0036,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel18 = 0x0036,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 19.
+        /// QualityOfService NSLP Aggregation Level 19.
         /// </summary>
-        QoSNslpAggregationLevel19 = 0x0037,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel19 = 0x0037,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 20.
+        /// QualityOfService NSLP Aggregation Level 20.
         /// </summary>
-        QoSNslpAggregationLevel20 = 0x0038,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel20 = 0x0038,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 21.
+        /// QualityOfService NSLP Aggregation Level 21.
         /// </summary>
-        QoSNslpAggregationLevel21 = 0x0039,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel21 = 0x0039,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 22.
+        /// QualityOfService NSLP Aggregation Level 22.
         /// </summary>
-        QoSNslpAggregationLevel22 = 0x003A,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel22 = 0x003A,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 23.
+        /// QualityOfService NSLP Aggregation Level 23.
         /// </summary>
-        QoSNslpAggregationLevel23 = 0x003B,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel23 = 0x003B,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 24.
+        /// QualityOfService NSLP Aggregation Level 24.
         /// </summary>
-        QoSNslpAggregationLevel24 = 0x003C,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel24 = 0x003C,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 25.
+        /// QualityOfService NSLP Aggregation Level 25.
         /// </summary>
-        QoSNslpAggregationLevel25 = 0x003D,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel25 = 0x003D,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 26.
+        /// QualityOfService NSLP Aggregation Level 26.
         /// </summary>
-        QoSNslpAggregationLevel26 = 0x003E,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel26 = 0x003E,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 27.
+        /// QualityOfService NSLP Aggregation Level 27.
         /// </summary>
-        QoSNslpAggregationLevel27 = 0x003F,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel27 = 0x003F,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 28.
+        /// QualityOfService NSLP Aggregation Level 28.
         /// </summary>
-        QoSNslpAggregationLevel28 = 0x0040,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel28 = 0x0040,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 29.
+        /// QualityOfService NSLP Aggregation Level 29.
         /// </summary>
-        QoSNslpAggregationLevel29 = 0x0041,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel29 = 0x0041,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 30.
+        /// QualityOfService NSLP Aggregation Level 30.
         /// </summary>
-        QoSNslpAggregationLevel30 = 0x0042,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel30 = 0x0042,
 
         /// <summary>
         /// RFC 5974.
-        /// QoS NSLP Aggregation Level 31.
+        /// QualityOfService NSLP Aggregation Level 31.
         /// </summary>
-        QoSNslpAggregationLevel31 = 0x0043,
+        QualityOfServiceNextStepsInSignalingLayerProtocolAggregationLevel31 = 0x0043,
 
         /// <summary>
         /// RFC 5973.
         /// NSIS NATFW NSLP.
         /// </summary>
-        NsisNatfwNslp = 0x0044,
+        NextStepsInSignalingNatFirewallLayerProtocol = 0x0044,
     }
 }

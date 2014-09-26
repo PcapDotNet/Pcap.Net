@@ -69,17 +69,12 @@ namespace PcapDotNet.Packets.Transport
 
         internal override bool EqualsData(TcpOption other)
         {
-            return EqualsData(other as TcpOptionSelectiveAcknowledgmentPermitted);
+            return other is TcpOptionSelectiveAcknowledgmentPermitted;
         }
 
         internal override int GetDataHashCode()
         {
             return 0;
-        }
-
-        private bool EqualsData(TcpOptionSelectiveAcknowledgmentPermitted other)
-        {
-            return other != null;
         }
 
         private static readonly TcpOptionSelectiveAcknowledgmentPermitted _instance = new TcpOptionSelectiveAcknowledgmentPermitted();

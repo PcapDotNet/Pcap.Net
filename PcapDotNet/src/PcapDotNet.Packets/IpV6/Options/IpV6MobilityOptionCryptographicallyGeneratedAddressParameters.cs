@@ -16,8 +16,8 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+----------------------------+
     /// </pre>
     /// </summary>
-    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CgaParameters)]
-    public sealed class IpV6MobilityOptionCgaParameters : IpV6MobilityOptionSingleDataSegmentField
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters)]
+    public sealed class IpV6MobilityOptionCryptographicallyGeneratedAddressParameters : IpV6MobilityOptionSingleDataSegmentField
     {
         /// <summary>
         /// The maximum option data length in bytes.
@@ -27,7 +27,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Creates an instance from the given CGA parameters.
         /// </summary>
-        /// <param name="cgaParameters">
+        /// <param name="cryptographicallyGeneratedAddressParameters">
         /// Contains up to 255 bytes of the CGA Parameters data structure defined in RFC 3972.
         /// The concatenation of all CGA Parameters options in the order they appear in the Binding Update message 
         /// must result in the original CGA Parameters data structure.
@@ -36,11 +36,13 @@ namespace PcapDotNet.Packets.IpV6
         /// All CGA Parameters options must appear directly one after another, that is, 
         /// a mobility option of a different type must not be placed in between two CGA Parameters options.
         /// </param>
-        public IpV6MobilityOptionCgaParameters(DataSegment cgaParameters)
-            : base(IpV6MobilityOptionType.CgaParameters, cgaParameters)
+        public IpV6MobilityOptionCryptographicallyGeneratedAddressParameters(DataSegment cryptographicallyGeneratedAddressParameters)
+            : base(IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters, cryptographicallyGeneratedAddressParameters)
         {
-            if (cgaParameters.Length > OptionDataMaxLength)
-                throw new ArgumentOutOfRangeException("cgaParameters", cgaParameters,
+            if (cryptographicallyGeneratedAddressParameters == null) 
+                throw new ArgumentNullException("cryptographicallyGeneratedAddressParameters");
+            if (cryptographicallyGeneratedAddressParameters.Length > OptionDataMaxLength)
+                throw new ArgumentOutOfRangeException("cryptographicallyGeneratedAddressParameters", cryptographicallyGeneratedAddressParameters,
                                                       string.Format(CultureInfo.InvariantCulture, "Must not exceed {0} bytes.", OptionDataMaxLength));
         }
 
@@ -53,7 +55,7 @@ namespace PcapDotNet.Packets.IpV6
         /// All CGA Parameters options must appear directly one after another, that is, 
         /// a mobility option of a different type must not be placed in between two CGA Parameters options.
         /// </summary>
-        public DataSegment CgaParameters
+        public DataSegment CryptographicallyGeneratedAddressParameters
         {
             get { return Value; }
         }
@@ -63,10 +65,10 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length > OptionDataMaxLength)
                 return null;
 
-            return new IpV6MobilityOptionCgaParameters(data);
+            return new IpV6MobilityOptionCryptographicallyGeneratedAddressParameters(data);
         }
 
-        private IpV6MobilityOptionCgaParameters()
+        private IpV6MobilityOptionCryptographicallyGeneratedAddressParameters()
             : this(DataSegment.Empty)
         {
         }

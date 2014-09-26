@@ -26,6 +26,8 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="option">The optional data to uniquely identify the requested context for the requested option.</param>
         public IpV6MobilityOptionContextRequestEntry(byte requestType, DataSegment option)
         {
+            if (option == null)
+                throw new ArgumentNullException("option");
             if (option.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException("option", option,
                                                       string.Format(CultureInfo.InvariantCulture, "Option length must not exceed {0}", byte.MaxValue));

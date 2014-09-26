@@ -52,6 +52,8 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype subtype, DataSegment identifier)
             : base(IpV6MobilityOptionType.MobileNodeIdentifier)
         {
+            if (identifier == null) 
+                throw new ArgumentNullException("identifier");
             if (subtype == IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier && identifier.Length < MinNetworkAccessIdentifierLength)
                 throw new ArgumentOutOfRangeException("identifier", identifier,
                                                       string.Format(CultureInfo.InvariantCulture, "Network Access Identifier must be at least {0} bytes long.",

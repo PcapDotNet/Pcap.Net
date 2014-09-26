@@ -68,6 +68,9 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6ExtensionHeaderAuthentication(IpV4Protocol nextHeader, uint securityParametersIndex, uint sequenceNumber, DataSegment authenticationData)
             : base(nextHeader)
         {
+            if (authenticationData == null)
+                throw new ArgumentNullException("authenticationData");
+
             if (authenticationData.Length % 4 != 0)
             {
                 throw new ArgumentException(

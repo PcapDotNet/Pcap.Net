@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.IpV6
         private bool EqualsData(IpV6MobilityOptionIpV6Address other)
         {
             return other != null &&
-                   other.Address.Equals(other.Address);
+                   Address.Equals(other.Address);
         }
     }
 }

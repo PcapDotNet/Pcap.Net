@@ -1,3 +1,5 @@
+using System;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV6OptionSmfDpdSequenceHashAssistValue : IpV6OptionSmfDpd
+    public sealed class IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue : IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetection
     {
         private static class Offset
         {
@@ -31,8 +33,10 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="data">
         /// The first bit of the data is ignored, and the rest are considered to be the Hash assist value (HAV) used to facilitate H-DPD operation.
         /// </param>
-        public IpV6OptionSmfDpdSequenceHashAssistValue(DataSegment data)
+        public IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue(DataSegment data)
         {
+            if (data == null) 
+                throw new ArgumentNullException("data");
             byte[] hashAssistValueBuffer = new byte[data.Length - Offset.HashAssistValue];
             data.Buffer.BlockCopy(data.StartOffset + Offset.HashAssistValue, hashAssistValueBuffer, 0, hashAssistValueBuffer.Length);
             hashAssistValueBuffer[0] &= 0x7F;
@@ -59,7 +63,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override bool EqualsData(IpV6Option other)
         {
-            return EqualsData(other as IpV6OptionSmfDpdSequenceHashAssistValue);
+            return EqualsData(other as IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue);
         }
 
         internal override int GetDataHashCode()
@@ -73,7 +77,7 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, HashAssistValue.Subsegment(1, HashAssistValue.Length - 1));
         }
 
-        private bool EqualsData(IpV6OptionSmfDpdSequenceHashAssistValue other)
+        private bool EqualsData(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue other)
         {
             return other != null &&
                    HashAssistValue.Equals(other.HashAssistValue);

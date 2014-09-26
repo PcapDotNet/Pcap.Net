@@ -124,7 +124,7 @@ namespace PcapDotNet.Packets.IpV6
                     return IpV6ExtensionHeaderMobility.ParseData(nextNextHeader, data);
 
                 default:
-                    throw new InvalidOperationException("Invalid nextHeader value" + nextHeader);
+                    throw new InvalidOperationException("Invalid next header value" + nextHeader);
             }
         }
 

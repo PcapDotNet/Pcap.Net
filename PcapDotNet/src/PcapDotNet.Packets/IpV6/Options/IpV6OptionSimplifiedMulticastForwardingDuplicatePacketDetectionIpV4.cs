@@ -1,10 +1,12 @@
+using PcapDotNet.Packets.IpV4;
+
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
     /// RFC 6621.
     /// Simplified Multicast Forwarding Duplicate Packet Detection.
     /// Sequence-based approach.
-    /// IPv6 tagger ID.
+    /// IPv4 tagger ID.
     /// <pre>
     /// +-----+---+-------+--------+
     /// | Bit | 0 | 1-3   | 4-7    |
@@ -19,25 +21,13 @@ namespace PcapDotNet.Packets.IpV6
     /// |     |                    |
     /// |     |                    |
     /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
-    /// |     |                    |
     /// +-----+--------------------+
-    /// | 152 | Identifier         |
+    /// | 56  | Identifier         |
     /// | ... |                    |
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV6OptionSmfDpdIpV6 : IpV6OptionSmfDpdSequenceBased
+    public sealed class IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4 : IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased
     {
         /// <summary>
         /// Creates an instance from tagger id and identifier.
@@ -52,7 +42,7 @@ namespace PcapDotNet.Packets.IpV6
         /// When the TaggerId field is not present, then it is assumed that the source applied the SMF_DPD option 
         /// and the Identifier can be considered unique in the context of the IPv6 packet header srcAddr:dstAddr tuple.
         /// </param>
-        public IpV6OptionSmfDpdIpV6(IpV6Address taggerId, DataSegment identifier)
+        public IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4(IpV4Address taggerId, DataSegment identifier)
             : base(identifier)
         {
             TaggerId = taggerId;
@@ -61,14 +51,14 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Used to differentiate multiple ingressing border gateways that may commonly apply the SMF_DPD option header to packets from a particular source.
         /// </summary>
-        public IpV6Address TaggerId { get; private set; }
+        public IpV4Address TaggerId { get; private set; }
 
         /// <summary>
         /// The length of the Tagger Id.
         /// </summary>
         public override int TaggerIdLength
         {
-            get { return IpV6Address.SizeOf; }
+            get { return IpV4Address.SizeOf; }
         }
 
         /// <summary>
@@ -76,12 +66,12 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override IpV6TaggerIdType TaggerIdType
         {
-            get { return IpV6TaggerIdType.IpV6; }
+            get { return IpV6TaggerIdType.IpV4; }
         }
 
-        internal override bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other)
+        internal override bool EqualsTaggerId(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased other)
         {
-            return EqualsTaggerId(other as IpV6OptionSmfDpdIpV6);
+            return EqualsTaggerId(other as IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4);
         }
 
         internal override int GetTaggerIdHashCode()
@@ -94,7 +84,7 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, TaggerId, Endianity.Big);
         }
 
-        private bool EqualsTaggerId(IpV6OptionSmfDpdIpV6 other)
+        private bool EqualsTaggerId(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4 other)
         {
             return other != null &&
                    TaggerId.Equals(other.TaggerId);

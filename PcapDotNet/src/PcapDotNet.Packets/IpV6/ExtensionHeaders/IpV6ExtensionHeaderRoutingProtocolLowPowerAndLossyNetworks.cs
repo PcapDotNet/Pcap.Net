@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+------------------------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV6ExtensionHeaderRoutingRpl : IpV6ExtensionHeaderRouting
+    public sealed class IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks : IpV6ExtensionHeaderRouting
     {
         private static class RoutingDataOffset
         {
@@ -90,10 +90,12 @@ namespace PcapDotNet.Packets.IpV6
         /// For example, a header carrying a full IPv6 address in Addresses[n] sets this to 0. 
         /// </param>
         /// <param name="addresses">Routing addresses.</param>
-        public IpV6ExtensionHeaderRoutingRpl(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
+        public IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
                                              byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
         {
+            if (addresses == null) 
+                throw new ArgumentNullException("addresses");
             if (commonPrefixLengthForNonLastAddresses > MaxCommonPrefixLength)
             {
                 throw new ArgumentOutOfRangeException("commonPrefixLengthForNonLastAddresses", commonPrefixLengthForNonLastAddresses,
@@ -142,7 +144,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override IpV6RoutingType RoutingType
         {
-            get { return IpV6RoutingType.RplSourceRouteHeader; }
+            get { return IpV6RoutingType.RoutingProtocolLowPowerAndLossyNetworksSourceRouteHeader; }
         }
 
         /// <summary>
@@ -179,7 +181,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal static IpV6ExtensionHeaderRoutingRpl ParseRoutingData(IpV4Protocol nextHeader, byte segmentsLeft, DataSegment routingData)
+        internal static IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks ParseRoutingData(IpV4Protocol nextHeader, byte segmentsLeft, DataSegment routingData)
         {
             if (routingData.Length < RoutingDataMinimumLength)
                 return null;
@@ -227,13 +229,13 @@ namespace PcapDotNet.Packets.IpV6
                 lastAddressSegment.Write(addressBytes, commonPrefixLengthForLastAddress);
                 addresses[numAddresses - 1] = addressBytes.ReadIpV6Address(0, Endianity.Big);
             }
-            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress,
+            return new IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress,
                                                      addresses);
         }
 
         internal override bool EqualsRoutingData(IpV6ExtensionHeaderRouting other)
         {
-            return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingRpl);
+            return EqualsRoutingData(other as IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks);
         }
 
         internal override int GetRoutingDataHashCode()
@@ -262,7 +264,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        private bool EqualsRoutingData(IpV6ExtensionHeaderRoutingRpl other)
+        private bool EqualsRoutingData(IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks other)
         {
             return other != null &&
                    CommonPrefixLengthForNonLastAddresses == other.CommonPrefixLengthForNonLastAddresses &&
