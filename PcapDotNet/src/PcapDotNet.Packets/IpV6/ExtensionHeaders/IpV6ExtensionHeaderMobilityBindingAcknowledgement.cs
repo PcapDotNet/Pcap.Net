@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Indicates that the local mobility anchor that processed the corresponding Proxy Binding Update message supports proxy registrations.
         /// True only if the corresponding Proxy Binding Update had the Proxy Registration set to true.
         /// </param>
-        /// <param name="tlvHeaderFormat">
+        /// <param name="typeLengthValueHeaderFormat">
         /// Indicates that the sender of the Proxy Binding Acknowledgement, the LMA, supports tunneling IPv6-or-IPv4 in IPv4 using TLV-header format.
         /// </param>
         /// <param name="sequenceNumber">
@@ -85,12 +85,12 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                  bool keyManagementMobilityCapability, bool mobileRouter, bool proxyRegistration,
-                                                                 bool tlvHeaderFormat, ushort sequenceNumber, ushort lifetime, IpV6MobilityOptions options)
+                                                                 bool typeLengthValueHeaderFormat, ushort sequenceNumber, ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime, options)
         {
             MobileRouter = mobileRouter;
             ProxyRegistration = proxyRegistration;
-            TlvHeaderFormat = tlvHeaderFormat;
+            TypeLengthValueHeaderFormat = typeLengthValueHeaderFormat;
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Indicates that the sender of the Proxy Binding Acknowledgement, the LMA, supports tunneling IPv6-or-IPv4 in IPv4 using TLV-header format.
         /// </summary>
-        public bool TlvHeaderFormat { get; private set; }
+        public bool TypeLengthValueHeaderFormat { get; private set; }
 
         internal static IpV6ExtensionHeaderMobilityBindingAcknowledgement ParseMessageData(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
         {

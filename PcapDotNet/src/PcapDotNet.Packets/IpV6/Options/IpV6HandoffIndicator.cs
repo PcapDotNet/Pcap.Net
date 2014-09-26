@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6HandoffIndicator : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Attachment over a new interface.
         /// </summary>
         AttachmentOverNewInterface = 1,

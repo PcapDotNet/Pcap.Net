@@ -29,7 +29,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6275.
         /// </summary>
-        NonceIndices = 0x04,
+        NonceIndexes = 0x04,
 
         /// <summary>
         /// RFC 6275.
@@ -70,13 +70,13 @@ namespace PcapDotNet.Packets.IpV6
         /// RFC 4866.
         /// CGA Parameters Request.
         /// </summary>
-        CgaParametersRequest = 0x0B,
+        CryptographicallyGeneratedAddressParametersRequest = 0x0B,
 
         /// <summary>
         /// RFC 4866.
         /// CGA Parameters.
         /// </summary>
-        CgaParameters = 0x0C,
+        CryptographicallyGeneratedAddressParameters = 0x0C,
 
         /// <summary>
         /// RFC 4866.

@@ -25,6 +25,6 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6554.
         /// </summary>
-        RplSourceRouteHeader = 3,
+        RoutingProtocolLowPowerAndLossyNetworksSourceRouteHeader = 3,
     }
 }

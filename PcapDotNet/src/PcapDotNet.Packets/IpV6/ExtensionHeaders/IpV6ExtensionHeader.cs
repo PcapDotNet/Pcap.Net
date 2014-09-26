@@ -94,7 +94,7 @@ namespace PcapDotNet.Packets.IpV6
                     return IpV6ExtensionHeaderAuthentication.CreateInstance(extensionHeaderData, out numBytesRead);
 
                 default:
-                    throw new InvalidOperationException("Invalid nextHeader value" + nextHeader);
+                    throw new InvalidOperationException("Invalid next header value" + nextHeader);
             }
         }
 
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.IpV6
                     break;
 
                 default:
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid nextHeader value {0}", nextHeader));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid next header value {0}", nextHeader));
             }
         }
 

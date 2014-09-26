@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace PcapDotNet.Packets.IpV6
@@ -12,16 +13,18 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Calculates FCS16.
         /// </summary>
-        public static ushort CalculateFcs16(IEnumerable<byte> values)
+        public static ushort CalculateFrameCheckSequence16(IEnumerable<byte> values)
         {
-            return CalculateFcs16(InitialValue, values);
+            return CalculateFrameCheckSequence16(InitialValue, values);
         }
 
         /// <summary>
         /// Calculates FCS16.
         /// </summary>
-        public static ushort CalculateFcs16(ushort fcs, IEnumerable<byte> values)
+        public static ushort CalculateFrameCheckSequence16(ushort fcs, IEnumerable<byte> values)
         {
+            if (values == null)
+                throw new ArgumentNullException("values");
             foreach (byte value in values)
             {
                 ushort tableValue = _fcsTable[(fcs ^ value) & 0xff];

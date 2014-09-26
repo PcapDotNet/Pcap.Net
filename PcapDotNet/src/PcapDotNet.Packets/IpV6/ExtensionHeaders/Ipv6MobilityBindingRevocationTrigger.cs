@@ -1,6 +1,7 @@
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
+    /// RFC 5846.
     /// The Per-MN Revocation Trigger values are less than 128.
     /// The Per-MN Revocation Trigger is used when the BRI message intends to revoke one or more bindings for the same mobile node.
     /// The Global Revocation Trigger values are greater than 128 and less than 250 and used in the BRI message 
@@ -22,17 +23,17 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Inter-MAG Handover - same Access Type.
         /// </summary>
-        InterMagHandoverSameAccessType = 2,
+        InterMobileAccessGatewayHandoverSameAccessType = 2,
 
         /// <summary>
         /// Inter-MAG Handover - different Access Type.
         /// </summary>
-        InterMagHandoverDifferentAccessType = 3,
+        InterMobileAccessGatewayHandoverDifferentAccessType = 3,
 
         /// <summary>
         /// Inter-MAG Handover - Unknown.
         /// </summary>
-        InterMagHandoverUnknown = 4,
+        InterMobileAccessGatewayHandoverUnknown = 4,
 
         /// <summary>
         /// User-Initiated Session(s) Termination

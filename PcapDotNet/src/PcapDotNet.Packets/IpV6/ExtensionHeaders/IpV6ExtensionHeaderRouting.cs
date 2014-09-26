@@ -102,8 +102,8 @@ namespace PcapDotNet.Packets.IpV6
                 case IpV6RoutingType.Type2RoutingHeader:
                     return IpV6ExtensionHeaderRoutingHomeAddress.ParseRoutingData(nextHeader, segmentsLeft, routingData);
 
-                case IpV6RoutingType.RplSourceRouteHeader:
-                    return IpV6ExtensionHeaderRoutingRpl.ParseRoutingData(nextHeader, segmentsLeft, routingData);
+                case IpV6RoutingType.RoutingProtocolLowPowerAndLossyNetworksSourceRouteHeader:
+                    return IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks.ParseRoutingData(nextHeader, segmentsLeft, routingData);
 
                 default:
                     return null;

@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.IpV6
@@ -20,7 +21,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+---------------------------------+
     /// </pre>
     /// </summary>
-    [IpV6OptionTypeRegistration(IpV6OptionType.RplOption)]
+    [IpV6OptionTypeRegistration(IpV6OptionType.RoutingProtocolLowPowerAndLossyNetworksOption)]
     public sealed class IpV6OptionRoutingProtocolLowPowerAndLossyNetworks : IpV6OptionComplex, IIpV6OptionComplexFactory
     {
         private static class Offset
@@ -28,9 +29,9 @@ namespace PcapDotNet.Packets.IpV6
             public const int Down = 0;
             public const int RankError = Down;
             public const int ForwardingError = RankError;
-            public const int RplInstanceId = ForwardingError + sizeof(byte);
-            public const int SenderRank = RplInstanceId + sizeof(byte);
-            public const int SubTlvs = SenderRank + sizeof(ushort);
+            public const int RoutingProtocolLowPowerAndLossyNetworksInstanceId = ForwardingError + sizeof(byte);
+            public const int SenderRank = RoutingProtocolLowPowerAndLossyNetworksInstanceId + sizeof(byte);
+            public const int SubTypeLengthValues = SenderRank + sizeof(ushort);
         }
 
         private static class Mask
@@ -43,7 +44,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// The minimum number of bytes this option data takes.
         /// </summary>
-        public const int OptionDataMinimumLength = Offset.SubTlvs;
+        public const int OptionDataMinimumLength = Offset.SubTypeLengthValues;
 
         /// <summary>
         /// Creates an instance from down, rank error, forwarding error, RPL instance id, sender rank and sub TLVs.
@@ -64,21 +65,22 @@ namespace PcapDotNet.Packets.IpV6
         /// The Forward Error flag might be set by a child node that does not have a route to destination for a packet with the Down flag set.
         /// A host or RPL leaf node must set the Forwarding error flag to 0.
         /// </param>
-        /// <param name="rplInstanceId">Indicating the DODAG instance along which the packet is sent.</param>
+        /// <param name="routingProtocolLowPowerAndLossyNetworksInstanceId">Indicating the DODAG instance along which the packet is sent.</param>
         /// <param name="senderRank">Set to zero by the source and to DAGRank(rank) by a router that forwards inside the RPL network.</param>
-        /// <param name="subTlvs">
+        /// <param name="subtypeLengthValues">
         /// A RPL device must skip over any unrecognized sub-TLVs and attempt to process any additional sub-TLVs that may appear after.
         /// </param>
-        public IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(bool down, bool rankError, bool forwardingError, byte rplInstanceId, ushort senderRank,
-                                                                 DataSegment subTlvs)
-            : base(IpV6OptionType.RplOption)
+        public IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(bool down, bool rankError, bool forwardingError,
+                                                                 byte routingProtocolLowPowerAndLossyNetworksInstanceId, ushort senderRank,
+                                                                 DataSegment subtypeLengthValues)
+            : base(IpV6OptionType.RoutingProtocolLowPowerAndLossyNetworksOption)
         {
             Down = down;
             RankError = rankError;
             ForwardingError = forwardingError;
-            RplInstanceId = rplInstanceId;
+            RoutingProtocolLowPowerAndLossyNetworksInstanceId = routingProtocolLowPowerAndLossyNetworksInstanceId;
             SenderRank = senderRank;
-            SubTlvs = subTlvs;
+            SubtypeLengthValues = subtypeLengthValues;
         }
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Indicating the DODAG instance along which the packet is sent.
         /// </summary>
-        public byte RplInstanceId { get; private set; }
+        public byte RoutingProtocolLowPowerAndLossyNetworksInstanceId { get; private set; }
 
         /// <summary>
         /// Set to zero by the source and to DAGRank(rank) by a router that forwards inside the RPL network.
@@ -116,7 +118,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// A RPL device must skip over any unrecognized sub-TLVs and attempt to process any additional sub-TLVs that may appear after.
         /// </summary>
-        public DataSegment SubTlvs { get; private set; }
+        public DataSegment SubtypeLengthValues { get; private set; }
 
         /// <summary>
         /// Parses an option from the given data.
@@ -125,22 +127,24 @@ namespace PcapDotNet.Packets.IpV6
         /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
+            if (data == null) 
+                throw new ArgumentNullException("data");
             if (data.Length < OptionDataMinimumLength)
                 return null;
 
             bool down = data.ReadBool(Offset.Down, Mask.Down);
             bool rankError = data.ReadBool(Offset.RankError, Mask.RankError);
             bool forwardingError = data.ReadBool(Offset.ForwardingError, Mask.ForwardingError);
-            byte rplInstanceId = data[Offset.RplInstanceId];
+            byte rplInstanceId = data[Offset.RoutingProtocolLowPowerAndLossyNetworksInstanceId];
             ushort senderRank = data.ReadUShort(Offset.SenderRank, Endianity.Big);
-            DataSegment subTlvs = data.Subsegment(Offset.SubTlvs, data.Length - Offset.SubTlvs);
+            DataSegment subTlvs = data.Subsegment(Offset.SubTypeLengthValues, data.Length - Offset.SubTypeLengthValues);
 
             return new IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(down, rankError, forwardingError, rplInstanceId, senderRank, subTlvs);
         }
 
         internal override int DataLength
         {
-            get { return OptionDataMinimumLength + SubTlvs.Length; }
+            get { return OptionDataMinimumLength + SubtypeLengthValues.Length; }
         }
 
         internal override bool EqualsData(IpV6Option other)
@@ -150,16 +154,16 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override int GetDataHashCode()
         {
-            return Sequence.GetHashCode(BitSequence.Merge(BitSequence.Merge(Down, RankError, ForwardingError), RplInstanceId, SenderRank), SubTlvs);
+            return Sequence.GetHashCode(BitSequence.Merge(BitSequence.Merge(Down, RankError, ForwardingError), RoutingProtocolLowPowerAndLossyNetworksInstanceId, SenderRank), SubtypeLengthValues);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
             byte flags = (byte)((Down ? Mask.Down : 0) | (RankError ? Mask.RankError : 0) | (ForwardingError ? Mask.ForwardingError : 0));
             buffer.Write(ref offset, flags);
-            buffer.Write(ref offset, RplInstanceId);
+            buffer.Write(ref offset, RoutingProtocolLowPowerAndLossyNetworksInstanceId);
             buffer.Write(ref offset, SenderRank, Endianity.Big);
-            buffer.Write(ref offset, SubTlvs);
+            buffer.Write(ref offset, SubtypeLengthValues);
         }
 
         private IpV6OptionRoutingProtocolLowPowerAndLossyNetworks()
@@ -170,8 +174,8 @@ namespace PcapDotNet.Packets.IpV6
         private bool EqualsData(IpV6OptionRoutingProtocolLowPowerAndLossyNetworks other)
         {
             return other != null &&
-                   Down == other.Down && RankError == other.RankError && ForwardingError == other.ForwardingError && RplInstanceId == other.RplInstanceId &&
-                   SenderRank == other.SenderRank && SubTlvs.Equals(SubTlvs);
+                   Down == other.Down && RankError == other.RankError && ForwardingError == other.ForwardingError && RoutingProtocolLowPowerAndLossyNetworksInstanceId == other.RoutingProtocolLowPowerAndLossyNetworksInstanceId &&
+                   SenderRank == other.SenderRank && SubtypeLengthValues.Equals(SubtypeLengthValues);
         }
     }
 }

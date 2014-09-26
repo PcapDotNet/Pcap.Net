@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Creates an instance from sub type and mobile node group identifier.
         /// </summary>
-        /// <param name="subType">
+        /// <param name="subtype">
         /// Identifies the specific mobile node's group type.
         /// </param>
         /// <param name="mobileNodeGroupIdentifier">
@@ -43,17 +43,17 @@ namespace PcapDotNet.Packets.IpV6
         /// The value of (1) ALL-SESSIONS is the default group of all mobility sessions established between a given local mobility anchor and a mobile access
         /// gateway.
         /// </param>
-        public IpV6MobilityOptionMobileNodeGroupIdentifier(IpV6MobileNodeGroupIdentifierSubType subType, uint mobileNodeGroupIdentifier)
+        public IpV6MobilityOptionMobileNodeGroupIdentifier(IpV6MobileNodeGroupIdentifierSubtype subtype, uint mobileNodeGroupIdentifier)
             : base(IpV6MobilityOptionType.MobileNodeGroupIdentifier)
         {
-            SubType = subType;
+            Subtype = subtype;
             MobileNodeGroupIdentifier = mobileNodeGroupIdentifier;
         }
 
         /// <summary>
         /// Identifies the specific mobile node's group type.
         /// </summary>
-        public IpV6MobileNodeGroupIdentifierSubType SubType { get; private set; }
+        public IpV6MobileNodeGroupIdentifierSubtype Subtype { get; private set; }
 
         /// <summary>
         /// Contains the mobile node's group identifier.
@@ -68,10 +68,10 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length != OptionDataLength)
                 return null;
 
-            IpV6MobileNodeGroupIdentifierSubType subType = (IpV6MobileNodeGroupIdentifierSubType)data[Offset.SubType];
+            IpV6MobileNodeGroupIdentifierSubtype subtype = (IpV6MobileNodeGroupIdentifierSubtype)data[Offset.SubType];
             uint mobileNodeGroupIdentifier = data.ReadUInt(Offset.MobileNodeGroupIdentifier, Endianity.Big);
 
-            return new IpV6MobilityOptionMobileNodeGroupIdentifier(subType, mobileNodeGroupIdentifier);
+            return new IpV6MobilityOptionMobileNodeGroupIdentifier(subtype, mobileNodeGroupIdentifier);
         }
 
         internal override int DataLength
@@ -86,25 +86,25 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override int GetDataHashCode()
         {
-            return Sequence.GetHashCode(SubType, MobileNodeGroupIdentifier);
+            return Sequence.GetHashCode(Subtype, MobileNodeGroupIdentifier);
         }
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
-            buffer.Write(offset + Offset.SubType, (byte)SubType);
+            buffer.Write(offset + Offset.SubType, (byte)Subtype);
             buffer.Write(offset + Offset.MobileNodeGroupIdentifier, MobileNodeGroupIdentifier, Endianity.Big);
             offset += OptionDataLength;
         }
 
         private IpV6MobilityOptionMobileNodeGroupIdentifier()
-            : this(IpV6MobileNodeGroupIdentifierSubType.BulkBindingUpdateGroup, 0)
+            : this(IpV6MobileNodeGroupIdentifierSubtype.BulkBindingUpdateGroup, 0)
         {
         }
 
         private bool EqualsData(IpV6MobilityOptionMobileNodeGroupIdentifier other)
         {
             return other != null &&
-                   SubType == other.SubType && MobileNodeGroupIdentifier == other.MobileNodeGroupIdentifier;
+                   Subtype == other.Subtype && MobileNodeGroupIdentifier == other.MobileNodeGroupIdentifier;
         }
     }
 }

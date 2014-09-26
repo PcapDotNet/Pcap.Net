@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -55,8 +56,11 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
         public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, ReadOnlyCollection<IpV6Address> homeAgentAddresses,
                                                                  IpV6MobilityOptions options)
-            : base(nextHeader, checksum, options, MessageDataOffset.HomeAgentAddresses + homeAgentAddresses.Count * IpV6Address.SizeOf)
+            : base(nextHeader, checksum, options,
+                   MessageDataOffset.HomeAgentAddresses + (homeAgentAddresses == null ? 0 : homeAgentAddresses.Count) * IpV6Address.SizeOf)
         {
+            if (homeAgentAddresses == null)
+                throw new ArgumentNullException("homeAgentAddresses");
             HomeAgentAddresses = homeAgentAddresses;
         }
 

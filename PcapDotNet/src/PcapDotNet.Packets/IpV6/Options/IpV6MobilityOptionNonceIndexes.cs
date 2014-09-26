@@ -16,8 +16,8 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------------+
     /// </pre>
     /// </summary>
-    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.NonceIndices)]
-    public sealed class IpV6MobilityOptionNonceIndices : IpV6MobilityOptionComplex
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.NonceIndexes)]
+    public sealed class IpV6MobilityOptionNonceIndexes : IpV6MobilityOptionComplex
     {
         private static class Offset
         {
@@ -40,8 +40,8 @@ namespace PcapDotNet.Packets.IpV6
         /// Ignored in requests to delete a binding.
         /// Otherwise, it tells the correspondent node which nonce value to use when producing the care-of keygen token.
         /// </param>
-        public IpV6MobilityOptionNonceIndices(ushort homeNonceIndex, ushort careOfNonceIndex)
-            : base(IpV6MobilityOptionType.NonceIndices)
+        public IpV6MobilityOptionNonceIndexes(ushort homeNonceIndex, ushort careOfNonceIndex)
+            : base(IpV6MobilityOptionType.NonceIndexes)
         {
             HomeNonceIndex = homeNonceIndex;
             CareOfNonceIndex = careOfNonceIndex;
@@ -66,7 +66,7 @@ namespace PcapDotNet.Packets.IpV6
             ushort homeNonceIndex = data.ReadUShort(Offset.HomeNonceIndex, Endianity.Big);
             ushort careOfNonceIndex = data.ReadUShort(Offset.CareOfNonceIndex, Endianity.Big);
 
-            return new IpV6MobilityOptionNonceIndices(homeNonceIndex, careOfNonceIndex);
+            return new IpV6MobilityOptionNonceIndexes(homeNonceIndex, careOfNonceIndex);
         }
 
         internal override int DataLength
@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override bool EqualsData(IpV6MobilityOption other)
         {
-            return EqualsData(other as IpV6MobilityOptionNonceIndices);
+            return EqualsData(other as IpV6MobilityOptionNonceIndexes);
         }
 
         internal override int GetDataHashCode()
@@ -90,12 +90,12 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, CareOfNonceIndex, Endianity.Big);
         }
 
-        private IpV6MobilityOptionNonceIndices()
+        private IpV6MobilityOptionNonceIndexes()
             : this(0, 0)
         {
         }
 
-        private bool EqualsData(IpV6MobilityOptionNonceIndices other)
+        private bool EqualsData(IpV6MobilityOptionNonceIndexes other)
         {
             return other != null &&
                    HomeNonceIndex == other.HomeNonceIndex && CareOfNonceIndex == other.CareOfNonceIndex;

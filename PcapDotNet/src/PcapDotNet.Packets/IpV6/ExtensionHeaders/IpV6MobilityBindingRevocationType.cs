@@ -7,6 +7,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6MobilityBindingRevocationType : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Binding Revocation Indication.
         /// </summary>
         BindingRevocationIndication = 1,

@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6621.
         /// </summary>
-        SmfDpd = 0x08,
+        SimplifiedMulticastForwardingDuplicatePacketDetection = 0x08,
 
         /// <summary>
         /// RFC 6275.
@@ -58,12 +58,12 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// RFC 6553.
         /// </summary>
-        RplOption = 0x63,
+        RoutingProtocolLowPowerAndLossyNetworksOption = 0x63,
 
         /// <summary>
         /// RFC irtf-rrg-ilnp-noncev6-06.
         /// </summary>
-        IlnpNonce = 0x8B,
+        IdentifierLocatorNetworkProtocolNonce = 0x8B,
         
         /// <summary>
         /// RFC ietf-6man-lineid-08.

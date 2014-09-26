@@ -10,14 +10,14 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-------------+--------------+
     /// </pre>
     /// </summary>
-    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CgaParametersRequest)]
-    public sealed class IpV6MobilityOptionCgaParametersRequest : IpV6MobilityOptionEmpty
+    [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest)]
+    public sealed class IpV6MobilityOptionCryptographicallyGeneratedAddressParametersRequest : IpV6MobilityOptionEmpty
     {
         /// <summary>
         /// Creates an instance.
         /// </summary>
-        public IpV6MobilityOptionCgaParametersRequest()
-            : base(IpV6MobilityOptionType.CgaParametersRequest)
+        public IpV6MobilityOptionCryptographicallyGeneratedAddressParametersRequest()
+            : base(IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest)
         {
         }
 
@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.IpV6
             if (data.Length != OptionDataLength)
                 return null;
 
-            return new IpV6MobilityOptionCgaParametersRequest();
+            return new IpV6MobilityOptionCryptographicallyGeneratedAddressParametersRequest();
         }
     }
 }

@@ -22,6 +22,8 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="extensionHeaders">The extension headers.</param>
         public IpV6ExtensionHeaders(ReadOnlyCollection<IpV6ExtensionHeader> extensionHeaders)
         {
+            if (extensionHeaders == null) 
+                throw new ArgumentNullException("extensionHeaders");
             for (int i = 0; i < extensionHeaders.Count; ++i)
             {
                 if (extensionHeaders[i].Protocol == IpV4Protocol.EncapsulatingSecurityPayload && i != extensionHeaders.Count - 1)

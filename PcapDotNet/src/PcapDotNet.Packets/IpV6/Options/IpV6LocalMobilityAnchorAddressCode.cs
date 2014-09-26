@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6LocalMobilityAnchorAddressCode : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// IPv6 address of the local mobility anchor (LMAA).
         /// </summary>
         IpV6 = 1,

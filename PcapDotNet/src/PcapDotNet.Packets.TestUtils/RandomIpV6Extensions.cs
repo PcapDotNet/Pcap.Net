@@ -82,14 +82,14 @@ namespace PcapDotNet.Packets.TestUtils
                         case IpV6RoutingType.Type2RoutingHeader:
                             return new IpV6ExtensionHeaderRoutingHomeAddress(nextHeader, random.NextByte(), random.NextIpV6Address());
 
-                        case IpV6RoutingType.RplSourceRouteHeader:
-                            byte commonPrefixLengthForNonLastAddresses = random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1);
-                            byte commonPrefixLengthForLastAddress = random.NextByte(IpV6ExtensionHeaderRoutingRpl.MaxCommonPrefixLength + 1);
+                        case IpV6RoutingType.RoutingProtocolLowPowerAndLossyNetworksSourceRouteHeader:
+                            byte commonPrefixLengthForNonLastAddresses = random.NextByte(IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks.MaxCommonPrefixLength + 1);
+                            byte commonPrefixLengthForLastAddress = random.NextByte(IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks.MaxCommonPrefixLength + 1);
                             IpV6Address[] addresses = random.NextIpV6AddressWithLeadingZeroBytesArray(commonPrefixLengthForNonLastAddresses,
                                                                                                       random.NextInt(0, 10));
                             if (addresses.Any() || random.NextBool())
                                 addresses = addresses.Concat(random.NextIpV6AddressWithLeadingZeroBytes(commonPrefixLengthForLastAddress)).ToArray();
-                            return new IpV6ExtensionHeaderRoutingRpl(nextHeader, random.NextByte(), commonPrefixLengthForNonLastAddresses,
+                            return new IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(nextHeader, random.NextByte(), commonPrefixLengthForNonLastAddresses,
                                                                      commonPrefixLengthForLastAddress, addresses);
 
                         default:
@@ -191,7 +191,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                                                      random.NextIpV6MobilityOptions());
 
                 case IpV6MobilityHeaderType.BindingRevocationMessage: // 16
-                    IpV6MobilityBindingRevocationType bindingRevocationType = random.NextEnum<IpV6MobilityBindingRevocationType>();
+                    IpV6MobilityBindingRevocationType bindingRevocationType = random.NextEnum(IpV6MobilityBindingRevocationType.None);
                     byte revocationTriggerOrStatus = random.NextByte();
                     ushort sequenceNumber = random.NextUShort();
                     bool proxyBinding = random.NextBool();
@@ -264,24 +264,24 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6OptionCalipso(random.NextEnum<IpV6CalipsoDomainOfInterpretation>(), random.NextByte(), random.NextUShort(),
                                                  random.NextDataSegment(random.NextInt(0, IpV6OptionCalipso.CompartmentBitmapMaxLength + 1) / 4 * sizeof(int)));
 
-                case IpV6OptionType.SmfDpd:
+                case IpV6OptionType.SimplifiedMulticastForwardingDuplicatePacketDetection:
                     if (random.NextBool())
-                        return new IpV6OptionSmfDpdSequenceHashAssistValue(random.NextDataSegment(random.NextInt(1, 100)));
+                        return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceHashAssistValue(random.NextDataSegment(random.NextInt(1, 100)));
                     IpV6TaggerIdType taggerIdType = random.NextEnum<IpV6TaggerIdType>();
                     DataSegment identifier = random.NextDataSegment(random.NextInt(0, 100));
                     switch (taggerIdType)
                     {
                         case IpV6TaggerIdType.Null:
-                            return new IpV6OptionSmfDpdNull(identifier);
+                            return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionNull(identifier);
 
                         case IpV6TaggerIdType.Default:
-                            return new IpV6OptionSmfDpdDefault(random.NextDataSegment(random.NextInt(1, 17)), identifier);
+                            return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault(random.NextDataSegment(random.NextInt(1, 17)), identifier);
 
                         case IpV6TaggerIdType.IpV4:
-                            return new IpV6OptionSmfDpdIpV4(random.NextIpV4Address(), identifier);
+                            return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV4(random.NextIpV4Address(), identifier);
 
                         case IpV6TaggerIdType.IpV6:
-                            return new IpV6OptionSmfDpdIpV6(random.NextIpV6Address(), identifier);
+                            return new IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionIpV6(random.NextIpV6Address(), identifier);
 
                         default:
                             throw new InvalidOperationException(string.Format("Invalid taggerIdType value {0}", taggerIdType));
@@ -293,12 +293,12 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV6OptionType.EndpointIdentification:
                     return new IpV6OptionEndpointIdentification(random.NextDataSegment(random.Next(10)), random.NextDataSegment(random.Next(10)));
 
-                case IpV6OptionType.RplOption:
+                case IpV6OptionType.RoutingProtocolLowPowerAndLossyNetworksOption:
                     return new IpV6OptionRoutingProtocolLowPowerAndLossyNetworks(random.NextBool(), random.NextBool(), random.NextBool(), random.NextByte(),
                                                                                  random.NextUShort(), random.NextDataSegment(random.Next(10)));
 
-                case IpV6OptionType.IlnpNonce:
-                    return new IpV6OptionIlnpNonce(random.NextDataSegment(random.Next(10)));
+                case IpV6OptionType.IdentifierLocatorNetworkProtocolNonce:
+                    return new IpV6OptionIdentifierLocatorNetworkProtocolNonce(random.NextDataSegment(random.Next(10)));
 
                 case IpV6OptionType.LineIdentification:
                     return new IpV6OptionLineIdentificationDestination(random.NextDataSegment(random.Next(10)));
@@ -330,8 +330,8 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV6MobilityOptionType.AlternateCareOfAddress:
                     return new IpV6MobilityOptionAlternateCareOfAddress(random.NextIpV6Address());
 
-                case IpV6MobilityOptionType.NonceIndices:
-                    return new IpV6MobilityOptionNonceIndices(random.NextUShort(), random.NextUShort());
+                case IpV6MobilityOptionType.NonceIndexes:
+                    return new IpV6MobilityOptionNonceIndexes(random.NextUShort(), random.NextUShort());
 
                 case IpV6MobilityOptionType.BindingAuthorizationData:
                     return new IpV6MobilityOptionBindingAuthorizationData(random.NextDataSegment(random.NextInt(0, 100)));
@@ -357,11 +357,11 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV6MobilityOptionType.ReplayProtection:
                     return new IpV6MobilityOptionReplayProtection(random.NextULong());
 
-                case IpV6MobilityOptionType.CgaParametersRequest:
-                    return new IpV6MobilityOptionCgaParametersRequest();
+                case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest:
+                    return new IpV6MobilityOptionCryptographicallyGeneratedAddressParametersRequest();
 
-                case IpV6MobilityOptionType.CgaParameters:
-                    return new IpV6MobilityOptionCgaParameters(random.NextDataSegment(random.NextInt(0, 100)));
+                case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters:
+                    return new IpV6MobilityOptionCryptographicallyGeneratedAddressParameters(random.NextDataSegment(random.NextInt(0, 100)));
 
                 case IpV6MobilityOptionType.Signature:
                     return new IpV6MobilityOptionSignature(random.NextDataSegment(random.NextInt(0, 100)));
@@ -501,7 +501,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV6MobilityOptionAlternateIpV4CareOfAddress(random.NextIpV4Address());
 
                 case IpV6MobilityOptionType.MobileNodeGroupIdentifier:
-                    return new IpV6MobilityOptionMobileNodeGroupIdentifier(random.NextEnum<IpV6MobileNodeGroupIdentifierSubType>(), random.NextUInt());
+                    return new IpV6MobilityOptionMobileNodeGroupIdentifier(random.NextEnum<IpV6MobileNodeGroupIdentifierSubtype>(), random.NextUInt());
 
                 case IpV6MobilityOptionType.MobileAccessGatewayIpV6Address:
                     return new IpV6MobilityOptionMobileAccessGatewayIpV6Address(random.NextIpV6Address());

@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
@@ -99,6 +100,8 @@ namespace PcapDotNet.Packets.IpV6
         /// <returns>The option if parsing was successful, null otherwise.</returns>
         public IpV6Option CreateInstance(DataSegment data)
         {
+            if (data == null) 
+                throw new ArgumentNullException("data");
             if (data.Length != OptionDataLength)
                 return null;
 

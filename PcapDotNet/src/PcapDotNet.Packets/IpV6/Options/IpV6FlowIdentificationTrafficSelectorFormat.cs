@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6FlowIdentificationTrafficSelectorFormat : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// IPv4 binary traffic selector.
         /// </summary>
         IpV4Binary = 1,

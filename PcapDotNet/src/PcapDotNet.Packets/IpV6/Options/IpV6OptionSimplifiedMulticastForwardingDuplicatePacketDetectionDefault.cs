@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+--------------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV6OptionSmfDpdDefault : IpV6OptionSmfDpdSequenceBased
+    public sealed class IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault : IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased
     {
         /// <summary>
         /// Creates an instance from tagger id and identifier.
@@ -42,9 +42,11 @@ namespace PcapDotNet.Packets.IpV6
         /// When the TaggerId field is not present, then it is assumed that the source applied the SMF_DPD option 
         /// and the Identifier can be considered unique in the context of the IPv6 packet header srcAddr:dstAddr tuple.
         /// </param>
-        public IpV6OptionSmfDpdDefault(DataSegment taggerId, DataSegment identifier)
+        public IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault(DataSegment taggerId, DataSegment identifier)
             : base(identifier)
         {
+            if (taggerId == null) 
+                throw new ArgumentNullException("taggerId");
             if (taggerId.Length > TaggerIdMaxLength)
             {
                 throw new ArgumentOutOfRangeException("taggerId", taggerId,
@@ -82,9 +84,9 @@ namespace PcapDotNet.Packets.IpV6
             get { return IpV6TaggerIdType.Default; }
         }
 
-        internal override bool EqualsTaggerId(IpV6OptionSmfDpdSequenceBased other)
+        internal override bool EqualsTaggerId(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionSequenceBased other)
         {
-            return EqualsTaggerId(other as IpV6OptionSmfDpdDefault);
+            return EqualsTaggerId(other as IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault);
         }
 
         internal override int GetTaggerIdHashCode()
@@ -97,7 +99,7 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(ref offset, TaggerId);
         }
 
-        private bool EqualsTaggerId(IpV6OptionSmfDpdDefault other)
+        private bool EqualsTaggerId(IpV6OptionSimplifiedMulticastForwardingDuplicatePacketDetectionDefault other)
         {
             return other != null &&
                    TaggerId.Equals(other.TaggerId);

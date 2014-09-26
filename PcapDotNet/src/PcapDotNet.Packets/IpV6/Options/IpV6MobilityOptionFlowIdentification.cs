@@ -67,6 +67,8 @@ namespace PcapDotNet.Packets.IpV6
                                                     IpV6FlowIdentificationSubOptions subOptions)
             : base(IpV6MobilityOptionType.FlowIdentification)
         {
+            if (subOptions == null) 
+                throw new ArgumentNullException("subOptions");
             if (Offset.SubOptions + subOptions.BytesLength > byte.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("subOptions", subOptions,

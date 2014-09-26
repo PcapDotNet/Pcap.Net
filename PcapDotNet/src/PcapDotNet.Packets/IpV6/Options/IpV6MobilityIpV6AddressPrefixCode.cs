@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6MobilityIpV6AddressPrefixCode : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Old Care-of Address.
         /// </summary>
         OldCareOfAddress = 1,

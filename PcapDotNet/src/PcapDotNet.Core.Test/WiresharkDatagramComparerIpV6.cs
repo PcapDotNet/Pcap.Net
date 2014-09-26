@@ -315,7 +315,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case " Unknown (4 bytes)":
-                            MoreAssert.IsInRange((ushort)IpV6RouterAlertType.ActiveNetwork, (ushort)IpV6RouterAlertType.NsisNatfwNslp, (ushort)routerAlert.RouterAlertType);
+                            MoreAssert.IsInRange((ushort)IpV6RouterAlertType.ActiveNetwork, (ushort)IpV6RouterAlertType.NextStepsInSignalingNatFirewallLayerProtocol, (ushort)routerAlert.RouterAlertType);
                             headerField.AssertValueInRange(0x05020002, 0x05020044);
                             break;
 
