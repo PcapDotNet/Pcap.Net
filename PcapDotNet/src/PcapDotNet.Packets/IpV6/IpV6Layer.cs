@@ -164,7 +164,7 @@ namespace PcapDotNet.Packets.IpV6
         {
             return base.GetHashCode() ^
                    Sequence.GetHashCode(BitSequence.Merge(TrafficClass, HopLimit),
-                                        FlowLabel, Source, CurrentDestination, NextHeader) ^ ExtensionHeaders.SequenceGetHashCode();
+                                        FlowLabel, Source, CurrentDestination, NextHeader) ^ ExtensionHeaders.GetHashCode();
         }
 
         /// <summary>

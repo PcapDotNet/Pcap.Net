@@ -91,10 +91,10 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="addresses">Routing addresses.</param>
         public IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
-                                             byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
+                                                                          byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
         {
-            if (addresses == null) 
+            if (addresses == null)
                 throw new ArgumentNullException("addresses");
             if (commonPrefixLengthForNonLastAddresses > MaxCommonPrefixLength)
             {
