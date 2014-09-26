@@ -18,6 +18,7 @@
             <Word>ax</Word>
             <Word>axfr</Word>
             <Word>bbn</Word> <!-- Probably BBN Technologies (originally Bolt, Beranek and Newman) -->
+            <Word>calipso</Word>
             <Word>cbt</Word>
             <Word>ccitt</Word>
             <Word>cftp</Word> <!-- maybe Configurable Fault Tolerant Processor -->
@@ -53,6 +54,7 @@
             <Word>ipsilon</Word> <!-- As in Ipsilon Networks -->
             <Word>ipx</Word>
             <Word>ixfr</Word>
+            <Word>keygen</Word>
             <Word>kryptolan</Word>
             <Word>lite</Word>
             <Word>llq</Word>
@@ -62,6 +64,7 @@
             <Word>multiprotocol</Word>
             <Word>nca</Word>
             <Word>netmask</Word>
+            <Word>nonces</Word>
             <Word>nsa</Word>
             <Word>osi</Word>
             <Word>pcap</Word>
@@ -87,7 +90,9 @@
             <Word>unicast</Word>
             <Word>uti</Word>
             <Word>vpn</Word>
+            <Word>wi</Word>
             <Word>wiegand</Word>
+            <Word>wo</Word>
             <Word>xtp</Word>
             <Word>yx</Word> <!--Yet exists?-->
         </Recognized>

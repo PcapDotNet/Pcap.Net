@@ -79,6 +79,11 @@ namespace PcapDotNet.Packets.IpV6
         public IpV6AccessNetworkIdentifierSubOptionNetworkIdentifier(bool isNetworkNameUtf8, DataSegment networkName, DataSegment accessPointName)
             : base(IpV6AccessNetworkIdentifierSubOptionType.NetworkIdentifier)
         {
+            if (networkName == null) 
+                throw new ArgumentNullException("networkName");
+            if (accessPointName == null)
+                throw new ArgumentNullException("accessPointName");
+
             if (networkName.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException("networkName", networkName,
                                                       string.Format(CultureInfo.InvariantCulture, "Network Name cannot be longer than {0} bytes.", byte.MaxValue));

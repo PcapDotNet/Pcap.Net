@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6AccessNetworkIdentifierSubOptionType : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Network-Identifier sub-option.
         /// </summary>
         NetworkIdentifier = 1,

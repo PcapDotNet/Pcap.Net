@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.IpV6
         public const int OptionDataLength = Offset.LongitudeDegrees + UInt24.SizeOf;
 
         /// <summary>
-        /// Creates an instance from latitude and longtitude degrees using integer numbers encoded as a two's complement, fixed point number with 9 whole bits.
+        /// Creates an instance from latitude and longitude degrees using integer numbers encoded as a two's complement, fixed point number with 9 whole bits.
         /// See <see cref="IpV6AccessNetworkIdentifierSubOptionGeoLocation.CreateFromRealValues"/> for using real numbers for the degrees.
         /// </summary>
         /// <param name="latitudeDegrees">
@@ -63,33 +63,37 @@ namespace PcapDotNet.Packets.IpV6
                                                       string.Format(CultureInfo.InvariantCulture, "LatitudeDegreesReal is {0} and must be in [-90, 90] range.",
                                                                     latitudeDegreesReal));
 
-            double longtitudeDegreesReal = LongitudeDegreesReal;
-            if (longtitudeDegreesReal < -180 || longtitudeDegreesReal > 180)
+            double longitudeDegreesReal = LongitudeDegreesReal;
+            if (longitudeDegreesReal < -180 || longitudeDegreesReal > 180)
                 throw new ArgumentOutOfRangeException("longitudeDegrees", longitudeDegrees,
                                                       string.Format(CultureInfo.InvariantCulture,
-                                                                    "LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
+                                                                    "LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longitudeDegreesReal));
         }
 
         /// <summary>
-        /// Creates an instance from latitude and longtitude degrees using real numbers.
+        /// Creates an instance from latitude and longitude degrees using real numbers.
         /// </summary>
         /// <param name="latitudeDegreesReal">
         /// Positive degrees correspond to the Northern Hemisphere and negative degrees correspond to the Southern Hemisphere.
         /// The value ranges from -90 to +90 degrees.
         /// </param>
-        /// <param name="longtitudeDegreesReal">
+        /// <param name="longitudeDegreesReal">
         /// The value ranges from -180 to +180 degrees.
         /// </param>
         /// <returns>An instance created from the given real degrees values.</returns>
-        public static IpV6AccessNetworkIdentifierSubOptionGeoLocation CreateFromRealValues(double latitudeDegreesReal, double longtitudeDegreesReal)
+        public static IpV6AccessNetworkIdentifierSubOptionGeoLocation CreateFromRealValues(double latitudeDegreesReal, double longitudeDegreesReal)
         {
             if (latitudeDegreesReal < -90 || latitudeDegreesReal > 90)
-                throw new ArgumentOutOfRangeException("latitudeDegreesReal", latitudeDegreesReal, string.Format("LatitudeDegreesReal is {0} and must be in [-90, 90] range.", latitudeDegreesReal));
+                throw new ArgumentOutOfRangeException("latitudeDegreesReal", latitudeDegreesReal,
+                                                      string.Format(CultureInfo.InvariantCulture, "LatitudeDegreesReal is {0} and must be in [-90, 90] range.",
+                                                                    latitudeDegreesReal));
 
-            if (longtitudeDegreesReal < -180 || longtitudeDegreesReal > 180)
-                throw new ArgumentOutOfRangeException("longtitudeDegreesReal", longtitudeDegreesReal, string.Format("LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longtitudeDegreesReal));
+            if (longitudeDegreesReal < -180 || longitudeDegreesReal > 180)
+                throw new ArgumentOutOfRangeException("longitudeDegreesReal", longitudeDegreesReal,
+                                                      string.Format(CultureInfo.InvariantCulture,
+                                                                    "LongitudeDegreesReal is {0} and must be in [-180, 180] range.", longitudeDegreesReal));
 
-            return new IpV6AccessNetworkIdentifierSubOptionGeoLocation(ToInteger(latitudeDegreesReal), ToInteger(longtitudeDegreesReal));
+            return new IpV6AccessNetworkIdentifierSubOptionGeoLocation(ToInteger(latitudeDegreesReal), ToInteger(longitudeDegreesReal));
         }
 
         /// <summary>

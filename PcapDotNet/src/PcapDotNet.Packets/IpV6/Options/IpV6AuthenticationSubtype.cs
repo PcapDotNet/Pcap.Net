@@ -6,6 +6,11 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6AuthenticationSubtype : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Used to authenticate the Binding Update and Binding Acknowledgement messages based on the shared-key-based security association 
         /// between the Mobile Node and the Home Agent.
         /// The shared-key-based mobility security association between Mobile Node and Home Agent used within this specification consists of a mobility SPI,

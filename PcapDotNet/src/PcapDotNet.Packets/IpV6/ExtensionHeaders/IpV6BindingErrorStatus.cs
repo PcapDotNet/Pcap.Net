@@ -6,13 +6,19 @@ namespace PcapDotNet.Packets.IpV6
     public enum IpV6BindingErrorStatus : byte
     {
         /// <summary>
+        /// Invalid value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// RFC 6275.
         /// </summary>
         UnknownBindingForHomeAddressDestinationOption = 1,
 
         /// <summary>
         /// RFC 6275.
+        /// Unrecognized MH Type value.
         /// </summary>
-        UnrecognizedMhTypeValue = 2,
+        UnrecognizedMobilityHeaderTypeValue = 2,
     }
 }
