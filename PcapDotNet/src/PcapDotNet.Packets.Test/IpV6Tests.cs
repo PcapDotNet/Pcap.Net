@@ -87,9 +87,12 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
                 Assert.AreEqual(ipV6Layer.GetHashCode(), packet.Ethernet.IpV6.ExtractLayer().GetHashCode(), "IP Layer");
                 Assert.AreEqual(string.Format("{0} -> {1} ({2})", ipV6Layer.Source, ipV6Layer.CurrentDestination, ipV6Layer.NextHeader), ipV6Layer.ToString());
+                IEnumerator extensionHeadersEnumerator = ((IEnumerable)packet.Ethernet.IpV6.ExtensionHeaders).GetEnumerator();
                 for (int extensionHeaderIndex = 0; extensionHeaderIndex != packet.Ethernet.IpV6.ExtensionHeaders.Headers.Count; ++extensionHeaderIndex)
                 {
                     IpV6ExtensionHeader extensionHeader = packet.Ethernet.IpV6.ExtensionHeaders[extensionHeaderIndex];
+                    Assert.IsTrue(extensionHeadersEnumerator.MoveNext());
+                    Assert.AreEqual(extensionHeader, extensionHeadersEnumerator.Current);
                     IpV6ExtensionHeader layerExtensionheader = ipV6Layer.ExtensionHeaders[extensionHeaderIndex];
                     Assert.AreEqual(extensionHeader, layerExtensionheader);
                     Assert.AreEqual(extensionHeader.GetHashCode(), layerExtensionheader.GetHashCode());
@@ -2403,6 +2406,86 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6OptionHomeAddressCreateInstanceNullData()
+        {
+            Assert.IsNull(new IpV6OptionHomeAddress(IpV6Address.Zero).CreateInstance(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6OptionJumboPayloadCreateInstanceNullData()
+        {
+            Assert.IsNull(new IpV6OptionJumboPayload(2000).CreateInstance(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6OptionRouterAlertCreateInstanceNullData()
+        {
+            Assert.IsNull(new IpV6OptionRouterAlert(IpV6RouterAlertType.Rsvp).CreateInstance(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6OptionTunnelEncapsulationLimitCreateInstanceNullData()
+        {
+            Assert.IsNull(new IpV6OptionTunnelEncapsulationLimit(10).CreateInstance(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6OptionPadNCreateInstanceNullData()
+        {
+            Assert.IsNull(new IpV6OptionPadN(10).CreateInstance(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionCryptographicallyGeneratedAddressParametersNullCryptographicallyGeneratedAddressParameters()
+        {
+            Assert.IsNull(new IpV6MobilityOptionCryptographicallyGeneratedAddressParameters(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionMobileNodeIdentifierNullIdentifier()
+        {
+            Assert.IsNull(new IpV6MobilityOptionMobileNodeIdentifier(IpV6MobileNodeIdentifierSubtype.NetworkAccessIdentifier, null));
+            Assert.Fail();
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionContextRequestEntryNullOption()
+        {
+            Assert.IsNull(new IpV6MobilityOptionContextRequestEntry(0, null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6MobilityOptionServiceSelectionNullIdentifier()
+        {
+            Assert.IsNull(new IpV6MobilityOptionServiceSelection(null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void PppFrameCheckSequenceCalculatorCalculateFrameCheckSequence16NullBytes()
+        {
+            Assert.IsNull(PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(0, null));
+            Assert.Fail();
+        }
+
+        [TestMethod]
         public void IpV6OptionJumboPayloadDataTooShort()
         {
             Packet packet = PacketBuilder.Build(
@@ -2539,6 +2622,14 @@ namespace PcapDotNet.Packets.Test
             --packet.Buffer[14 + 40 + 2 + 1];
             Packet invalidPacket = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
             Assert.IsFalse(invalidPacket.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeaderMobilityExperimentalNullMessageData()
+        {
+            Assert.IsNull(new IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol.Pin, 0, null));
+            Assert.Fail();
         }
 
         [TestMethod]
