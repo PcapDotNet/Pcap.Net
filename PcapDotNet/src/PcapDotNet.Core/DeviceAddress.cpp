@@ -74,10 +74,10 @@ DeviceAddress::DeviceAddress(pcap_addr_t* pcapAddress)
     }
 }
 
-
 // Private
 
 // static
+
 void DeviceAddress::AppendSocketAddressString(StringBuilder^ stringBuilder, SocketAddress^ socketAddress, String^ title)
 {
     if (socketAddress != nullptr)
