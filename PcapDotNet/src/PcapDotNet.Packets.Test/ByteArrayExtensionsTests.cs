@@ -178,10 +178,28 @@ namespace PcapDotNet.Packets.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
-        public void ByteArrayUnsignedBigIntegerNullBufferTest()
+        public void ByteArrayReadUnsignedBigIntegerNullBufferTest()
         {
             byte[] buffer = null;
             Assert.IsNotNull(buffer.ReadUnsignedBigInteger(0, 0, Endianity.Big));
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void ByteArrayWriteUnsignedBigIntegerNullBufferTest()
+        {
+            byte[] buffer = null;
+            buffer.WriteUnsigned(0, 0, 1, Endianity.Big);
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void ByteArrayWriteUnsignedNegativeBigIntegerBufferTest()
+        {
+            byte[] buffer = new byte[200];
+            buffer.WriteUnsigned(0, -1, 100, Endianity.Big);
             Assert.Fail();
         }
 
