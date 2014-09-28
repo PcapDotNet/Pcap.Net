@@ -14,7 +14,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Pcap.Net")];
 [assembly:AssemblyProductAttribute("PcapDotNet.Core")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c)  2010")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) 2010")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -29,8 +29,8 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("0.10.0.*")];
-[assembly:AssemblyFileVersionAttribute("0.10.0.0")]
+[assembly:AssemblyVersionAttribute("1.0.0.*")];
+[assembly:AssemblyFileVersionAttribute("1.0.0.0")]
 
 [assembly:ComVisible(false)];
 
