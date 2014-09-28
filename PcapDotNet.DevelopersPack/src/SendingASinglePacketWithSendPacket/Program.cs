@@ -13,6 +13,7 @@ using PcapDotNet.Packets.Http;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.Transport;
 
 namespace SendingASinglePacketWithSendPacket
@@ -112,6 +113,7 @@ namespace SendingASinglePacketWithSendPacket
                 communicator.SendPacket(BuildArpPacket());
                 communicator.SendPacket(BuildVLanTaggedFramePacket());
                 communicator.SendPacket(BuildIpV4Packet());
+                communicator.SendPacket(BuildIpV6Packet());
                 communicator.SendPacket(BuildIcmpPacket());
                 communicator.SendPacket(BuildIgmpPacket());
                 communicator.SendPacket(BuildGrePacket());
@@ -243,6 +245,40 @@ namespace SendingASinglePacketWithSendPacket
                     };
 
             PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV4Layer, payloadLayer);
+
+            return builder.Build(DateTime.Now);
+        }
+
+        /// <summary>
+        /// This function build an IPv6 over Ethernet with payload packet.
+        /// </summary>
+        private static Packet BuildIpV6Packet()
+        {
+            EthernetLayer ethernetLayer =
+                new EthernetLayer
+                {
+                    Source = new MacAddress("01:01:01:01:01:01"),
+                    Destination = new MacAddress("02:02:02:02:02:02"),
+                    EtherType = EthernetType.None,
+                };
+
+            IpV6Layer ipV6Layer =
+                new IpV6Layer
+                {
+                    Source = new IpV6Address("0123:4567:89AB:CDEF:0123:4567:89AB:CDEF"),
+                    CurrentDestination = new IpV6Address("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210"),
+                    FlowLabel = 123,
+                    HopLimit = 100,
+                    NextHeader = IpV4Protocol.Udp,
+                };
+
+            PayloadLayer payloadLayer =
+                new PayloadLayer
+                {
+                    Data = new Datagram(Encoding.ASCII.GetBytes("hello world")),
+                };
+
+            PacketBuilder builder = new PacketBuilder(ethernetLayer, ipV6Layer, payloadLayer);
 
             return builder.Build(DateTime.Now);
         }
