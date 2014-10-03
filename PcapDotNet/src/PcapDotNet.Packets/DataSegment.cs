@@ -375,9 +375,29 @@ namespace PcapDotNet.Packets
             return sum;
         }
 
+        internal static uint Sum16Bits(IpV6Address address)
+        {
+            return Sum16Bits(address.ToValue());
+        }
+
         internal static uint Sum16Bits(IpV4Address address)
         {
-            uint value = address.ToValue();
+            return Sum16Bits(address.ToValue());
+        }
+
+
+        internal static uint Sum16Bits(UInt128 value)
+        {
+            return Sum16Bits((ulong)(value >> 64)) + Sum16Bits((ulong)value);
+        }
+
+        internal static uint Sum16Bits(ulong value)
+        {
+            return Sum16Bits((uint)(value >> 32)) + Sum16Bits((uint)value);
+        }
+
+        internal static uint Sum16Bits(uint value)
+        {
             return (value >> 16) + (value & 0xFFFF);
         }
 

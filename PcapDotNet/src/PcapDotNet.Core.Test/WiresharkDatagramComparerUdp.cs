@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 
@@ -16,7 +17,7 @@ namespace PcapDotNet.Core.Test
 
         protected override bool CompareField(XElement field, Datagram parentDatagram, Datagram datagram)
         {
-            IpV4Datagram ipV4Datagram = (IpV4Datagram)parentDatagram;
+            IpDatagram ipDatagram = (IpDatagram)parentDatagram;
             UdpDatagram udpDatagram = (UdpDatagram)datagram;
 
             switch (field.Name())
@@ -47,12 +48,12 @@ namespace PcapDotNet.Core.Test
                             switch (checksumField.Name())
                             {
                                 case "udp.checksum_good":
-                                    checksumField.AssertShowDecimal(ipV4Datagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "udp.checksum_bad":
                                     if (checksumField.Show() == "1")
-                                        Assert.IsFalse(ipV4Datagram.IsTransportChecksumCorrect);
+                                        Assert.IsFalse(ipDatagram.IsTransportChecksumCorrect);
                                     else
                                         checksumField.AssertShowDecimal(0);
                                     break;

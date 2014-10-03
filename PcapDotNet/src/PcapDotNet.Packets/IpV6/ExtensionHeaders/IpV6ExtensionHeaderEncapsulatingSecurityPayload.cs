@@ -209,12 +209,6 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public DataSegment EncryptedDataAndAuthenticationData { get; private set; }
 
-        internal static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
-        {
-            nextNextHeader = null;
-            extensionHeaderLength = extensionHeader.Length;
-        }
-
         internal static IpV6ExtensionHeaderEncapsulatingSecurityPayload CreateInstance(DataSegment extensionHeaderData, out int numBytesRead)
         {
             if (extensionHeaderData.Length < MinimumLength)

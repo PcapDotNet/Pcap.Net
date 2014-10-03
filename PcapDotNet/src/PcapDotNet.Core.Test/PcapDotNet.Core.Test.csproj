@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BerkeleyPacketFilterTests.cs" />
+    <Compile Include="IpV6AddressExtensions.cs" />
     <Compile Include="LivePacketDeviceExtensionsTests.cs" />
     <Compile Include="LivePacketDeviceTests.cs" />
     <Compile Include="MarshalingServicesTests.cs" />

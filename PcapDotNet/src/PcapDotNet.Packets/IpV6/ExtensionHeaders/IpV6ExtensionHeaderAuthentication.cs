@@ -200,19 +200,6 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderAuthentication(nextHeader, securityParametersIndex, sequenceNumber, authenticationData);
         }
 
-        internal static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
-        {
-            if (extensionHeader.Length < MinimumLength)
-            {
-                nextNextHeader = null;
-                extensionHeaderLength = extensionHeader.Length;
-                return;
-            }
-
-            nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
-            extensionHeaderLength = (extensionHeader[Offset.PayloadLength] + 2) * 4;
-        }
-
         internal override void Write(byte[] buffer, ref int offset)
         {
             buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);

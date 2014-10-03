@@ -29,6 +29,11 @@ namespace PcapDotNet.Core.Test
                 do
                 {
                     ++_currentExtensionHeaderIndex;
+                    if (_currentExtensionHeaderIndex >= ipV6Datagram.ExtensionHeaders.Headers.Count)
+                    {
+                        Assert.IsFalse(ipV6Datagram.ExtensionHeaders.IsValid);
+                        return false;
+                    }
                 } while (ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex].Protocol != IpV4Protocol.AuthenticationHeader);
                 --_count;
             }

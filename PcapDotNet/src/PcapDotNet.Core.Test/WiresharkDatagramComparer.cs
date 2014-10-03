@@ -27,7 +27,8 @@ namespace PcapDotNet.Core.Test
             if (Ignore(datagram))
                 return null;
 
-            CompareDatagram(layer, datagramParent as Datagram, datagram);
+            if (!CompareDatagram(layer, datagramParent as Datagram, datagram))
+                return null;
             return datagram;
         }
 
@@ -40,7 +41,7 @@ namespace PcapDotNet.Core.Test
             return false;
         }
 
-        protected void CompareDatagram(XElement layer, Datagram parentDatagram, Datagram datagram)
+        protected bool CompareDatagram(XElement layer, Datagram parentDatagram, Datagram datagram)
         {
             bool success = true;
             foreach (var element in layer.Fields())
@@ -53,6 +54,7 @@ namespace PcapDotNet.Core.Test
             }
 
             WiresharkCompareTests.CompareProtocols(datagram, layer, success);
+            return success;
         }
 
         public static WiresharkDatagramComparer GetComparer(string name, int count, bool parentLayerSuccess)

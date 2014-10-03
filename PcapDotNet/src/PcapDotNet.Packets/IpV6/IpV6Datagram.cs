@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PcapDotNet.Base;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.IpV6
@@ -32,7 +33,7 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-----------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV6Datagram : Datagram
+    public sealed class IpV6Datagram : IpDatagram
     {
         /// <summary>
         /// The number of bytes the header takes in bytes (not including extension headers).
@@ -73,14 +74,6 @@ namespace PcapDotNet.Packets.IpV6
         /// The version (6).
         /// </summary>
         public const int DefaultVersion = 0x6;
-
-        /// <summary>
-        /// Internet Protocol version number.
-        /// </summary>
-        public byte Version
-        {
-            get { return (byte)((this[Offset.Version] & Mask.Version) >> Shift.Version); }
-        }
 
         /// <summary>
         /// Available for use by originating nodes and/or forwarding routers to identify and distinguish between different classes or priorities of 
@@ -170,6 +163,49 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        public override int TotalLength
+        {
+            get { return HeaderLength + PayloadLength; }
+        }
+
+        protected override ushort CalculateTransportChecksum()
+        {
+            return CalculateTransportChecksum(Buffer, StartOffset, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, CurrentDestination);
+        }
+
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
+        {
+            int offsetAfterChecksum = offset + HeaderLength + transportChecksumOffset + 2;
+            uint sum = Sum16Bits(buffer, offset + Offset.SourceAddress, IpV6Address.SizeOf) +
+                       Sum16Bits(destination) +
+                       transportLength + buffer[offset + Offset.NextHeader] +
+                       Sum16Bits(buffer, offset + HeaderLength, transportChecksumOffset) +
+                       Sum16Bits(buffer, offsetAfterChecksum, transportLength - transportChecksumOffset - 2);
+
+            ushort checksumResult = Sum16BitsToChecksum(sum);
+            if (checksumResult == 0 && isChecksumOptional)
+                return 0xFFFF;
+            return checksumResult;
+        }
+
+        internal override IpV4Protocol PayloadProtocol
+        {
+            get
+            {
+                IpV4Protocol? extensionHeadersNextHeader = ExtensionHeaders.NextHeader;
+                if (extensionHeadersNextHeader != null)
+                    return extensionHeadersNextHeader.Value;
+                return NextHeader;
+            }
+        }
+
+        internal override DataSegment GetPayload()
+        {
+            if (Length < HeaderLength)
+                return null;
+            return Subsegment(HeaderLength + ExtensionHeaders.BytesLength, Length - HeaderLength - ExtensionHeaders.BytesLength);
+        }
+
         private void ParseExtensionHeaders()
         {
             if (_extensionHeaders != null)
@@ -221,16 +257,7 @@ namespace PcapDotNet.Packets.IpV6
             if (payload.Length <= HeaderLength)
                 return payload.Length;
 
-            int totalLength = HeaderLength;
-            IpV4Protocol? nextHeader = (IpV4Protocol)payload[Offset.NextHeader];
-            while (nextHeader.HasValue && IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value))
-            {
-                int extensionHeaderLength;
-                IpV6ExtensionHeader.GetNextNextHeaderAndLength(nextHeader.Value, payload.Subsegment(totalLength, payload.Length - totalLength), out nextHeader,
-                                                               out extensionHeaderLength);
-                totalLength += extensionHeaderLength;
-            }
-            return totalLength;
+            return Math.Min(payload.Length, HeaderLength + payload.ReadUShort(Offset.PayloadLength, Endianity.Big));
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,

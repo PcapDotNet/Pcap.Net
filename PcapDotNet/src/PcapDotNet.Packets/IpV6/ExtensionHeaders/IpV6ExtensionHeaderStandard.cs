@@ -128,18 +128,6 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal static void GetNextNextHeaderAndLength(DataSegment extensionHeader, out IpV4Protocol? nextNextHeader, out int extensionHeaderLength)
-        {
-            if (extensionHeader.Length < MinimumLength)
-            {
-                nextNextHeader = null;
-                extensionHeaderLength = extensionHeader.Length;
-                return;
-            }
-            nextNextHeader = (IpV4Protocol)extensionHeader[Offset.NextHeader];
-            extensionHeaderLength = Math.Min(extensionHeader.Length / 8 * 8, (extensionHeader[Offset.HeaderExtensionLength] + 1) * 8);
-        }
-
         internal static ReadOnlyCollection<IpV4Protocol> StandardExtensionHeaders
         {
             get { return _standardExtensionHeaders; }

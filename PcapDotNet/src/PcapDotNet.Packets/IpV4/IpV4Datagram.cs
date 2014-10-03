@@ -4,13 +4,14 @@ using System.Linq;
 using PcapDotNet.Packets.Gre;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.Igmp;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.Transport;
 
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
+    /// RFC 791.
     /// Represents an IPv4 datagram.
-    /// 
     /// <pre>
     /// +-----+---------+-----+-----------------+-------+-----------------+
     /// | Bit | 0-3     | 4-7 | 8-15            | 16-18 | 19-31           |
@@ -33,7 +34,7 @@ namespace PcapDotNet.Packets.IpV4
     /// +-----+-----------------------------------------------------------+
     /// </pre>
     /// </summary>
-    public sealed class IpV4Datagram : Datagram
+    public sealed class IpV4Datagram : IpDatagram
     {
         /// <summary>
         /// The minimum length of the header in bytes.
@@ -63,15 +64,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The version (4).
         /// </summary>
-        public const int DefaultVersion = 0x4;
-
-        /// <summary>
-        /// Indicates the format of the internet header.
-        /// </summary>
-        public int Version
-        {
-            get { return (this[Offset.VersionAndHeaderLength] & 0xF0) >> 4; }
-        }
+        public const byte DefaultVersion = 0x4;
 
         /// <summary>
         /// The header length in bytes.
@@ -100,7 +93,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// The length of the entire datagram as stated in the total length field.
         /// </summary>
-        public ushort TotalLength
+        public override int TotalLength
         {
             get { return ReadUShort(Offset.TotalLength, Endianity.Big); }
         }
@@ -205,26 +198,6 @@ namespace PcapDotNet.Packets.IpV4
         }
 
         /// <summary>
-        /// Returns whether the TCP or UDP checksum is correct.
-        /// The protocol must be TCP or UDP.
-        /// For UDP, the checksum is optional, so 0 checksum is still correct.
-        /// </summary>
-        public bool IsTransportChecksumCorrect
-        {
-            get
-            {
-                if (_isTransportChecksumCorrect == null)
-                {
-                    ushort transportChecksum = Transport.Checksum;
-                    _isTransportChecksumCorrect = Length >= TotalLength &&
-                                                  (Transport.IsChecksumOptional && transportChecksum == 0) ||
-                                                  (CalculateTransportChecksum() == transportChecksum);
-                }
-                return _isTransportChecksumCorrect.Value;
-            }
-        }
-
-        /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
         public override ILayer ExtractLayer()
@@ -243,122 +216,16 @@ namespace PcapDotNet.Packets.IpV4
                        };
         }
 
-        /// <summary>
-        /// The payload of the datagram.
-        /// </summary>
-        public Datagram Payload
+        internal override IpV4Protocol PayloadProtocol
         {
-            get
-            {
-                if (_payload == null && Length >= HeaderLength)
-                    _payload = new Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _payload;
-            }
+            get { return Protocol; }
         }
 
-         /// <summary>
-        /// The payload of the datagram as an IPv4 datagram (IP over IP).
-        /// </summary>
-        public IpV4Datagram IpV4
+        internal override DataSegment GetPayload()
         {
-            get
-            {
-                if (_ipV4 == null && Length >= HeaderLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                return _ipV4;
-            }
-        }
-
-        /// <summary>
-        /// The payload of the datagram as an ICMP datagram.
-        /// </summary>
-        public IcmpDatagram Icmp
-        {
-            get
-            {
-                if (_icmp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _icmp = IcmpDatagram.CreateDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-
-                return _icmp;
-            }
-        }
-
-        /// <summary>
-        /// The payload of the datagram as an IGMP datagram.
-        /// </summary>
-        public IgmpDatagram Igmp
-        {
-            get
-            {
-                if (_igmp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _igmp = new IgmpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-
-                return _igmp;
-            }
-        }
-
-        /// <summary>
-        /// The payload of the datagram as a TCP datagram.
-        /// </summary>
-        public TcpDatagram Tcp
-        {
-            get
-            {
-                if (_tcp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _tcp = new TcpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-
-                return _tcp;
-            }
-        }
-
-        /// <summary>
-        /// The payload of the datagram as a GRE datagram.
-        /// </summary>
-        public GreDatagram Gre
-        {
-            get
-            {
-                if (_gre == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _gre = new GreDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-
-                return _gre;
-            }
-        }
-
-        /// <summary>
-        /// The payload of the datagram as a UDP datagram.
-        /// </summary>
-        public UdpDatagram Udp
-        {
-            get
-            {
-                if (_udp == null && Length >= HeaderMinimumLength && Length >= HeaderLength)
-                    _udp = new UdpDatagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-
-                return _udp;
-            }
-        }
-
-        /// <summary>
-        /// Returns the Tranposrt Datagram.
-        /// This is either a TCP Datagram or a UDP Datagram (according to the protocol).
-        /// </summary>
-        public TransportDatagram Transport
-        {
-            get
-            {
-                switch (Protocol)
-                {
-                    case IpV4Protocol.Tcp:
-                        return Tcp;
-
-                    case IpV4Protocol.Udp:
-                        return Udp;
-
-                    default:
-                        return null;
-                }
-            }
+            if (Length < HeaderMinimumLength || Length < HeaderLength)
+                return null;
+            return Subsegment(HeaderLength, Length - HeaderLength);
         }
 
         internal static int GetTotalLength(Datagram ipV4Datagram)
@@ -466,17 +333,17 @@ namespace PcapDotNet.Packets.IpV4
             }
         }
 
+        protected override ushort CalculateTransportChecksum()
+        {
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
+        }
+
         private ushort CalculateHeaderChecksum()
         {
             uint sum = Sum16Bits(Buffer, StartOffset, Math.Min(Offset.HeaderChecksum, Length)) +
                        Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, RealHeaderLength - Offset.HeaderChecksum - 2);
 
             return Sum16BitsToChecksum(sum);
-        }
-
-        private ushort CalculateTransportChecksum()
-        {
-            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
         }
 
         private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV4Address destination)
@@ -496,14 +363,6 @@ namespace PcapDotNet.Packets.IpV4
 
         private IpV4Address? _destination;
         private bool? _isHeaderChecksumCorrect;
-        private bool? _isTransportChecksumCorrect;
         private IpV4Options _options;
-        private Datagram _payload;
-        private IpV4Datagram _ipV4;
-        private IcmpDatagram _icmp;
-        private IgmpDatagram _igmp;
-        private GreDatagram _gre;
-        private TcpDatagram _tcp;
-        private UdpDatagram _udp;
     }
 }
