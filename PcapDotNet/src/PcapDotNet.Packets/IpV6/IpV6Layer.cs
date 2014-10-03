@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.IpV6
     /// Represents IPv6 layer.
     /// <seealso cref="IpV6Datagram"/>
     /// </summary>
-    public sealed class IpV6Layer : Layer, IEthernetNextLayer, IIpV4NextLayer
+    public sealed class IpV6Layer : Layer, IEthernetNextLayer, IIpNextLayer
     {
         /// <summary>
         /// Creates an IPv6 layer with all zero values.
@@ -118,10 +118,10 @@ namespace PcapDotNet.Packets.IpV6
                 {
                     if (nextLayer == null)
                         throw new ArgumentException("Can't determine protocol automatically from next layer because there is no next layer");
-                    IIpV4NextLayer ipV4NextLayer = nextLayer as IIpV4NextLayer;
-                    if (ipV4NextLayer == null)
+                    IIpNextLayer ipNextLayer = nextLayer as IIpNextLayer;
+                    if (ipNextLayer == null)
                         throw new ArgumentException("Can't determine protocol automatically from next layer (" + nextLayer.GetType() + ")");
-                    nextHeader = ipV4NextLayer.PreviousLayerProtocol;
+                    nextHeader = ipNextLayer.PreviousLayerProtocol;
                 }
             }
             else

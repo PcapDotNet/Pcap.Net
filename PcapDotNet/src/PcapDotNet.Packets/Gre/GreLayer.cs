@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Gre
     /// Represents a GRE layer.
     /// <seealso cref="GreDatagram"/>
     /// </summary>
-    public sealed class GreLayer : EthernetBaseLayer, IIpV4NextLayer, IEquatable<GreLayer>
+    public sealed class GreLayer : EthernetBaseLayer, IIpNextLayer, IEquatable<GreLayer>
     {
         /// <summary>
         /// The GRE Version Number.

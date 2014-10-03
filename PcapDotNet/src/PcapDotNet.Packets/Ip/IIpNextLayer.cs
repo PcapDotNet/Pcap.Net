@@ -1,10 +1,10 @@
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
-    /// A layer under an IPv4 layer.
+    /// A layer under an IP layer.
     /// Must provide the IPv4 Protocol.
     /// </summary>
-    public interface IIpV4NextLayer : ILayer
+    public interface IIpNextLayer : ILayer
     {
         /// <summary>
         /// The protocol that should be written in the previous (IPv4) layer.

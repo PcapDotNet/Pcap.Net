@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Transport
     /// Contains the common part of UDP and TCP layers.
     /// <seealso cref="TransportDatagram"/>
     /// </summary>
-    public abstract class TransportLayer : Layer, IIpV4NextTransportLayer, IEquatable<TransportLayer>
+    public abstract class TransportLayer : Layer, IIpNextTransportLayer, IEquatable<TransportLayer>
     {
         /// <summary>
         /// Checksum is the 16-bit one's complement of the one's complement sum of a pseudo header of information from the IP header, 

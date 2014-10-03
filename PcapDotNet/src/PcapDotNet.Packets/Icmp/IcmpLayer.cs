@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Icmp
     /// Represents an ICMP layer.
     /// <seealso cref="IcmpDatagram"/>
     /// </summary>
-    public abstract class IcmpLayer : SimpleLayer, IIpV4NextLayer
+    public abstract class IcmpLayer : SimpleLayer, IIpNextLayer
     {
         /// <summary>
         /// The value of this field determines the format of the remaining data.

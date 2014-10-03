@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.Igmp
     /// The base of all IGMP layers.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public abstract class IgmpLayer : SimpleLayer, IIpV4NextLayer
+    public abstract class IgmpLayer : SimpleLayer, IIpNextLayer
     {
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
