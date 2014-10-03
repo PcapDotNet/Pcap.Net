@@ -110,6 +110,8 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ReadOnlyCollection<IpV6ExtensionHeader> Headers { get; private set; }
 
+        public int BytesLength { get; private set; }
+
         /// <summary>
         /// True iff a parsing issue wasn't encountered when parsing the extension headers.
         /// </summary>
@@ -188,6 +190,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal IpV6ExtensionHeaders(DataSegment data, IpV4Protocol firstHeader)
         {
+            BytesLength = 0;
             IpV4Protocol? nextHeader = firstHeader;
             List<IpV6ExtensionHeader> headers = new List<IpV6ExtensionHeader>();
             while (data.Length >= 8 && nextHeader.HasValue && IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value))
@@ -196,6 +199,7 @@ namespace PcapDotNet.Packets.IpV6
                 IpV6ExtensionHeader extensionHeader = IpV6ExtensionHeader.CreateInstance(nextHeader.Value, data, out numBytesRead);
                 if (extensionHeader == null)
                     break;
+                BytesLength += numBytesRead;
                 headers.Add(extensionHeader);
                 nextHeader = extensionHeader.NextHeader;
                 data = data.Subsegment(numBytesRead, data.Length - numBytesRead);

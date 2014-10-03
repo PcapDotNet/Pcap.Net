@@ -72,7 +72,7 @@ namespace PcapDotNet.Core.Test
 
                 case "ipv6.src":
                 case "ipv6.src_host":
-                    field.AssertShow(ipV6Datagram.Source.ToString("x"));
+                    field.AssertShow(ipV6Datagram.Source.GetWiresharkString());
                     field.AssertNoFields();
                     break;
 
@@ -85,21 +85,34 @@ namespace PcapDotNet.Core.Test
 
                 case "ipv6.dst":
                 case "ipv6.dst_host":
-                    field.AssertShow(ipV6Datagram.CurrentDestination.ToString("x"));
+                    field.AssertShow(ipV6Datagram.CurrentDestination.GetWiresharkString());
                     field.AssertNoFields();
                     break;
 
                 case "ipv6.addr":
                 case "ipv6.host":
-                    Assert.IsTrue(field.Show() == ipV6Datagram.Source.ToString("x") ||
-                                  field.Show() == ipV6Datagram.CurrentDestination.ToString("x"));
+                    Assert.IsTrue(field.Show() == ipV6Datagram.Source.GetWiresharkString() ||
+                                  field.Show() == ipV6Datagram.CurrentDestination.GetWiresharkString());
                     field.AssertNoFields();
                     break;
 
                 case "ipv6.hop_opt":
-                    IpV6ExtensionHeaderHopByHopOptions hopByHopOptions = (IpV6ExtensionHeaderHopByHopOptions)ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex];
-                    IncrementCurrentExtensionHeaderIndex(ipV6Datagram);
-                    CompareOptions(field, ref optionsIndex, hopByHopOptions);
+                    if (_currentExtensionHeaderIndex >= ipV6Datagram.ExtensionHeaders.Headers.Count)
+                    {
+                        Assert.IsFalse(ipV6Datagram.ExtensionHeaders.IsValid);
+                        int length = int.Parse(
+                            field.Fields().Where(subfield => subfield.Name() == "" && subfield.Show().StartsWith("Length:")).Select(
+                                subfield => subfield.Show().Split(new[] {':', '(', ' '}, StringSplitOptions.RemoveEmptyEntries)[2]).First());
+                        int maxLength = ipV6Datagram.Length - IpV6Datagram.HeaderLength - ipV6Datagram.ExtensionHeaders.BytesLength;
+                        MoreAssert.IsBigger(maxLength, length);
+                    }
+                    else
+                    {
+                        IpV6ExtensionHeaderHopByHopOptions hopByHopOptions =
+                            (IpV6ExtensionHeaderHopByHopOptions)ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex];
+                        IncrementCurrentExtensionHeaderIndex(ipV6Datagram);
+                        CompareOptions(field, ref optionsIndex, hopByHopOptions);
+                    }
                     break;
 
                 case "ipv6.routing_hdr":
@@ -237,12 +250,14 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "ipv6.opt.pad1":
-                        Assert.AreEqual(IpV6OptionType.Pad1, header.Options[optionsIndex++].OptionType);
+                        if (header.Options.IsValid)
+                            Assert.AreEqual(IpV6OptionType.Pad1, header.Options[optionsIndex++].OptionType);
                         break;
 
                     case "ipv6.opt.padn":
                         Assert.AreEqual(IpV6OptionType.PadN, header.Options[optionsIndex].OptionType);
-                        headerField.AssertShowDecimal(header.Options[optionsIndex++].Length);
+                        if (header.Options.IsValid)
+                            headerField.AssertShowDecimal(header.Options[optionsIndex++].Length);
                         break;
 
                     case "ipv6.mipv6_type":
@@ -299,7 +314,8 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "Length":
-                    Assert.IsTrue(headerFieldShowValue.EndsWith(" (" + header.Length + " bytes)"));
+                    if (header.IsValid)
+                        Assert.IsTrue(headerFieldShowValue.EndsWith(" (" + header.Length + " bytes)"));
                     break;
 
                 case "Router alert":

@@ -787,7 +787,7 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case IpV6MobilityOptionType.MobileNodeIdentifier:
-                                                optionField.AssertShow("Mobile Node Identifier");
+                                                Assert.IsTrue(optionField.Show().StartsWith("Mobile Node Identifier"));
                                                 IpV6MobilityOptionMobileNodeIdentifier mobileNodeIdentifier = (IpV6MobilityOptionMobileNodeIdentifier)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {

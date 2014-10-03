@@ -316,6 +316,7 @@
     <Compile Include="Igmp\IgmpRecordType.cs" />
     <Compile Include="Igmp\IgmpMessageType.cs" />
     <Compile Include="Igmp\IIgmpLayerWithGroupAddress.cs" />
+    <Compile Include="Ip\IpDatagram.cs" />
     <Compile Include="IpV6\IpV6BindingAcknowledgementStatus.cs" />
     <Compile Include="IpV6\ExtensionHeaders\IpV6BindingErrorStatus.cs" />
     <Compile Include="IpV6\ExtensionHeaders\IpV6ExtensionHeaderMobility.cs" />

@@ -86,6 +86,11 @@ namespace PcapDotNet.Core.Test
 
                 case "ip.checksum":
                     field.AssertShowHex(ipV4Datagram.HeaderChecksum);
+                    if (field.Showname().EndsWith(" [not all data available]"))
+                    {
+                        Assert.IsFalse(ipV4Datagram.IsValid);
+                        break;
+                    }
                     foreach (var checksumField in field.Fields())
                     {
                         switch (checksumField.Name())

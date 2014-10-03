@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
@@ -19,7 +20,7 @@ namespace PcapDotNet.Core.Test
 
         protected override bool CompareField(XElement field, Datagram parentDatagram, Datagram datagram)
         {
-            IpV4Datagram ipV4Datagram = (IpV4Datagram)parentDatagram;
+            IpDatagram ipDatagram = (IpDatagram)parentDatagram;
             TcpDatagram tcpDatagram = (TcpDatagram)datagram;
 
             switch (field.Name())
@@ -126,7 +127,8 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.checksum":
                     field.AssertShowHex(tcpDatagram.Checksum);
-                    if (!ipV4Datagram.Options.IsBadForWireshark())
+                    IpV4Datagram ipV4Datagram = ipDatagram as IpV4Datagram;
+                    if (ipV4Datagram != null && !ipV4Datagram.Options.IsBadForWireshark())
                     {
                         foreach (var checksumField in field.Fields())
                         {
@@ -134,11 +136,11 @@ namespace PcapDotNet.Core.Test
                             switch (checksumField.Name())
                             {
                                 case "tcp.checksum_good":
-                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipV4Datagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "tcp.checksum_bad":
-                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && !ipV4Datagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && !ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 default:
@@ -183,6 +185,7 @@ namespace PcapDotNet.Core.Test
                     Assert.IsFalse(options.IsValid, "Options IsValid");
                     Assert.IsTrue(
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net
+                        field.Show().StartsWith("Echo reply (with option length = ") ||
                         field.Show().Contains("bytes says option goes past end of options") ||
                         field.Show().Contains(") (with too-short option length = ") ||
                         field.Show().EndsWith(" (length byte past end of options)"),

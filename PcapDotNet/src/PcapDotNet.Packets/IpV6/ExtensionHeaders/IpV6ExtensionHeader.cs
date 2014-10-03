@@ -98,30 +98,6 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal static void GetNextNextHeaderAndLength(IpV4Protocol nextHeader, DataSegment data, out IpV4Protocol? nextNextHeader,
-                                                        out int extensionHeaderLength)
-        {
-            if (IpV6ExtensionHeaderStandard.IsStandard(nextHeader))
-            {
-                IpV6ExtensionHeaderStandard.GetNextNextHeaderAndLength(data, out nextNextHeader, out extensionHeaderLength);
-                return;
-            }
-
-            switch (nextHeader)
-            {
-                case IpV4Protocol.EncapsulatingSecurityPayload: // 50
-                    IpV6ExtensionHeaderEncapsulatingSecurityPayload.GetNextNextHeaderAndLength(data, out nextNextHeader, out extensionHeaderLength);
-                    break;
-
-                case IpV4Protocol.AuthenticationHeader: // 51
-                    IpV6ExtensionHeaderAuthentication.GetNextNextHeaderAndLength(data, out nextNextHeader, out extensionHeaderLength);
-                    break;
-
-                default:
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Invalid next header value {0}", nextHeader));
-            }
-        }
-
         internal abstract void Write(byte[] buffer, ref int offset);
 
         private static readonly ReadOnlyCollection<IpV4Protocol> _extensionHeaders =
