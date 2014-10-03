@@ -1,10 +1,10 @@
 namespace PcapDotNet.Packets.IpV4
 {
     /// <summary>
-    /// A Transport layer under an IPv4 layer.
+    /// A Transport layer under an IP layer.
     /// Must supply information about the Transport layer checksum.
     /// </summary>
-    public interface IIpV4NextTransportLayer : IIpV4NextLayer
+    public interface IIpNextTransportLayer : IIpNextLayer
     {
         /// <summary>
         /// Checksum is the 16-bit one's complement of the one's complement sum of a pseudo header of information from the IP header, 

@@ -8,7 +8,7 @@ namespace PcapDotNet.Packets.IpV4
     /// Represents IPv4 layer.
     /// <seealso cref="IpV4Datagram"/>
     /// </summary>
-    public sealed class IpV4Layer : Layer, IEthernetNextLayer, IIpV4NextLayer
+    public sealed class IpV4Layer : Layer, IEthernetNextLayer, IIpNextLayer
     {
         /// <summary>
         /// Creates an IPv4 layer with all zero values.
@@ -131,10 +131,10 @@ namespace PcapDotNet.Packets.IpV4
             {
                 if (nextLayer == null)
                     throw new ArgumentException("Can't determine protocol automatically from next layer because there is no next layer");
-                IIpV4NextLayer ipV4NextLayer = nextLayer as IIpV4NextLayer;
-                if (ipV4NextLayer == null)
+                IIpNextLayer ipNextLayer = nextLayer as IIpNextLayer;
+                if (ipNextLayer == null)
                     throw new ArgumentException("Can't determine protocol automatically from next layer (" + nextLayer.GetType() + ")");
-                protocol = ipV4NextLayer.PreviousLayerProtocol;
+                protocol = ipNextLayer.PreviousLayerProtocol;
             }
             else
                 protocol = Protocol.Value;
@@ -156,7 +156,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
-            IIpV4NextTransportLayer nextTransportLayer = nextLayer as IIpV4NextTransportLayer;
+            IIpNextTransportLayer nextTransportLayer = nextLayer as IIpNextTransportLayer;
             if (nextTransportLayer == null || !nextTransportLayer.CalculateChecksum)
                 return;
 

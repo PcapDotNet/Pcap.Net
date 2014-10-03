@@ -502,8 +502,8 @@
     <Compile Include="Ip\V4Option.cs" />
     <Compile Include="Ip\IIpOptionQuickStart.cs" />
     <Compile Include="IpV4\IpV4OptionTypeRegistrationAttribute.cs" />
-    <Compile Include="IpV4\IIpV4NextLayer.cs" />
-    <Compile Include="IpV4\IIpV4NextTransportLayer.cs" />
+    <Compile Include="Ip\IIpNextLayer.cs" />
+    <Compile Include="Ip\IIpNextTransportLayer.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="Ip\IOptionUnknownFactory.cs" />
     <Compile Include="IpV4\IpV4Layer.cs" />
