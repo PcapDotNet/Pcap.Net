@@ -69,16 +69,13 @@ namespace PcapDotNet.Packets.Test
             Random random = new Random();
             int seed = random.Next();
             Console.WriteLine("Seed: " + seed);
-            random = new Random(1930237499);
+            random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {
                 IpV6Layer ipV6Layer = random.NextIpV6Layer(false);
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.NextInt(0, 50 * 1024));
-
-                if (i < 26)
-                    continue;
 
                 List<ILayer> layers = new List<ILayer> {ethernetLayer, ipV6Layer};
                 if (ipV6Layer.ExtensionHeaders.LastHeader != IpV4Protocol.EncapsulatingSecurityPayload)
@@ -298,6 +295,38 @@ namespace PcapDotNet.Packets.Test
         }
 
         // IpV6ExtensionHeader tests.
+
+        [TestMethod]
+        public void IpV6ExtensionHeadersAutomaticNextHeaderByNextExtensionHeader()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty),
+                        new IpV6ExtensionHeaderDestinationOptions(IpV4Protocol.Skip, IpV6Options.Empty))
+                });
+
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(IpV4Protocol.IpV6Opts, packet.Ethernet.IpV6.ExtensionHeaders[0].NextHeader);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeadersAutomaticNextHeaderFailure()
+        {
+            Assert.IsNull(PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                    {
+                        ExtensionHeaders = new IpV6ExtensionHeaders(
+                            new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty))
+                    }));
+            Assert.Fail();
+        }
 
         [TestMethod]
         public void IpV6ExtensionHeaderAuthenticationBadPayloadLength()
