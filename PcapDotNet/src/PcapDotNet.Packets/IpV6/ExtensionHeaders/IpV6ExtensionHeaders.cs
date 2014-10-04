@@ -26,13 +26,18 @@ namespace PcapDotNet.Packets.IpV6
                 throw new ArgumentNullException("extensionHeaders");
             for (int i = 0; i < extensionHeaders.Count; ++i)
             {
-                if (extensionHeaders[i].Protocol == IpV4Protocol.EncapsulatingSecurityPayload && i != extensionHeaders.Count - 1)
+                IpV6ExtensionHeader extensionHeader = extensionHeaders[i];
+                if (i != extensionHeaders.Count - 1)
                 {
-                    throw new ArgumentException(
-                        string.Format(CultureInfo.InvariantCulture,
-                                      "EncapsulatingSecurityPayload can only be the last extension header. However it is the {0} out of {1}.", (i + 1),
-                                      extensionHeaders.Count), "extensionHeaders");
+                    if (extensionHeader.Protocol == IpV4Protocol.EncapsulatingSecurityPayload)
+                    {
+                        throw new ArgumentException(
+                            string.Format(CultureInfo.InvariantCulture,
+                                          "EncapsulatingSecurityPayload can only be the last extension header. However it is the {0} out of {1}.", (i + 1),
+                                          extensionHeaders.Count), "extensionHeaders");
+                    }
                 }
+                BytesLength += extensionHeader.Length;
             }
             Headers = extensionHeaders;
             IsValid = true;
@@ -208,10 +213,25 @@ namespace PcapDotNet.Packets.IpV6
             IsValid = (!nextHeader.HasValue || !IpV6ExtensionHeader.IsExtensionHeader(nextHeader.Value)) && headers.All(header => header.IsValid);
         }
 
-        internal void Write(byte[] buffer, int offset)
+        internal void Write(byte[] buffer, int offset, IpV4Protocol? nextLayerProtocol)
         {
-            foreach (IpV6ExtensionHeader extensionHeader in this)
-                extensionHeader.Write(buffer, ref offset);
+            for (int i = 0; i != Headers.Count; ++i)
+            {
+                IpV6ExtensionHeader extensionHeader = Headers[i];
+                IpV4Protocol nextHeader;
+                if (extensionHeader.NextHeader != null)
+                    nextHeader = extensionHeader.NextHeader.Value;
+                else if (i < Headers.Count - 1)
+                    nextHeader = Headers[i + 1].Protocol;
+                else if (nextLayerProtocol.HasValue)
+                    nextHeader = nextLayerProtocol.Value;
+                else if (extensionHeader.Protocol == IpV4Protocol.EncapsulatingSecurityPayload)
+                    nextHeader = IpV4Protocol.NoNextHeaderForIpV6;  // Arbitrary.
+                else
+                    throw new InvalidOperationException("Can't determine extension header next header value. It is the last extension header with no known next layer protocol.");
+
+                extensionHeader.Write(buffer, ref offset, nextHeader);
+            }
         }
 
         private static readonly IpV6ExtensionHeaders _empty = new IpV6ExtensionHeaders();

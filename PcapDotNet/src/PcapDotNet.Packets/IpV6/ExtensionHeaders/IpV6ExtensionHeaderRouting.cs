@@ -56,7 +56,7 @@ namespace PcapDotNet.Packets.IpV6
             get { return IpV4Protocol.IpV6Route; }
         }
 
-        internal IpV6ExtensionHeaderRouting(IpV4Protocol nextHeader, byte segmentsLeft)
+        internal IpV6ExtensionHeaderRouting(IpV4Protocol? nextHeader, byte segmentsLeft)
             : base(nextHeader)
         {
             SegmentsLeft = segmentsLeft;

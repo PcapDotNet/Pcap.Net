@@ -31,10 +31,16 @@ namespace PcapDotNet.Packets.TestUtils
             return ((Func<IpV6Address>)(() => random.NextIpV6AddressWithLeadingZeroBytes(numLeadingZeros))).GenerateArray(count);
         }
 
-        public static IpV6Layer NextIpV6Layer(this Random random)
+        public static IpV6Layer NextIpV6Layer(this Random random, bool withAutomaticNextLayer)
         {
-            IpV6ExtensionHeaders extensionHeaders = random.NextIpV6ExtensionHeaders(random.NextInt(0, 10));
-            IpV4Protocol nextHeader = extensionHeaders.FirstHeader ?? random.NextEnum<IpV4Protocol>(IpV6ExtensionHeader.ExtensionHeaders);
+            IpV4Protocol? lastNextHeader = withAutomaticNextLayer ? (IpV4Protocol?)null : random.NextEnum<IpV4Protocol>(IpV6ExtensionHeader.ExtensionHeaders);
+            return random.NextIpV6Layer(lastNextHeader, !withAutomaticNextLayer);
+        }
+
+        public static IpV6Layer NextIpV6Layer(this Random random, IpV4Protocol? lastNextHeader, bool allowEncapsulatingSecurityPayload)
+        {
+            IpV6ExtensionHeaders extensionHeaders = random.NextIpV6ExtensionHeaders(random.NextInt(0, 10), lastNextHeader, allowEncapsulatingSecurityPayload);
+            IpV4Protocol nextHeader = extensionHeaders.FirstHeader ?? (lastNextHeader ?? random.NextEnum<IpV4Protocol>(IpV6ExtensionHeader.ExtensionHeaders));
             return new IpV6Layer
                        {
                            TrafficClass = random.NextByte(),
@@ -47,21 +53,20 @@ namespace PcapDotNet.Packets.TestUtils
                        };
         }
 
-        public static IpV6ExtensionHeaders NextIpV6ExtensionHeaders(this Random random, int count)
+        public static IpV6ExtensionHeaders NextIpV6ExtensionHeaders(this Random random, int count, IpV4Protocol? nextHeader, bool allowEncapsulatingSecurityPayload)
         {
             if (count == 0)
                 return IpV6ExtensionHeaders.Empty;
-            IpV4Protocol nextHeader = random.NextEnum<IpV4Protocol>(IpV6ExtensionHeader.ExtensionHeaders);
             IpV6ExtensionHeader[] headers = new IpV6ExtensionHeader[count];
             for (int i = headers.Length - 1; i >= 0; --i)
             {
-                headers[i] = random.NextIpV6ExtensionHeader(nextHeader, i == headers.Length - 1);
+                headers[i] = random.NextIpV6ExtensionHeader(nextHeader, allowEncapsulatingSecurityPayload && i == headers.Length - 1);
                 nextHeader = headers[i].Protocol;
             }
             return new IpV6ExtensionHeaders(headers);
         }
 
-        public static IpV6ExtensionHeader NextIpV6ExtensionHeader(this Random random, IpV4Protocol nextHeader, bool isEncapsulatingSecurityPayloadPossible)
+        public static IpV6ExtensionHeader NextIpV6ExtensionHeader(this Random random, IpV4Protocol? nextHeader, bool isEncapsulatingSecurityPayloadPossible)
         {
             IpV4Protocol extensionHeaderType =
                 random.NextValue(
@@ -118,7 +123,7 @@ namespace PcapDotNet.Packets.TestUtils
             }
         }
 
-        public static IpV6ExtensionHeaderMobility NextIpV6ExtensionHeaderMobility(this Random random, IpV4Protocol nextHeader)
+        public static IpV6ExtensionHeaderMobility NextIpV6ExtensionHeaderMobility(this Random random, IpV4Protocol? nextHeader)
         {
             IpV6MobilityHeaderType mobilityHeaderType = random.NextEnum<IpV6MobilityHeaderType>();
             ushort checksum = random.NextUShort();

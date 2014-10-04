@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">
         /// Zero or more TLV-encoded mobility options.
         /// </param>
-        public IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingInitiation(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, sequenceNumber, lifetime, options)
         {

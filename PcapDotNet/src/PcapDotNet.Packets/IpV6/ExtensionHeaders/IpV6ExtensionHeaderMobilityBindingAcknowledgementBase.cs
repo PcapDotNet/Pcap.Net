@@ -84,7 +84,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Lifetime { get; private set; }
 
-        internal IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+        internal IpV6ExtensionHeaderMobilityBindingAcknowledgementBase(IpV4Protocol? nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                        bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
                                                                        IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)

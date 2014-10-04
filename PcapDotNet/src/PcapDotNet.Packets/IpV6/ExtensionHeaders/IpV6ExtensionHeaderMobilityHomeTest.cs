@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="homeInitCookie">Contains the home init cookie.</param>
         /// <param name="homeKeygenToken">Contains the 64-bit home keygen token used in the return routability procedure.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHomeTest(IpV4Protocol nextHeader, ushort checksum, ushort homeNonceIndex, ulong homeInitCookie, ulong homeKeygenToken,
+        public IpV6ExtensionHeaderMobilityHomeTest(IpV4Protocol? nextHeader, ushort checksum, ushort homeNonceIndex, ulong homeInitCookie, ulong homeKeygenToken,
                                                    IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="homeInitCookie">Contains a random value, the home init cookie.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHomeTestInit(IpV4Protocol nextHeader, ushort checksum, ulong homeInitCookie, IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityHomeTestInit(IpV4Protocol? nextHeader, ushort checksum, ulong homeInitCookie, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             HomeInitCookie = homeInitCookie;

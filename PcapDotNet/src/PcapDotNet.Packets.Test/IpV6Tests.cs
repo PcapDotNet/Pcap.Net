@@ -70,7 +70,7 @@ namespace PcapDotNet.Packets.Test
 
             for (int i = 0; i != 1000; ++i)
             {
-                IpV6Layer ipV6Layer = random.NextIpV6Layer();
+                IpV6Layer ipV6Layer = random.NextIpV6Layer(false);
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.NextInt(0, 50 * 1024));
 
@@ -253,7 +253,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void AutomaticIpV6NextHeaderNoNextLayer()
         {
             PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer());
@@ -261,7 +261,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void AutomaticIpV6NextHeaderUnknownNextLayer()
         {
             PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer(), new PayloadLayer());

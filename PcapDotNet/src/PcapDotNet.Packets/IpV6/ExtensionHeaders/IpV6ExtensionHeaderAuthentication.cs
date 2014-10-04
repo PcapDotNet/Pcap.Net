@@ -65,7 +65,7 @@ namespace PcapDotNet.Packets.IpV6
         /// All implementations must support such padding.
         /// The authentication algorithm specification must specify the length of the ICV and the comparison rules and processing steps for validation.
         /// </param>
-        public IpV6ExtensionHeaderAuthentication(IpV4Protocol nextHeader, uint securityParametersIndex, uint sequenceNumber, DataSegment authenticationData)
+        public IpV6ExtensionHeaderAuthentication(IpV4Protocol? nextHeader, uint securityParametersIndex, uint sequenceNumber, DataSegment authenticationData)
             : base(nextHeader)
         {
             if (authenticationData == null)
@@ -200,9 +200,9 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderAuthentication(nextHeader, securityParametersIndex, sequenceNumber, authenticationData);
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        internal override void Write(byte[] buffer, ref int offset, IpV4Protocol nextHeader)
         {
-            buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);
+            buffer.Write(offset + Offset.NextHeader, (byte)(nextHeader));
             int length = Length;
             buffer.Write(offset + Offset.PayloadLength, (byte)((length / 4) - 2));
             buffer.Write(offset + Offset.SecurityParametersIndex, SecurityParametersIndex, Endianity.Big);

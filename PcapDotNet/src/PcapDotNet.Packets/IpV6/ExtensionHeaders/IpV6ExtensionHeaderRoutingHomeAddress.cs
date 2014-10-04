@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="homeAddress">
         /// The home address of the destination mobile node.
         /// </param>
-        public IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol nextHeader, byte segmentsLeft, IpV6Address homeAddress)
+        public IpV6ExtensionHeaderRoutingHomeAddress(IpV4Protocol? nextHeader, byte segmentsLeft, IpV6Address homeAddress)
             : base(nextHeader, segmentsLeft)
         {
             HomeAddress = homeAddress;

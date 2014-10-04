@@ -96,7 +96,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public bool Global { get; private set; }
 
-        internal IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
+        internal IpV6ExtensionHeaderMobilityBindingRevocationMessage(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber, bool proxyBinding,
                                                                      bool ipV4HomeAddressBindingOnly, bool global, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

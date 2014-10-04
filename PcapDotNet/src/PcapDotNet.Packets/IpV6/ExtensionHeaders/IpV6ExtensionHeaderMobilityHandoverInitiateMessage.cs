@@ -68,7 +68,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="code">Describes whether the source ip address is a previous care of address.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHandoverInitiateMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool assignedAddressConfiguration,
+        public IpV6ExtensionHeaderMobilityHandoverInitiateMessage(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber, bool assignedAddressConfiguration,
                                                                   bool buffer, IpV6HandoverInitiateMessageCode code, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

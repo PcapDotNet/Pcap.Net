@@ -65,7 +65,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">
         /// Zero or more TLV-encoded mobility options.
         /// </param>
-        public IpV6ExtensionHeaderMobilityBindingError(IpV4Protocol nextHeader, ushort checksum, IpV6BindingErrorStatus status, IpV6Address homeAddress,
+        public IpV6ExtensionHeaderMobilityBindingError(IpV4Protocol? nextHeader, ushort checksum, IpV6BindingErrorStatus status, IpV6Address homeAddress,
                                                        IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

@@ -88,7 +88,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public IpV6MobilityOptions MobilityOptions { get; private set; }
 
-        internal IpV6ExtensionHeaderMobility(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions, int? messageDataMobilityOptionsOffset)
+        internal IpV6ExtensionHeaderMobility(IpV4Protocol? nextHeader, ushort checksum, IpV6MobilityOptions mobilityOptions, int? messageDataMobilityOptionsOffset)
             : base(nextHeader)
         {
             if (messageDataMobilityOptionsOffset.HasValue)

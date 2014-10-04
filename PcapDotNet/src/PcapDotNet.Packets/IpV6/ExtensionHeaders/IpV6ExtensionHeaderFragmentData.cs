@@ -62,7 +62,7 @@ namespace PcapDotNet.Packets.IpV6
         /// The Identification must be different than that of any other fragmented packet sent recently with the same Source Address and Destination Address.
         /// If a Routing header is present, the Destination Address of concern is that of the final destination.
         /// </param>
-        public IpV6ExtensionHeaderFragmentData(IpV4Protocol nextHeader, ushort fragmentOffset, bool moreFragments, uint identification)
+        public IpV6ExtensionHeaderFragmentData(IpV4Protocol? nextHeader, ushort fragmentOffset, bool moreFragments, uint identification)
             : base(nextHeader)
         {
             if (fragmentOffset > MaxFragmentOffset)

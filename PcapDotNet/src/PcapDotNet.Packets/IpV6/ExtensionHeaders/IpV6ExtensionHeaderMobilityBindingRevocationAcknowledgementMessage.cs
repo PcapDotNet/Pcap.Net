@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">
         /// Zero or more TLV-encoded mobility options.
         /// </param>
-        public IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage(IpV4Protocol nextHeader, ushort checksum,
+        public IpV6ExtensionHeaderMobilityBindingRevocationAcknowledgementMessage(IpV4Protocol? nextHeader, ushort checksum,
                                                                                   Ipv6MobilityBindingRevocationStatus status, ushort sequenceNumber,
                                                                                   bool proxyBinding, bool ipV4HomeAddressBindingOnly, bool global,
                                                                                   IpV6MobilityOptions options)

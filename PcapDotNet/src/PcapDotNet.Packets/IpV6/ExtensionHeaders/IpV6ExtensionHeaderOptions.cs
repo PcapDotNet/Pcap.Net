@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.IpV6
             Options.Write(buffer, offset);
         }
 
-        internal IpV6ExtensionHeaderOptions(IpV4Protocol nextHeader, IpV6Options options)
+        internal IpV6ExtensionHeaderOptions(IpV4Protocol? nextHeader, IpV6Options options)
             : base(nextHeader)
         {
             if (options.BytesLength % 8 != 6)
