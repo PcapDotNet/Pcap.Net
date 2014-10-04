@@ -164,6 +164,9 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
+        /// <summary>
+        /// The total length - header and payload according to the IP header.
+        /// </summary>
         public override int TotalLength
         {
             get { return HeaderLength + PayloadLength; }
@@ -198,6 +201,10 @@ namespace PcapDotNet.Packets.IpV6
             return IsPayloadValid;
         }
 
+        /// <summary>
+        /// Calculates the Transport checksum field value.
+        /// </summary>
+        /// <returns>The calculated checksum value.</returns>
         protected override ushort CalculateTransportChecksum()
         {
             return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength + ExtensionHeaders.BytesLength, (uint)Transport.Length, Transport.ChecksumOffset,
@@ -249,7 +256,7 @@ namespace PcapDotNet.Packets.IpV6
             else if (nextLayerProtocol.HasValue)
                 actualNextHeader = nextLayerProtocol.Value;
             else
-                throw new InvalidOperationException("Can't determinte next header. No extension headers and no known next layer protocol.");
+                throw new InvalidOperationException("Can't determine next header. No extension headers and no known next layer protocol.");
             buffer.Write(offset + Offset.NextHeader, (byte)actualNextHeader);
             buffer.Write(offset + Offset.HopLimit, hopLimit);
             buffer.Write(offset + Offset.SourceAddress, source, Endianity.Big);

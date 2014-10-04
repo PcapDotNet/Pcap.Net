@@ -113,6 +113,10 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.IpV6; }
         }
 
+        /// <summary>
+        /// Returns the IP Datagram.
+        /// This is either an IPv4 Datagram or an IPv6 Datagram (according to the Ethernet Type).
+        /// </summary>
         public IpDatagram Ip
         {
             get
