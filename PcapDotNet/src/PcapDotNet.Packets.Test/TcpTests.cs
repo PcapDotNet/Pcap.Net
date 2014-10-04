@@ -58,15 +58,14 @@ namespace PcapDotNet.Packets.Test
             Random random = new Random();
             int seed = random.Next();
             Console.WriteLine("Seed: {0}", seed);
-            random = new Random(830476811);
-
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
-            ipV4Layer.HeaderChecksum = null;
-
-            IpV6Layer ipV6Layer = random.NextIpV6Layer(IpV4Protocol.Tcp, false);
+            random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                IpV6Layer ipV6Layer = random.NextIpV6Layer(IpV4Protocol.Tcp, false);
+
                 EthernetType ethernetType = random.NextBool() ? EthernetType.IpV4 : EthernetType.IpV6;
                 Layer ipLayer = (ethernetType == EthernetType.IpV4 ? (Layer)ipV4Layer : ipV6Layer);
                 TcpLayer tcpLayer = random.NextTcpLayer();

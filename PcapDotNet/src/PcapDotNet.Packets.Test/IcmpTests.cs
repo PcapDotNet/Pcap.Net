@@ -54,12 +54,16 @@ namespace PcapDotNet.Packets.Test
                                               };
 
             Random random = new Random();
-
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
-            ipV4Layer.HeaderChecksum = null;
+            int seed = random.Next();
+            Console.WriteLine("Seed: " + seed);
+            random = new Random(seed);
 
             for (int i = 0; i != 2000; ++i)
             {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(IpV4Protocol.InternetControlMessageProtocol, false);
+
                 IcmpLayer icmpLayer = random.NextIcmpLayer();
                 icmpLayer.Checksum = null;
                 if (icmpLayer.MessageType == IcmpMessageType.DestinationUnreachable && 
@@ -83,45 +87,55 @@ namespace PcapDotNet.Packets.Test
                         break;
                 }
 
-                PacketBuilder packetBuilder = new PacketBuilder(new ILayer[] { ethernetLayer, ipV4Layer, icmpLayer }.Concat(icmpPayloadLayers));
+                PacketBuilder packetBuilder = new PacketBuilder(new ILayer[] { ethernetLayer, ipLayer, icmpLayer }.Concat(icmpPayloadLayers));
 
                 Packet packet = packetBuilder.Build(DateTime.Now);
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 byte[] buffer = (byte[])packet.Buffer.Clone();
-                buffer.Write(ethernetLayer.Length + ipV4Layer.Length, random.NextDatagram(icmpLayer.Length));
+                buffer.Write(ethernetLayer.Length + ipLayer.Length, random.NextDatagram(icmpLayer.Length));
                 Packet illegalPacket = new Packet(buffer, DateTime.Now, packet.DataLink);
                 Assert.IsFalse(illegalPacket.IsValid, "IsInvalid");
-                if (illegalPacket.Ethernet.IpV4.Icmp is IcmpUnknownDatagram)
+                if (illegalPacket.Ethernet.Ip.Icmp is IcmpUnknownDatagram)
                 {
-                    byte[] icmpBuffer = new byte[illegalPacket.Ethernet.IpV4.Icmp.ExtractLayer().Length];
-                    ILayer layer = illegalPacket.Ethernet.IpV4.Icmp.ExtractLayer();
+                    byte[] icmpBuffer = new byte[illegalPacket.Ethernet.Ip.Icmp.ExtractLayer().Length];
+                    ILayer layer = illegalPacket.Ethernet.Ip.Icmp.ExtractLayer();
                     layer.Write(icmpBuffer,0,icmpBuffer.Length, null,null);
                     layer.Finalize(icmpBuffer,0,icmpBuffer.Length,null);
-                    MoreAssert.AreSequenceEqual(illegalPacket.Ethernet.IpV4.Icmp.ToArray(),
+                    MoreAssert.AreSequenceEqual(illegalPacket.Ethernet.Ip.Icmp.ToArray(),
                                     icmpBuffer);
 
                     Assert.AreEqual(illegalPacket,
-                                    PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, illegalPacket.Ethernet.IpV4.Icmp.ExtractLayer()));
+                                    PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, illegalPacket.Ethernet.Ip.Icmp.ExtractLayer()));
                 }
 
                 // Ethernet
-                ethernetLayer.EtherType = EthernetType.IpV4;
+                ethernetLayer.EtherType = ipLayer == ipV4Layer ? EthernetType.IpV4 : EthernetType.IpV6;
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+                ethernetLayer.EtherType = EthernetType.None;
 
-                // IPv4
-                ipV4Layer.Protocol = IpV4Protocol.InternetControlMessageProtocol;
-                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
-                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer());
-                ipV4Layer.HeaderChecksum = null;
-                Assert.AreEqual(ipV4Layer.Length, packet.Ethernet.IpV4.HeaderLength);
-                Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
-                Assert.AreEqual(ipV4Layer.Length + icmpLayer.Length + icmpPayloadLength,
-                                packet.Ethernet.IpV4.TotalLength);
-                Assert.AreEqual(IpV4Datagram.DefaultVersion, packet.Ethernet.IpV4.Version);
+                // IP.
+                if (ipLayer == ipV4Layer)
+                {
+                    // IPv4.
+                    ipV4Layer.Protocol = IpV4Protocol.InternetControlMessageProtocol;
+                    ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
+                    Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer());
+                    ipV4Layer.HeaderChecksum = null;
+                    Assert.AreEqual(ipV4Layer.Length, packet.Ethernet.IpV4.HeaderLength);
+                    Assert.IsTrue(packet.Ethernet.IpV4.IsHeaderChecksumCorrect);
+                    Assert.AreEqual(ipV4Layer.Length + icmpLayer.Length + icmpPayloadLength,
+                                    packet.Ethernet.IpV4.TotalLength);
+                    Assert.AreEqual(IpV4Datagram.DefaultVersion, packet.Ethernet.IpV4.Version);
+                } 
+                else
+                {
+                    // IPv6.
+                    Assert.AreEqual(ipLayer, packet.Ethernet.IpV6.ExtractLayer());
+                }
 
                 // ICMP
-                IcmpDatagram actualIcmp = packet.Ethernet.IpV4.Icmp;
+                IcmpDatagram actualIcmp = packet.Ethernet.Ip.Icmp;
                 IcmpLayer actualIcmpLayer = (IcmpLayer)actualIcmp.ExtractLayer();
                 icmpLayer.Checksum = actualIcmpLayer.Checksum;
                 Assert.AreEqual(icmpLayer, actualIcmpLayer);
@@ -135,10 +149,10 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(icmpLayer.MessageType, actualIcmp.MessageType);
                 Assert.AreEqual(icmpLayer.CodeValue, actualIcmp.Code);
                 Assert.AreEqual(icmpLayer.MessageTypeAndCode, actualIcmp.MessageTypeAndCode);
-                Assert.AreEqual(packet.Length - ethernetLayer.Length - ipV4Layer.Length - IcmpDatagram.HeaderLength, actualIcmp.Payload.Length);
+                Assert.AreEqual(packet.Length - ethernetLayer.Length - ipLayer.Length - IcmpDatagram.HeaderLength, actualIcmp.Payload.Length);
                 Assert.IsNotNull(icmpLayer.ToString());
 
-                switch (packet.Ethernet.IpV4.Icmp.MessageType)
+                switch (packet.Ethernet.Ip.Icmp.MessageType)
                 {
                     case IcmpMessageType.RouterSolicitation:
                     case IcmpMessageType.SourceQuench:
@@ -169,7 +183,7 @@ namespace PcapDotNet.Packets.Test
 
                     case IcmpMessageType.DomainNameReply:
                     default:
-                        throw new InvalidOperationException("Invalid icmpMessageType " + packet.Ethernet.IpV4.Icmp.MessageType);
+                        throw new InvalidOperationException("Invalid icmpMessageType " + packet.Ethernet.Ip.Icmp.MessageType);
 
                 }
             }
