@@ -187,12 +187,15 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         /// <summary>
-        /// Valid if all extension headers are valid.
+        /// Valid if all extension headers are valid and payload is valid.
         /// </summary>
         protected override bool CalculateIsValid()
         {
             ParseExtensionHeaders();
-            return _isValid;
+            if (!_isValidExtensionHeaders)
+                return false;
+
+            return IsPayloadValid;
         }
 
         protected override ushort CalculateTransportChecksum()
@@ -269,12 +272,12 @@ namespace PcapDotNet.Packets.IpV6
 
             if (Length < HeaderLength)
             {
-                _isValid = false;
+                _isValidExtensionHeaders = false;
                 _extensionHeaders = IpV6ExtensionHeaders.Empty;
                 return;
             }
             _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
-            _isValid = _isValid && _extensionHeaders.IsValid;
+            _isValidExtensionHeaders = _isValidExtensionHeaders && _extensionHeaders.IsValid;
         }
 
         private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int fullHeaderLength, uint transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
@@ -293,6 +296,6 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;
-        private bool _isValid = true;
+        private bool _isValidExtensionHeaders = true;
     }
 }

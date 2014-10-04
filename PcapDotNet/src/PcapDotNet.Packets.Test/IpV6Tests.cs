@@ -67,6 +67,9 @@ namespace PcapDotNet.Packets.Test
                                               };
 
             Random random = new Random();
+            int seed = random.Next();
+            Console.WriteLine("Seed: " + seed);
+            random = new Random(1930237499);
 
             for (int i = 0; i != 1000; ++i)
             {
@@ -74,12 +77,22 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.NextInt(0, 50 * 1024));
 
+                if (i < 26)
+                    continue;
+
                 List<ILayer> layers = new List<ILayer> {ethernetLayer, ipV6Layer};
                 if (ipV6Layer.ExtensionHeaders.LastHeader != IpV4Protocol.EncapsulatingSecurityPayload)
                     layers.Add(payloadLayer);
                 Packet packet = PacketBuilder.Build(DateTime.Now, layers);
 
-                Assert.IsTrue(packet.IsValid, string.Format("IsValid ({0}...{1})", ipV6Layer.NextHeader, ipV6Layer.ExtensionHeaders.NextHeader));
+                Assert.IsTrue(ipV6Layer.LastNextHeader == IpV4Protocol.Ip ||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.IpV6||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.Udp ||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.Tcp ||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.InternetGroupManagementProtocol ||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.InternetControlMessageProtocol ||
+                              ipV6Layer.LastNextHeader == IpV4Protocol.Gre ||
+                              packet.IsValid, string.Format("IsValid ({0}...{1})", ipV6Layer.NextHeader, ipV6Layer.ExtensionHeaders.NextHeader));
 
                 // Ethernet
                 Assert.AreEqual(packet.Length - EthernetDatagram.HeaderLengthValue, packet.Ethernet.PayloadLength, "PayloadLength");

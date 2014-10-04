@@ -1,4 +1,5 @@
 ﻿using PcapDotNet.Packets.Arp;
+using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.IpV6;
 
@@ -96,8 +97,6 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.VLanTaggedFrame; }
         }
 
-        // TODO: Add Ip property.
-
         /// <summary>
         /// The Ethernet payload as an IPv4 datagram.
         /// </summary>
@@ -112,6 +111,24 @@ namespace PcapDotNet.Packets.Ethernet
         public IpV6Datagram IpV6
         {
             get { return PayloadDatagrams.IpV6; }
+        }
+
+        public IpDatagram Ip
+        {
+            get
+            {
+                switch (EtherType)
+                {
+                    case EthernetType.IpV4:
+                        return IpV4;
+
+                    case EthernetType.IpV6:
+                        return IpV6;
+
+                    default:
+                        return null;
+                }
+            }
         }
         
         /// <summary>

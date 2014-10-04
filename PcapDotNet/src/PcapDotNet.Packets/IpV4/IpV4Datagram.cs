@@ -311,26 +311,7 @@ namespace PcapDotNet.Packets.IpV4
             if (!IsHeaderChecksumCorrect)
                 return false;
 
-            switch (Protocol)
-            {
-                case IpV4Protocol.Tcp:
-                case IpV4Protocol.Udp:
-                    return Transport.IsValid && (Transport.IsChecksumOptional && Transport.Checksum == 0 ||
-                                                 IsTransportChecksumCorrect);
-
-                case IpV4Protocol.InternetGroupManagementProtocol:
-                    return Igmp.IsValid;
-
-                case IpV4Protocol.InternetControlMessageProtocol:
-                    return Icmp.IsValid;
-
-                case IpV4Protocol.Gre:
-                    return Gre.IsValid;
-
-                default:
-                    // Todo check more protocols
-                    return true;
-            }
+            return IsPayloadValid;
         }
 
         protected override ushort CalculateTransportChecksum()

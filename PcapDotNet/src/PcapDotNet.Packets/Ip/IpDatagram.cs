@@ -119,6 +119,24 @@ namespace PcapDotNet.Packets.Ip
             }
         }
 
+        public IpDatagram Ip
+        {
+            get
+            {
+                switch (PayloadProtocol)
+                {
+                    case IpV4Protocol.Ip:
+                        return IpV4;
+
+                    case IpV4Protocol.IpV6:
+                        return IpV6;
+
+                    default:
+                        return null;
+                }
+            }
+        }
+
         /// <summary>
         /// The payload of the datagram as an ICMP datagram.
         /// </summary>
@@ -231,6 +249,37 @@ namespace PcapDotNet.Packets.Ip
         internal IpDatagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
+        }
+
+        internal bool IsPayloadValid
+        {
+            get
+            {
+                switch (PayloadProtocol)
+                {
+                    case IpV4Protocol.Ip:
+                    case IpV4Protocol.IpV6:
+                        return Ip.IsValid;
+
+                    case IpV4Protocol.Tcp:
+                    case IpV4Protocol.Udp:
+                        return Transport.IsValid && (Transport.IsChecksumOptional && Transport.Checksum == 0 ||
+                                                     IsTransportChecksumCorrect);
+
+                    case IpV4Protocol.InternetGroupManagementProtocol:
+                        return Igmp.IsValid;
+
+                    case IpV4Protocol.InternetControlMessageProtocol:
+                        return Icmp.IsValid;
+
+                    case IpV4Protocol.Gre:
+                        return Gre.IsValid;
+
+                    default:
+                        // Todo check more protocols
+                        return true;
+                }
+            }
         }
 
         internal abstract IpV4Protocol PayloadProtocol { get; }

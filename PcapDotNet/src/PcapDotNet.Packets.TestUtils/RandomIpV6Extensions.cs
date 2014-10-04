@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.TestUtils
         public static IpV6Layer NextIpV6Layer(this Random random, IpV4Protocol? lastNextHeader, bool allowEncapsulatingSecurityPayload)
         {
             IpV6ExtensionHeaders extensionHeaders = random.NextIpV6ExtensionHeaders(random.NextInt(0, 10), lastNextHeader, allowEncapsulatingSecurityPayload);
-            IpV4Protocol nextHeader = extensionHeaders.FirstHeader ?? (lastNextHeader ?? random.NextEnum<IpV4Protocol>(IpV6ExtensionHeader.ExtensionHeaders));
+            IpV4Protocol? nextHeader = extensionHeaders.FirstHeader ?? lastNextHeader;
             return new IpV6Layer
                        {
                            TrafficClass = random.NextByte(),
