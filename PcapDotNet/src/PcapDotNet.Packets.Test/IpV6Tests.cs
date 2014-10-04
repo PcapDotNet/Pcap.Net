@@ -250,6 +250,7 @@ namespace PcapDotNet.Packets.Test
             Packet invalidPacket = new Packet(packet.Buffer.Take(packet.Length - 1).ToArray(), DateTime.Now, DataLinkKind.Ethernet);
             Assert.AreEqual(IpV6ExtensionHeaders.Empty, invalidPacket.Ethernet.IpV6.ExtensionHeaders);
             Assert.AreEqual(0, invalidPacket.Ethernet.IpV6.RealPayloadLength);
+            Assert.IsNull(invalidPacket.Ethernet.IpV6.Icmp);
             Assert.IsFalse(invalidPacket.IsValid);
         }
 
@@ -295,38 +296,6 @@ namespace PcapDotNet.Packets.Test
         }
 
         // IpV6ExtensionHeader tests.
-
-        [TestMethod]
-        public void IpV6ExtensionHeadersAutomaticNextHeaderByNextExtensionHeader()
-        {
-            Packet packet = PacketBuilder.Build(
-                DateTime.Now,
-                new EthernetLayer(),
-                new IpV6Layer
-                {
-                    ExtensionHeaders = new IpV6ExtensionHeaders(
-                        new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty),
-                        new IpV6ExtensionHeaderDestinationOptions(IpV4Protocol.Skip, IpV6Options.Empty))
-                });
-
-            Assert.IsTrue(packet.IsValid);
-            Assert.AreEqual(IpV4Protocol.IpV6Opts, packet.Ethernet.IpV6.ExtensionHeaders[0].NextHeader);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
-        public void IpV6ExtensionHeadersAutomaticNextHeaderFailure()
-        {
-            Assert.IsNull(PacketBuilder.Build(
-                DateTime.Now,
-                new EthernetLayer(),
-                new IpV6Layer
-                    {
-                        ExtensionHeaders = new IpV6ExtensionHeaders(
-                            new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty))
-                    }));
-            Assert.Fail();
-        }
 
         [TestMethod]
         public void IpV6ExtensionHeaderAuthenticationBadPayloadLength()
@@ -558,6 +527,38 @@ namespace PcapDotNet.Packets.Test
         }
 
         // IpV6ExtensionHeaders tests.
+
+        [TestMethod]
+        public void IpV6ExtensionHeadersAutomaticNextHeaderByNextExtensionHeader()
+        {
+            Packet packet = PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty),
+                        new IpV6ExtensionHeaderDestinationOptions(IpV4Protocol.Skip, IpV6Options.Empty))
+                });
+
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(IpV4Protocol.IpV6Opts, packet.Ethernet.IpV6.ExtensionHeaders[0].NextHeader);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
+        public void IpV6ExtensionHeadersAutomaticNextHeaderFailure()
+        {
+            Assert.IsNull(PacketBuilder.Build(
+                DateTime.Now,
+                new EthernetLayer(),
+                new IpV6Layer
+                {
+                    ExtensionHeaders = new IpV6ExtensionHeaders(
+                        new IpV6ExtensionHeaderDestinationOptions(null, IpV6Options.Empty))
+                }));
+            Assert.Fail();
+        }
 
         [TestMethod]
         public void IpV6ExtensionHeadersConstructors()

@@ -517,6 +517,7 @@ namespace PcapDotNet.Packets.Test
             byte[] badPacketBuffer = new byte[packet.Length - 5];
             packet.Buffer.BlockCopy(0, badPacketBuffer, 0, badPacketBuffer.Length);
             Packet badPacket = new Packet(badPacketBuffer, DateTime.Now, packet.DataLink);
+            Assert.IsNull(badPacket.Ethernet.IpV4.Icmp);
             Assert.IsFalse(badPacket.IsValid, "badPacket.IsValid");
         }
 

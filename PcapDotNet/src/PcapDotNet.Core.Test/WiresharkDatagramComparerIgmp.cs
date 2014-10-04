@@ -24,7 +24,16 @@ namespace PcapDotNet.Core.Test
                     if (field.Show() == "0")
                         return false; // TODO: support IGMP version 0.
 
-                    field.AssertShowDecimal(igmpDatagram.Version);
+                    if (field.Show() == "3" && igmpDatagram.Version == 1)
+                    {
+                        // TODO: Fix following https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10526
+                        Assert.AreEqual(IgmpMessageType.MembershipQuery, igmpDatagram.MessageType);
+                        Assert.AreEqual(8, igmpDatagram.Length);
+                    }
+                    else
+                    {
+                        field.AssertShowDecimal(igmpDatagram.Version);
+                    }
                     break;
 
                 case "igmp.type":
