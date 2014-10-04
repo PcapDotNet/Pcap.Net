@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -97,6 +98,12 @@ namespace PcapDotNet.Packets.IpV6
             get { return IpV6Datagram.HeaderLength + ExtensionHeaders.BytesLength; }
         }
 
+        /// <summary>
+        /// The IPv6 last next header field.
+        /// If there are no extension headers, this is the IPv6 layer next header field.
+        /// If there are extesion headers, this is the last extension header next header field.
+        /// Returns null if the last next header should be calculated automatically when building a packet.
+        /// </summary>
         public IpV4Protocol? LastNextHeader
         {
             get { return ExtensionHeaders.Any() ? ExtensionHeaders.NextHeader : NextHeader; }
@@ -126,6 +133,14 @@ namespace PcapDotNet.Packets.IpV6
                                      TrafficClass, FlowLabel, (ushort)(payloadLength + ExtensionHeaders.BytesLength), NextHeader, nextLayerProtocol, HopLimit, Source, CurrentDestination, ExtensionHeaders);
         }
 
+        /// <summary>
+        /// Finalizes the layer data in the buffer.
+        /// Used for fields that must be calculated according to the layer's payload (like checksum).
+        /// </summary>
+        /// <param name="buffer">The buffer to finalize the layer in.</param>
+        /// <param name="offset">The offset in the buffer the layer starts.</param>
+        /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
+        /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
         {
             IIpNextTransportLayer nextTransportLayer = nextLayer as IIpNextTransportLayer;
@@ -173,7 +188,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override string ToString()
         {
-            return string.Format("{0} -> {1} ({2})", Source, CurrentDestination, NextHeader);
+            return string.Format(CultureInfo.InvariantCulture, "{0} -> {1} ({2})", Source, CurrentDestination, NextHeader);
         }
     }
 }

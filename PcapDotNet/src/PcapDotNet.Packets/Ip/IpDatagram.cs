@@ -46,6 +46,9 @@ namespace PcapDotNet.Packets.Ip
             get { return (byte)((this[Offset.Version] & Mask.Version) >> Shift.Version); }
         }
 
+        /// <summary>
+        /// The total length - header and payload according to the IP header.
+        /// </summary>
         public abstract int TotalLength { get; }
 
         /// <summary>
@@ -119,6 +122,10 @@ namespace PcapDotNet.Packets.Ip
             }
         }
 
+        /// <summary>
+        /// Returns the inner IP Datagram.
+        /// This is either an IPv4 Datagram or an IPv6 Datagram (according to the Payload Protocol).
+        /// </summary>
         public IpDatagram Ip
         {
             get
@@ -244,6 +251,10 @@ namespace PcapDotNet.Packets.Ip
             }
         }
 
+        /// <summary>
+        /// Calculates the Transport checksum field value.
+        /// </summary>
+        /// <returns>The calculated checksum value.</returns>
         protected abstract ushort CalculateTransportChecksum();
 
         internal IpDatagram(byte[] buffer, int offset, int length)

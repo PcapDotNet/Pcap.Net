@@ -314,6 +314,10 @@ namespace PcapDotNet.Packets.IpV4
             return IsPayloadValid;
         }
 
+        /// <summary>
+        /// Calculates the Transport checksum field value.
+        /// </summary>
+        /// <returns>The calculated checksum value.</returns>
         protected override ushort CalculateTransportChecksum()
         {
             return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);

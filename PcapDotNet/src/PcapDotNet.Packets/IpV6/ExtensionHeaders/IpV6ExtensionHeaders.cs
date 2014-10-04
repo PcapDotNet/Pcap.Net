@@ -115,6 +115,9 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ReadOnlyCollection<IpV6ExtensionHeader> Headers { get; private set; }
 
+        /// <summary>
+        /// The total number of bytes the extension headers take.
+        /// </summary>
         public int BytesLength { get; private set; }
 
         /// <summary>
