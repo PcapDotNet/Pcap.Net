@@ -61,6 +61,7 @@ namespace PcapDotNet.Packets.Test
 
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
             ipV4Layer.HeaderChecksum = null;
+            Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(true);
 
             UdpLayer udpLayer = random.NextUdpLayer();
             udpLayer.Checksum = null;
@@ -73,19 +74,19 @@ namespace PcapDotNet.Packets.Test
                     dnsLayer = random.NextDnsLayer();
                 } while (dnsLayer.Length > 65000);
 
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, dnsLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, udpLayer, dnsLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // DNS
-                DnsLayer actualLayer = (DnsLayer)packet.Ethernet.IpV4.Udp.Dns.ExtractLayer();
+                DnsLayer actualLayer = (DnsLayer)packet.Ethernet.Ip.Udp.Dns.ExtractLayer();
                 Assert.AreEqual(dnsLayer, actualLayer, "DNS Layer");
-                Assert.IsTrue(packet.Ethernet.IpV4.Udp.Dns.IsValid);
+                Assert.IsTrue(packet.Ethernet.Ip.Udp.Dns.IsValid);
 
-                DnsDataResourceRecord opt = packet.Ethernet.IpV4.Udp.Dns.Additionals.FirstOrDefault(additional => additional.DnsType == DnsType.Opt);
-                Assert.AreEqual(opt, packet.Ethernet.IpV4.Udp.Dns.OptionsRecord);
+                DnsDataResourceRecord opt = packet.Ethernet.Ip.Udp.Dns.Additionals.FirstOrDefault(additional => additional.DnsType == DnsType.Opt);
+                Assert.AreEqual(opt, packet.Ethernet.Ip.Udp.Dns.OptionsRecord);
 
-                foreach (var record in packet.Ethernet.IpV4.Udp.Dns.ResourceRecords)
+                foreach (var record in packet.Ethernet.Ip.Udp.Dns.ResourceRecords)
                 {
                     Assert.IsTrue(record.Equals(record));
                     Assert.IsTrue(record.DomainName.Equals((object)record.DomainName));
@@ -93,7 +94,7 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(record.GetHashCode(), record.GetHashCode());
                 }
 
-                foreach (var record in packet.Ethernet.IpV4.Udp.Dns.DataResourceRecords)
+                foreach (var record in packet.Ethernet.Ip.Udp.Dns.DataResourceRecords)
                 {
                     MoreAssert.IsBiggerOrEqual(9, record.ToString().Length);
                     Assert.IsTrue(record.Equals((object)record));

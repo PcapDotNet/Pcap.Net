@@ -5,6 +5,7 @@ using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
+using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.Test
 {
@@ -43,7 +44,7 @@ namespace PcapDotNet.Packets.Test
         #endregion
 
         [TestMethod]
-        public void RandomUdpOverIpV4Test()
+        public void RandomUdpTest()
         {
             EthernetLayer ethernetLayer = new EthernetLayer
                                               {
@@ -52,82 +53,55 @@ namespace PcapDotNet.Packets.Test
                                               };
 
             Random random = new Random();
+            int seed = random.Next();
+            Console.WriteLine("Seed: " + seed);
+            random = new Random(seed);
 
             IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
             ipV4Layer.HeaderChecksum = null;
-
-            // TODO: Merge this test with the above one.
-            for (int i = 0; i != 500; ++i)
-            {
-                UdpLayer udpLayer = random.NextUdpLayer();
-                udpLayer.Checksum = null;
-
-                PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
-
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, udpLayer, payloadLayer);
-
-                Assert.IsTrue(packet.IsValid, "IsValid");
-
-                // Ethernet
-                ethernetLayer.EtherType = EthernetType.IpV4;
-                Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
-
-                // IpV4
-                ipV4Layer.Protocol = IpV4Protocol.Udp;
-                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
-                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
-                ipV4Layer.HeaderChecksum = null;
-
-                // UDP
-                udpLayer.Checksum = packet.Ethernet.IpV4.Udp.Checksum;
-                Assert.AreEqual(udpLayer, packet.Ethernet.IpV4.Udp.ExtractLayer(), "UDP Layer");
-                Assert.AreEqual(UdpDatagram.HeaderLength + payloadLayer.Length, packet.Ethernet.IpV4.Udp.TotalLength, "Total Length");
-                Assert.IsTrue(!udpLayer.CalculateChecksum && packet.Ethernet.IpV4.Udp.Checksum == 0 ||
-                              udpLayer.CalculateChecksum && packet.Ethernet.IpV4.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
-                Assert.IsTrue(packet.Ethernet.IpV4.Udp.IsChecksumOptional, "IsChecksumOptional");
-                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Udp.Payload, "Payload");
-            }
-        }
-
-        [TestMethod]
-        public void RandomUdpOverIpV6Test()
-        {
-            EthernetLayer ethernetLayer = new EthernetLayer
-            {
-                Source = new MacAddress("00:01:02:03:04:05"),
-                Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
-            };
-
-            Random random = new Random();
-
             IpV6Layer ipV6Layer = random.NextIpV6Layer(IpV4Protocol.Udp, false);
 
-            for (int i = 0; i != 500; ++i)
+            for (int i = 0; i != 1000; ++i)
             {
+                EthernetType ethernetType = random.NextBool() ? EthernetType.IpV4 : EthernetType.IpV6;
+                Layer ipLayer = (ethernetType == EthernetType.IpV4 ? (Layer)ipV4Layer : ipV6Layer);
                 UdpLayer udpLayer = random.NextUdpLayer();
                 udpLayer.Checksum = null;
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV6Layer, udpLayer, payloadLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, udpLayer, payloadLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // Ethernet
-                ethernetLayer.EtherType = EthernetType.IpV6;
+                ethernetLayer.EtherType = ethernetType;
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+                ethernetLayer.EtherType = EthernetType.None;
 
-                // IpV6
-                Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
+                // Ip
+                if (ipLayer == ipV4Layer)
+                {
+                    // IpV4.
+                    ipV4Layer.Protocol = IpV4Protocol.Udp;
+                    ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
+                    Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IP Layer");
+                    ipV4Layer.HeaderChecksum = null;
+                }
+                else
+                {
+                    // IpV6.
+                    Assert.AreEqual(ipV6Layer, packet.Ethernet.IpV6.ExtractLayer(), "IP Layer");
+                }
 
                 // UDP
-                udpLayer.Checksum = packet.Ethernet.IpV6.Udp.Checksum;
-                Assert.AreEqual(udpLayer, packet.Ethernet.IpV6.Udp.ExtractLayer(), "UDP Layer");
-                Assert.AreEqual(UdpDatagram.HeaderLength + payloadLayer.Length, packet.Ethernet.IpV6.Udp.TotalLength, "Total Length");
-                Assert.IsTrue(!udpLayer.CalculateChecksum && packet.Ethernet.IpV6.Udp.Checksum == 0 ||
-                              udpLayer.CalculateChecksum && packet.Ethernet.IpV6.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
-                Assert.IsTrue(packet.Ethernet.IpV6.Udp.IsChecksumOptional, "IsChecksumOptional");
-                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV6.Udp.Payload, "Payload");
+                udpLayer.Checksum = packet.Ethernet.Ip.Udp.Checksum;
+                Assert.AreEqual(udpLayer, packet.Ethernet.Ip.Udp.ExtractLayer(), "UDP Layer");
+                Assert.AreEqual(UdpDatagram.HeaderLength + payloadLayer.Length, packet.Ethernet.Ip.Udp.TotalLength, "Total Length");
+                Assert.IsTrue(!udpLayer.CalculateChecksum && packet.Ethernet.Ip.Udp.Checksum == 0 ||
+                              udpLayer.CalculateChecksum && packet.Ethernet.Ip.IsTransportChecksumCorrect, "IsTransportChecksumCorrect");
+                Assert.IsTrue(packet.Ethernet.Ip.Udp.IsChecksumOptional, "IsChecksumOptional");
+                Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Ip.Udp.Payload, "Payload");
             }
         }
 

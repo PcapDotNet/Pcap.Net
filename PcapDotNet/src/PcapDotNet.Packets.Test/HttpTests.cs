@@ -52,21 +52,25 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomHttpTest()
         {
-           Random random = new Random();
+            Random random = new Random();
+            int seed = random.Next();
+            Console.WriteLine("Seed: " + seed);
+            random = new Random(seed);
 
             for (int i = 0; i != 200; ++i)
             {
                 EthernetLayer ethernetLayer = random.NextEthernetLayer(EthernetType.None);
                 IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
                 ipV4Layer.HeaderChecksum = null;
+                Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(true);
                 TcpLayer tcpLayer = random.NextTcpLayer();
                 tcpLayer.Checksum = null;
                 HttpLayer httpLayer = random.NextHttpLayer();
 
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, tcpLayer, httpLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, tcpLayer, httpLayer);
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
-                HttpDatagram httpDatagram = packet.Ethernet.IpV4.Tcp.Http;
+                HttpDatagram httpDatagram = packet.Ethernet.Ip.Tcp.Http;
                 Assert.AreEqual(httpLayer.Version, httpDatagram.Version);
                 if (httpLayer.Version != null)
                     Assert.AreEqual(httpLayer.Version.GetHashCode(), httpDatagram.Version.GetHashCode());
@@ -76,7 +80,7 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsTrue(httpLayer.IsRequest);
                     Assert.IsFalse(httpDatagram.IsResponse);
                     Assert.IsFalse(httpLayer.IsResponse);
-                    
+
                     HttpRequestLayer httpRequestLayer = (HttpRequestLayer)httpLayer;
                     HttpRequestDatagram httpRequestDatagram = (HttpRequestDatagram)httpDatagram;
                     Assert.AreEqual(httpRequestLayer.Method, httpRequestDatagram.Method);

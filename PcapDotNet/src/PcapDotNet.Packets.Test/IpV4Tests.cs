@@ -102,7 +102,9 @@ namespace PcapDotNet.Packets.Test
 
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, payloadLayer);
 
-                Assert.IsTrue(ipV4Layer.Protocol == IpV4Protocol.Udp ||
+                Assert.IsTrue(ipV4Layer.Protocol == IpV4Protocol.Ip ||
+                              ipV4Layer.Protocol == IpV4Protocol.IpV6 ||
+                              ipV4Layer.Protocol == IpV4Protocol.Udp ||
                               ipV4Layer.Protocol == IpV4Protocol.Tcp ||
                               ipV4Layer.Protocol == IpV4Protocol.InternetGroupManagementProtocol ||
                               ipV4Layer.Protocol == IpV4Protocol.InternetControlMessageProtocol ||
