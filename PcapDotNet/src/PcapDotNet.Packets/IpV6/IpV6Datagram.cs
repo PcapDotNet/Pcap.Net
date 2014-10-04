@@ -169,70 +169,6 @@ namespace PcapDotNet.Packets.IpV6
             get { return HeaderLength + PayloadLength; }
         }
 
-// TODO: Sort method by visibility.
-
-        protected override ushort CalculateTransportChecksum()
-        {
-            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength + ExtensionHeaders.BytesLength, (uint)Transport.Length, Transport.ChecksumOffset,
-                                              Transport.IsChecksumOptional, CurrentDestination);
-        }
-
-        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int fullHeaderLength, uint transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
-        {
-            int offsetAfterChecksum = offset + fullHeaderLength + transportChecksumOffset + sizeof(ushort);
-            uint sum = Sum16Bits(buffer, offset + Offset.SourceAddress, IpV6Address.SizeOf) +
-                       Sum16Bits(destination) +
-                       Sum16Bits(transportLength) + buffer[offset + Offset.NextHeader] +
-                       Sum16Bits(buffer, offset + fullHeaderLength, transportChecksumOffset) +
-                       Sum16Bits(buffer, offsetAfterChecksum, (int)(transportLength - transportChecksumOffset - sizeof(ushort)));
-
-            ushort checksumResult = Sum16BitsToChecksum(sum);
-            if (checksumResult == 0 && isChecksumOptional)
-                return 0xFFFF;
-            return checksumResult;
-        }
-
-        internal override IpV4Protocol PayloadProtocol
-        {
-            get
-            {
-                IpV4Protocol? extensionHeadersNextHeader = ExtensionHeaders.NextHeader;
-                if (extensionHeadersNextHeader != null)
-                    return extensionHeadersNextHeader.Value;
-                return NextHeader;
-            }
-        }
-
-        internal override DataSegment GetPayload()
-        {
-            if (Length < HeaderLength)
-                return null;
-            return Subsegment(HeaderLength + ExtensionHeaders.BytesLength, Length - HeaderLength - ExtensionHeaders.BytesLength);
-        }
-
-        private void ParseExtensionHeaders()
-        {
-            if (_extensionHeaders != null)
-                return;
-
-            if (Length < HeaderLength)
-            {
-                _isValid = false;
-                _extensionHeaders = IpV6ExtensionHeaders.Empty;
-                return;
-            }
-            _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
-            _isValid = _isValid && _extensionHeaders.IsValid;
-        }
-
-        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, uint transportLength, int transportChecksumOffset,
-                                                    bool isChecksumOptional, ushort? checksum, IpV6Address destination)
-        {
-            ushort checksumValue =
-                checksum ?? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional, destination);
-            buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -259,9 +195,26 @@ namespace PcapDotNet.Packets.IpV6
             return _isValid;
         }
 
+        protected override ushort CalculateTransportChecksum()
+        {
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength + ExtensionHeaders.BytesLength, (uint)Transport.Length, Transport.ChecksumOffset,
+                                              Transport.IsChecksumOptional, CurrentDestination);
+        }
+
         internal IpV6Datagram(byte[] buffer, int offset, int length)
             : base(buffer, offset, length)
         {
+        }
+
+        internal override IpV4Protocol PayloadProtocol
+        {
+            get
+            {
+                IpV4Protocol? extensionHeadersNextHeader = ExtensionHeaders.NextHeader;
+                if (extensionHeadersNextHeader != null)
+                    return extensionHeadersNextHeader.Value;
+                return NextHeader;
+            }
         }
 
         internal static int GetTotalLength(Datagram payload)
@@ -270,6 +223,13 @@ namespace PcapDotNet.Packets.IpV6
                 return payload.Length;
 
             return Math.Min(payload.Length, HeaderLength + payload.ReadUShort(Offset.PayloadLength, Endianity.Big));
+        }
+
+        internal override DataSegment GetPayload()
+        {
+            if (Length < HeaderLength)
+                return null;
+            return Subsegment(HeaderLength + ExtensionHeaders.BytesLength, Length - HeaderLength - ExtensionHeaders.BytesLength);
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,
@@ -292,6 +252,44 @@ namespace PcapDotNet.Packets.IpV6
             buffer.Write(offset + Offset.SourceAddress, source, Endianity.Big);
             buffer.Write(offset + Offset.DestinationAddress, currentDestination, Endianity.Big);
             extensionHeaders.Write(buffer, offset + HeaderLength, nextLayerProtocol);
+        }
+
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, uint transportLength, int transportChecksumOffset,
+                                                    bool isChecksumOptional, ushort? checksum, IpV6Address destination)
+        {
+            ushort checksumValue =
+                checksum ?? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional, destination);
+            buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
+        }
+
+        private void ParseExtensionHeaders()
+        {
+            if (_extensionHeaders != null)
+                return;
+
+            if (Length < HeaderLength)
+            {
+                _isValid = false;
+                _extensionHeaders = IpV6ExtensionHeaders.Empty;
+                return;
+            }
+            _extensionHeaders = new IpV6ExtensionHeaders(Subsegment(HeaderLength, RealPayloadLength), NextHeader);
+            _isValid = _isValid && _extensionHeaders.IsValid;
+        }
+
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int fullHeaderLength, uint transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
+        {
+            int offsetAfterChecksum = offset + fullHeaderLength + transportChecksumOffset + sizeof(ushort);
+            uint sum = Sum16Bits(buffer, offset + Offset.SourceAddress, IpV6Address.SizeOf) +
+                       Sum16Bits(destination) +
+                       Sum16Bits(transportLength) + buffer[offset + Offset.NextHeader] +
+                       Sum16Bits(buffer, offset + fullHeaderLength, transportChecksumOffset) +
+                       Sum16Bits(buffer, offsetAfterChecksum, (int)(transportLength - transportChecksumOffset - sizeof(ushort)));
+
+            ushort checksumResult = Sum16BitsToChecksum(sum);
+            if (checksumResult == 0 && isChecksumOptional)
+                return 0xFFFF;
+            return checksumResult;
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;
