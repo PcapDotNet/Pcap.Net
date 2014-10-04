@@ -57,17 +57,19 @@ namespace PcapDotNet.Packets.Test
                 Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
             };
 
-            Random random = new Random();
-
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
-            ipV4Layer.HeaderChecksum = null;
-            Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(true);
-
-            UdpLayer udpLayer = random.NextUdpLayer();
-            udpLayer.Checksum = null;
+            int seed = new Random().Next();
+            Console.WriteLine("Seed: " + seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(true);
+
+                UdpLayer udpLayer = random.NextUdpLayer();
+                udpLayer.Checksum = null;
+
                 DnsLayer dnsLayer;
                 do
                 {

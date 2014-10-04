@@ -52,10 +52,9 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomHttpTest()
         {
-            Random random = new Random();
-            int seed = random.Next();
+            int seed = new Random().Next();
             Console.WriteLine("Seed: " + seed);
-            random = new Random(seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 200; ++i)
             {

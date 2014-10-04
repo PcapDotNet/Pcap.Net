@@ -66,10 +66,9 @@ namespace PcapDotNet.Packets.Test
                                                   EtherType = EthernetType
                                               };
 
-            Random random = new Random();
-            int seed = random.Next();
+            int seed = new Random().Next();
             Console.WriteLine("Seed: " + seed);
-            random = new Random(seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {

@@ -185,6 +185,7 @@ namespace PcapDotNet.Core.Test
                     return false;
 
                 case "ipv6.src_sa_mac":
+                case "ipv6.dst_sa_mac":
                 case "ipv6.sa_mac":
                 case "ipv6.dst_6to4_gw_ipv4":
                 case "ipv6.dst_6to4_sla_id":

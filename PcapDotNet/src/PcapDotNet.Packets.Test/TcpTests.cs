@@ -56,10 +56,9 @@ namespace PcapDotNet.Packets.Test
                                                   Destination = ethernetDestination
                                               };
 
-            Random random = new Random();
-            int seed = random.Next();
-            Console.WriteLine("Seed: {0}", seed);
-            random = new Random(seed);
+            int seed = new Random().Next();
+            Console.WriteLine("Seed: " + seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {
