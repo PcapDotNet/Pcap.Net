@@ -54,10 +54,9 @@ namespace PcapDotNet.Packets.Test
                                                   Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
                                               };
 
-            Random random = new Random();
-            int seed = random.Next();
+            int seed = new Random().Next();
             Console.WriteLine("Seed: " + seed);
-            random = new Random(seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 200; ++i)
             {
@@ -217,10 +216,9 @@ namespace PcapDotNet.Packets.Test
                                                   Destination = new MacAddress("A0:A1:A2:A3:A4:A5")
                                               };
 
-            Random random = new Random();
-            int seed = random.Next();
+            int seed = new Random().Next();
             Console.WriteLine("Seed: " + seed);
-            random = new Random(seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 100; ++i)
             {
