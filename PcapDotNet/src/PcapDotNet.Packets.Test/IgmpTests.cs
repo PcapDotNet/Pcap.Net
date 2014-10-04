@@ -54,54 +54,68 @@ namespace PcapDotNet.Packets.Test
                                               };
 
             Random random = new Random();
-
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
-            ipV4Layer.HeaderChecksum = null;
+            int seed = random.Next();
+            Console.WriteLine("Seed: " + seed);
+            random = new Random(seed);
 
             for (int i = 0; i != 200; ++i)
             {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(IpV4Protocol.InternetGroupManagementProtocol, false);
+
                 IgmpLayer igmpLayer = random.NextIgmpLayer();
 
-                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipV4Layer, igmpLayer);
+                Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, igmpLayer);
 
                 Assert.IsTrue(packet.IsValid, "IsValid");
 
                 // Ethernet
-                ethernetLayer.EtherType = EthernetType.IpV4;
+                ethernetLayer.EtherType = ipLayer == ipV4Layer ? EthernetType.IpV4 : EthernetType.IpV6;
                 Assert.AreEqual(ethernetLayer, packet.Ethernet.ExtractLayer(), "Ethernet Layer");
+                ethernetLayer.EtherType = EthernetType.None;
 
-                // IPv4
-                ipV4Layer.Protocol = IpV4Protocol.InternetGroupManagementProtocol;
-                ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
-                Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IPv4 Layer");
-                ipV4Layer.HeaderChecksum = null;
+                // IP.
+                if (ipV4Layer == ipLayer)
+                {
+                    // IPv4.
+                    ipV4Layer.Protocol = IpV4Protocol.InternetGroupManagementProtocol;
+                    ipV4Layer.HeaderChecksum = ((IpV4Layer)packet.Ethernet.IpV4.ExtractLayer()).HeaderChecksum;
+                    Assert.AreEqual(ipV4Layer, packet.Ethernet.IpV4.ExtractLayer(), "IPv4 Layer");
+                    ipV4Layer.HeaderChecksum = null;
+                }
+                else
+                {
+                    // IPv6.
+                    Assert.AreEqual(ipLayer, packet.Ethernet.IpV6.ExtractLayer(), "IPv6 Layer");
+                }
 
                 // IGMP
-                Assert.IsTrue(packet.Ethernet.IpV4.Igmp.IsChecksumCorrect);
-                Assert.AreEqual(igmpLayer, packet.Ethernet.IpV4.Igmp.ExtractLayer(), "IGMP Layer");
-                Assert.AreEqual(igmpLayer.GetHashCode(), packet.Ethernet.IpV4.Igmp.ExtractLayer().GetHashCode(), "IGMP Layer");
+                Assert.IsTrue(packet.Ethernet.Ip.Igmp.IsChecksumCorrect);
+                Assert.AreEqual(igmpLayer, packet.Ethernet.Ip.Igmp.ExtractLayer(), "IGMP Layer");
+                Assert.AreEqual(igmpLayer.GetHashCode(), packet.Ethernet.Ip.Igmp.ExtractLayer().GetHashCode(), "IGMP Layer");
                 Assert.AreNotEqual(igmpLayer, null);
                 Assert.AreNotEqual(igmpLayer, random.NextPayloadLayer(igmpLayer.Length));
                 Assert.AreNotEqual(igmpLayer.GetHashCode(), random.NextPayloadLayer(igmpLayer.Length).GetHashCode());
-                if (packet.Ethernet.IpV4.Igmp.QueryVersion != IgmpQueryVersion.Version3)
-                    MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.IpV4.Igmp.MaxResponseTime);
-                if (packet.Ethernet.IpV4.Igmp.MessageType != IgmpMessageType.MembershipQuery)
-                    Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.IpV4.Igmp.QueryVersion);
+                if (packet.Ethernet.Ip.Igmp.QueryVersion != IgmpQueryVersion.Version3)
+                    MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.Ip.Igmp.MaxResponseTime);
+                if (packet.Ethernet.Ip.Igmp.MessageType != IgmpMessageType.MembershipQuery)
+                    Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.Ip.Igmp.QueryVersion);
                 switch (igmpLayer.MessageType)
                 {
                     case IgmpMessageType.MembershipQuery:
                         switch (igmpLayer.QueryVersion)
                         {
                             case IgmpQueryVersion.Version1:
-                                Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);
+                                Assert.AreEqual(1, packet.Ethernet.Ip.Igmp.Version);
                                 break;
 
                             case IgmpQueryVersion.Version2:
-                                Assert.AreEqual(2, packet.Ethernet.IpV4.Igmp.Version);
+                                Assert.AreEqual(2, packet.Ethernet.Ip.Igmp.Version);
                                 break;
 
                             case IgmpQueryVersion.Version3:
-                                Assert.AreEqual(3, packet.Ethernet.IpV4.Igmp.Version);
+                                Assert.AreEqual(3, packet.Ethernet.Ip.Igmp.Version);
                                 break;
 
                             default:
@@ -111,23 +125,23 @@ namespace PcapDotNet.Packets.Test
                         break;
 
                     case IgmpMessageType.MembershipReportVersion1:
-                        Assert.AreEqual(1, packet.Ethernet.IpV4.Igmp.Version);
+                        Assert.AreEqual(1, packet.Ethernet.Ip.Igmp.Version);
                         break;
 
                     case IgmpMessageType.MembershipReportVersion2:
                     case IgmpMessageType.LeaveGroupVersion2:
-                        Assert.AreEqual(2, packet.Ethernet.IpV4.Igmp.Version);
+                        Assert.AreEqual(2, packet.Ethernet.Ip.Igmp.Version);
                         break;
 
                     case IgmpMessageType.MembershipReportVersion3:
-                        Assert.AreEqual(3, packet.Ethernet.IpV4.Igmp.Version);
+                        Assert.AreEqual(3, packet.Ethernet.Ip.Igmp.Version);
                         break;
 
                     default:
                         Assert.Fail(igmpLayer.MessageType.ToString());
                         break;
                 }
-                foreach (IgmpGroupRecordDatagram groupRecord in packet.Ethernet.IpV4.Igmp.GroupRecords)
+                foreach (IgmpGroupRecordDatagram groupRecord in packet.Ethernet.Ip.Igmp.GroupRecords)
                     Assert.IsNotNull(groupRecord.ToString());
             }
         }

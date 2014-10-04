@@ -59,12 +59,12 @@ namespace PcapDotNet.Packets.Test
             Console.WriteLine("Seed: " + seed);
             random = new Random(seed);
 
-            IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
-            ipV4Layer.HeaderChecksum = null;
-            Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(IpV4Protocol.Gre, false);
-
             for (int i = 0; i != 200; ++i)
             {
+                IpV4Layer ipV4Layer = random.NextIpV4Layer(null);
+                ipV4Layer.HeaderChecksum = null;
+                Layer ipLayer = random.NextBool() ? (Layer)ipV4Layer : random.NextIpV6Layer(IpV4Protocol.Gre, false);
+
                 GreLayer greLayer = random.NextGreLayer();
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
 
