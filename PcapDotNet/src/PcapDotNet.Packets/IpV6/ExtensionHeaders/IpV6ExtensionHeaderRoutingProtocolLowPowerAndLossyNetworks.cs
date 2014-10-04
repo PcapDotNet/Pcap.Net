@@ -90,7 +90,7 @@ namespace PcapDotNet.Packets.IpV6
         /// For example, a header carrying a full IPv6 address in Addresses[n] sets this to 0. 
         /// </param>
         /// <param name="addresses">Routing addresses.</param>
-        public IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(IpV4Protocol nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
+        public IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(IpV4Protocol? nextHeader, byte segmentsLeft, byte commonPrefixLengthForNonLastAddresses,
                                                                           byte commonPrefixLengthForLastAddress, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
         {

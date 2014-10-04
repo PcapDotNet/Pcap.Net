@@ -44,7 +44,7 @@ namespace PcapDotNet.Packets.IpV6
         /// The checksum is the 16-bit one's complement of the one's complement sum of this string.
         /// </param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityBindingRefreshRequest(IpV4Protocol nextHeader, ushort checksum, IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityBindingRefreshRequest(IpV4Protocol? nextHeader, ushort checksum, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
         }

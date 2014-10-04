@@ -20,6 +20,8 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// Identifies the type of header immediately following this extension header.
+        /// If the extension header is constructed with null NextHeader, it would be auto calculated according to the next extension or next layer when writing
+        /// the layer.
         /// </summary>
         public IpV4Protocol? NextHeader { get; private set; }
 
@@ -98,7 +100,7 @@ namespace PcapDotNet.Packets.IpV6
             }
         }
 
-        internal abstract void Write(byte[] buffer, ref int offset);
+        internal abstract void Write(byte[] buffer, ref int offset, IpV4Protocol nextHeader);
 
         private static readonly ReadOnlyCollection<IpV4Protocol> _extensionHeaders =
             IpV6ExtensionHeaderStandard.StandardExtensionHeaders.Concat(

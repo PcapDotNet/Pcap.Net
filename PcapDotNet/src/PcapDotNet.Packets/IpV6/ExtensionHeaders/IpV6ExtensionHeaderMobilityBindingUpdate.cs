@@ -114,7 +114,7 @@ namespace PcapDotNet.Packets.IpV6
         /// One time unit is 4 seconds for Binding Update and 1 second for Fast Binding Update.
         /// </param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
+        public IpV6ExtensionHeaderMobilityBindingUpdate(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber, bool acknowledge, bool homeRegistration,
                                                         bool linkLocalAddressCompatibility, bool keyManagementMobilityCapability, bool mapRegistration,
                                                         bool mobileRouter, bool proxyRegistration, bool forcingUdpEncapsulation, bool typeLengthValueHeaderFormat,
                                                         bool bulkBindingUpdate, ushort lifetime, IpV6MobilityOptions options)

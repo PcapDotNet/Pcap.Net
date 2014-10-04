@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="careOfInitCookie">Contains the care-of init cookie.</param>
         /// <param name="careOfKeygenToken">Contains the 64-bit care-of keygen token used in the return routability procedure.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityCareOfTest(IpV4Protocol nextHeader, ushort checksum, ushort careOfNonceIndex, ulong careOfInitCookie,
+        public IpV6ExtensionHeaderMobilityCareOfTest(IpV4Protocol? nextHeader, ushort checksum, ushort careOfNonceIndex, ulong careOfInitCookie,
                                                      ulong careOfKeygenToken, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

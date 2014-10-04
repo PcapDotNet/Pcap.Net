@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Typically copied from the corresponding field in the LRI message.
         /// </param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited,
+        public IpV6ExtensionHeaderMobilityLocalizedRoutingAcknowledgement(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber, bool unsolicited,
                                                                           IpV6MobilityLocalizedRoutingAcknowledgementStatus status, ushort lifetime,
                                                                           IpV6MobilityOptions options)
             : base(nextHeader, checksum, sequenceNumber, lifetime, options)

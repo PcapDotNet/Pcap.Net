@@ -43,7 +43,6 @@ namespace PcapDotNet.Packets.Transport
         {
         }
 
-
         private static readonly TcpOptions _none = new TcpOptions();
     }
 }

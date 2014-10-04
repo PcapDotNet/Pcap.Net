@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="homeAgentAddresses">A list of alternate home agent addresses for the mobile node.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, ReadOnlyCollection<IpV6Address> homeAgentAddresses,
+        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol? nextHeader, ushort checksum, ReadOnlyCollection<IpV6Address> homeAgentAddresses,
                                                                  IpV6MobilityOptions options)
             : base(nextHeader, checksum, options,
                    MessageDataOffset.HomeAgentAddresses + (homeAgentAddresses == null ? 0 : homeAgentAddresses.Count) * IpV6Address.SizeOf)
@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="homeAgentAddresses">A list of alternate home agent addresses for the mobile node.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol nextHeader, ushort checksum, IList<IpV6Address> homeAgentAddresses, IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityHomeAgentSwitchMessage(IpV4Protocol? nextHeader, ushort checksum, IList<IpV6Address> homeAgentAddresses, IpV6MobilityOptions options)
             : this(nextHeader, checksum, (ReadOnlyCollection<IpV6Address>)homeAgentAddresses.AsReadOnly(), options)
         {
         }

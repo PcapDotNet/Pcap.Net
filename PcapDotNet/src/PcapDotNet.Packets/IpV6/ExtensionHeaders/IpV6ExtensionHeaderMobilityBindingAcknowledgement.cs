@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.IpV6
         /// for which this node should retain the entry for this mobile node in its Binding Cache.
         /// </param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+        public IpV6ExtensionHeaderMobilityBindingAcknowledgement(IpV4Protocol? nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                  bool keyManagementMobilityCapability, bool mobileRouter, bool proxyRegistration,
                                                                  bool typeLengthValueHeaderFormat, ushort sequenceNumber, ushort lifetime, IpV6MobilityOptions options)
             : base(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime, options)

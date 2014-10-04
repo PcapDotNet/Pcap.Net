@@ -60,7 +60,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public ushort Lifetime { get; private set; }
 
-        internal IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
+        internal IpV6ExtensionHeaderMobilityLocalizedRouting(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber, ushort lifetime,
                                                            IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

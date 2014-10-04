@@ -58,14 +58,14 @@ namespace PcapDotNet.Packets.IpV6
 
         internal abstract int GetDataHashCode();
 
-        internal IpV6ExtensionHeaderStandard(IpV4Protocol nextHeader) 
+        internal IpV6ExtensionHeaderStandard(IpV4Protocol? nextHeader) 
             : base(nextHeader)
         {
         }
 
-        internal sealed override void Write(byte[] buffer, ref int offset)
+        internal sealed override void Write(byte[] buffer, ref int offset, IpV4Protocol nextHeader)
         {
-            buffer.Write(offset + Offset.NextHeader, (byte)NextHeader);
+            buffer.Write(offset + Offset.NextHeader, (byte)nextHeader);
             int length = Length;
             buffer.Write(offset + Offset.HeaderExtensionLength, (byte)((length / 8) - 1));
             WriteData(buffer, offset + Offset.Data);

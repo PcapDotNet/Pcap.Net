@@ -96,6 +96,8 @@ namespace PcapDotNet.Packets.Ethernet
             get { return PayloadDatagrams.VLanTaggedFrame; }
         }
 
+        // TODO: Add Ip property.
+
         /// <summary>
         /// The Ethernet payload as an IPv4 datagram.
         /// </summary>

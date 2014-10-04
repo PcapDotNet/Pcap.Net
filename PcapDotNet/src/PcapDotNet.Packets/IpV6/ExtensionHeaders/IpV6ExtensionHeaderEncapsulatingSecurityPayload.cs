@@ -224,7 +224,7 @@ namespace PcapDotNet.Packets.IpV6
             return new IpV6ExtensionHeaderEncapsulatingSecurityPayload(securityParametersIndex, sequenceNumber, encryptedDataAndAuthenticationData);
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        internal override void Write(byte[] buffer, ref int offset, IpV4Protocol nextHeader)
         {
             buffer.Write(offset + Offset.SecurityParametersIndex, SecurityParametersIndex, Endianity.Big);
             buffer.Write(offset + Offset.SequenceNumber, SequenceNumber, Endianity.Big);

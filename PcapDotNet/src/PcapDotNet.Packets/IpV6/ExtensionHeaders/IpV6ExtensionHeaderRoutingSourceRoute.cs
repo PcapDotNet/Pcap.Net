@@ -57,7 +57,7 @@ namespace PcapDotNet.Packets.IpV6
         /// Number of route segments remaining, i.e., number of explicitly listed intermediate nodes still to be visited before reaching the final destination.
         /// </param>
         /// <param name="addresses">Routing addresses.</param>
-        public IpV6ExtensionHeaderRoutingSourceRoute(IpV4Protocol nextHeader, byte segmentsLeft, params IpV6Address[] addresses)
+        public IpV6ExtensionHeaderRoutingSourceRoute(IpV4Protocol? nextHeader, byte segmentsLeft, params IpV6Address[] addresses)
             : base(nextHeader, segmentsLeft)
         {
             Addresses = addresses.AsReadOnly();

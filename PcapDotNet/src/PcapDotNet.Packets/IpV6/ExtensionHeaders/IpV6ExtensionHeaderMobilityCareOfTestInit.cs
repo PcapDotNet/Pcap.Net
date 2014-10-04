@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="careOfInitCookie">Contains a random value, the care-of init cookie.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityCareOfTestInit(IpV4Protocol nextHeader, ushort checksum, ulong careOfInitCookie, IpV6MobilityOptions options)
+        public IpV6ExtensionHeaderMobilityCareOfTestInit(IpV4Protocol? nextHeader, ushort checksum, ulong careOfInitCookie, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {
             CareOfInitCookie = careOfInitCookie;

@@ -259,7 +259,7 @@ namespace PcapDotNet.Core.Test
 
                 case 5: // IPv6
                 case 6:
-                    IpV6Layer ipV6Layer = random.NextIpV6Layer();
+                    IpV6Layer ipV6Layer = random.NextIpV6Layer(random.NextBool(20));
                     layers.Add(ipV6Layer);
                     CreateRandomIpPayload(random, ipV6Layer, layers);
                     return;
@@ -279,7 +279,7 @@ namespace PcapDotNet.Core.Test
                     return;
             }
 
-            if (random.NextBool(20))
+            if (ipV6Layer != null ? ipV6Layer.LastNextHeader != null : random.NextBool(20))
             {
                 // Finish with payload.
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(100));
@@ -306,7 +306,7 @@ namespace PcapDotNet.Core.Test
 
                 case 2: // IpV6.
                 case 3:
-                    IpV6Layer innerIpV6Layer = random.NextIpV6Layer();
+                    IpV6Layer innerIpV6Layer = random.NextIpV6Layer(random.NextBool(20));
                     layers.Add(innerIpV6Layer);
                     CreateRandomIpPayload(random, innerIpV6Layer, layers);
                     return;

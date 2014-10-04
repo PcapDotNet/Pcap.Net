@@ -64,7 +64,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="sequenceNumber">Sequence number used for matching the request to the reply.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHeartbeatMessage(IpV4Protocol nextHeader, ushort checksum, bool isUnsolicitedHeartbeatResponse, bool isResponse,
+        public IpV6ExtensionHeaderMobilityHeartbeatMessage(IpV4Protocol? nextHeader, ushort checksum, bool isUnsolicitedHeartbeatResponse, bool isResponse,
                                                            uint sequenceNumber, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.MobilityOptions)
         {

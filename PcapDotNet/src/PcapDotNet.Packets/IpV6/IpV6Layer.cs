@@ -94,7 +94,12 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override int Length
         {
-            get { return IpV6Datagram.HeaderLength + ExtensionHeaders.Sum(header => header.Length); }
+            get { return IpV6Datagram.HeaderLength + ExtensionHeaders.BytesLength; }
+        }
+
+        public IpV4Protocol? LastNextHeader
+        {
+            get { return ExtensionHeaders.Any() ? ExtensionHeaders.NextHeader : NextHeader; }
         }
 
         /// <summary>
@@ -107,33 +112,29 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
         public override void Write(byte[] buffer, int offset, int payloadLength, ILayer previousLayer, ILayer nextLayer)
         {
-            IpV4Protocol nextHeader;
-            if (NextHeader == null)
+            IpV4Protocol? nextLayerProtocol = null;
+            if (nextLayer != null)
             {
-                if (ExtensionHeaders.FirstHeader != null)
-                {
-                    nextHeader = ExtensionHeaders.FirstHeader.Value;
-                }
-                else
-                {
-                    if (nextLayer == null)
-                        throw new ArgumentException("Can't determine protocol automatically from next layer because there is no next layer");
-                    IIpNextLayer ipNextLayer = nextLayer as IIpNextLayer;
-                    if (ipNextLayer == null)
-                        throw new ArgumentException("Can't determine protocol automatically from next layer (" + nextLayer.GetType() + ")");
-                    nextHeader = ipNextLayer.PreviousLayerProtocol;
-                }
+                IIpNextLayer ipNextLayer = nextLayer as IIpNextLayer;
+                if (ipNextLayer != null)
+                    nextLayerProtocol = ipNextLayer.PreviousLayerProtocol;
             }
-            else
-            {
-                nextHeader = NextHeader.Value;
-            }
-
             if (nextLayer != null && ExtensionHeaders.LastHeader == IpV4Protocol.EncapsulatingSecurityPayload)
                 throw new ArgumentException("Cannot have a layer after IpV6Layer with EncapsulatingSecurityPayload extension header.", "nextLayer");
 
             IpV6Datagram.WriteHeader(buffer, offset,
-                                     TrafficClass, FlowLabel, (ushort)(payloadLength + ExtensionHeaders.Sum(header => header.Length)), nextHeader, HopLimit, Source, CurrentDestination, ExtensionHeaders);
+                                     TrafficClass, FlowLabel, (ushort)(payloadLength + ExtensionHeaders.BytesLength), NextHeader, nextLayerProtocol, HopLimit, Source, CurrentDestination, ExtensionHeaders);
+        }
+
+        public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
+        {
+            IIpNextTransportLayer nextTransportLayer = nextLayer as IIpNextTransportLayer;
+            if (nextTransportLayer == null || !nextTransportLayer.CalculateChecksum)
+                return;
+
+            IpV6Datagram.WriteTransportChecksum(buffer, offset, Length, (uint)payloadLength,
+                                                nextTransportLayer.ChecksumOffset, nextTransportLayer.IsChecksumOptional,
+                                                nextTransportLayer.Checksum, CurrentDestination);
         }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         public override string ToString()
         {
-            return Source + " -> " + CurrentDestination + " (" + NextHeader + ")";
+            return string.Format("{0} -> {1} ({2})", Source, CurrentDestination, NextHeader);
         }
     }
 }

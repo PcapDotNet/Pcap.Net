@@ -54,7 +54,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </param>
         /// <param name="code">Describes whether the handover was accepted or not and more details.</param>
         /// <param name="options">Zero or more TLV-encoded mobility options.</param>
-        public IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(IpV4Protocol nextHeader, ushort checksum, ushort sequenceNumber,
+        public IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage(IpV4Protocol? nextHeader, ushort checksum, ushort sequenceNumber,
                                                                      IpV6MobilityHandoverAcknowledgeCode code, IpV6MobilityOptions options)
             : base(nextHeader, checksum, options, MessageDataOffset.Options)
         {

@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="options">
         /// Zero or more TLV-encoded mobility options.
         /// </param>
-        public IpV6ExtensionHeaderMobilityFastBindingAcknowledgement(IpV4Protocol nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
+        public IpV6ExtensionHeaderMobilityFastBindingAcknowledgement(IpV4Protocol? nextHeader, ushort checksum, IpV6BindingAcknowledgementStatus status,
                                                                      bool keyManagementMobilityCapability, ushort sequenceNumber, ushort lifetime,
                                                                      IpV6MobilityOptions options)
             : base(nextHeader, checksum, status, keyManagementMobilityCapability, sequenceNumber, lifetime, options)

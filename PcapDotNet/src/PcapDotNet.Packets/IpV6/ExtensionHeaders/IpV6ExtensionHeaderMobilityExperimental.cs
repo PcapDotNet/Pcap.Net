@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <param name="messageData">
         /// Carries the data specific to the experimental protocol extension.
         /// </param>
-        public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol nextHeader, ushort checksum, DataSegment messageData)
+        public IpV6ExtensionHeaderMobilityExperimental(IpV4Protocol? nextHeader, ushort checksum, DataSegment messageData)
             : base(nextHeader, checksum, IpV6MobilityOptions.None, null)
         {
             if (messageData == null) 

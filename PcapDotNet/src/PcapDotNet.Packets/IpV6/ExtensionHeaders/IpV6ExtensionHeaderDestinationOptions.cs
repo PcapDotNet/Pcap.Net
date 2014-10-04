@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.IpV6
         /// </summary>
         /// <param name="nextHeader">Identifies the type of header immediately following this extension header.</param>
         /// <param name="options">Extension header options.</param>
-        public IpV6ExtensionHeaderDestinationOptions(IpV4Protocol nextHeader, IpV6Options options)
+        public IpV6ExtensionHeaderDestinationOptions(IpV4Protocol? nextHeader, IpV6Options options)
             : base(nextHeader, options)
         {
         }

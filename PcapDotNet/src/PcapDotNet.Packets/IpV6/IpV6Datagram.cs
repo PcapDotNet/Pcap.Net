@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
@@ -168,19 +169,22 @@ namespace PcapDotNet.Packets.IpV6
             get { return HeaderLength + PayloadLength; }
         }
 
+// TODO: Sort method by visibility.
+
         protected override ushort CalculateTransportChecksum()
         {
-            return CalculateTransportChecksum(Buffer, StartOffset, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, CurrentDestination);
+            return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength + ExtensionHeaders.BytesLength, (uint)Transport.Length, Transport.ChecksumOffset,
+                                              Transport.IsChecksumOptional, CurrentDestination);
         }
 
-        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
+        private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int fullHeaderLength, uint transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV6Address destination)
         {
-            int offsetAfterChecksum = offset + HeaderLength + transportChecksumOffset + 2;
+            int offsetAfterChecksum = offset + fullHeaderLength + transportChecksumOffset + sizeof(ushort);
             uint sum = Sum16Bits(buffer, offset + Offset.SourceAddress, IpV6Address.SizeOf) +
                        Sum16Bits(destination) +
-                       transportLength + buffer[offset + Offset.NextHeader] +
-                       Sum16Bits(buffer, offset + HeaderLength, transportChecksumOffset) +
-                       Sum16Bits(buffer, offsetAfterChecksum, transportLength - transportChecksumOffset - 2);
+                       Sum16Bits(transportLength) + buffer[offset + Offset.NextHeader] +
+                       Sum16Bits(buffer, offset + fullHeaderLength, transportChecksumOffset) +
+                       Sum16Bits(buffer, offsetAfterChecksum, (int)(transportLength - transportChecksumOffset - sizeof(ushort)));
 
             ushort checksumResult = Sum16BitsToChecksum(sum);
             if (checksumResult == 0 && isChecksumOptional)
@@ -221,6 +225,14 @@ namespace PcapDotNet.Packets.IpV6
             _isValid = _isValid && _extensionHeaders.IsValid;
         }
 
+        internal static void WriteTransportChecksum(byte[] buffer, int offset, int headerLength, uint transportLength, int transportChecksumOffset,
+                                                    bool isChecksumOptional, ushort? checksum, IpV6Address destination)
+        {
+            ushort checksumValue =
+                checksum ?? CalculateTransportChecksum(buffer, offset, headerLength, transportLength, transportChecksumOffset, isChecksumOptional, destination);
+            buffer.Write(offset + headerLength + transportChecksumOffset, checksumValue, Endianity.Big);
+        }
+
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -239,7 +251,7 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         /// <summary>
-        /// The default validity check always returns true.
+        /// Valid if all extension headers are valid.
         /// </summary>
         protected override bool CalculateIsValid()
         {
@@ -261,16 +273,25 @@ namespace PcapDotNet.Packets.IpV6
         }
 
         internal static void WriteHeader(byte[] buffer, int offset,
-                                         byte trafficClass, int flowLabel, ushort payloadLength, IpV4Protocol nextHeader, byte hopLimit,
-                                         IpV6Address source, IpV6Address currentDestination, IpV6ExtensionHeaders extensionHeaders)
+                                         byte trafficClass, int flowLabel, ushort payloadLength, IpV4Protocol? nextHeader, IpV4Protocol? nextLayerProtocol,
+                                         byte hopLimit, IpV6Address source, IpV6Address currentDestination, IpV6ExtensionHeaders extensionHeaders)
         {
             buffer.Write(offset + Offset.Version, (uint)((((DefaultVersion << 8) | trafficClass) << 20) | flowLabel), Endianity.Big);
             buffer.Write(offset + Offset.PayloadLength, payloadLength, Endianity.Big);
-            buffer.Write(offset + Offset.NextHeader, (byte)nextHeader);
+            IpV4Protocol actualNextHeader;
+            if (nextHeader.HasValue)
+                actualNextHeader = nextHeader.Value;
+            else if (extensionHeaders.Any())
+                actualNextHeader = extensionHeaders.FirstHeader.Value;
+            else if (nextLayerProtocol.HasValue)
+                actualNextHeader = nextLayerProtocol.Value;
+            else
+                throw new InvalidOperationException("Can't determinte next header. No extension headers and no known next layer protocol.");
+            buffer.Write(offset + Offset.NextHeader, (byte)actualNextHeader);
             buffer.Write(offset + Offset.HopLimit, hopLimit);
             buffer.Write(offset + Offset.SourceAddress, source, Endianity.Big);
             buffer.Write(offset + Offset.DestinationAddress, currentDestination, Endianity.Big);
-            extensionHeaders.Write(buffer, offset + HeaderLength);
+            extensionHeaders.Write(buffer, offset + HeaderLength, nextLayerProtocol);
         }
 
         private IpV6ExtensionHeaders _extensionHeaders;
