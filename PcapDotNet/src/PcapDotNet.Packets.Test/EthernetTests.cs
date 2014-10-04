@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
+using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
 
@@ -66,6 +68,13 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreEqual(ethernetLayer.ToString(), packet.Ethernet.ExtractLayer().ToString(), "Ethernet Layer ToString()");
                 Assert.AreNotEqual(random.NextEthernetLayer().ToString(), packet.Ethernet.ExtractLayer().ToString(), "Ethernet Layer ToString()");
                 Assert.AreNotEqual(2, packet.Ethernet.Source, "Ethernet Source");
+
+                if (packet.Ethernet.EtherType == EthernetType.IpV4)
+                    Assert.IsInstanceOfType(packet.Ethernet.Ip, typeof(IpV4Datagram));
+                else if (packet.Ethernet.EtherType == EthernetType.IpV6)
+                    Assert.IsInstanceOfType(packet.Ethernet.Ip, typeof(IpV6Datagram));
+                else
+                    Assert.IsNull(packet.Ethernet.Ip);
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Payload);
             }

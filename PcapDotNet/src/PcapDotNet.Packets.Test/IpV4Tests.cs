@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 using PcapDotNet.Packets.TestUtils;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
@@ -155,8 +156,15 @@ namespace PcapDotNet.Packets.Test
                     Assert.IsInstanceOfType(packet.Ethernet.IpV4.Transport, typeof(TcpDatagram));
                 else if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.Udp)
                     Assert.IsInstanceOfType(packet.Ethernet.IpV4.Transport, typeof(UdpDatagram));
-                else
+                else 
                     Assert.IsNull(packet.Ethernet.IpV4.Transport);
+
+                if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.Ip)
+                    Assert.IsInstanceOfType(packet.Ethernet.IpV4.Ip, typeof(IpV4Datagram));
+                else if (packet.Ethernet.IpV4.Protocol == IpV4Protocol.IpV6)
+                    Assert.IsInstanceOfType(packet.Ethernet.IpV4.Ip, typeof(IpV6Datagram));
+                else
+                    Assert.IsNull(packet.Ethernet.IpV4.Ip);
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.IpV4.Payload, "IP Payload");
             }
