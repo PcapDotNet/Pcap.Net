@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -129,6 +130,17 @@ namespace PcapDotNet.Packets.Test
 
                 Assert.AreEqual(payloadLayer.Data, packet.Ethernet.Ip.Tcp.Payload, "Payload");
             }
+        }
+
+        [TestMethod]
+        public void TcpTooShort()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new TcpLayer());
+            Assert.IsTrue(packet.IsValid);
+            Assert.IsNotNull(packet.Ethernet.IpV4.Tcp.Payload);
+            packet = new Packet(packet.Take(packet.Length - 1).ToArray(), DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(packet.IsValid);
+            Assert.IsNull(packet.Ethernet.IpV4.Tcp.Payload);
         }
         
         [TestMethod]

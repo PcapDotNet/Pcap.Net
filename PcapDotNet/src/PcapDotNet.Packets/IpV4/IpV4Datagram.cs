@@ -329,12 +329,12 @@ namespace PcapDotNet.Packets.IpV4
 
         private static ushort CalculateTransportChecksum(byte[] buffer, int offset, int headerLength, ushort transportLength, int transportChecksumOffset, bool isChecksumOptional, IpV4Address destination)
         {
-            int offsetAfterChecksum = offset + headerLength + transportChecksumOffset + 2;
+            int offsetAfterChecksum = offset + headerLength + transportChecksumOffset + sizeof(ushort);
             uint sum = Sum16Bits(buffer, offset + Offset.Source, IpV4Address.SizeOf) +
                        Sum16Bits(destination) +
                        buffer[offset + Offset.Protocol] + transportLength +
                        Sum16Bits(buffer, offset + headerLength, transportChecksumOffset) +
-                       Sum16Bits(buffer, offsetAfterChecksum, transportLength - transportChecksumOffset - 2);
+                       Sum16Bits(buffer, offsetAfterChecksum, transportLength - transportChecksumOffset - sizeof(ushort));
 
             ushort checksumResult = Sum16BitsToChecksum(sum);
             if (checksumResult == 0 && isChecksumOptional)

@@ -116,7 +116,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void UdpZeroChecksumTest()
+        public void UdpOverIpV4ZeroChecksumTest()
         {
             byte[] payload = new byte[2];
             payload.Write(0, (ushort)65498, Endianity.Big);
@@ -131,6 +131,24 @@ namespace PcapDotNet.Packets.Test
                                                     });
             Assert.IsTrue(packet.Ethernet.IpV4.IsTransportChecksumCorrect);
             Assert.AreEqual(0xFFFF, packet.Ethernet.IpV4.Udp.Checksum);
+        }
+
+        [TestMethod]
+        public void UdpOverIpV6ZeroChecksumTest()
+        {
+            byte[] payload = new byte[2];
+            payload.Write(0, (ushort)65498, Endianity.Big);
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV6Layer(),
+                                                new UdpLayer
+                                                {
+                                                    CalculateChecksumValue = true
+                                                },
+                                                new PayloadLayer
+                                                {
+                                                    Data = new Datagram(payload)
+                                                });
+            Assert.IsTrue(packet.Ethernet.IpV6.IsTransportChecksumCorrect);
+            Assert.AreEqual(0xFFFF, packet.Ethernet.IpV6.Udp.Checksum);
         }
     }
 }
