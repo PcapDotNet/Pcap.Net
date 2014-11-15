@@ -200,6 +200,14 @@ namespace PcapDotNet.Packets.Transport
         }
 
         /// <summary>
+        /// True iff the NonceSum control bit is turned on.
+        /// </summary>
+        public bool IsNonceSum
+        {
+            get { return (ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum; }
+        }
+
+        /// <summary>
         /// True iff the CongestionWindowReduced control bit is turned on.
         /// </summary>
         public bool IsCongestionWindowReduced

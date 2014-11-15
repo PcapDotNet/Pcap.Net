@@ -180,7 +180,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IpV4OptionQuickStart(random.NextEnum<IpV4OptionQuickStartFunction>(),
                                                     random.NextByte(IpV4OptionQuickStart.RateMaximumValue + 1), 
                                                     random.NextByte(),
-                                                    random.NextUInt() & 0xFFFFFFFC);
+                                                    random.NextUInt() & 0x3FFFFFFF);
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

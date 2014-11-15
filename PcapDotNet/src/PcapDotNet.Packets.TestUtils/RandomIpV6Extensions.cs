@@ -263,7 +263,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IpV6OptionType.QuickStart:
                     return new IpV6OptionQuickStart(random.NextEnum<IpV4OptionQuickStartFunction>(),
                                                     random.NextByte(IpOptionQuickStartCommon.RateMaximumValue + 1), random.NextByte(),
-                                                    random.NextUInt() & 0xFFFFFFFC);
+                                                    random.NextUInt() & 0x3FFFFFFF);
 
                 case IpV6OptionType.Calipso:
                     return new IpV6OptionCalipso(random.NextEnum<IpV6CalipsoDomainOfInterpretation>(), random.NextByte(), random.NextUShort(),

@@ -9,11 +9,11 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// Request for a specific rate.
         /// </summary>
-        RateRequest = 0x00,
+        RateRequest = 0x0,
 
         /// <summary>
         /// Reports on a specific rate that was agreed (or disagreed).
         /// </summary>
-        RateReport = 0x80
+        RateReport = 0x8
     }
 }

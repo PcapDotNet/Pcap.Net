@@ -18,7 +18,6 @@ namespace PcapDotNet.Core.Test
                     switch (currentChar)
                     {
                         case '\\':
-                        case '"':
                             result.Append('\\');
                             result.Append(currentChar);
                             continue;

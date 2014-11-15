@@ -14,6 +14,7 @@ namespace PcapDotNet.Core.Test
 
         protected override bool CompareField(XElement field, Datagram datagram)
         {
+            field.AssertNoFields();
             ArpDatagram arpDatagram = (ArpDatagram)datagram;
             switch (field.Name())
             {
@@ -22,7 +23,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "arp.proto.type":
-                    field.AssertShowHex((ushort)arpDatagram.ProtocolType);
+                    field.AssertShowDecimal((ushort)arpDatagram.ProtocolType);
                     break;
 
                 case "arp.hw.size":
@@ -65,6 +66,8 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "arp.isgratuitous":
+                case "arp.dst.drarp_error_status":
+                    // TODO: Support DRARP (RFC 1931).
                     break;
 
                 default:

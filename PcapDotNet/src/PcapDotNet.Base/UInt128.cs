@@ -223,6 +223,10 @@ namespace PcapDotNet.Base
         /// </remarks>
         public static UInt128 Parse(string value, NumberStyles style, IFormatProvider provider)
         {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            if ((style & NumberStyles.HexNumber) == NumberStyles.HexNumber)
+                value = "0" + value;
             BigInteger bigIntegerValue = BigInteger.Parse(value, style, provider);
             if (bigIntegerValue < 0 || bigIntegerValue > MaxValue)
                 throw new OverflowException("Value was either too large or too small for an UInt128.");
@@ -524,6 +528,28 @@ namespace PcapDotNet.Base
         }
 
         /// <summary>
+        /// Bitwise ors between two values.
+        /// </summary>
+        /// <param name="value1">The first value to do bitwise or.</param>
+        /// <param name="value2">The second value to do bitwise or.</param>
+        /// <returns>The two values after they were bitwise ored.</returns>
+        public static UInt128 operator |(UInt128 value1, UInt128 value2)
+        {
+            return BitwiseOr(value1, value2);
+        }
+
+        /// <summary>
+        /// Bitwise ors between two values.
+        /// </summary>
+        /// <param name="value1">The first value to do bitwise or.</param>
+        /// <param name="value2">The second value to do bitwise or.</param>
+        /// <returns>The two values after they were bitwise ored.</returns>
+        public static UInt128 BitwiseOr(UInt128 value1, UInt128 value2)
+        {
+            return new UInt128(value1._mostSignificant | value2._mostSignificant, value1._leastSignificant | value2._leastSignificant);
+        }
+
+        /// <summary>
         /// Sums the given values and returns the sum.
         /// </summary>
         /// <param name="value1">The first value to sum.</param>
@@ -616,7 +642,10 @@ namespace PcapDotNet.Base
         /// </remarks>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return ((BigInteger)this).ToString(format, formatProvider);
+            string bigIntegerString = ((BigInteger)this).ToString(format, formatProvider);
+            if (_mostSignificant >> 63 == 1 && bigIntegerString[0] == '0')
+                return bigIntegerString.Substring(1);
+            return bigIntegerString;
         }
 
         /// <summary>

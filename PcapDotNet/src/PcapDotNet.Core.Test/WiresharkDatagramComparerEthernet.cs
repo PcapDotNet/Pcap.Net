@@ -26,7 +26,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "eth.type":
-                    field.AssertShowHex((ushort)ethernetDatagram.EtherType);
+                    field.AssertShowDecimal((ushort)ethernetDatagram.EtherType);
                     break;
 
                 case "eth.trailer":
@@ -53,11 +53,20 @@ namespace PcapDotNet.Core.Test
                 switch (field.Name())
                 {
                     case "eth.addr":
+                    case "eth.dst_resolved":
+                    case "eth.addr_resolved":
+                    case "eth.src_resolved":
                         field.AssertShow(address.ToString().ToLower());
+                        field.AssertNoFields();
                         break;
 
                     case "eth.ig":
                     case "eth.lg":
+                        field.AssertNoFields();
+                        break;
+
+                    case "_ws.expert":
+                        field.AssertNumFields(4);
                         break;
 
                     default:

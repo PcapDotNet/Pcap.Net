@@ -76,7 +76,10 @@ namespace PcapDotNet.Core.Test
             }
 #pragma warning restore 162
 
-            Random random = new Random();
+            int seed = new Random().Next();
+            Console.WriteLine("Seed: " + seed);
+            Random random = new Random(seed);
+
             for (int i = 0; i != 10; ++i)
             {
                 // Create packets
@@ -436,7 +439,9 @@ namespace PcapDotNet.Core.Test
                                     {
                                         // Wireshark's preferences file is %APPDATA%\Wireshark\preferences
                                             FileName = WiresharkTsharkPath,
-                                            Arguments = "-o udp.check_checksum:TRUE " +
+                                            Arguments = "-o ip.check_checksum:TRUE " + 
+                                                        "-o ipv6.use_geoip:FALSE " +
+                                                        "-o udp.check_checksum:TRUE " +
                                                         "-o tcp.relative_sequence_numbers:FALSE " +
                                                         "-o tcp.analyze_sequence_numbers:FALSE " +
                                                         "-o tcp.track_bytes_in_flight:FALSE " +
@@ -447,13 +452,20 @@ namespace PcapDotNet.Core.Test
                                             WorkingDirectory = WiresharkDiretory,
                                             UseShellExecute = false,
                                             RedirectStandardOutput = true,
+                                            RedirectStandardError = true,
                                             CreateNoWindow = true
                                         };
                 Console.WriteLine("Starting process " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-                process.Start();
+                Assert.IsTrue(process.Start());
                 string output = process.StandardOutput.ReadToEnd();
+                string errorOutput = process.StandardError.ReadToEnd();
                 process.WaitForExit();
+                Console.WriteLine(errorOutput);
                 File.WriteAllText(documentFilename, output);
+                // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10651 is fixed.
+                if (process.ExitCode == 3)
+                    return;
+                Assert.AreEqual(0, process.ExitCode);
             }
 
             // Fix pdml file
@@ -533,7 +545,8 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     default:
-                        var comparer = WiresharkDatagramComparer.GetComparer(layer.Name(), layerNameToCount[layerName], parentLayerSuccess);
+                        var comparer = WiresharkDatagramComparer.GetComparer(layer.Name(), layerNameToCount[layerName], layersContainer.Name(),
+                                                                             parentLayerSuccess);
                         if (comparer == null)
                             return;
                         currentDatagram = comparer.Compare(layer, currentDatagram);

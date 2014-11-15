@@ -54,13 +54,11 @@ namespace PcapDotNet.Core.Test
 
                 case "":
                     if (fieldShow == "HTTP chunked response")
-                    {
                         throw new InvalidOperationException("HTTP chunked response");
-                    }
+                    if (fieldShow == @"\r\n" || fieldShow == "HTTP response 1/1" || fieldShow == "HTTP request 1/1")
+                        break;
 
                     _data.Append(field.Value());
-                    if (fieldShow == @"\r\n")
-                        break;
 
                     if (_isFirstEmptyName)
                     {
@@ -168,8 +166,16 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
+                case "http.request.line":
+                case "http.response.line":
+                    if (_data.ToString().EndsWith(field.Value()))
+                        break;
+                    {
+                        _data.Append(field.Value());
+                    }
+                    break;
+
                 case "http.transfer_encoding":
-                    _data.Append(field.Value());
                     if (!IsBadHttp(httpDatagram))
                     {
                         Assert.AreEqual(fieldShow.ToWiresharkLowerLiteral(),
@@ -192,20 +198,23 @@ namespace PcapDotNet.Core.Test
         {
             foreach (var field in httpFirstLineElement.Fields())
             {
-                field.AssertNoFields();
                 switch (field.Name())
                 {
                     case "http.request.method":
+                        field.AssertNoFields();
                         Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
                         field.AssertShow(((HttpRequestDatagram)httpDatagram).Method.Method);
                         break;
 
                     case "http.request.uri":
+                        field.AssertNoFields();
                         Assert.IsTrue(httpDatagram.IsRequest, field.Name() + " IsRequest");
-                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri.ToWiresharkLiteral());
+                        // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10681 is fixed.
+//                        field.AssertShow(((HttpRequestDatagram)httpDatagram).Uri.ToWiresharkLiteral());
                         break;
 
                     case "http.request.version":
+                        field.AssertNoFields();
                         if (httpDatagram.Version == null)
                         {
                             if (field.Show() != string.Empty)
@@ -216,16 +225,21 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "http.response.code":
+                        field.AssertNoFields();
                         Assert.IsTrue(httpDatagram.IsResponse, field.Name() + " IsResponse");
                         field.AssertShowDecimal(IsBadHttp(httpDatagram) ? 0 : ((HttpResponseDatagram)httpDatagram).StatusCode.Value);
                         break;
 
                     case "http.response.phrase":
+                        field.AssertNoFields();
                         Datagram reasonPhrase = ((HttpResponseDatagram)httpDatagram).ReasonPhrase;
                         if (reasonPhrase == null)
                             Assert.IsTrue(IsBadHttp(httpDatagram));
                         else
                             field.AssertValue(reasonPhrase);
+                        break;
+
+                    case "_ws.expert":
                         break;
 
                     default:

@@ -66,7 +66,18 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.ack":
                     field.AssertShowDecimal(tcpDatagram.AcknowledgmentNumber);
-                    field.AssertNoFields();
+                    foreach (XElement subfield in field.Fields())
+                    {
+                        switch (subfield.Name())
+                        {
+                            case "_ws.expert":
+                                break;
+
+                            default:
+                                subfield.AssertNoFields();
+                                throw new InvalidOperationException("Invalid TCP subfield name " + subfield.Name());
+                        }
+                    }
                     break;
 
                 case "tcp.hdr_len":
@@ -79,44 +90,93 @@ namespace PcapDotNet.Core.Test
                         (ushort)((tcpDatagram.Reserved << 9) |
                                  (((tcpDatagram.ControlBits & TcpControlBits.NonceSum) == TcpControlBits.NonceSum ? 1 : 0) << 8) |
                                  (byte)tcpDatagram.ControlBits);
-                    field.AssertShow("0x" + flags.ToString("x" + 4 * sizeof(byte)));
+                    field.AssertShowDecimal(flags);
                     foreach (var flagField in field.Fields())
                     {
                         switch (flagField.Name())
                         {
+                            case "tcp.flags.res":
+                                flagField.AssertNoFields();
+                                break;
+
+                            case "tcp.flags.ns":
+                                flagField.AssertNoFields();
+                                flagField.AssertShowDecimal(tcpDatagram.IsNonceSum);
+                                break;
+
                             case "tcp.flags.cwr":
+                                flagField.AssertNoFields();
                                 flagField.AssertShowDecimal(tcpDatagram.IsCongestionWindowReduced);
                                 break;
 
                             case "tcp.flags.ecn":
+                                flagField.AssertNoFields();
                                 flagField.AssertShowDecimal(tcpDatagram.IsExplicitCongestionNotificationEcho);
                                 break;
 
                             case "tcp.flags.urg":
+                                flagField.AssertNoFields();
                                 flagField.AssertShowDecimal(tcpDatagram.IsUrgent);
                                 break;
 
                             case "tcp.flags.ack":
+                                flagField.AssertNoFields();
                                 flagField.AssertShowDecimal(tcpDatagram.IsAcknowledgment);
                                 break;
 
                             case "tcp.flags.push":
+                                flagField.AssertNoFields();
                                 flagField.AssertShowDecimal(tcpDatagram.IsPush);
                                 break;
 
                             case "tcp.flags.reset":
                                 flagField.AssertShowDecimal(tcpDatagram.IsReset);
+                                foreach (XElement subfield in flagField.Fields())
+                                {
+                                    switch (subfield.Name())
+                                    {
+                                        case "_ws.expert":
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid TCP subfield name " + subfield.Name());
+                                    }
+                                }
                                 break;
 
                             case "tcp.flags.syn":
                                 flagField.AssertShowDecimal(tcpDatagram.IsSynchronize);
+                                foreach (XElement subfield in flagField.Fields())
+                                {
+                                    switch (subfield.Name())
+                                    {
+                                        case "_ws.expert":
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid TCP subfield name " + subfield.Name());
+                                    }
+                                }
                                 break;
 
                             case "tcp.flags.fin":
                                 flagField.AssertShowDecimal(tcpDatagram.IsFin);
+                                foreach (XElement subfield in flagField.Fields())
+                                {
+                                    switch (subfield.Name())
+                                    {
+                                        case "_ws.expert":
+                                            break;
+
+                                        default:
+                                            throw new InvalidOperationException("Invalid TCP subfield name " + subfield.Name());
+                                    }
+                                }
                                 break;
+
+                            default:
+                                throw new InvalidOperationException("Invalid TCP flag field name " + flagField.Name());
                         }
-                        flagField.AssertNoFields();
                     }
                     break;
 
@@ -126,7 +186,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "tcp.checksum":
-                    field.AssertShowHex(tcpDatagram.Checksum);
+                    field.AssertShowDecimal(tcpDatagram.Checksum);
                     IpV4Datagram ipV4Datagram = ipDatagram as IpV4Datagram;
                     if (ipV4Datagram != null && !ipV4Datagram.Options.IsBadForWireshark())
                     {
@@ -143,6 +203,11 @@ namespace PcapDotNet.Core.Test
                                     checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && !ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
+                                case "tcp.checksum_calculated":
+                                    if (ipDatagram.IsTransportChecksumCorrect)
+                                        checksumField.AssertShowDecimal(tcpDatagram.Checksum);
+                                    break;
+
                                 default:
                                     throw new InvalidOperationException("Invalid checksum field name " + checksumField.Name());
                             }
@@ -153,7 +218,6 @@ namespace PcapDotNet.Core.Test
 
                 case "tcp.urgent_pointer":
                     field.AssertShowDecimal(tcpDatagram.UrgentPointer);
-                    field.AssertNoFields();
                     break;
 
                 case "tcp.options":
@@ -164,8 +228,19 @@ namespace PcapDotNet.Core.Test
                 case "tcp.pdu.size":
                 case "tcp.window_size":
                 case "tcp.window_size_scalefactor":
-                case "":
                     field.AssertNoFields();
+                    break;
+
+                case "":
+                    if (field.Show() == "Short segment. Segment/fragment does not contain a full TCP header (might be NMAP or someone else deliberately sending unusual packets)")
+                    {
+                        field.AssertNumFields(1);
+                        field.Fields().First().AssertName("_ws.expert");
+                    }
+                    else
+                    {
+                        field.AssertNoFields();
+                    }
                     break;
 
                 default:
@@ -220,16 +295,10 @@ namespace PcapDotNet.Core.Test
                                 TcpOptionWindowScale windowScale = (TcpOptionWindowScale)option;
                                 foreach (var subField in field.Fields())
                                 {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
                                     switch (subField.Name())
                                     {
-                                        case "tcp.option_kind":
-                                            subField.AssertShowDecimal((byte)windowScale.OptionType);
-                                            break;
-
-                                        case "tcp.option_len":
-                                            subField.AssertShowDecimal(windowScale.Length);
-                                            break;
-
                                         case "tcp.options.wscale.shift":
                                             subField.AssertShowDecimal(windowScale.ScaleFactorLog);
                                             break;
@@ -239,7 +308,7 @@ namespace PcapDotNet.Core.Test
                                             break;
 
                                         default:
-                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
                                     }
                                 }
                                 break;
@@ -249,6 +318,9 @@ namespace PcapDotNet.Core.Test
                                 int blockIndex = 0;
                                 foreach (var subField in field.Fields())
                                 {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
                                     switch (subField.Name())
                                     {
                                         case "tcp.options.sack":
@@ -264,8 +336,12 @@ namespace PcapDotNet.Core.Test
                                             ++blockIndex;
                                             break;
 
+                                        case "tcp.options.sack.count":
+                                            subField.AssertShowDecimal(selectiveAcknowledgmentOption.Blocks.Count);
+                                            break;
+
                                         default:
-                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
                                     }
                                 }
                                 break;
@@ -274,16 +350,11 @@ namespace PcapDotNet.Core.Test
                                 var timestampOption = (TcpOptionTimestamp)option;
                                 foreach (var subField in field.Fields())
                                 {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
                                     switch (subField.Name())
                                     {
-                                        case "tcp.option_kind":
-                                            subField.AssertShowDecimal((byte)option.OptionType);
-                                            break;
-
-                                        case "tcp.option_len":
-                                            subField.AssertShowDecimal(option.Length);
-                                            break;
-
                                         case "tcp.options.timestamp.tsval":
                                             subField.AssertShowDecimal(timestampOption.TimestampValue);
                                             break;
@@ -293,9 +364,128 @@ namespace PcapDotNet.Core.Test
                                             break;
 
                                         default:
-                                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
                                     }
                                 }
+                                break;
+
+                            case TcpOptionType.ConnectionCount:
+                                field.AssertShow("CC: " + ((TcpOptionConnectionCount)option).ConnectionCount);
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
+                                    switch (subField.Name())
+                                    {
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.Echo:
+                                field.AssertShow("Echo: " + ((TcpOptionEcho)option).Info);
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
+                                    switch (subField.Name())
+                                    {
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.ConnectionCountNew:
+                                field.AssertShow("CC.NEW: " + ((TcpOptionConnectionCountNew)option).ConnectionCount);
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
+                                    switch (subField.Name())
+                                    {
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.EndOfOptionList:
+                                field.AssertShow("End of Option List (EOL)");
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    switch (subField.Name())
+                                    {
+                                        default:
+                                            subField.AssertNoFields();
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.ConnectionCountEcho:
+                                field.AssertShow("CC.ECHO: " + ((TcpOptionConnectionCountEcho)option).ConnectionCount);
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    subField.AssertNoFields();
+                                    switch (subField.Name())
+                                    {
+                                        default:
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.Md5Signature:
+                                field.AssertShow("TCP MD5 signature");
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    switch (subField.Name())
+                                    {
+                                        case "tcp.options.type":
+                                            subField.AssertShowDecimal((byte)TcpOptionType.Md5Signature);
+                                            break;
+
+                                        default:
+                                            subField.AssertNoFields();
+                                            throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                    }
+                                }
+                                break;
+
+                            case TcpOptionType.NoOperation:
+                                field.AssertShow("No-Operation (NOP)");
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                }
+                                break;
+
+                            case TcpOptionType.EchoReply:
+                                field.AssertShow("Echo reply: " + ((TcpOptionEchoReply)option).Info);
+                                foreach (var subField in field.Fields())
+                                {
+                                    if (HandleOptionCommonFields(subField, option))
+                                        continue;
+                                    throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
+                                }
+                                break;
+
+                            case (TcpOptionType)23:
+                                field.AssertShow("SCPS corruption experienced (with option length = " + option.Length + " bytes; should be 2)");
+                                // TODO: Support 23.
                                 break;
 
                             default:
@@ -307,8 +497,24 @@ namespace PcapDotNet.Core.Test
 
                     case "tcp.options.mss":
                         Assert.AreEqual(TcpOptionType.MaximumSegmentSize, option.OptionType);
-                        field.AssertShowDecimal(true);
-                        field.AssertNoFields();
+                        var maximumSegmentSize = (TcpOptionMaximumSegmentSize)option;
+                        field.AssertShowname("Maximum segment size: " + maximumSegmentSize.MaximumSegmentSize + " bytes");
+                        foreach (var subField in field.Fields())
+                        {
+                            if (HandleOptionCommonFields(subField, option))
+                                continue;
+                            subField.AssertNoFields();
+                            switch (subField.Name())
+                            {
+                                case "tcp.options.mss_val":
+                                    subField.AssertShowDecimal(maximumSegmentSize.MaximumSegmentSize);
+                                    break;
+
+                                default:
+                                    throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                            }
+                        }
+                        ++currentOptionIndex;
                         break;
 
                     case "tcp.options.mss_val":
@@ -330,13 +536,15 @@ namespace PcapDotNet.Core.Test
                         break;
 
                     case "tcp.options.scps.vector":
+                        // TODO: Support 20.
                         Assert.AreEqual((TcpOptionType)20, option.OptionType);
-                        if (field.Show() == "0")
-                            ++currentOptionIndex;
+//                        if (field.Show() == "0")
+//                            ++currentOptionIndex;
                         ++currentOptionIndex;
                         break;
 
                     case "tcp.options.scps":
+                        // TODO: Support 20.
                         Assert.AreEqual((TcpOptionType)20, option.OptionType);
                         Assert.IsFalse(field.Fields().Any());
                         break;
@@ -350,7 +558,13 @@ namespace PcapDotNet.Core.Test
 
                     case "tcp.options.sack_perm":
                         Assert.AreEqual(TcpOptionType.SelectiveAcknowledgmentPermitted, option.OptionType);
-                        field.AssertNoFields();
+                        foreach (var subField in field.Fields())
+                        {
+                            if (HandleOptionCommonFields(subField, option))
+                                continue;
+                            subField.AssertNoFields();
+                            throw new InvalidOperationException("Invalid tcp options subfield " + subField.Name());
+                        }
                         ++currentOptionIndex;
                         break;
 
@@ -366,9 +580,38 @@ namespace PcapDotNet.Core.Test
                         ++currentOptionIndex;
                         break;
 
+                    case "tcp.options.experimental":
+                        Assert.IsTrue(new []{(TcpOptionType)253, (TcpOptionType)254}.Contains(option.OptionType));
+                        // TODO: Support Experimental.
+                        ++currentOptionIndex;
+                        break;
+
                     default:
                         throw new InvalidOperationException("Invalid tcp options field " + field.Name());
                 }
+            }
+        }
+
+        private static bool HandleOptionCommonFields(XElement subfield, TcpOption option)
+        {
+            switch (subfield.Name())
+            {
+                case "tcp.option_kind":
+                    subfield.AssertNoFields();
+                    subfield.AssertShowDecimal((byte)option.OptionType);
+                    return true;
+
+                case "tcp.options.type":
+                    subfield.AssertShowDecimal((byte)option.OptionType);
+                    return true;
+
+                case "tcp.option_len":
+                    subfield.AssertNoFields();
+                    subfield.AssertShowDecimal(option.Length);
+                    return true;
+
+                default:
+                    return false;
             }
         }
     }

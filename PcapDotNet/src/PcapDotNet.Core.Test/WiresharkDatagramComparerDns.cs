@@ -28,11 +28,11 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "dns.id":
-                    field.AssertShowHex(dnsDatagram.Id);
+                    field.AssertShowDecimal(dnsDatagram.Id);
                     break;
 
                 case "dns.flags":
-                    field.AssertShowHex(dnsDatagram.Subsegment(2, 2).ToArray().ReadUShort(0, Endianity.Big));
+                    field.AssertShowDecimal(dnsDatagram.Subsegment(2, 2).ToArray().ReadUShort(0, Endianity.Big));
                     foreach (var flagField in field.Fields())
                     {
                         switch (flagField.Name())
@@ -147,13 +147,20 @@ namespace PcapDotNet.Core.Test
         {
             XElement[] resourceRecordFieldsArray= resourceRecordFields.ToArray();
             DnsResourceRecord[] resourceRecordsArray = resourceRecords.ToArray();
-            if (resourceRecordFieldsArray.Length != resourceRecordsArray.Length)
+            if (resourceRecordFieldsArray.Length > resourceRecordsArray.Length)
             {
                 var queryNameField = resourceRecordFieldsArray[resourceRecordsArray.Length].Fields().First();
                 if (queryNameField.Name() == "dns.qry.name")
                     Assert.AreEqual("<Unknown extended label>", queryNameField.Show());
                 else
                     Assert.AreEqual("dns.resp.name", queryNameField.Name());
+            }
+            else if (resourceRecordFieldsArray.Length < resourceRecordsArray.Length)
+            {
+                // TODO: This case should never happen when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
+                XElement lastDnsType = resourceRecordFieldsArray.Last().Fields().Skip(1).First();
+                lastDnsType.AssertName("dns.resp.type");
+                lastDnsType.AssertShowDecimal((ushort)DnsType.NextDomain);
             }
             for (int i = 0; i != resourceRecordsArray.Length; ++i)
             {
@@ -170,15 +177,27 @@ namespace PcapDotNet.Core.Test
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
+                        case "dns.qry.name.len":
+                            // TODO: Remove the IsRoot condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10674 is fixed.
+                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.IsRoot ? 6 : resourceRecord.DomainName.NonCompressedLength - 2);
+                            resourceRecordAttributeField.AssertNoFields();
+                            break;
+
+                        case "dns.count.labels":
+                            // TODO: Remove the IsRoot condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10674 is fixed.
+                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.IsRoot ? 1 : resourceRecord.DomainName.LabelsCount);
+                            resourceRecordAttributeField.AssertNoFields();
+                            break;
+
                         case "dns.qry.type":
                         case "dns.resp.type":
-                            resourceRecordAttributeField.AssertShowHex((ushort)resourceRecord.DnsType);
+                            resourceRecordAttributeField.AssertShowDecimal((ushort)resourceRecord.DnsType);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
                         case "dns.qry.class":
                         case "dns.resp.class":
-                            resourceRecordAttributeField.AssertShowHex((ushort)resourceRecord.DnsClass);
+                            resourceRecordAttributeField.AssertShowDecimal((ushort)resourceRecord.DnsClass);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
@@ -198,13 +217,13 @@ namespace PcapDotNet.Core.Test
 
                         case "dns.srv.service":
                             Assert.AreEqual(resourceRecord.DnsType, DnsType.ServerSelection);
-                            resourceRecordAttributeField.AssertShow(resourceRecord.DomainName.IsRoot ? "Root>" : resourceRecord.DomainName.ToString().Split('.')[0].Substring(1));
+                            resourceRecordAttributeField.AssertShow(resourceRecord.DomainName.IsRoot ? "<Root>" : resourceRecord.DomainName.ToString().Split('.')[0]);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
                         case "dns.srv.proto":
                             Assert.AreEqual(resourceRecord.DnsType, DnsType.ServerSelection);
-                            resourceRecordAttributeField.AssertShow(resourceRecord.DomainName.ToString().Split('.')[1].Substring(1));
+                            resourceRecordAttributeField.AssertShow(resourceRecord.DomainName.ToString().Split('.')[1]);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
@@ -216,7 +235,8 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         default:
-                            CompareResourceRecordData(resourceRecordAttributeField, resourceRecord);
+                            if (!CompareResourceRecordData(resourceRecordAttributeField, resourceRecord))
+                                return;
                             break;
                     }
                 }
@@ -228,13 +248,16 @@ namespace PcapDotNet.Core.Test
             _hipRendezvousServersIndex = 0;
             _wksBitmapIndex = 0;
             _nxtTypeIndex = 0;
+            _spfTypeIndex = 0;
+            _txtTypeIndex = 0;
             _nSecTypeIndex = 0;
             _nSec3TypeIndex = 0;
             _txtIndex = 0;
             _aplItemIndex = 0;
+            _optOptionIndex = 0;
         }
 
-        private void CompareResourceRecordData(XElement dataField, DnsResourceRecord resourceRecord)
+        private bool CompareResourceRecordData(XElement dataField, DnsResourceRecord resourceRecord)
         {
             var data = resourceRecord.Data;
             string dataFieldName = dataField.Name();
@@ -243,9 +266,10 @@ namespace PcapDotNet.Core.Test
             switch (resourceRecord.DnsType)
             {
                 case DnsType.A:
+                    dataField.AssertNoFields();
                     switch (dataFieldName)
                     {
-                        case "dns.resp.addr":
+                        case "dns.a":
                             dataField.AssertShow(((DnsResourceDataIpV4)data).Data.ToString());
                             break;
 
@@ -255,243 +279,322 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case DnsType.Ns:
-                    dataField.AssertName("dns.resp.ns");
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
+                    {
+                        case "dns.ns":
+                            dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
+                    }
+                    break;
+
+                case DnsType.Mailbox:
+                    dataField.AssertName("dns.mb");
+                    dataField.AssertNoFields();
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    break;
+
+                case DnsType.Md:
+                    dataField.AssertName("dns.md");
+                    dataField.AssertNoFields();
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    break;
+
+                case DnsType.MailForwarder: 
+                    dataField.AssertName("dns.mf");
+                    dataField.AssertNoFields();
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    break;
+
+                case DnsType.MailGroup:     // 8.
+                    dataField.AssertName("dns.mg");
                     dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
-                case DnsType.Md:            // 3.
-                case DnsType.MailForwarder: // 4.
-                case DnsType.Mailbox:       // 7.
-                case DnsType.MailGroup:     // 8.
                 case DnsType.MailRename:    // 9.
-                    dataField.AssertName("");
-                    dataField.AssertShow("Host: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    dataField.AssertName("dns.mr");
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.CName:
-                    dataField.AssertName("dns.resp.primaryname");
+                    dataField.AssertName("dns.cname");
                     dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.StartOfAuthority:
-                    dataField.AssertName("");
-                    var soaData = (DnsResourceDataStartOfAuthority)data;
-                    switch (dataFieldShowUntilColon)
+                    var startOfAuthority = (DnsResourceDataStartOfAuthority)data;
+                    dataField.AssertNoFields();
+                    switch (dataField.Name())
                     {
-                        case "Primary name server":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(soaData.MainNameServer));
+                        case "dns.soa.mname":
+                            dataField.AssertShow(GetWiresharkDomainName(startOfAuthority.MainNameServer));
                             break;
 
-                        case "Responsible authority's mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(soaData.ResponsibleMailbox));
+                        case "dns.soa.rname":
+                            dataField.AssertShow(GetWiresharkDomainName(startOfAuthority.ResponsibleMailbox));
                             break;
 
-                        case "Serial number":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + soaData.Serial);
+                        case "dns.soa.serial_number":
+                            dataField.AssertShowDecimal(startOfAuthority.Serial.Value);
                             break;
 
-                        case "Refresh interval":
-                            dataField.AssertValue(soaData.Refresh);
+                        case "dns.soa.refresh_interval":
+                            dataField.AssertShowDecimal(startOfAuthority.Refresh);
                             break;
 
-                        case "Retry interval":
-                            dataField.AssertValue(soaData.Retry);
+                        case "dns.soa.retry_interval":
+                            dataField.AssertShowDecimal(startOfAuthority.Retry);
                             break;
 
-                        case "Expiration limit":
-                            dataField.AssertValue(soaData.Expire);
+                        case "dns.soa.expire_limit":
+                            dataField.AssertShowDecimal(startOfAuthority.Expire);
                             break;
 
-                        case "Minimum TTL":
-                            dataField.AssertValue(soaData.MinimumTtl);
+                        case "dns.soa.mininum_ttl":
+                            dataField.AssertShowDecimal(startOfAuthority.MinimumTtl);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
-                    dataField.AssertNoFields();
                     break;
-                    
+
                 case DnsType.Wks:
-                    dataField.AssertName("");
                     var wksData = (DnsResourceDataWellKnownService)data;
-                    switch (dataFieldShowUntilColon)
+                    dataField.AssertNoFields();
+                    switch (dataField.Name())
                     {
-                        case "Addr":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + wksData.Address);
+                        case "dns.wks.address":
+                            dataField.AssertShow(wksData.Address.ToString());
                             break;
 
-                        case "Protocol":
-                            dataField.AssertValue((byte)wksData.Protocol);
+                        case "dns.wks.protocol":
+                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10675 is fixed.
+//                            dataField.AssertShowDecimal((byte)wksData.Protocol);
                             break;
 
-                        case "Bits":
+                        case "dns.wks.bits":
                             while (wksData.Bitmap[_wksBitmapIndex] == 0x00)
                                 ++_wksBitmapIndex;
-                            dataField.AssertValue(wksData.Bitmap[_wksBitmapIndex++]);
+                            dataField.AssertShowDecimal(wksData.Bitmap[_wksBitmapIndex++]);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.Ptr:
-                    dataField.AssertName("");
-                    dataField.AssertShow("Domain name: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    dataField.AssertName("dns.ptr.domain_name");
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.HInfo:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var hInfoData = (DnsResourceDataHostInformation)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "CPU":
-                            dataField.AssertValue(new[] {(byte)hInfoData.Cpu.Length}.Concat(hInfoData.Cpu));
+                        case "dns.hinfo.cpu_length":
+                            dataField.AssertShowDecimal(hInfoData.Cpu.Length);
                             break;
 
-                        case "OS":
-                            dataField.AssertValue(new[] {(byte)hInfoData.Os.Length}.Concat(hInfoData.Os));
+                        case "dns.hinfo.cpu":
+                            dataField.AssertValue(hInfoData.Cpu);
+                            break;
+
+                        case "dns.hinfo.os_length":
+                            dataField.AssertShowDecimal(hInfoData.Os.Length);
+                            break;
+
+                        case "dns.hinfo.os":
+                            dataField.AssertValue(hInfoData.Os);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
-                    
+
                 case DnsType.MInfo:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var mInfoData = (DnsResourceDataMailingListInfo)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Responsible Mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(mInfoData.MailingList));
+                        case "dns.minfo.r":
+                            dataField.AssertShow(GetWiresharkDomainName(mInfoData.MailingList));
                             break;
 
-                        case "Error Mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(mInfoData.ErrorMailbox));
+                        case "dns.minfo.e":
+                            dataField.AssertShow(GetWiresharkDomainName(mInfoData.ErrorMailbox));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.MailExchange:
                     var mxData = (DnsResourceDataMailExchange)data;
-                    switch (dataFieldShowUntilColon)
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
                     {
-                        case "Preference":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + mxData.Preference);
+                        case "dns.mx.preference":
+                            dataField.AssertShowDecimal(mxData.Preference);
                             break;
 
-                        case "Mail exchange":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(mxData.MailExchangeHost));
+                        case "dns.mx.mail_exchange":
+                            dataField.AssertShow(GetWiresharkDomainName(mxData.MailExchangeHost));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.Txt: // 16.
-                case DnsType.Spf: // 99.
                     var txtData = (DnsResourceDataText)data;
-                    dataField.AssertShow("Text: " + txtData.Text[_txtIndex++].Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
                     dataField.AssertNoFields();
+                    switch (dataField.Name())
+                    {
+                        case "dns.txt.length":
+                            dataField.AssertShowDecimal(txtData.Text[_txtTypeIndex].Length);
+                            break;
+
+                        case "dns.txt":
+                            dataField.AssertValue(txtData.Text[_txtTypeIndex]);
+                            ++_txtTypeIndex;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
+                    }
+                    break;
+
+                case DnsType.Spf: // 99.
+                    var spfData = (DnsResourceDataText)data;
+                    dataField.AssertNoFields();
+                    switch (dataField.Name())
+                    {
+                        case "dns.spf.length":
+                            dataField.AssertShowDecimal(spfData.Text[_spfTypeIndex].Length);
+                            break;
+
+                        case "dns.spf":
+                            dataField.AssertValue(spfData.Text[_spfTypeIndex]);
+                            ++_spfTypeIndex;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
+                    }
                     break;
 
                 case DnsType.ResponsiblePerson:
-                    dataField.AssertName("");
                     var rpData = (DnsResourceDataResponsiblePerson)data;
-                    switch (dataFieldShowUntilColon)
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
                     {
-                        case "Mailbox":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(rpData.Mailbox));
+                        case "dns.rp.mailbox":
+                            dataField.AssertShow(GetWiresharkDomainName(rpData.Mailbox));
                             break;
 
-                        case "TXT RR":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(rpData.TextDomain));
+                        case "dns.rp.txt_rr":
+                            dataField.AssertShow(GetWiresharkDomainName(rpData.TextDomain));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.AfsDatabase:
-                    dataField.AssertName("");
                     var afsDbData = (DnsResourceDataAfsDatabase)data;
-                    switch (dataFieldShowUntilColon)
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
                     {
-                        case "Subtype":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + (ushort)afsDbData.Subtype);
+                        case "dns.afsdb.subtype":
+                            dataField.AssertShowDecimal((ushort)afsDbData.Subtype);
                             break;
 
-                        case "Hostname":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(afsDbData.HostName));
+                        case "dns.afsdb.hostname":
+                            dataField.AssertShow(GetWiresharkDomainName(afsDbData.HostName));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
 
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.X25:
-                    dataField.AssertName("");
-                    dataField.AssertShow("PSDN-Address: " + ((DnsResourceDataString)data).String.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                    var x25 = (DnsResourceDataString)data;
                     dataField.AssertNoFields();
-                    break;
-
-                case DnsType.Isdn:
-                    dataField.AssertName("");
-                    var isdnData = (DnsResourceDataIsdn)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "ISDN Address":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                 isdnData.IsdnAddress.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                        case "dns.x25.length":
+                            dataField.AssertShowDecimal(x25.String.Length);
                             break;
 
-                        case "Subaddress":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                 isdnData.Subaddress.Decode(EncodingExtensions.Iso88591).ToWiresharkLiteral(false, false));
+                        case "dns.x25.psdn_address":
+                            dataField.AssertValue(x25.String);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
+                    }
+                    break;
+
+                case DnsType.Isdn:
+                    var isdnData = (DnsResourceDataIsdn)data;
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
+                    {
+                        case "dns.idsn.length":
+                            dataField.AssertShowDecimal(isdnData.IsdnAddress.Length);
+                            break;
+
+                        case "dns.idsn.address":
+                            dataField.AssertValue(isdnData.IsdnAddress);
+                            break;
+
+                        case "dns.idsn.sa.length":
+                            dataField.AssertShowDecimal(isdnData.Subaddress.Length);
+                            break;
+
+                        case "dns.idsn.sa.address":
+                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10650 is fixed.
+//                            dataField.AssertValue(isdnData.Subaddress);
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.RouteThrough:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var rtData = (DnsResourceDataRouteThrough)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Preference":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + rtData.Preference);
+                        case "dns.rt.subtype":
+                            dataField.AssertShowDecimal(rtData.Preference);
                             break;
 
-                        case "Intermediate-Host":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(rtData.IntermediateHost));
+                        case "dns.rt.intermediate_host":
+                            dataField.AssertShow(GetWiresharkDomainName(rtData.IntermediateHost));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.NetworkServiceAccessPoint:
@@ -512,66 +615,52 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case DnsType.NetworkServiceAccessPointPointer:
-                    dataField.AssertName("");
-                    dataField.AssertShow("Owner: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    dataField.AssertName("dns.nsap_ptr.owner");
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.Key:
-                    dataField.AssertName("");
                     var keyData = (DnsResourceDataKey)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Flags":
+                        case "dns.key.flags":
                             foreach (var flagField in dataField.Fields())
                             {
+                                flagField.AssertNoFields();
                                 int flagCount = GetFlagCount(flagField);
                                 switch (flagCount)
                                 {
                                     case 0:
-                                        flagField.AssertShow(keyData.AuthenticationProhibited
-                                                                 ? "1... .... .... .... = Key prohibited for authentication"
-                                                                 : "0... .... .... .... = Key allowed for authentication");
+                                        flagField.AssertShowDecimal(keyData.AuthenticationProhibited);
                                         break;
 
                                     case 1:
-                                        flagField.AssertShow(keyData.ConfidentialityProhibited
-                                                                 ? ".1.. .... .... .... = Key prohibited for confidentiality"
-                                                                 : ".0.. .... .... .... = Key allowed for confidentiality");
+                                        flagField.AssertShowDecimal(keyData.ConfidentialityProhibited);
                                         break;
 
                                     case 2:
-                                        flagField.AssertShow(keyData.Experimental
-                                                                 ? "..1. .... .... .... = Key is experimental or optional"
-                                                                 : "..0. .... .... .... = Key is required");
+                                        flagField.AssertShowDecimal(keyData.Experimental);
                                         break;
 
                                     case 5:
-                                        flagField.AssertShow(keyData.UserAssociated
-                                                                 ? ".... .1.. .... .... = Key is associated with a user"
-                                                                 : ".... .0.. .... .... = Key is not associated with a user");
+                                        flagField.AssertShowDecimal(keyData.UserAssociated);
                                         break;
 
                                     case 6:
-                                        flagField.AssertShow(keyData.NameType == DnsKeyNameType.NonZoneEntity
-                                                                 ? ".... ..1. .... .... = Key is associated with the named entity"
-                                                                 : ".... ..0. .... .... = Key is not associated with the named entity");
+                                        flagField.AssertShowDecimal(keyData.NameType == DnsKeyNameType.NonZoneEntity);
                                         break;
 
                                     case 8:
-                                        flagField.AssertShow(keyData.IpSec
-                                                                 ? ".... .... 1... .... = Key is valid for use with IPSEC"
-                                                                 : ".... .... 0... .... = Key is not valid for use with IPSEC");
+                                        flagField.AssertShowDecimal(keyData.IpSec);
                                         break;
 
                                     case 9:
-                                        flagField.AssertShow(keyData.Email
-                                                                 ? ".... .... .1.. .... = Key is valid for use with MIME security multiparts"
-                                                                 : ".... .... .0.. .... = Key is not valid for use with MIME security multiparts");
+                                        flagField.AssertShowDecimal(keyData.Email);
                                         break;
 
                                     case 12:
-                                        Assert.AreEqual(flagField.Show().Substring(19), " = Signatory = " + (byte)keyData.Signatory);
+                                        flagField.AssertShowDecimal((byte)keyData.Signatory);
                                         break;
 
                                     default:
@@ -580,356 +669,337 @@ namespace PcapDotNet.Core.Test
                             }
                             break;
 
-                        case "Protocol":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + (byte)keyData.Protocol);
+                        case "dns.key.protocol":
                             dataField.AssertNoFields();
+                            dataField.AssertShowDecimal((byte)keyData.Protocol);
                             break;
 
-                        case "Algorithm":
-                            dataField.AssertValue((byte)keyData.Algorithm);
+                        case "dns.key.algorithm":
                             dataField.AssertNoFields();
+                            dataField.AssertShowDecimal((byte)keyData.Algorithm);
                             break;
 
-                        case "Key id":
+                        case "dns.key.key_id":
+                            dataField.AssertNoFields();
                             // TODO: Calculate key tag.
-                            dataField.AssertNoFields();
                             break;
 
-                        case "Public key":
+                        case "dns.key.public_key":
+                            dataField.AssertNoFields();
                             byte[] flagsExtension;
                             if (keyData.FlagsExtension == null)
                             {
                                 flagsExtension = new byte[0];
-                            } 
+                            }
                             else
                             {
                                 flagsExtension = new byte[2];
                                 flagsExtension.Write(0, keyData.FlagsExtension.Value, Endianity.Big);
                             }
                             dataField.AssertValue(flagsExtension.Concat(keyData.PublicKey));
-                            dataField.AssertNoFields();
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
                     break;
 
                 case DnsType.Signature:   // 24.
                 case DnsType.ResourceRecordSignature: // 46.
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var sigData = (DnsResourceDataSignature)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Type covered":
-                            dataField.AssertValue((ushort)sigData.TypeCovered);
+                        case "dns.rrsig.type_covered":
+                            dataField.AssertShowDecimal((ushort)sigData.TypeCovered);
                             break;
 
-                        case "Algorithm":
-                            dataField.AssertValue((byte)sigData.Algorithm);
+                        case "dns.rrsig.algorithm":
+                            dataField.AssertShowDecimal((byte)sigData.Algorithm);
                             break;
 
-                        case "Labels":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + sigData.Labels);
+                        case "dns.rrsig.labels":
+                            dataField.AssertShowDecimal(sigData.Labels);
                             break;
 
-                        case "Original TTL":
-                            dataField.AssertValue(sigData.OriginalTtl);
+                        case "dns.rrsig.original_ttl":
+                            dataField.AssertShowDecimal(sigData.OriginalTtl);
                             break;
 
-                        case "Signature expiration":
+                        case "dns.rrsig.signature_expiration":
                             dataField.AssertValue(sigData.SignatureExpiration);
                             break;
 
-                        case "Time signed":
+                        case "dns.rrsig.signature_inception":
                             dataField.AssertValue(sigData.SignatureInception);
                             break;
 
-                        case "Id of signing key(footprint)":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + sigData.KeyTag);
+                        case "dns.rrsig.key_tag":
+                            dataField.AssertShowDecimal(sigData.KeyTag);
                             break;
 
-                        case "Signer's name":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(sigData.SignersName));
+                        case "dns.rrsig.signers_name":
+                            dataField.AssertShow(GetWiresharkDomainName(sigData.SignersName));
                             break;
 
-                        case "Signature":
+                        case "dns.rrsig.signature":
                             dataField.AssertValue(sigData.Signature);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.PointerX400:
-                    dataField.AssertName("");
                     var pxData = (DnsResourceDataX400Pointer)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataField.Name())
                     {
-                        case "Preference":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + pxData.Preference);
+                        case "dns.px.preference":
+                            dataField.AssertShowDecimal(pxData.Preference);
                             break;
 
-                        case "MAP822":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(pxData.Map822));
+                        case "dns.px.map822":
+                            dataField.AssertShow(GetWiresharkDomainName(pxData.Map822));
                             break;
 
-                        case "MAPX400":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(pxData.MapX400));
+                        case "dns.px.map400":
+                            dataField.AssertShow(GetWiresharkDomainName(pxData.MapX400));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.GPos:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var gposData = (DnsResourceDataGeographicalPosition)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Longitude":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + gposData.Longitude);
+                        case "dns.gpos.longitude_length":
+                            dataField.AssertShowDecimal(gposData.Longitude.Length);
                             break;
 
-                        case "Latitude":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + gposData.Latitude);
+                        case "dns.gpos.longitude":
+                            dataField.AssertShow(gposData.Longitude);
                             break;
 
-                        case "Altitude":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + gposData.Altitude);
+                        case "dns.gpos.latitude_length":
+                            dataField.AssertShowDecimal(gposData.Latitude.Length);
+                            break;
+
+                        case "dns.gpos.latitude":
+                            dataField.AssertShow(gposData.Latitude);
+                            break;
+
+                        case "dns.gpos.altitude_length":
+                            dataField.AssertShowDecimal(gposData.Altitude.Length);
+                            break;
+
+                        case "dns.gpos.altitude":
+                            dataField.AssertShow(gposData.Altitude);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.Aaaa:
-                    dataField.AssertName("");
-                    dataField.AssertShow("Addr: " + GetWiresharkIpV6(((DnsResourceDataIpV6)data).Data));
-                    break;
-
-                case DnsType.Loc:
-                    dataField.AssertName("");
-                    var locData = (DnsResourceDataLocationInformation)data;
-                    switch (dataFieldShowUntilColon)
-                    {
-                        case "Version":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + locData.Version);
-                            break;
-
-                        case "Data":
-                            dataField.AssertShow("Data");
-                            break;
-
-                        case "Size":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetPrecisionValueString(locData.Size));
-                            break;
-
-                        case "Horizontal precision":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetPrecisionValueString(locData.HorizontalPrecision));
-                            break;
-
-                        case "Vertical precision":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetPrecisionValueString(locData.VerticalPrecision));
-                            break;
-
-                        case "Latitude":
-                            dataField.AssertValue(locData.Latitude);
-                            break;
-
-                        case "Longitude":
-                            dataField.AssertValue(locData.Longitude);
-                            break;
-
-                        case "Altitude":
-                            dataField.AssertValue(locData.Altitude);
-                            break;
-
-                        default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShowUntilColon);
-                    }
+                    dataField.AssertName("dns.aaaa");
+                    dataField.AssertShow(GetWiresharkIpV6(((DnsResourceDataIpV6)data).Data));
                     dataField.AssertNoFields();
                     break;
 
-                case DnsType.NextDomain:
-                    dataField.AssertName("");
-                    var nxtData = (DnsResourceDataNextDomain)data;
-                    switch (dataFieldShowUntilColon)
+                case DnsType.Loc:
+                    var locData = (DnsResourceDataLocationInformation)data;
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
                     {
-                        case "Next domain name":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(nxtData.NextDomainName));
+                        case "dns.loc.version":
+                            dataField.AssertShowDecimal(locData.Version);
                             break;
 
-                        case "RR type in bit map":
-                            DnsType actualType = nxtData.TypesExist.Skip(_nxtTypeIndex++).First();
-                            DnsType expectedType;
-                            if (!TryGetDnsType(dataFieldShow, out expectedType))
-                                throw new InvalidOperationException(string.Format("Can't parse DNS field {0} : {1}", dataFieldShow, actualType));
-                            Assert.AreEqual(expectedType, actualType);
+                        case "dns.loc.unknown_data":
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
+                    }
+                    break;
+
+                case DnsType.NextDomain:
+                    var nxtData = (DnsResourceDataNextDomain)data;
+                    switch (dataField.Name())
+                    {
+                        case "dns.nxt.next_domain_name":
+                            dataField.AssertShow(GetWiresharkDomainName(nxtData.NextDomainName));
+                            break;
+
+                        case "":
+                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
+//                            DnsType actualType = nxtData.TypesExist.Skip(_nxtTypeIndex++).First();
+//                            DnsType expectedType;
+//                            if (!TryGetDnsType(dataFieldShow, out expectedType))
+//                                throw new InvalidOperationException(string.Format("Can't parse DNS field {0} : {1}", dataFieldShow, actualType));
+//                            Assert.AreEqual(expectedType, actualType);
+                            return false;
+
+                        default:
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
                     dataField.AssertNoFields();
                     break;
 
                 case DnsType.ServerSelection:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var srvData = (DnsResourceDataServerSelection)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Priority":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + srvData.Priority);
+                        case "dns.srv.priority":
+                            dataField.AssertShowDecimal(srvData.Priority);
                             break;
 
-                        case "Weight":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + srvData.Weight);
+                        case "dns.srv.weight":
+                            dataField.AssertShowDecimal(srvData.Weight);
                             break;
 
-                        case "Port":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + srvData.Port);
+                        case "dns.srv.port":
+                            dataField.AssertShowDecimal(srvData.Port);
                             break;
 
-                        case "Target":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(srvData.Target));
+                        case "dns.srv.target":
+                            dataField.AssertShow(GetWiresharkDomainName(srvData.Target));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShowUntilColon);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.NaPtr:
-                    dataField.AssertName("");
                     var naPtrData = (DnsResourceDataNamingAuthorityPointer)data;
-                    switch (dataFieldShowUntilColon)
+                    dataField.AssertNoFields();
+                    switch (dataFieldName)
                     {
-                        case "Order":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Order);
+                        case "dns.naptr.order":
+                            dataField.AssertShowDecimal(naPtrData.Order);
                             break;
 
-                        case "Preference":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Preference);
+                        case "dns.naptr.preference":
+                            dataField.AssertShowDecimal(naPtrData.Preference);
                             break;
 
-                        case "Flags length":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Flags.Length);
+                        case "dns.naptr.flags_length":
+                            dataField.AssertShowDecimal(naPtrData.Flags.Length);
                             break;
 
-                        case "Flags":
+                        case "dns.naptr.flags":
                             dataField.AssertValue(naPtrData.Flags);
                             break;
 
-                        case "Service length":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Services.Length);
+                        case "dns.naptr.service_length":
+                            dataField.AssertShowDecimal(naPtrData.Services.Length);
                             break;
 
-                        case "Service":
+                        case "dns.naptr.service":
                             dataField.AssertValue(naPtrData.Services);
                             break;
 
-                        case "Regex length":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.RegularExpression.Length);
+                        case "dns.naptr.regex_length":
+                            dataField.AssertShowDecimal(naPtrData.RegularExpression.Length);
                             break;
 
-                        case "Regex":
+                        case "dns.naptr.regex":
                             dataField.AssertValue(naPtrData.RegularExpression);
                             break;
 
-                        case "Replacement length":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + naPtrData.Replacement.NonCompressedLength);
+                        case "dns.naptr.replacement_length":
+                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10700 is fixed.
+//                            dataField.AssertShowDecimal(naPtrData.Replacement.NonCompressedLength);
                             break;
 
-                        case "Replacement":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(naPtrData.Replacement));
+                        case "dns.naptr.replacement":
+                            dataField.AssertShow(GetWiresharkDomainName(naPtrData.Replacement));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.KeyExchanger:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var kxData = (DnsResourceDataKeyExchanger)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Preference":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": 0");
-                            dataField.AssertValue(kxData.Preference);
+                        case "dns.kx.preference":
+                            dataField.AssertShowDecimal(kxData.Preference);
                             break;
 
-                        case "Key exchange":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(kxData.KeyExchangeHost));
+                        case "dns.kx.key_exchange":
+                            dataField.AssertShow(GetWiresharkDomainName(kxData.KeyExchangeHost));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.Cert:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var certData = (DnsResourceDataCertificate)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Type":
-                            dataField.AssertValue((ushort)certData.CertificateType);
+                        case "dns.cert.type":
+                            dataField.AssertShowDecimal((ushort)certData.CertificateType);
                             break;
 
-                        case "Key footprint":
-                            dataField.AssertValue(certData.KeyTag);
+                        case "dns.cert.key_tag":
+                            dataField.AssertShowDecimal(certData.KeyTag);
                             break;
 
-                        case "Algorithm":
-                            dataField.AssertValue((byte)certData.Algorithm);
+                        case "dns.cert.algorithm":
+                            dataField.AssertShowDecimal((byte)certData.Algorithm);
                             break;
 
-                        case "Public key":
+                        case "dns.cert.certificate":
                             dataField.AssertValue(certData.Certificate);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
-                    
+
                 case DnsType.A6:
                     var a6Data = (DnsResourceDataA6)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Prefix len":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + a6Data.PrefixLength);
+                        case "dns.a6.prefix_len":
+                            dataField.AssertShowDecimal(a6Data.PrefixLength);
                             break;
 
-                        case "Address suffix":
-                            Assert.AreEqual(new IpV6Address(dataFieldShow.Substring(dataFieldShowUntilColon.Length + 2)), a6Data.AddressSuffix);
+                        case "dns.a6.address_suffix":
+                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10652 is fixed.
+//                            Assert.AreEqual(new IpV6Address(dataFieldShow), a6Data.AddressSuffix);
                             break;
 
-                        case "Prefix name":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(a6Data.PrefixName));
+                        case "dns.a6.prefix_name":
+                            dataField.AssertShow(GetWiresharkDomainName(a6Data.PrefixName));
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
                     dataField.AssertNoFields();
                     break;
-                
+
                 case DnsType.DName:
-                    dataField.AssertName("");
-                    dataField.AssertShow("Target name: " + GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
+                    dataField.AssertName("dns.dname");
+                    dataField.AssertShow(GetWiresharkDomainName(((DnsResourceDataDomainName)data).Data));
                     dataField.AssertNoFields();
                     break;
 
@@ -938,53 +1008,90 @@ namespace PcapDotNet.Core.Test
                     var optData = (DnsResourceDataOptions)data;
                     switch (dataFieldName)
                     {
-                        case "":
-                            switch (dataFieldShowUntilColon)
+                        case "dns.rr.udp_payload_size":
+                            _optOptionIndex = 0;
+                            dataField.AssertNoFields();
+                            dataField.AssertShowDecimal(optResourceRecord.SendersUdpPayloadSize);
+                            break;
+
+                        case "dns.resp.ext_rcode":
+                            dataField.AssertNoFields();
+                            dataField.AssertShowDecimal(optResourceRecord.ExtendedReturnCode);
+                            break;
+
+                        case "dns.resp.edns0_version":
+                            dataField.AssertNoFields();
+                            dataField.AssertShowDecimal((byte)optResourceRecord.Version);
+                            break;
+
+                        case "dns.resp.z":
+                            DnsOptFlags flags = optResourceRecord.Flags;
+                            dataField.AssertShowDecimal((ushort)flags);
+                            foreach (XElement subfield in dataField.Fields())
                             {
-                                case "UDP payload size":
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + optResourceRecord.SendersUdpPayloadSize);
-                                    dataField.AssertNoFields();
-                                    break;
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
+                                {
+                                    case "dns.resp.z.do":
+                                        subfield.AssertShowDecimal((flags & DnsOptFlags.DnsSecOk) == DnsOptFlags.DnsSecOk);
+                                        break;
 
-                                case "Higher bits in extended RCODE":
-                                    dataField.AssertValue(optResourceRecord.ExtendedReturnCode);
-                                    dataField.AssertNoFields();
-                                    break;
+                                    case "dns.resp.z.reserved":
+                                        subfield.AssertShowDecimal(0);
+                                        break;
 
-                                case "EDNS0 version":
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + (byte)optResourceRecord.Version);
-                                    dataField.AssertNoFields();
-                                    break;
-
-                                case "Z":
-                                    ushort flags = (ushort)optResourceRecord.Flags;
-                                    dataField.AssertValue(flags);
-                                    if (dataField.Fields().Any())
-                                    {
-                                        dataField.AssertNumFields(2);
-                                        dataField.Fields().First().AssertShow("Bit 0 (DO bit): 1 (Accepts DNSSEC security RRs)");
-                                        // TODO - uncomment once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=7045 is fixed.
-                                        // dataField.Fields().Last().AssertShow("Bits 1-15: 0x" + (flags & 0x7FFF).ToString("x") + " (reserved)");
-                                    }
-                                    else
-                                    {
-                                        Assert.AreEqual<ushort>(0, (ushort)optResourceRecord.Flags);
-                                    }
-                                    break;
-
-                                case "Data":
-                                    Assert.AreEqual(dataField.Value().Length, 2 * optData.Options.Options.Sum(option => option.Length));
-                                    dataField.AssertNoFields();
-                                    break;
-
-                                default:
-                                    throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                                    default:
+                                        throw new InvalidOperationException("Invalid DNS data subfield name " + subfield.Name());
+                                }
                             }
                             break;
 
-                        case "dns.resp.len":
-                            dataField.AssertShow("Data length: " + optData.Options.Options.Sum(option => option.DataLength));
-                            dataField.AssertNoFields();
+                        case "dns.opt":
+                            foreach (XElement subfield in dataField.Fields())
+                            {
+                                subfield.AssertNoFields();
+                                DnsOption dnsOption = optData.Options.Options[_optOptionIndex];
+                                switch (subfield.Name())
+                                {
+                                    case "dns.opt.code":
+                                        subfield.AssertShowDecimal((ushort)dnsOption.Code);
+                                        break;
+
+                                    case "dns.opt.len":
+                                        subfield.AssertShowDecimal(dnsOption.DataLength);
+                                        break;
+
+                                    case "dns.opt.data":
+                                        switch (dnsOption.Code)
+                                        {
+                                            case DnsOptionCode.UpdateLease:
+                                                subfield.AssertValue((uint)((DnsOptionUpdateLease)dnsOption).Lease);
+                                                break;
+
+                                            case DnsOptionCode.LongLivedQuery:
+                                                byte[] expectedLongLivedQueryValue =
+                                                    new byte[sizeof(ushort) + sizeof(ushort) + sizeof(ushort) + sizeof(ulong) + sizeof(uint)];
+                                                var longLivedQuery = (DnsOptionLongLivedQuery)dnsOption;
+                                                int offset = 0;
+                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.Version, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref offset, (ushort)longLivedQuery.OpCode, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref offset, (ushort)longLivedQuery.ErrorCode, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.Id, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.LeaseLife, Endianity.Big);
+                                                subfield.AssertValue(expectedLongLivedQueryValue);
+                                                break;
+
+                                            default:
+                                                subfield.AssertValue(((DnsOptionAnything)dnsOption).Data);
+                                                break;
+                                        }
+                                        ++_optOptionIndex;
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException("Invalid DNS data subfield name " + subfield.Name());
+                                }
+                            }
                             break;
 
                         default:
@@ -996,26 +1103,13 @@ namespace PcapDotNet.Core.Test
                     var aplData = (DnsResourceDataAddressPrefixList)data;
                     switch (dataFieldName)
                     {
-                        case "":
-                            switch (dataFieldShowUntilColon)
-                            {
-                                case "Address Family":
-                                    dataField.AssertValue((ushort)aplData.Items[_aplItemIndex++].AddressFamily);
-                                    break;
-
-                                case "IPv4 address":
-                                case "IPv6 address":
-                                    dataField.AssertValue(aplData.Items[_aplItemIndex - 1].AddressFamilyDependentPart);
-                                    break;
-
-                                default:
-                                    throw new InvalidOperationException("Invalid DNS data field name " + dataFieldShowUntilColon);
-                            }
+                        case "dns.apl.address_family":
                             dataField.AssertNoFields();
-                            
+                            dataField.AssertShowDecimal((ushort)aplData.Items[_aplItemIndex++].AddressFamily);
+
                             break;
 
-                        case "dns.apl.coded.prefix":
+                        case "dns.apl.coded_prefix":
                             dataField.AssertShowDecimal(aplData.Items[_aplItemIndex - 1].PrefixLength);
                             break;
 
@@ -1027,6 +1121,11 @@ namespace PcapDotNet.Core.Test
                             dataField.AssertShowDecimal(aplData.Items[_aplItemIndex - 1].AddressFamilyDependentPart.Length);
                             break;
 
+                        case "dns.apl.afdpart.data":
+                        case "dns.apl.afdpart.ipv6":
+                            dataField.AssertValue(aplData.Items[_aplItemIndex - 1].AddressFamilyDependentPart);
+                            break;
+
                         default:
                             throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
@@ -1035,50 +1134,42 @@ namespace PcapDotNet.Core.Test
 
                 case DnsType.DelegationSigner:  // 43.
                 case DnsType.DnsSecLookAsideValidation: // 32769.
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var dsData = (DnsResourceDataDelegationSigner)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Key id":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + dsData.KeyTag.ToString("0000"));
+                        case "dns.ds.key_id":
+                            dataField.AssertShowDecimal(dsData.KeyTag);
                             break;
 
-                        case "Algorithm":
-                            dataField.AssertValue((byte)dsData.Algorithm);
+                        case "dns.ds.algorithm":
+                            dataField.AssertShowDecimal((byte)dsData.Algorithm);
                             break;
 
-                        case "Digest type":
-                            dataField.AssertValue((byte)dsData.DigestType);
+                        case "dns.ds.digest_type":
+                            dataField.AssertShowDecimal((byte)dsData.DigestType);
                             break;
 
-                        case "Public key":
+                        case "dns.ds.digest":
                             dataField.AssertValue(dsData.Digest);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.SshFingerprint:
                     var sshFpData = (DnsResourceDataSshFingerprint)data;
+                    dataField.AssertNoFields();
                     switch (dataFieldName)
                     {
-                        case "":
-                            switch (dataFieldShowUntilColon)
-                            {
-                                case "Algorithm":
-                                    dataField.AssertValue((byte)sshFpData.Algorithm);
-                                    break;
+                        case "dns.sshfp.algorithm":
+                            dataField.AssertShowDecimal((byte)sshFpData.Algorithm);
+                            break;
 
-                                case "Fingerprint type":
-                                    dataField.AssertValue((byte)sshFpData.FingerprintType);
-                                    break;
-
-                                default:
-                                    throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
-                            }
+                        case "dns.sshfp.fingerprint.type":
+                            dataField.AssertShowDecimal((byte)sshFpData.FingerprintType);
                             break;
 
                         case "dns.sshfp.fingerprint":
@@ -1088,66 +1179,55 @@ namespace PcapDotNet.Core.Test
                         default:
                             throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.IpSecKey:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var ipSecKeyData = (DnsResourceDataIpSecKey)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataField.Name())
                     {
-                        case "Gateway precedence":
-                            dataField.AssertValue(ipSecKeyData.Precedence);
+                        case "dns.ipseckey.gateway_precedence":
+                            dataField.AssertShowDecimal(ipSecKeyData.Precedence);
                             break;
 
-                        case "Algorithm":
-                            dataField.AssertValue((byte)ipSecKeyData.Algorithm);
+                        case "dns.ipseckey.gateway_type":
+                            dataField.AssertShowDecimal((byte)ipSecKeyData.GatewayType);
                             break;
 
-                        case "Gateway":
-                            switch (ipSecKeyData.GatewayType)
-                            {
-                                case DnsGatewayType.None:
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": no gateway");
-                                    break;
-
-                                case DnsGatewayType.IpV4:
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + ((DnsGatewayIpV4)ipSecKeyData.Gateway).Value);
-                                    break;
-
-                                case DnsGatewayType.IpV6:
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkIpV6(((DnsGatewayIpV6)ipSecKeyData.Gateway).Value));
-                                    break;
-
-                                case DnsGatewayType.DomainName:
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(((DnsGatewayDomainName)ipSecKeyData.Gateway).Value));
-                                    break;
-
-                                default:
-                                    throw new InvalidOperationException("Invalid Gateway Type " + ipSecKeyData.GatewayType);
-                            }
+                        case "dns.ipseckey.gateway_algorithm":
+                            dataField.AssertShowDecimal((byte)ipSecKeyData.Algorithm);
                             break;
 
-                        case "Public key":
+                        case "dns.ipseckey.gateway_ipv4":
+                            dataField.AssertShow(((DnsGatewayIpV4)ipSecKeyData.Gateway).Value.ToString());
+                            break;
+
+                        case "dns.ipseckey.gateway_ipv6":
+                            dataField.AssertValue(((DnsGatewayIpV6)ipSecKeyData.Gateway).Value.ToValue());
+                            break;
+
+                        case "dns.ipseckey.gateway_dns":
+                            dataField.AssertShow(GetWiresharkDomainName(((DnsGatewayDomainName)ipSecKeyData.Gateway).Value));
+                            break;
+
+                        case "dns.ipseckey.public_key":
                             dataField.AssertValue(ipSecKeyData.PublicKey);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.NSec:
-                    dataField.AssertName("");
                     var nSecData = (DnsResourceDataNextDomainSecure)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataField.Name())
                     {
-                        case "Next domain name":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(nSecData.NextDomainName));
+                        case "dns.nsec.next_domain_name":
+                            dataField.AssertShow(GetWiresharkDomainName(nSecData.NextDomainName));
                             break;
 
-                        case "RR type in bit map":
+                        case "":
                             DnsType actualType = nSecData.TypesExist[_nSecTypeIndex++];
                             DnsType expectedType;
                             if (!TryGetDnsType(dataFieldShow, out expectedType))
@@ -1157,68 +1237,63 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataField.Name());
                     }
                     dataField.AssertNoFields();
                     break;
-                    
+
                 case DnsType.DnsKey:
-                    dataField.AssertName("");
                     var dnsKeyData = (DnsResourceDataDnsKey)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Flags":
-                            foreach (var flagField in dataField.Fields())
+                        case "dns.dnskey.flags":
+                            foreach (XElement subfield in dataField.Fields())
                             {
-                                int flagCount = GetFlagCount(flagField);
-                                switch (flagCount)
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
                                 {
-                                    case 7:
-                                        flagField.AssertShow(dnsKeyData.ZoneKey
-                                                                 ? ".... ...1 .... .... = This is the zone key for the specified zone"
-                                                                 : ".... ...0 .... .... = This is not a zone key");
+                                    case "dns.dnskey.flags.zone_key":
+                                        subfield.AssertShowDecimal(dnsKeyData.ZoneKey);
                                         break;
 
-                                    case 8:
-                                        flagField.AssertShow(dnsKeyData.Revoke
-                                                                 ? ".... .... 1... .... = Key is revoked"
-                                                                 : ".... .... 0... .... = Key is not revoked");
+                                    case "dns.dnskey.flags.key_revoked":
+                                        subfield.AssertShowDecimal(dnsKeyData.Revoke);
                                         break;
 
-                                    case 15:
-                                        flagField.AssertShow(dnsKeyData.SecureEntryPoint
-                                                                 ? ".... .... .... ...1 = Key is a Key Signing Key"
-                                                                 : ".... .... .... ...0 = Key is a Zone Signing Key");
+                                    case "dns.dnskey.flags.secure_entry_point":
+                                        subfield.AssertShowDecimal(dnsKeyData.SecureEntryPoint);
+                                        break;
+
+                                    case "dns.dnskey.flags.reserved":
+                                        subfield.AssertShowDecimal(0);
+                                        break;
+
+                                    case "dns.dnskey.protocol":
+                                        subfield.AssertShowDecimal(dnsKeyData.Protocol);
+                                        break;
+
+                                    case "dns.dnskey.algorithm":
+                                        subfield.AssertShowDecimal((byte)dnsKeyData.Algorithm);
                                         break;
 
                                     default:
-                                        throw new InvalidOperationException("Invalid DNS data flag field " + flagField.Show());
+                                        throw new InvalidOperationException("Invalid DNS flags subfield name " + subfield.Name());
                                 }
                             }
                             break;
 
-                        case "Protocol":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + dnsKeyData.Protocol);
-                            dataField.AssertNoFields();
-                            break;
-
-                        case "Algorithm":
-                            dataField.AssertValue((byte)dnsKeyData.Algorithm);
-                            dataField.AssertNoFields();
-                            break;
-
-                        case "Key id":
+                        case "dns.dnskey.key_id":
                             // TODO: Calculate key tag.
                             dataField.AssertNoFields();
                             break;
 
-                        case "Public key":
-                            dataField.AssertValue(dnsKeyData.PublicKey);
+                        case "dns.dnskey.public_key":
                             dataField.AssertNoFields();
+                            dataField.AssertValue(dnsKeyData.PublicKey);
                             break;
-
+                            
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS resource data field name " + dataFieldName);
                     }
                     break;
 
@@ -1337,37 +1412,28 @@ namespace PcapDotNet.Core.Test
                     var hipData = (DnsResourceDataHostIdentityProtocol)data;
                     switch (dataFieldName)
                     {
-                        case "":
-                            switch (dataFieldShowUntilColon)
-                            {
-                                case "HIT length":
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + hipData.HostIdentityTag.Length);
-                                    break;
-
-                                case "PK algorithm":
-                                    dataField.AssertValue((byte)hipData.PublicKeyAlgorithm);
-                                    break;
-
-                                case "PK length":
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " + hipData.PublicKey.Length);
-                                    break;
-
-                                case "Rendezvous Server":
-                                    dataField.AssertShow(dataFieldShowUntilColon + ": " +
-                                                         GetWiresharkDomainName(hipData.RendezvousServers[_hipRendezvousServersIndex++]));
-                                    break;
-
-                                default:
-                                    throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
-                            }
-                            break;
-
                         case "dns.hip.hit":
                             dataField.AssertShow(hipData.HostIdentityTag);
                             break;
 
                         case "dns.hip.pk":
                             dataField.AssertShow(hipData.PublicKey);
+                            break;
+
+                        case "dns.hip.hit.length":
+                            dataField.AssertShowDecimal(hipData.HostIdentityTag.Length);
+                            break;
+
+                        case "dns.hip.hit.pk.algo":
+                            dataField.AssertShowDecimal((byte)hipData.PublicKeyAlgorithm);
+                            break;
+
+                        case "dns.hip.pk.length":
+                            dataField.AssertShowDecimal(hipData.PublicKey.Length);
+                            break;
+
+                        case "dns.hip.rendezvous_server":
+                            dataField.AssertShow(GetWiresharkDomainName(hipData.RendezvousServers[_hipRendezvousServersIndex++]));
                             break;
 
                         default:
@@ -1377,50 +1443,49 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case DnsType.TKey:
-                    dataField.AssertName("");
+                    dataField.AssertNoFields();
                     var tKeyData = (DnsResourceDataTransactionKey)data;
-                    switch (dataFieldShowUntilColon)
+                    switch (dataFieldName)
                     {
-                        case "Algorithm name":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + GetWiresharkDomainName(tKeyData.Algorithm));
+                        case "dns.tkey.algo_name":
+                            dataField.AssertShow(GetWiresharkDomainName(tKeyData.Algorithm));
                             break;
 
-                        case "Signature inception":
+                        case "dns.tkey.signature_inception":
                             dataField.AssertValue(tKeyData.Inception);
                             break;
 
-                        case "Signature expiration":
+                        case "dns.tkey.signature_expiration":
                             dataField.AssertValue(tKeyData.Expiration);
                             break;
 
-                        case "Mode":
-                            dataField.AssertValue((ushort)tKeyData.Mode);
+                        case "dns.tkey.mode":
+                            dataField.AssertShowDecimal((ushort)tKeyData.Mode);
                             break;
 
-                        case "Error":
-                            dataField.AssertValue((ushort)tKeyData.Error);
+                        case "dns.tkey.error":
+                            dataField.AssertShowDecimal((ushort)tKeyData.Error);
                             break;
 
-                        case "Key Size":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + tKeyData.Key.Length);
+                        case "dns.tkey.key_size":
+                            dataField.AssertShowDecimal(tKeyData.Key.Length);
                             break;
 
-                        case "Key Data":
+                        case "dns.tkey.key_data":
                             dataField.AssertValue(tKeyData.Key);
                             break;
 
-                        case "Other Size":
-                            dataField.AssertShow(dataFieldShowUntilColon + ": " + tKeyData.Other.Length);
+                        case "dns.tkey.other_size":
+                            dataField.AssertShowDecimal(tKeyData.Other.Length);
                             break;
 
-                        case "Other Data":
+                        case "dns.tkey.other_data":
                             dataField.AssertValue(tKeyData.Other);
                             break;
 
                         default:
-                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldShow);
+                            throw new InvalidOperationException("Invalid DNS data field " + dataFieldName);
                     }
-                    dataField.AssertNoFields();
                     break;
 
                 case DnsType.TransactionSignature:
@@ -1459,8 +1524,7 @@ namespace PcapDotNet.Core.Test
                             dataField.AssertShow("");
                             Assert.AreEqual(1, dataField.Fields().Count());
                             var tsigSubfield = dataField.Fields().First();
-                                tsigSubfield.AssertShow("No dissector for algorithm:" + GetWiresharkDomainName(tSigData.Algorithm));
-                            tsigSubfield.AssertValue(tSigData.MessageAuthenticationCode);
+                            tsigSubfield.AssertName("_ws.expert");
                             break;
 
                         case "dns.tsig.original_id":
@@ -1483,12 +1547,80 @@ namespace PcapDotNet.Core.Test
                             dataField.AssertNoFields();
                             break;
 
+                        case "dns.tsig.time_signed":
+                            dataField.AssertValue(tSigData.TimeSigned);
+                            dataField.AssertNoFields();
+                            break;
+
+                        case "_ws.expert":
+                            break;
+
                         default:
                             throw new InvalidOperationException("Invalid DNS data field name " + dataFieldName);
                     }
                     break;
 
-                case DnsType.Null:                                // 10.
+                case DnsType.Null:
+                    dataField.AssertNoFields();
+                    dataField.AssertName("dns.null");
+                    dataField.AssertValue(((DnsResourceDataAnything)data).Data);
+                    break;
+
+                case DnsType.CertificationAuthorityAuthorization:
+                    var certificationAuthorityAuthorization = (DnsResourceDataCertificationAuthorityAuthorization)data;
+                    switch (dataField.Name())
+                    {
+                        case "dns.caa.flags":
+                            dataField.AssertShowDecimal((byte)certificationAuthorityAuthorization.Flags);
+                            foreach (XElement subfield in dataField.Fields())
+                            {
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
+                                {
+                                    case "dns.caa.flags.issuer_critical":
+                                        subfield.AssertShowDecimal((certificationAuthorityAuthorization.Flags &
+                                                                    DnsCertificationAuthorityAuthorizationFlags.Critical) ==
+                                                                   DnsCertificationAuthorityAuthorizationFlags.Critical);
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException("Invalid subfield " + subfield.Name());
+                                }
+
+                            }
+                            break;
+
+                        case "dns.caa.unknown":
+                        case "dns.caa.issue":
+                            foreach (XElement subfield in dataField.Fields())
+                            {
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
+                                {
+                                    case "dns.caa.tag_length":
+                                        subfield.AssertShowDecimal(certificationAuthorityAuthorization.Tag.Length);
+                                        break;
+
+                                    case "dns.caa.tag":
+                                        subfield.AssertValue(certificationAuthorityAuthorization.Tag);
+                                        break;
+
+                                    case "dns.caa.value":
+                                        subfield.AssertValue(certificationAuthorityAuthorization.Value);
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException("Invalid subfield " + subfield.Name());
+                                }
+
+                            }
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid field " + dataField.Name());
+                    }
+                    break;
+
                 case DnsType.EId:                                 // 31.
                 case DnsType.NimrodLocator:                       // 32.
                 case DnsType.AtmA:                                // 34.
@@ -1507,14 +1639,20 @@ namespace PcapDotNet.Core.Test
                 case DnsType.MailA:                               // 254.
                 case DnsType.Any:                                 // 255.
                 case DnsType.Uri:                                 // 256.
-                case DnsType.CertificationAuthorityAuthorization: // 257.
                 case DnsType.TrustAnchor:                         // 32768.
                 default:
-                    dataField.AssertName("");
-                    dataField.AssertShow("Data");
-                    dataField.AssertNoFields();
+                    if (dataField.Name() == "_ws.expert")
+                    {
+                        dataField.AssertShowname("Expert Info (Note/Undecoded): Dissector for DNS Type (" + (ushort)resourceRecord.DnsType +
+                                                 ") code not implemented, Contact Wireshark developers if you want this supported");
+                    }
+                    else
+                    {
+                        dataField.AssertName("dns.data");
+                    }
                     break;
             }
+            return true;
         }
 
         private static string GetWiresharkDomainName(DnsDomainName domainName)
@@ -1555,8 +1693,12 @@ namespace PcapDotNet.Core.Test
                 {"RRSIG", DnsType.ResourceRecordSignature},             // 46
                 {"DHCID", DnsType.DynamicHostConfigurationId},          // 49
                 {"NSEC3PARAM", DnsType.NSec3Parameters},                // 51
+                {"TALINK", DnsType.TrustAnchorLink},                    // 58
                 {"UNSPEC", DnsType.Unspecified},                        // 103
                 {"TSIG", DnsType.TransactionSignature},                 // 250
+                {"*", DnsType.Any},                                     // 255
+                {"CAA", DnsType.CertificationAuthorityAuthorization},   // 257
+                {"TA", DnsType.TrustAnchor},                            // 32768
                 {"DLV", DnsType.DnsSecLookAsideValidation},             // 32769
             };
 
@@ -1585,12 +1727,13 @@ namespace PcapDotNet.Core.Test
                 return true;
             }
 
-            return _wiresharkDnsTypeToDnsType.TryGetValue(dataFieldShow.Split(new[] { ": " }, StringSplitOptions.None)[1].Split(' ')[0], out type);
+            string wiresharkDnsType = dataFieldShow.Split(new[] {": "}, StringSplitOptions.None)[1].Split(' ', '(')[0];
+            return _wiresharkDnsTypeToDnsType.TryGetValue(wiresharkDnsType, out type);
         }
 
         private static int GetFlagCount(XElement flagField)
         {
-            return flagField.Show().Replace(" ", "").TakeWhile(c => c == '.').Count();
+            return flagField.Showname().Replace(" ", "").TakeWhile(c => c == '.').Count();
         }
 
         private static string GetPrecisionValueString(ulong value)
@@ -1611,9 +1754,12 @@ namespace PcapDotNet.Core.Test
         private int _hipRendezvousServersIndex;
         private int _wksBitmapIndex;
         private int _nxtTypeIndex;
+        private int _spfTypeIndex;
+        private int _txtTypeIndex;
         private int _nSecTypeIndex;
         private int _nSec3TypeIndex;
         private int _txtIndex;
         private int _aplItemIndex;
+        private int _optOptionIndex;
     }
 }

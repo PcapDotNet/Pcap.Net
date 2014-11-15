@@ -37,11 +37,11 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.type":
-                    field.AssertShowHex((byte)igmpDatagram.MessageType);
+                    field.AssertShowDecimal((byte)igmpDatagram.MessageType);
                     break;
 
                 case "igmp.checksum":
-                    field.AssertShowHex(igmpDatagram.Checksum);
+                    field.AssertShowDecimal(igmpDatagram.Checksum);
                     break;
 
                 case "igmp.maddr":

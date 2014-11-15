@@ -40,7 +40,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "udp.checksum":
-                    field.AssertShowHex(udpDatagram.Checksum);
+                    field.AssertShowDecimal(udpDatagram.Checksum);
                     if (udpDatagram.Checksum != 0)
                     {
                         foreach (var checksumField in field.Fields())
@@ -64,6 +64,9 @@ namespace PcapDotNet.Core.Test
 
                 case "udp.checksum_coverage":
                     field.AssertShowDecimal(udpDatagram.TotalLength);
+                    break;
+
+                case "udp.stream":
                     break;
 
                 default:
