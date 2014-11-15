@@ -1699,6 +1699,21 @@ namespace PcapDotNet.Core.Test
                                                                 ++requestIndex;
                                                             break;
 
+                                                        case "mip6.vsm.vendorId":
+                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
+                                                            if (requestIndex == contextRequest.Requests.Count)
+                                                                continue;
+                                                            optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option.Subsegment(0, 4));
+                                                            break;
+
+                                                        case "mip6.vsm.subtype":
+                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
+                                                            if (requestIndex == contextRequest.Requests.Count)
+                                                                continue;
+                                                            optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option.Subsegment(4, 1));
+                                                            ++requestIndex;
+                                                            break;
+
                                                         case "":
                                                             // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
                                                             if (requestIndex == contextRequest.Requests.Count)

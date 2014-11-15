@@ -616,7 +616,10 @@ namespace PcapDotNet.Core.Test
 
                     case (IpV4OptionType)133:
                         // TODO: Support 133.
-                        field.AssertShow("Extended Security (" + option.Length + " bytes)");
+                        if (option.Length >= 3)
+                            field.AssertShow("Extended Security (" + option.Length + " bytes)");
+                        else
+                            field.AssertShow("Extended Security (with option length = " + option.Length + " bytes; should be >= 3)");
                         break;
 
                     case (IpV4OptionType)134:
@@ -627,7 +630,10 @@ namespace PcapDotNet.Core.Test
 
                     case (IpV4OptionType)149:
                         // TODO: Support 149.
-                        field.AssertShow("Selective Directed Broadcast (11 bytes)");
+                        if (option.Length >= 6)
+                            field.AssertShow("Selective Directed Broadcast (" + option.Length + " bytes)");
+                        else
+                            field.AssertShow("Selective Directed Broadcast (with option length = " + option.Length + " bytes; should be >= 6)");
                         break;
 
                     default:
