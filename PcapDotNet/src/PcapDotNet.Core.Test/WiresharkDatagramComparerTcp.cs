@@ -196,14 +196,21 @@ namespace PcapDotNet.Core.Test
                             switch (checksumField.Name())
                             {
                                 case "tcp.checksum_good":
+                                    checksumField.AssertNoFields();
                                     checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "tcp.checksum_bad":
-                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && !ipDatagram.IsTransportChecksumCorrect);
+                                    checksumField.AssertShowDecimal(!ipDatagram.IsTransportChecksumCorrect);
+                                    if (checksumField.Fields().Any())
+                                    {
+                                        checksumField.AssertNumFields(1);
+                                        checksumField.Fields().First().AssertName("_ws.expert");
+                                    }
                                     break;
 
                                 case "tcp.checksum_calculated":
+                                    checksumField.AssertNoFields();
                                     if (ipDatagram.IsTransportChecksumCorrect)
                                         checksumField.AssertShowDecimal(tcpDatagram.Checksum);
                                     break;
@@ -211,7 +218,6 @@ namespace PcapDotNet.Core.Test
                                 default:
                                     throw new InvalidOperationException("Invalid checksum field name " + checksumField.Name());
                             }
-                            checksumField.AssertNoFields();
                         }
                     }
                     break;
@@ -259,6 +265,7 @@ namespace PcapDotNet.Core.Test
                 {
                     Assert.IsFalse(options.IsValid, "Options IsValid");
                     Assert.IsTrue(
+                        field.Show().StartsWith("Unknown (0x09) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x19) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Echo reply (with option length = ") ||
@@ -481,6 +488,11 @@ namespace PcapDotNet.Core.Test
                                         continue;
                                     throw new InvalidOperationException("Invalid tcp option subfield " + subField.Name());
                                 }
+                                break;
+
+                            case (TcpOptionType)22:
+                                field.AssertShow("SCPS record boundary (with option length = " + option.Length + " bytes; should be 2)");
+                                // TODO: Support 22.
                                 break;
 
                             case (TcpOptionType)23:

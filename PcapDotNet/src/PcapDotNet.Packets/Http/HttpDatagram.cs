@@ -90,6 +90,13 @@ namespace PcapDotNet.Packets.Http
     /// IPv4address      = 1*digit "." 1*digit "." 1*digit "." 1*digit
     /// domainlabel      = alphanum | alphanum *( alphanum | "-" ) alphanum
     /// toplabel         = alpha | alpha *( alphanum | "-" ) alphanum
+    /// alphanum         = alpha | digit
+    /// alpha            = lowalpha | upalpha
+    /// lowalpha         = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" |
+    ///                    "w" | "x" | "y" | "z"
+    /// upalpha          = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" |
+    ///                    "W" | "X" | "Y" | "Z"
+    /// digit            = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
     /// 
     /// request-header   = Accept                  
     ///                  | Accept-Charset          

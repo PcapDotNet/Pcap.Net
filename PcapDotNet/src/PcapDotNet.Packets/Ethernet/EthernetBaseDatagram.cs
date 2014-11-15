@@ -30,30 +30,75 @@ namespace PcapDotNet.Packets.Ethernet
         }
 
         /// <summary>
-        /// The bytes padding the Ethernet packet beyond the actual Ethernet payload.
+        /// The bytes padding the Ethernet packet beyond the actual Ethernet payload until it is a 60 bytes packet.
         /// This assumes we know how to calculate the actual payload length (For example, by using the Total Length of the IPv4 payload).
         /// If we don't know how to calculate the actual payload length <see langword="null"/> will be returned.
-        /// The trailer doesn't include the <see cref="FrameCheckSequence"/> if it exists.
+        /// The Padding doesn't include the <see cref="Trailer"/> and the <see cref="FrameCheckSequence"/> if any exist.
+        /// </summary>
+        public DataSegment Padding
+        {
+            get
+            {
+                if (Length < 60)
+                    return DataSegment.Empty;
+                DataSegment payloadByEtherType = PayloadByEtherType;
+                if (payloadByEtherType == null)
+                    return null;
+
+                int payloadLength = PayloadByEtherType.Length;
+
+                return new DataSegment(Buffer, StartOffset + HeaderLength + payloadLength, 60 - HeaderLength - payloadLength);
+            }
+        }
+
+        /// <summary>
+        /// The bytes padding the Ethernet packet beyond the actual Ethernet payload and beyond the first 60 bytes of the packet.
+        /// This assumes we know how to calculate the actual payload length (For example, by using the Total Length of the IPv4 payload).
+        /// If we don't know how to calculate the actual payload length <see langword="null"/> will be returned.
+        /// The trailer doesn't include the <see cref="Padding"/> and the <see cref="FrameCheckSequence"/> if any exist.
         /// </summary>
         public DataSegment Trailer
         {
             get
             {
-                DataSegment trailerWithFrameCheckSequence = TrailerWithFrameCheckSequence;
-                if (trailerWithFrameCheckSequence == null)
+                DataSegment extraBytes = ExtraData;
+                if (extraBytes == null)
                     return null;
 
                 DataSegment frameCheckSequence = FrameCheckSequence;
                 if (frameCheckSequence == null)
-                    return trailerWithFrameCheckSequence;
-                return trailerWithFrameCheckSequence.Subsegment(0, trailerWithFrameCheckSequence.Length - frameCheckSequence.Length);
+                    return extraBytes;
+                return extraBytes.Subsegment(Padding.Length, extraBytes.Length - frameCheckSequence.Length - Padding.Length);
             }
         }
 
         /// <summary>
-        /// A sequence of bytes that includes the trailer bytes and the framce check sequence bytes.
+        /// The 4 bytes of the Frame Check Sequence (FCS).
+        /// Usually, these bytes won't be available because the device remvoed them after checking their validity.
+        /// We assume they exist when we see that the Ethernet extra bytes pads to 68 bytes or more.
+        /// If the packet isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
         /// </summary>
-        public DataSegment TrailerWithFrameCheckSequence
+        public DataSegment FrameCheckSequence
+        {
+            get
+            {
+                if (Length < 68)
+                    return null;
+
+                DataSegment extraBytes = ExtraData;
+                if (extraBytes == null)
+                    return null;
+
+                if (extraBytes.Length >= 4)
+                    return extraBytes.Subsegment(extraBytes.Length - 4, 4);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// A sequence of bytes that includes the padding bytes, trailer bytes and the frame check sequence bytes.
+        /// </summary>
+        public DataSegment ExtraData
         {
             get
             {
@@ -63,29 +108,6 @@ namespace PcapDotNet.Packets.Ethernet
 
                 int payloadLength = PayloadByEtherType.Length;
                 return new DataSegment(Buffer, StartOffset + HeaderLength + payloadLength, Length - HeaderLength - payloadLength);
-            }
-        }
-
-        /// <summary>
-        /// The 4 bytes of the Frame Check Sequence (FCS).
-        /// Usually, these bytes won't be available because the device remvoed them after checking their validity.
-        /// We assume they exist when we see that the Ethernet padding pads to 68 bytes or more.
-        /// If the padding isn't that long or we don't know how to calculate the real payload length, <see langword="null"/> will be returned.
-        /// </summary>
-        public DataSegment FrameCheckSequence
-        {
-            get
-            {
-                if (Length < 68)
-                    return null;
-
-                DataSegment trailerWithFrameCheckSequence = TrailerWithFrameCheckSequence;
-                if (trailerWithFrameCheckSequence == null)
-                    return null;
-
-                if (trailerWithFrameCheckSequence.Length >= 4)
-                    return trailerWithFrameCheckSequence.Subsegment(trailerWithFrameCheckSequence.Length - 4, 4);
-                return null;
             }
         }
 

@@ -51,7 +51,12 @@ namespace PcapDotNet.Core.Test
                                  (EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)29, (EthernetType)30, (EthernetType)43, (EthernetType)50, EthernetType.ReverseArp, 
                              }.Contains(
                                  vLanTaggedFrameDatagram.EtherType))
-                        field.AssertValue(vLanTaggedFrameDatagram.TrailerWithFrameCheckSequence);
+                        field.AssertValue(vLanTaggedFrameDatagram.ExtraData);
+                    break;
+
+                case "eth.padding":
+                    field.AssertNoFields();
+                    field.AssertValue(vLanTaggedFrameDatagram.Trailer);
                     break;
 
                 default:
