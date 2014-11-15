@@ -19,26 +19,33 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "vlan.priority":
+                    field.AssertNoFields();
                     field.AssertShowDecimal((byte)vLanTaggedFrameDatagram.PriorityCodePoint);
                     break;
 
                 case "vlan.cfi":
+                    field.AssertNoFields();
                     field.AssertShowDecimal(vLanTaggedFrameDatagram.CanonicalFormatIndicator);
                     break;
 
                 case "vlan.id":
+                    field.AssertNoFields();
                     field.AssertShowDecimal(vLanTaggedFrameDatagram.VLanIdentifier);
                     break;
 
                 case "vlan.etype":
-                    field.AssertShowHex((ushort)vLanTaggedFrameDatagram.EtherType);
+                    field.AssertNoFields();
+                    field.AssertShowDecimal((ushort)vLanTaggedFrameDatagram.EtherType);
                     break;
 
                 case "vlan.len":
                     field.AssertShowDecimal((ushort)vLanTaggedFrameDatagram.EtherType);
+                    field.AssertNumFields(1);
+                    field.Fields().First().AssertName("_ws.expert");
                     break;
 
                 case "vlan.trailer":
+                    field.AssertNoFields();
                     if (!new[]
                              {
                                  (EthernetType)1, (EthernetType)5, (EthernetType)17, (EthernetType)29, (EthernetType)30, (EthernetType)43, (EthernetType)50, EthernetType.ReverseArp, 
@@ -50,7 +57,6 @@ namespace PcapDotNet.Core.Test
                 default:
                     throw new InvalidOperationException("Invalid VLanTaggedFrame field " + field.Name());
             }
-            field.AssertNoFields();
 
             return true;
         }

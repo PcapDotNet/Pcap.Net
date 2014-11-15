@@ -15,7 +15,9 @@ namespace PcapDotNet.Packets.IpV6
     /// +-----+-------------+--------------+
     /// | 0   | Option Type | Opt Data Len |
     /// +-----+-------------+--------------+
-    /// | 16  | Request 1                  |
+    /// | 16  | Reserved                   |
+    /// +-----+----------------------------+
+    /// | 32  | Request 1                  |
     /// | ... | Request 2                  |
     /// |     | ...                        |
     /// |     | Request n                  |
@@ -25,6 +27,16 @@ namespace PcapDotNet.Packets.IpV6
     [IpV6MobilityOptionTypeRegistration(IpV6MobilityOptionType.ContextRequest)]
     public sealed class IpV6MobilityOptionContextRequest : IpV6MobilityOptionComplex
     {
+        private static class Offset
+        {
+            public const int Requests = sizeof(ushort);
+        }
+
+        /// <summary>
+        /// The minimum number of bytes this option data takes.
+        /// </summary>
+        public const int OptionDataMinimumLength = Offset.Requests;
+
         /// <summary>
         /// Creates an instance from an array of requests.
         /// </summary>
@@ -51,7 +63,7 @@ namespace PcapDotNet.Packets.IpV6
             : base(IpV6MobilityOptionType.ContextRequest)
         {
             Requests = requests;
-            _dataLength = Requests.Sum(request => request.Length);
+            _dataLength = OptionDataMinimumLength + Requests.Sum(request => request.Length);
             if (_dataLength > byte.MaxValue)
                 throw new ArgumentOutOfRangeException("requests", requests,
                                                       string.Format(CultureInfo.InvariantCulture, "requests length is too large. Takes over {0}>{1} bytes.",
@@ -66,7 +78,7 @@ namespace PcapDotNet.Packets.IpV6
         internal override IpV6MobilityOption CreateInstance(DataSegment data)
         {
             List<IpV6MobilityOptionContextRequestEntry> requests = new List<IpV6MobilityOptionContextRequestEntry>();
-            int offset = 0;
+            int offset = Offset.Requests;
             while (data.Length > offset)
             {
                 byte requestType = data[offset++];
@@ -104,6 +116,7 @@ namespace PcapDotNet.Packets.IpV6
 
         internal override void WriteData(byte[] buffer, ref int offset)
         {
+            offset += Offset.Requests;
             foreach (var request in Requests)
                 request.Write(buffer, ref offset);
         }

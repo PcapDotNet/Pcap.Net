@@ -5,7 +5,7 @@ using PcapDotNet.Base;
 namespace PcapDotNet.Packets.IpV6
 {
     /// <summary>
-    /// RFC 5845.
+    /// RFC 5568.
     /// <pre>
     /// +-----+-------------+---------------+
     /// | Bit | 0-7         | 8-15          |

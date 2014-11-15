@@ -67,6 +67,11 @@ namespace PcapDotNet.Core.Test
             Assert.AreEqual(expectedNumFields, element.Fields().Count());
         }
 
+        public static void AssertShowname(this XElement element, string expectedValue, bool ignoreCase = false, string message = null)
+        {
+            Assert.AreEqual(expectedValue, element.Showname(), ignoreCase, message ?? element.Name());
+        }
+
         public static void AssertNoShow(this XElement element)
         {
             Assert.IsNull(element.Attribute("show"));
@@ -164,7 +169,7 @@ namespace PcapDotNet.Core.Test
 
         public static void AssertValue(this XElement element, string expectedValue, string message = null)
         {
-            Assert.AreEqual(expectedValue.Length, element.Value().Length, message ?? element.Name());
+            Assert.AreEqual(expectedValue.Length, element.Value().Length, (message ?? element.Name()) + " Length");
             Assert.AreEqual(expectedValue, element.Value(), message ?? element.Name());
         }
 
@@ -206,6 +211,11 @@ namespace PcapDotNet.Core.Test
         public static void AssertValue(this XElement element, ulong expectedValue)
         {
             element.AssertValue(expectedValue.ToString("x16"));
+        }
+
+        public static void AssertValue(this XElement element, UInt128 expectedValue)
+        {
+            element.AssertValue(expectedValue.ToString("x32"));
         }
 
         public static void AssertValue(this XElement element, SerialNumber32 expectedValue)

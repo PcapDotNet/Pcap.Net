@@ -37,7 +37,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "icmp.checksum":
-                    field.AssertShowHex(icmpDatagram.Checksum);
+                    field.AssertShowDecimal(icmpDatagram.Checksum);
                     field.AssertNoFields();
                     break;
 

@@ -254,9 +254,17 @@ namespace PcapDotNet.Base.Test
         [TestMethod]
         public void ToStringTest()
         {
-            const string ValueString = "0123456789ABCDEFFEDCBA9876543210";
+            const string ValueString = "1234567890abcdeffedcba0987654321";
             UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            Assert.AreEqual(ValueString, value.ToString("X32"));
+            Assert.AreEqual(ValueString, value.ToString("x32"));
+        }
+
+        [TestMethod]
+        public void ToStringTestFirstBitIsOne()
+        {
+            const string ValueString = "fedcba9876543210fedcba9876543210";
+            UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            Assert.AreEqual(ValueString, value.ToString("x32"));
         }
     }
 }

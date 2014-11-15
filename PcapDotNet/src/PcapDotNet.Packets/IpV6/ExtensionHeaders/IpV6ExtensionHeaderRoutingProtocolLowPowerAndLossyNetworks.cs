@@ -229,8 +229,8 @@ namespace PcapDotNet.Packets.IpV6
                 lastAddressSegment.Write(addressBytes, commonPrefixLengthForLastAddress);
                 addresses[numAddresses - 1] = addressBytes.ReadIpV6Address(0, Endianity.Big);
             }
-            return new IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses, commonPrefixLengthForLastAddress,
-                                                     addresses);
+            return new IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks(nextHeader, segmentsLeft, commonPrefixLengthForNonLastAddresses,
+                                                                                  commonPrefixLengthForLastAddress, addresses);
         }
 
         internal override bool EqualsRoutingData(IpV6ExtensionHeaderRouting other)

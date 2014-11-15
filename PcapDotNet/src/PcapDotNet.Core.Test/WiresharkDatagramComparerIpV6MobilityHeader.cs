@@ -143,12 +143,12 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "mip6.reserved":
-                    field.AssertShowHex((byte)0);
+                    field.AssertShowDecimal(0);
                     field.AssertNoFields();
                     break;
 
                 case "mip6.csum":
-                    field.AssertShowHex(mobilityHeader.Checksum);
+                    field.AssertShowDecimal(mobilityHeader.Checksum);
                     break;
 
                 case "":
@@ -199,7 +199,7 @@ namespace PcapDotNet.Core.Test
                                         subfield.AssertShowDecimal((byte)bindingRevocationIndicationMessage.RevocationTrigger);
                                         break;
 
-                                    case "mip6._bri_seqnr":
+                                    case "mip6.bri_seqnr":
                                         subfield.AssertShowDecimal(bindingRevocationIndicationMessage.SequenceNumber);
                                         break;
 
@@ -207,8 +207,7 @@ namespace PcapDotNet.Core.Test
                                         subfield.AssertShowDecimal(bindingRevocationIndicationMessage.ProxyBinding);
                                         break;
 
-                                    case "mip6.bri_ia":
-                                        // TODO: Should be named differently. See https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10015
+                                    case "mip6.bri_iv":
                                         subfield.AssertShowDecimal(bindingRevocationIndicationMessage.IpV4HomeAddressBindingOnly);
                                         break;
 
@@ -240,7 +239,7 @@ namespace PcapDotNet.Core.Test
                                         subfield.AssertShowDecimal((byte)bindingRevocationAcknowledgementMessage.Status);
                                         break;
 
-                                    case "mip6._bri_seqnr":
+                                    case "mip6.bri_seqnr":
                                         subfield.AssertShowDecimal(bindingRevocationAcknowledgementMessage.SequenceNumber);
                                         break;
 
@@ -248,9 +247,12 @@ namespace PcapDotNet.Core.Test
                                         subfield.AssertShowDecimal(bindingRevocationAcknowledgementMessage.ProxyBinding);
                                         break;
 
-                                    case "mip6.bri_ag":
-                                        // TODO: Fix after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10007 is fixed.
+                                    case "mip6.bri_av":
                                         subfield.AssertShowDecimal(bindingRevocationAcknowledgementMessage.IpV4HomeAddressBindingOnly);
+                                        break;
+
+                                    case "mip6.bri_ag":
+                                        subfield.AssertShowDecimal(bindingRevocationAcknowledgementMessage.Global);
                                         break;
 
                                     case "mip6.bri_res":
@@ -270,7 +272,7 @@ namespace PcapDotNet.Core.Test
                                 switch (subfield.Name())
                                 {
                                     case "mip6.coti.cookie":
-                                        subfield.AssertShowHex(careOfTestInit.CareOfInitCookie);
+                                        subfield.AssertShowDecimal(careOfTestInit.CareOfInitCookie);
                                         break;
 
                                     default:
@@ -291,11 +293,11 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "mip6.cot.cookie":
-                                        subfield.AssertShowHex(careOfTest.CareOfInitCookie);
+                                        subfield.AssertShowDecimal(careOfTest.CareOfInitCookie);
                                         break;
 
                                     case "mip6.hot.token":
-                                        subfield.AssertShowHex(careOfTest.CareOfKeygenToken);
+                                        subfield.AssertShowDecimal(careOfTest.CareOfKeygenToken);
                                         break;
 
                                     default:
@@ -371,11 +373,11 @@ namespace PcapDotNet.Core.Test
                                         break;
 
                                     case "mip6.hot.cookie":
-                                        subfield.AssertShowHex(homeTest.HomeInitCookie);
+                                        subfield.AssertShowDecimal(homeTest.HomeInitCookie);
                                         break;
 
                                     case "mip6.hot.token":
-                                        subfield.AssertShowHex(homeTest.HomeKeygenToken);
+                                        subfield.AssertShowDecimal(homeTest.HomeKeygenToken);
                                         break;
 
                                     default:
@@ -392,7 +394,7 @@ namespace PcapDotNet.Core.Test
                                 switch (subfield.Name())
                                 {
                                     case "mip6.hoti.cookie":
-                                        subfield.AssertShowHex(homeTestInit.HomeInitCookie);
+                                        subfield.AssertShowDecimal(homeTestInit.HomeInitCookie);
                                         break;
 
                                     default:
@@ -448,6 +450,10 @@ namespace PcapDotNet.Core.Test
                                         subfield.AssertShowDecimal(bindingUpdate.TypeLengthValueHeaderFormat);
                                         break;
 
+                                    case "mip6.bu.b_flag":
+                                        subfield.AssertShowDecimal(bindingUpdate.BulkBindingUpdate);
+                                        break;
+
                                     case "mip6.bu.lifetime":
                                         subfield.AssertShowDecimal(bindingUpdate.Lifetime);
                                         break;
@@ -483,6 +489,10 @@ namespace PcapDotNet.Core.Test
 
                                     case "mip6.ba.t_flag":
                                         subfield.AssertShowDecimal(bindingAcknowledgement.TypeLengthValueHeaderFormat);
+                                        break;
+
+                                    case "mip6.ba.b_flag":
+                                        // TODO: Support Bulk Binding Update Support for Proxy Mobile IPv6 (RFC 6602).
                                         break;
 
                                     case "mip6.ba.seqnr":
@@ -536,104 +546,134 @@ namespace PcapDotNet.Core.Test
                             }
                             break;
 
+                        case "Handover Acknowledge ":
+                            var handoverAcknowledgeMessage = (IpV6ExtensionHeaderMobilityHandoverAcknowledgeMessage)mobilityHeader;
+                            foreach (XElement subfield in field.Fields())
+                            {
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
+                                {
+                                    case "mip6.hack.seqnr":
+                                        subfield.AssertShowDecimal(handoverAcknowledgeMessage.SequenceNumber);
+                                        break;
+
+                                    case "mip6.hack.code":
+                                        subfield.AssertShowDecimal((byte)handoverAcknowledgeMessage.Code);
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException(string.Format("Invalid IPv6 Handover Acknowledge mobility header field {0}", subfield.Name()));
+                                }
+                            }
+                            break;
+
+                        case "Handover Initiate":
+                            var handoverInitiateMessage = (IpV6ExtensionHeaderMobilityHandoverInitiateMessage)mobilityHeader;
+                            foreach (XElement subfield in field.Fields())
+                            {
+                                subfield.AssertNoFields();
+                                switch (subfield.Name())
+                                {
+                                    case "mip6.hi.seqnr":
+                                        subfield.AssertShowDecimal(handoverInitiateMessage.SequenceNumber);
+                                        break;
+
+                                    case "mip6.hi.s_flag":
+                                        subfield.AssertShowDecimal(handoverInitiateMessage.AssignedAddressConfiguration);
+                                        break;
+
+                                    case "mip6.hi.u_flag":
+                                        subfield.AssertShowDecimal(handoverInitiateMessage.Buffer);
+                                        break;
+
+                                    case "mip6.hi.code":
+                                        subfield.AssertShowDecimal((byte)handoverInitiateMessage.Code);
+                                        break;
+
+                                    default:
+                                        throw new InvalidOperationException(string.Format("Invalid IPv6 mobility header field {0}", subfield.Name()));
+                                }
+                            }
+                            break;
+
                         case "Mobility Options":
+                            // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10703 is fixed.
+                            if (mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.Experimental)
+                                break;
                             int optionIndex = 0;
                             foreach (XElement optionField in field.Fields())
                             {
                                 IpV6MobilityOption option = mobilityHeader.MobilityOptions[optionIndex];
                                 switch (optionField.Name())
                                 {
-                                    case "mip6..mobility_opt":
-                                        optionField.AssertShowDecimal((byte)option.OptionType);
-                                        optionField.AssertNoFields();
-                                        break;
-
-                                    case "mip6.bra.interval":
-                                        optionField.AssertShowDecimal(((IpV6MobilityOptionBindingRefreshAdvice)option).RefreshInterval);
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.gre_key":
-                                        optionField.AssertShowDecimal(((IpV6MobilityOptionGreKey)option).GreKeyIdentifier);
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.acoa.acoa":
-                                        optionField.AssertShow(((IpV6MobilityOptionAlternateCareOfAddress)option).AlternateCareOfAddress.ToString("x"));
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.rc":
-                                        optionField.AssertShowDecimal(((IpV6MobilityOptionRestartCounter)option).RestartCounter);
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.timestamp":
-                                        IpV6MobilityOptionTimestamp timestamp = (IpV6MobilityOptionTimestamp)option;
-                                        optionField.AssertValue(timestamp.Timestamp);
-                                        Assert.AreEqual(IpV6MobilityOptionType.Timestamp, option.OptionType);
-                                        // TODO: Fix this after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10008 is fixed.
-//                                        if (optionField.Show() != "Not representable")
-//                                            optionField.AssertShow(timestamp.TimestampDateTime.ToString());
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.att":
-                                        optionField.AssertShowDecimal((byte)((IpV6MobilityOptionAccessTechnologyType)option).AccessTechnologyType);
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
-                                    case "mip6.hi":
-                                        optionField.AssertShowDecimal((byte)((IpV6MobilityOptionHandoffIndicator)option).HandoffIndicator);
-                                        optionField.AssertNoFields();
-                                        ++optionIndex;
-                                        break;
-
                                     case "":
                                         switch (option.OptionType)
                                         {
                                             case IpV6MobilityOptionType.LinkLayerAddress:
-                                                optionField.AssertShow("Mobility Header Link-Layer Address option");
+                                                optionField.AssertShow("Mobility Header Link-Layer Address");
                                                 IpV6MobilityOptionLinkLayerAddress linkLayerAddress = (IpV6MobilityOptionLinkLayerAddress)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.lla.optcode":
-                                                            optionSubfield.AssertShowDecimal((byte)linkLayerAddress.Code);
-                                                            break;
-
                                                         case "":
-                                                            // TODO: Fix when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10006 is fixed.
-                                                            // optionSubfield.AssertValue(linkLayerAddress.LinkLayerAddress);
-                                                            return false;
+                                                            optionSubfield.AssertShow("Mobility Header Link-Layer Address option");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                if (HandleCommonMobilityOptionSubfield(optionSubsubfield, option))
+                                                                    continue;
+
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.lla.optcode":
+                                                                        optionSubsubfield.AssertShowDecimal((byte)linkLayerAddress.Code);
+                                                                        break;
+
+                                                                    case "":
+                                                                        // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
+//                                                                        optionSubsubfield.AssertValue(linkLayerAddress.LinkLayerAddress);
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(string.Format(
+                                                                            "Invalid IPv6 Link Layer Address option subfield {0}", optionSubsubfield.Name()));
+                                                                }
+                                                            }
+                                                            break;
 
                                                         default:
                                                             throw new InvalidOperationException(string.Format(
                                                                 "Invalid IPv6 Link Layer Address option field {0}", optionSubfield.Name()));
                                                     }
                                                 }
-                                                // TODO: Remove once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10043 is fixed.
-                                                if (linkLayerAddress.LinkLayerAddress.Length == 0)
-                                                    return false;
-                                                break;
+                                                // TODO: Change to break when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10043 or https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
+                                                return false;
 
                                             case IpV6MobilityOptionType.IpV4DefaultRouterAddress:
-                                                optionField.AssertShow("IPv4 Default-Router Address");
-                                                IpV6MobilityOptionIpV4DefaultRouterAddress ipV4DefaultRouterAddress =
-                                                    (IpV6MobilityOptionIpV4DefaultRouterAddress)option;
+                                                var ipV4DefaultRouterAddress = (IpV6MobilityOptionIpV4DefaultRouterAddress)option;
+                                                optionField.AssertShow("IPv4 Default-Router Address: " + ipV4DefaultRouterAddress.DefaultRouterAddress);
+                                                bool encounteredOptionTypeInIpV4DefaultRouterAddress = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10631 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInIpV4DefaultRouterAddress)
+                                                            continue;
+                                                        encounteredOptionTypeInIpV4DefaultRouterAddress = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
                                                     optionSubfield.AssertNoFields();
                                                     switch (optionSubfield.Name())
                                                     {
+                                                        case "mip6.ipv4dra.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
                                                         case "mip6.ipv4dra.dra":
                                                             optionSubfield.AssertShow(ipV4DefaultRouterAddress.DefaultRouterAddress.ToString());
                                                             break;
@@ -651,15 +691,37 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case IpV6MobilityOptionType.PadN:
-                                                optionField.AssertShow(string.Format("PadN: {0} bytes", option.Length));
-                                                optionField.AssertNoFields();
+                                                if (optionField.Show() != "PadN" && optionIndex == mobilityHeader.MobilityOptions.Count - 1)
+                                                {
+                                                    Assert.IsFalse(mobilityHeader.IsValid);
+                                                    return true;
+                                                }
+                                                optionField.AssertShow("PadN");
+                                                IpV6MobilityOptionPadN padN = (IpV6MobilityOptionPadN)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "":
+                                                            optionSubfield.AssertShow(string.Format("PadN: {0} bytes", padN.PaddingDataLength));
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.IpV4HomeAddressReply:
-                                                optionField.AssertShow("IPv4 Home Address Reply");
                                                 IpV6MobilityOptionIpV4HomeAddressReply ipV4HomeAddressReply = (IpV6MobilityOptionIpV4HomeAddressReply)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
                                                     optionSubfield.AssertNoFields();
                                                     switch (optionSubfield.Name())
                                                     {
@@ -675,11 +737,21 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case IpV6MobilityOptionType.IpV4HomeAddressRequest:
-                                                optionField.AssertShow("IPv4 Home Address Request");
-                                                IpV6MobilityOptionIpV4HomeAddressRequest ipV4HomeAddressRequest =
-                                                    (IpV6MobilityOptionIpV4HomeAddressRequest)option;
+                                                var ipV4HomeAddressRequest = (IpV6MobilityOptionIpV4HomeAddressRequest)option;
+                                                optionField.AssertShow("IPv4 Home Address Request: " + ipV4HomeAddressRequest.HomeAddress);
+                                                bool encounteredOptionTypeInIpV4HomeAddressRequest = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInIpV4HomeAddressRequest)
+                                                            continue;
+                                                        encounteredOptionTypeInIpV4HomeAddressRequest = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     optionSubfield.AssertNoFields();
                                                     ValidateIpV6MobilityOptionIpV4HomeAddressField(optionSubfield, ipV4HomeAddressRequest);
                                                 }
@@ -687,41 +759,129 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.IpV4AddressAcknowledgement:
                                                 optionField.AssertShow("IPv4 Address Acknowledgement");
-                                                IpV6MobilityOptionIpV4AddressAcknowledgement ipV4AddressAcknowledgement =
-                                                    (IpV6MobilityOptionIpV4AddressAcknowledgement)option;
+                                                var ipV4AddressAcknowledgement = (IpV6MobilityOptionIpV4AddressAcknowledgement)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.ipv4aa.sts":
-                                                            optionSubfield.AssertShowDecimal((byte)ipV4AddressAcknowledgement.Status);
+                                                        case "":
+                                                            optionSubfield.AssertShow("IPv4 Address Acknowledgement");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                optionSubsubfield.AssertNoFields();
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.ipv4aa.sts":
+                                                                        optionSubsubfield.AssertShowDecimal((byte)ipV4AddressAcknowledgement.Status);
+                                                                        break;
+
+                                                                    default:
+                                                                        ValidateIpV6MobilityOptionIpV4HomeAddressField(optionSubsubfield, ipV4AddressAcknowledgement);
+                                                                        break;
+                                                                }
+                                                            }
                                                             break;
 
                                                         default:
-                                                            ValidateIpV6MobilityOptionIpV4HomeAddressField(optionSubfield, ipV4AddressAcknowledgement);
-                                                            break;
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
                                                     }
                                                 }
                                                 break;
 
                                             case IpV6MobilityOptionType.MobileNetworkPrefix:
                                                 optionField.AssertShow("Mobile Network Prefix");
-                                                IpV6MobilityOptionMobileNetworkPrefix mobileNetworkPrefix = (IpV6MobilityOptionMobileNetworkPrefix)option;
-                                                ValidateNetworkPrefixOption(mobileNetworkPrefix, optionField);
+                                                var mobileNetworkPrefix = (IpV6MobilityOptionMobileNetworkPrefix)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "":
+                                                            optionSubfield.AssertShow("Mobile Network Prefix");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                optionSubsubfield.AssertNoFields();
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.nemo.mnp.mnp":
+                                                                        optionSubsubfield.AssertShow(mobileNetworkPrefix.NetworkPrefix.ToString("x"));
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subsubfield {0}",
+                                                                                                                          optionSubsubfield.Name()));
+                                                                }
+                                                            }
+                                                            break;
+
+                                                        case "mip6.nemo.mnp.pfl":
+                                                            optionSubfield.AssertNoFields();
+                                                            optionSubfield.AssertShowDecimal(mobileNetworkPrefix.PrefixLength);
+                                                            break;
+
+                                                        default:
+                                                            optionSubfield.AssertNoFields();
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.HomeNetworkPrefix:
                                                 optionField.AssertShow("Home Network Prefix");
-                                                IpV6MobilityOptionHomeNetworkPrefix homeNetworkPrefix = (IpV6MobilityOptionHomeNetworkPrefix)option;
-                                                ValidateNetworkPrefixOption(homeNetworkPrefix, optionField);
+                                                var homeNetworkPrefix = (IpV6MobilityOptionHomeNetworkPrefix)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "":
+                                                            optionSubfield.AssertShow("Home Network Prefix");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.nemo.mnp.mnp":
+                                                                        optionSubsubfield.AssertShow(homeNetworkPrefix.NetworkPrefix.ToString("x"));
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(string.Format("Invalid IPv6 Network Prefix option subfield {0}", optionSubsubfield.Name()));
+                                                                }
+                                                            }
+                                                            break;
+
+                                                        case "mip6.nemo.mnp.pfl":
+                                                            optionSubfield.AssertShowDecimal(homeNetworkPrefix.PrefixLength);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Network Prefix option field {0}", optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.VendorSpecific:
-                                                optionField.AssertShow("Vendor Specific Mobility");
+                                                Assert.IsTrue(optionField.Show().StartsWith("Vendor Specific: "));
                                                 IpV6MobilityOptionVendorSpecific vendorSpecific = (IpV6MobilityOptionVendorSpecific)option;
+                                                bool encounteredOptionType = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionType)
+                                                            continue;
+                                                        encounteredOptionType = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
                                                     optionSubfield.AssertNoFields();
                                                     switch (optionSubfield.Name())
                                                     {
@@ -749,15 +909,31 @@ namespace PcapDotNet.Core.Test
                                                 IpV6MobilityOptionNonceIndexes nonceIndexes = (IpV6MobilityOptionNonceIndexes)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.ni.hni":
-                                                            optionSubfield.AssertShowDecimal(nonceIndexes.HomeNonceIndex);
-                                                            break;
+                                                        case "":
+                                                            optionSubfield.AssertShow("Nonce Indices");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                optionSubsubfield.AssertNoFields();
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.ni.hni":
+                                                                        optionSubsubfield.AssertShowDecimal(nonceIndexes.HomeNonceIndex);
+                                                                        break;
 
-                                                        case "mip6.ni.cni":
-                                                            optionSubfield.AssertShowDecimal(nonceIndexes.CareOfNonceIndex);
+                                                                    case "mip6.ni.cni":
+                                                                        optionSubsubfield.AssertShowDecimal(nonceIndexes.CareOfNonceIndex);
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(string.Format("Invalid IPv6 Nonce Indices option subfield {0}",
+                                                                                                                          optionSubsubfield.Name()));
+                                                                }
+                                                            }
                                                             break;
 
                                                         default:
@@ -772,11 +948,26 @@ namespace PcapDotNet.Core.Test
                                                 IpV6MobilityOptionLinkLocalAddress linkLocalAddress = (IpV6MobilityOptionLinkLocalAddress)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.lila_lla":
-                                                            optionSubfield.AssertShow(linkLocalAddress.LinkLocalAddress.ToString("x"));
+                                                        case "":
+                                                            optionSubfield.AssertShow("Link-local Address");
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                optionSubsubfield.AssertNoFields();
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.lila_lla":
+                                                                        optionSubsubfield.AssertShow(linkLocalAddress.LinkLocalAddress.ToString("x"));
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(string.Format(
+                                                                            "Invalid IPv6 Link-local Address option field {0}", optionSubsubfield.Name()));
+                                                                }
+                                                            }
                                                             break;
 
                                                         default:
@@ -791,6 +982,9 @@ namespace PcapDotNet.Core.Test
                                                 IpV6MobilityOptionMobileNodeIdentifier mobileNodeIdentifier = (IpV6MobilityOptionMobileNodeIdentifier)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     optionSubfield.AssertNoFields();
                                                     switch (optionSubfield.Name())
                                                     {
@@ -813,13 +1007,36 @@ namespace PcapDotNet.Core.Test
                                                 optionField.AssertShow("Authorization Data");
                                                 IpV6MobilityOptionBindingAuthorizationData authorizationData =
                                                     (IpV6MobilityOptionBindingAuthorizationData)option;
+                                                bool encounteredOptionTypeInBindingAuthorizationData = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10623 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInBindingAuthorizationData)
+                                                            continue;
+                                                        encounteredOptionTypeInBindingAuthorizationData = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.bad.auth":
-                                                            optionSubfield.AssertValue(authorizationData.Authenticator);
+                                                        case "":
+                                                            foreach (XElement authSubfield in optionSubfield.Fields())
+                                                            {
+                                                                switch (authSubfield.Name())
+                                                                {
+                                                                    case "mip6.bad.auth":
+                                                                        authSubfield.AssertValue(authorizationData.Authenticator);
+                                                                        break;
+
+                                                                    default:
+                                                                        throw new InvalidOperationException(
+                                                                            string.Format("Invalid IPv6 Authorization Data option subfield {0}",
+                                                                                          authSubfield.Name()));
+                                                                }
+                                                            }
                                                             break;
 
                                                         default:
@@ -832,68 +1049,924 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.IpV4HomeAddress:
                                                 optionField.AssertShow("IPv4 Home Address");
                                                 IpV6MobilityOptionIpV4HomeAddress ipV4HomeAddress = (IpV6MobilityOptionIpV4HomeAddress)option;
+                                                bool encounteredOptionTypeInIpV4HomeAddress = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionSubfield.AssertNoFields();
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInIpV4HomeAddress)
+                                                            continue;
+                                                        encounteredOptionTypeInIpV4HomeAddress = true;
+                                                    }
+
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     switch (optionSubfield.Name())
                                                     {
-                                                        case "mip6.ipv4ha.p_flag":
-                                                            optionSubfield.AssertShowDecimal(ipV4HomeAddress.RequestPrefix);
+                                                        case "":
+                                                            foreach (XElement optionSubsubfield in optionSubfield.Fields())
+                                                            {
+                                                                optionSubsubfield.AssertNoFields();
+                                                                switch (optionSubsubfield.Name())
+                                                                {
+                                                                    case "mip6.ipv4ha.p_flag":
+                                                                        optionSubsubfield.AssertShowDecimal(ipV4HomeAddress.RequestPrefix);
+                                                                        break;
+
+                                                                    default:
+                                                                        ValidateIpV6MobilityOptionIpV4HomeAddressField(optionSubsubfield, ipV4HomeAddress);
+                                                                        break;
+                                                                }
+                                                            }
                                                             break;
 
                                                         default:
-                                                            ValidateIpV6MobilityOptionIpV4HomeAddressField(optionSubfield, ipV4HomeAddress);
-                                                            break;
+                                                            throw new InvalidOperationException(string.Format(
+                                                                "Invalid IPv6 Authorization Data option field {0}", optionSubfield.Name()));
                                                     }
                                                 }
                                                 break;
 
                                             case IpV6MobilityOptionType.ServiceSelection:
                                                 IpV6MobilityOptionServiceSelection serviceSelection = (IpV6MobilityOptionServiceSelection)option;
-                                                // TODO: Get rid of that when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10045 is fixed.
-                                                if (serviceSelection.Identifier.Length == 1)
+                                                foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    optionField.AssertShow("Service Selection Mobility (with option length = 1 byte; should be >= 2)");
-                                                    break;
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.ss.identifier":
+                                                            optionSubfield.AssertValue(serviceSelection.Identifier);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
                                                 }
-                                                optionField.AssertValue(serviceSelection.Identifier);
-                                                optionField.AssertNoFields();
+                                                break;
+
+                                            case IpV6MobilityOptionType.RedirectCapability:
+                                                IpV6MobilityOptionRedirectCapability redirectCapability = (IpV6MobilityOptionRedirectCapability)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.recap.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.BindingIdentifier:
+                                                IpV6MobilityOptionBindingIdentifier bindingIdentifier = (IpV6MobilityOptionBindingIdentifier)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.bi.bid":
+                                                            optionSubfield.AssertShowDecimal(bindingIdentifier.BindingId);
+                                                            break;
+
+                                                        case "mip6.bi.status":
+                                                            optionSubfield.AssertShowDecimal((byte)bindingIdentifier.Status);
+                                                            break;
+
+                                                        case "mip6.bi.h_flag":
+                                                            optionSubfield.AssertShowDecimal(bindingIdentifier.SimultaneousHomeAndForeignBinding);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.LoadInformation:
+                                                IpV6MobilityOptionLoadInformation loadInformation = (IpV6MobilityOptionLoadInformation)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.load_inf.priority":
+                                                            optionSubfield.AssertShowDecimal(loadInformation.Priority);
+                                                            break;
+
+                                                        case "mip6.load_inf.sessions_in_use":
+                                                            optionSubfield.AssertShowDecimal(loadInformation.SessionsInUse);
+                                                            break;
+
+                                                        case "mip6.load_inf.maximum_sessions":
+                                                            optionSubfield.AssertShowDecimal(loadInformation.MaximumSessions);
+                                                            break;
+
+                                                        case "mip6.load_inf.used_capacity":
+                                                            optionSubfield.AssertShowDecimal(loadInformation.UsedCapacity);
+                                                            break;
+
+                                                        case "mip6.load_inf.maximum_capacity":
+                                                            optionSubfield.AssertShowDecimal(loadInformation.MaximumCapacity);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.IpV4CareOfAddress:
+                                                IpV6MobilityOptionIpV4CareOfAddress ipV4CareOfAddress = (IpV6MobilityOptionIpV4CareOfAddress)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.ipv4coa.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.ipv4coa.addr":
+                                                            optionSubfield.AssertShow(ipV4CareOfAddress.CareOfAddress.ToString());
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest:
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.IpV6AddressPrefix:
+                                                var ipV6AddressPrefix = (IpV6MobilityOptionIpV6AddressPrefix)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.mhipv6ap.opt_code":
+                                                            optionSubfield.AssertShowDecimal((byte)ipV6AddressPrefix.Code);
+                                                            break;
+
+                                                        case "mip6.mhipv6ap.len":
+                                                            optionSubfield.AssertShowDecimal(ipV6AddressPrefix.PrefixLength);
+                                                            break;
+
+                                                        case "":
+                                                            optionSubfield.AssertShow("IPv6 Address/Prefix");
+                                                            // TODO: Compare the AddressPrefix property after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10576 is fixed.
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.MobileNodeGroupIdentifier:
+                                                var mobileNodeGroupIdentifier = (IpV6MobilityOptionMobileNodeGroupIdentifier)option;
+                                                bool encounteredOptionTypeInMobileNodeGroupIdentifier = false;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInMobileNodeGroupIdentifier)
+                                                            continue;
+                                                        encounteredOptionTypeInMobileNodeGroupIdentifier = true;
+                                                    }
+
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.mng.sub_type":
+                                                            optionSubfield.AssertShowDecimal((byte)mobileNodeGroupIdentifier.Subtype);
+                                                            break;
+
+                                                        case "mip6.mng.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.mng._mng_id":
+                                                            optionSubfield.AssertShowDecimal(mobileNodeGroupIdentifier.MobileNodeGroupIdentifier);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.BindingAuthorizationDataForFmIpV6:
+                                                var bindingAuthorizationDataForFmIpV6 = (IpV6MobilityOptionBindingAuthorizationDataForFmIpV6)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.badff.spi":
+                                                            optionSubfield.AssertShowDecimal(bindingAuthorizationDataForFmIpV6.SecurityParameterIndex);
+                                                            break;
+
+                                                        case "mip6.badff.auth":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10577 is fixed.
+//                                                            optionSubfield.AssertValue(bindingAuthorizationDataForFmIpV6.Authenticator);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.MobileNodeLinkLayerIdentifier:
+                                                var mobileNodeLinkLayerIdentifier = (IpV6MobilityOptionMobileNodeLinkLayerIdentifier)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.mnlli.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.mnlli.lli":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10578 is fixed.
+//                                                            optionSubfield.AssertValue(mobileNodeLinkLayerIdentifier.LinkLayerIdentifier);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.AccessTechnologyType:
+                                                var accessTechnologyType = (IpV6MobilityOptionAccessTechnologyType)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.att.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.att":
+                                                            optionSubfield.AssertShowDecimal((byte)accessTechnologyType.AccessTechnologyType);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.AccessNetworkIdentifier:
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.BindingRefreshAdvice:
+                                                var bindingRefreshAdvice = (IpV6MobilityOptionBindingRefreshAdvice)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.bra.interval":
+                                                            optionSubfield.AssertShowDecimal(bindingRefreshAdvice.RefreshInterval);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.PermanentHomeKeygenToken:
+                                                var permanentHomeKeygenToken = (IpV6MobilityOptionPermanentHomeKeygenToken)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.phkt.phkt":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10619 is fixed.
+//                                                            optionSubfield.AssertValue(permanentHomeKeygenToken.PermanentHomeKeygenToken);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.Redirect:
+                                                var redirect = (IpV6MobilityOptionRedirect)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.redir.k":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10622 is fixed.
+//                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV6 != null);
+                                                            break;
+
+                                                        case "mip6.redir.n":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10622 is fixed.
+//                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV4 != null);
+                                                            break;
+
+                                                        case "mip6.redir.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.CareOfTest:
+                                                var careOfTestOption = (IpV6MobilityOptionCareOfTest)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.mocot.co_keygen_tok":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10624 is fixed.
+//                                                            optionSubfield.AssertValue(careOfTest.CareOfKeygenToken);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.ReplayProtection:
+                                                var replayProtection = (IpV6MobilityOptionReplayProtection)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10625 is fixed.
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.Authentication:
+                                                var authentication = (IpV6MobilityOptionAuthentication)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.auth.subtype":
+                                                            optionSubfield.AssertShowDecimal((byte)authentication.Subtype);
+                                                            break;
+
+                                                        case "mip6.auth.mobility_spi":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10626 is fixed.
+//                                                            optionSubfield.AssertShowDecimal(authentication.MobilitySecurityParameterIndex);
+                                                            break;
+
+                                                        case "mip6.auth.auth_data":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10626 is fixed.
+//                                                            optionSubfield.AssertValue(authentication.AuthenticationData);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.HandoffIndicator:
+                                                var handoffIndicator = (IpV6MobilityOptionHandoffIndicator)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.hi.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.hi":
+                                                            optionSubfield.AssertShowDecimal((byte)handoffIndicator.HandoffIndicator);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.IpV4DhcpSupportMode:
+                                                var ipV4DhcpSupportMode = (IpV6MobilityOptionIpV4DhcpSupportMode)option;
+                                                bool encounteredOptionTypeInIpV4DhcpSupportMode = false;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInIpV4DhcpSupportMode)
+                                                            continue;
+                                                        encounteredOptionTypeInIpV4DhcpSupportMode = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.ipv4dsm.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.ipv4dsm.s_flag":
+                                                            optionSubfield.AssertShowDecimal(ipV4DhcpSupportMode.IsServer);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.DnsUpdate:
+                                                var dnsUpdate = (IpV6MobilityOptionDnsUpdate)option;
+                                                bool encounteredOptionTypeInDnsUpdate = false;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInDnsUpdate)
+                                                            continue;
+                                                        encounteredOptionTypeInDnsUpdate = true;
+                                                    }
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.dnsu.status":
+                                                            optionSubfield.AssertShowDecimal((byte)dnsUpdate.Status);
+                                                            break;
+
+                                                        case "mip6.dnsu.flag.r":
+                                                            optionSubfield.AssertShowDecimal(dnsUpdate.Remove);
+                                                            break;
+
+                                                        case "mip6.dnsu.mn_id":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10629 is fixed.
+//                                                            optionSubfield.AssertValue(dnsUpdate.MobileNodeIdentity);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.LocalMobilityAnchorAddress:
+                                                var localMobilityAnchorAddress = (IpV6MobilityOptionLocalMobilityAnchorAddress)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mmip6.lmaa.opt_code":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
+//                                                            optionSubfield.AssertShowDecimal((byte)localMobilityAnchorAddress.Code);
+                                                            break;
+
+                                                        case "mmip6.lmaa.reserved":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
+//                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.lmaa.ipv6":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
+//                                                                optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
+                                                            break;
+
+                                                        case "mip6.lmaa.ipv4":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
+//                                                            optionSubfield.AssertShow(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV4.Value.ToString());
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.ContextRequest:
+                                                var contextRequest = (IpV6MobilityOptionContextRequest)option;
+                                                optionField.AssertShow("Context Request" +
+                                                                       (contextRequest.Requests.Any() ? "" : " (with option length = 2 bytes; should be >= 4)"));
+                                                int requestIndex = 0;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.cr.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mmip6.cr.req_type":
+                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
+                                                            if (requestIndex == contextRequest.Requests.Count)
+                                                                continue;
+                                                            optionSubfield.AssertShowDecimal(contextRequest.Requests[requestIndex].RequestType);
+                                                            break;
+
+                                                        case "mmip6.cr.req_length":
+                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
+                                                            if (requestIndex == contextRequest.Requests.Count)
+                                                                continue;
+                                                            optionSubfield.AssertShowDecimal(contextRequest.Requests[requestIndex].OptionLength);
+                                                            if (contextRequest.Requests[requestIndex].OptionLength == 0)
+                                                                ++requestIndex;
+                                                            break;
+
+                                                        case "":
+                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
+                                                            if (requestIndex == contextRequest.Requests.Count)
+                                                                continue;
+                                                            optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option);
+                                                            ++requestIndex;
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.AlternateIpV4CareOfAddress:
+                                                var alternateIpV4CareOfAddress = (IpV6MobilityOptionAlternateIpV4CareOfAddress)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.alt_ip4":
+                                                            optionSubfield.AssertShow(alternateIpV4CareOfAddress.AlternateCareOfAddress.ToString());
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.Signature:
+                                                var signature = (IpV6MobilityOptionSignature)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.sign.sign":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10653 is fixed.
+//                                                            optionSubfield.AssertValue(signature.Signature);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.TransientBinding:
+                                                optionField.AssertShow("Transient Binding(2 bytes)");
+                                                optionField.AssertNumFields(1);
+                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                break;
+
+                                            case IpV6MobilityOptionType.Timestamp:
+                                                var timestamp = (IpV6MobilityOptionTimestamp)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.timestamp_tmp":
+                                                            optionSubfield.AssertValue(timestamp.Timestamp);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.RestartCounter:
+                                                var restartCounter = (IpV6MobilityOptionRestartCounter)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.rc":
+                                                            optionSubfield.AssertShowDecimal(restartCounter.RestartCounter);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters:
+                                                var cryptographicallyGeneratedAddressParameters = (IpV6MobilityOptionCryptographicallyGeneratedAddressParameters)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.cgar.cga_par":
+                                                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10654 is fixed.
+//                                                            optionSubfield.AssertValue(cryptographicallyGeneratedAddressParameters.CryptographicallyGeneratedAddressParameters);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.FlowIdentification:
+                                                optionField.AssertShow("Flow Identification(" + (option.Length - 2) + " bytes)");
+                                                optionField.AssertNumFields(1);
+                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                break;
+
+                                            case IpV6MobilityOptionType.NatDetection:
+                                                optionField.AssertShow("NAT Detection");
+                                                var natDetection = (IpV6MobilityOptionNatDetection)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.natd.f_flag":
+                                                            optionSubfield.AssertShowDecimal(natDetection.UdpEncapsulationRequired);
+                                                            break;
+
+                                                        case "mip6.natd.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.natd.refresh_t":
+                                                            optionSubfield.AssertShowDecimal(natDetection.RefreshTime);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.FlowSummary:
-                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParametersRequest:
-                                            case IpV6MobilityOptionType.Redirect:
-                                            case IpV6MobilityOptionType.IpV4CareOfAddress:
-                                            case IpV6MobilityOptionType.Signature:
-                                            case IpV6MobilityOptionType.MobileNodeGroupIdentifier:
-                                            case IpV6MobilityOptionType.MobileNodeLinkLayerIdentifier:
-                                            case IpV6MobilityOptionType.Authentication:
-                                            case IpV6MobilityOptionType.RedirectCapability:
-                                            case IpV6MobilityOptionType.CryptographicallyGeneratedAddressParameters:
-                                            case IpV6MobilityOptionType.ContextRequest:
-                                            case IpV6MobilityOptionType.IpV6AddressPrefix:
-                                            case IpV6MobilityOptionType.FlowIdentification:
-                                            case IpV6MobilityOptionType.TransientBinding:
-                                            case IpV6MobilityOptionType.LocalMobilityAnchorAddress:
-                                            case IpV6MobilityOptionType.PermanentHomeKeygenToken:
-                                            case IpV6MobilityOptionType.AccessNetworkIdentifier:
-                                            case IpV6MobilityOptionType.BindingIdentifier:
-                                            case IpV6MobilityOptionType.DnsUpdate:
-                                            case IpV6MobilityOptionType.CareOfTest:
-                                            case IpV6MobilityOptionType.IpV4DhcpSupportMode:
-                                            case IpV6MobilityOptionType.AlternateIpV4CareOfAddress:
-                                            case IpV6MobilityOptionType.MobileNodeLinkLocalAddressInterfaceIdentifier:
-                                            case IpV6MobilityOptionType.LoadInformation:
-                                            case IpV6MobilityOptionType.BindingAuthorizationDataForFmIpV6:
-                                            case IpV6MobilityOptionType.NatDetection:
-                                            case IpV6MobilityOptionType.MobileAccessGatewayIpV6Address:
-                                            case IpV6MobilityOptionType.ReplayProtection:
-                                            case IpV6MobilityOptionType.CareOfTestInit:
-                                            case IpV6MobilityOptionType.Experimental:
-                                                optionField.AssertShow("IE data not dissected yet");
-                                                optionField.AssertNoFields();
+                                                optionField.AssertShow("Flow Summary(" + (option.Length - 2) + " bytes)");
+                                                optionField.AssertNumFields(1);
+                                                optionField.Fields().First().AssertName("_ws.expert");
                                                 break;
 
+                                            case IpV6MobilityOptionType.Experimental:
+                                                optionField.AssertShow("Experimental");
+                                                var experimental = (IpV6MobilityOptionExperimental)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.em.data":
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10682 is fixed.
+//                                                            optionSubfield.AssertValue(experimental.Data);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.MobileAccessGatewayIpV6Address:
+                                                optionField.AssertShow("MAG IPv6 Address(18 bytes)");
+                                                optionField.AssertNumFields(1);
+                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                break;
+
+                                            case IpV6MobilityOptionType.CareOfTestInit:
+                                                optionField.AssertShow("Care-of Test Init");
+                                                bool encounteredOptionTypeInCareOfTestInit = false;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
+                                                    {
+                                                        if (encounteredOptionTypeInCareOfTestInit)
+                                                            continue;
+                                                        encounteredOptionTypeInCareOfTestInit = true;
+                                                    }
+                                                    Assert.IsTrue(HandleCommonMobilityOptionSubfield(optionSubfield, option));
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.MobileNodeLinkLocalAddressInterfaceIdentifier:
+                                                optionField.AssertShow("Mobile Node Link-local Address Interface Identifier(10 bytes)");
+                                                optionField.AssertNumFields(1);
+                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                break;
+
+                                            case IpV6MobilityOptionType.AlternateCareOfAddress:
+                                                optionField.AssertShow("Alternate Care-of Address");
+                                                var alternateCareOfAddress = (IpV6MobilityOptionAlternateCareOfAddress)option;
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.acoa.acoa":
+                                                            optionSubfield.AssertValue(alternateCareOfAddress.AlternateCareOfAddress.ToValue());
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
+
+                                            case IpV6MobilityOptionType.GreKey:
+                                                var greKey = (IpV6MobilityOptionGreKey)option;
+                                                optionField.AssertShow("GRE Key: " + greKey.GreKeyIdentifier);
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    optionSubfield.AssertNoFields();
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.ipv4dra.reserved":
+                                                            optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.gre_key":
+                                                            optionSubfield.AssertShowDecimal(greKey.GreKeyIdentifier);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
+                                                break;
                                             default:
                                                 throw new InvalidOperationException(string.Format("Unsupported IPv6 mobility option type {0}", option.OptionType));
                                         }
@@ -909,11 +1982,9 @@ namespace PcapDotNet.Core.Test
                         default:
                             field.AssertShow("Unknown MH Type");
                             Assert.IsTrue(mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.Experimental ||
-                                          mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.HandoverAcknowledgeMessage ||
                                           mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.HomeAgentSwitchMessage ||
                                           mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.LocalizedRoutingInitiation ||
-                                          mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.LocalizedRoutingAcknowledgement ||
-                                          mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.HandoverInitiateMessage);
+                                          mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.LocalizedRoutingAcknowledgement);
                             field.AssertNoFields();
                             break;
                     }
@@ -926,24 +1997,23 @@ namespace PcapDotNet.Core.Test
             return true;
         }
 
-        private static void ValidateNetworkPrefixOption(IpV6MobilityOptionNetworkPrefix networkPrefix, XElement field)
+        private bool HandleCommonMobilityOptionSubfield(XElement optionSubfield, IpV6MobilityOption option)
         {
-            foreach (XElement subfield in field.Fields())
+            switch (optionSubfield.Name())
             {
-                subfield.AssertNoFields();
-                switch (subfield.Name())
-                {
-                    case "mip6.nemo.mnp.pfl":
-                        subfield.AssertShowDecimal(networkPrefix.PrefixLength);
-                        break;
+                case "mip6.mobility_opt":
+                    optionSubfield.AssertNoFields();
+                    // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
+//                    optionSubfield.AssertShowDecimal((byte)option.OptionType);
+                    return true;
 
-                    case "mip6.nemo.mnp.mnp":
-                        subfield.AssertShow(networkPrefix.NetworkPrefix.ToString("x"));
-                        break;
+                case "mip6.mobility_opt.len":
+                    optionSubfield.AssertNoFields();
+                    optionSubfield.AssertShowDecimal(option.Length - 2);
+                    return true;
 
-                    default:
-                        throw new InvalidOperationException(string.Format("Invalid IPv6 Network Prefix option field {0}", subfield.Name()));
-                }
+                default:
+                    return false;
             }
         }
 

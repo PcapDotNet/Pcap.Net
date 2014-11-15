@@ -56,7 +56,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "gre.checksum":
-                    field.AssertShowHex(greDatagram.Checksum);
+                    field.AssertShowDecimal(greDatagram.Checksum);
                     field.AssertNoFields();
                     break;
 
@@ -138,12 +138,12 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "gre.proto":
-                    field.AssertShowHex((ushort)greDatagram.ProtocolType);
+                    field.AssertShowDecimal((ushort)greDatagram.ProtocolType);
                     field.AssertNoFields();
                     break;
 
                 case "gre.key":
-                    field.AssertShowHex(greDatagram.Key);
+                    field.AssertShowDecimal(greDatagram.Key);
                     field.AssertNoFields();
                     break;
 

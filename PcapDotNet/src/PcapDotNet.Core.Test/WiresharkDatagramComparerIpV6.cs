@@ -46,12 +46,11 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ipv6.class":
-                    field.AssertShowHex((uint)ipV6Datagram.TrafficClass);
-                    //field.AssertNoFields();
+                    field.AssertShowDecimal(ipV6Datagram.TrafficClass);
                     break;
 
                 case "ipv6.flow":
-                    field.AssertShowHex((uint)ipV6Datagram.FlowLabel);
+                    field.AssertShowDecimal(ipV6Datagram.FlowLabel);
                     field.AssertNoFields();
                     break;
 
@@ -61,7 +60,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ipv6.nxt":
-                    field.AssertShowHex((byte)ipV6Datagram.NextHeader);
+                    field.AssertShowDecimal((byte)ipV6Datagram.NextHeader);
                     field.AssertNoFields();
                     break;
 
@@ -111,7 +110,7 @@ namespace PcapDotNet.Core.Test
                         IpV6ExtensionHeaderHopByHopOptions hopByHopOptions =
                             (IpV6ExtensionHeaderHopByHopOptions)ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex];
                         IncrementCurrentExtensionHeaderIndex(ipV6Datagram);
-                        CompareOptions(field, ref optionsIndex, hopByHopOptions);
+                        CompareOptions(field, ref optionsIndex, ipV6Datagram, hopByHopOptions);
                     }
                     break;
 
@@ -119,33 +118,81 @@ namespace PcapDotNet.Core.Test
                     if (!ipV6Datagram.IsValid)
                         return false;
                     IpV6ExtensionHeaderRouting routing = (IpV6ExtensionHeaderRouting)ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex];
+                        IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks routingProtocolLowPowerAndLossyNetworks =
+                            routing as IpV6ExtensionHeaderRoutingProtocolLowPowerAndLossyNetworks;
+                    int routingProtocolLowPowerAndLossyNetworksAddressIndex = 0;
                     IncrementCurrentExtensionHeaderIndex(ipV6Datagram);
                     int sourceRouteAddressIndex = 0;
                     foreach (var headerField in field.Fields())
                     {
-                        headerField.AssertNoFields();
                         switch (headerField.Name())
                         {
                             case "":
+                                headerField.AssertNoFields();
                                 ValidateExtensionHeaderUnnamedField(routing, headerField);
                                 break;
 
                             case "ipv6.routing_hdr.type":
+                                headerField.AssertNoFields();
                                 headerField.AssertShowDecimal((byte)routing.RoutingType);
                                 break;
 
                             case "ipv6.routing_hdr.left":
+                                headerField.AssertNoFields();
                                 headerField.AssertShowDecimal(routing.SegmentsLeft);
                                 break;
 
                             case "ipv6.mipv6_home_address":
+                                headerField.AssertNoFields();
                                 IpV6ExtensionHeaderRoutingHomeAddress routingHomeAddress = (IpV6ExtensionHeaderRoutingHomeAddress)routing;
                                 headerField.AssertShow(routingHomeAddress.HomeAddress.ToString("x"));
                                 break;
 
                             case "ipv6.routing_hdr.addr":
+                                headerField.AssertNoFields();
                                 IpV6ExtensionHeaderRoutingSourceRoute routingSourceRoute = (IpV6ExtensionHeaderRoutingSourceRoute)routing;
                                 headerField.AssertShow(routingSourceRoute.Addresses[sourceRouteAddressIndex++].ToString("x"));
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.cmprI":
+                                headerField.AssertNoFields();
+                                headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.CommonPrefixLengthForNonLastAddresses);
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.cmprE":
+                                headerField.AssertNoFields();
+                                headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.CommonPrefixLengthForLastAddress);
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.pad":
+                                headerField.AssertNoFields();
+                                headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.PadSize);
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.reserved":
+                                headerField.AssertNoFields();
+                                headerField.AssertShowDecimal(0);
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.segments":
+                                if (headerField.Fields().Any())
+                                {
+                                    headerField.AssertNumFields(1);
+                                    headerField.Fields().First().AssertName("_ws.expert");
+                                }
+                                // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10560 is fixed.
+//                                headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.Addresses.Count);
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.address":
+                                headerField.AssertNoFields();
+                                // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10560 is fixed.
+                                break;
+
+                            case "ipv6.routing_hdr.rpl.full_address":
+                                headerField.AssertNoFields();
+                                // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10673 is fixed.
+                                ++routingProtocolLowPowerAndLossyNetworksAddressIndex;
                                 break;
 
                             default:
@@ -166,7 +213,7 @@ namespace PcapDotNet.Core.Test
                     }
                     IpV6ExtensionHeaderDestinationOptions destinationOptions = (IpV6ExtensionHeaderDestinationOptions)ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex];
                     IncrementCurrentExtensionHeaderIndex(ipV6Datagram);
-                    CompareOptions(field, ref optionsIndex, destinationOptions);
+                    CompareOptions(field, ref optionsIndex, ipV6Datagram, destinationOptions);
                     break;
 
                 case "ipv6.shim6":
@@ -205,7 +252,7 @@ namespace PcapDotNet.Core.Test
                             {
                                 switch (headerField.Name())
                                 {
-                                    case "":
+                                    case "ipv6.fragment.nxt":
                                         headerField.AssertValue((byte)fragmentData.NextHeader.Value);
                                         break;
 
@@ -217,8 +264,13 @@ namespace PcapDotNet.Core.Test
                                         headerField.AssertShowDecimal(fragmentData.MoreFragments);
                                         break;
 
-                                    case "ipv6.framgent.id":
-                                        headerField.AssertShowHex(fragmentData.Identification);
+                                    case "ipv6.fragment.id":
+                                        headerField.AssertShowDecimal(fragmentData.Identification);
+                                        break;
+
+                                    case "ipv6.fragment.reserved_octet":
+                                    case "ipv6.fragment.reserved_bits":
+                                        headerField.AssertShowDecimal(0);
                                         break;
 
                                     default:
@@ -239,39 +291,194 @@ namespace PcapDotNet.Core.Test
             return true;
         }
 
-        private void CompareOptions(XElement field, ref int optionsIndex, IpV6ExtensionHeaderOptions header)
+        private void CompareOptions(XElement field, ref int optionsIndex, IpV6Datagram ipV6Datagram, IpV6ExtensionHeaderOptions header)
         {
             foreach (var headerField in field.Fields())
             {
-                headerField.AssertNoFields();
                 switch (headerField.Name())
                 {
-                    case "":
-                        ValidateExtensionHeaderUnnamedField(header, headerField, ref optionsIndex);
+                    case "ipv6.nxt":
+                        headerField.AssertNoFields();
+                        headerField.AssertShowDecimal((byte)header.NextHeader);
                         break;
 
-                    case "ipv6.opt.pad1":
-                        if (header.Options.IsValid)
-                            Assert.AreEqual(IpV6OptionType.Pad1, header.Options[optionsIndex++].OptionType);
+                    case "ipv6.opt.length":
+                        headerField.AssertNoFields();
+                        headerField.AssertShowDecimal((header.Length - 8) / 8);
                         break;
 
-                    case "ipv6.opt.padn":
-                        Assert.AreEqual(IpV6OptionType.PadN, header.Options[optionsIndex].OptionType);
-                        if (header.Options.IsValid)
-                            headerField.AssertShowDecimal(header.Options[optionsIndex++].Length);
-                        break;
+                    case "ipv6.opt":
+                        foreach (XElement headerSubfield in headerField.Fields())
+                        {
+                            IpV6Option option = header.Options[optionsIndex];
+                            var optionCalipso = option as IpV6OptionCalipso;
+                            var optionQuickStart = option as IpV6OptionQuickStart;
+                            switch (headerSubfield.Name())
+                            {
+                                case "ipv6.opt.type":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal((byte)option.OptionType);
+                                    break;
 
-                    case "ipv6.mipv6_type":
-                        Assert.AreEqual(IpV6OptionType.HomeAddress, header.Options[optionsIndex].OptionType);
-                        break;
+                                case "ipv6.opt.length":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(option.Length - 2);
+                                    break;
 
-                    case "ipv6.mipv6_length":
-                        headerField.AssertShowDecimal(header.Options[optionsIndex].Length - 2);
-                        break;
+                                case "ipv6.opt.tel":
+                                    headerSubfield.AssertNoFields();
+                                    IpV6OptionTunnelEncapsulationLimit optionTunnelEncapsulationLimit = (IpV6OptionTunnelEncapsulationLimit)option;
+                                    headerSubfield.AssertShowDecimal(optionTunnelEncapsulationLimit.TunnelEncapsulationLimit);
+                                    ++optionsIndex;
+                                    break;
 
-                    case "ipv6.mipv6_home_address":
-                        IpV6OptionHomeAddress homeAddress = (IpV6OptionHomeAddress)header.Options[optionsIndex++];
-                        headerField.AssertShow(homeAddress.HomeAddress.ToString("x"));
+                                case "ipv6.opt.rpl.flag":
+                                    IpV6OptionRoutingProtocolLowPowerAndLossyNetworks optionRoutingProtocolLowPowerAndLossyNetworks =
+                                        (IpV6OptionRoutingProtocolLowPowerAndLossyNetworks)option;
+                                    foreach (XElement optionSubfield in headerSubfield.Fields())
+                                    {
+                                        optionSubfield.AssertNoFields();
+                                        switch (optionSubfield.Name())
+                                        {
+                                            case "ipv6.opt.rpl.flag.o":
+                                                optionSubfield.AssertShowDecimal(optionRoutingProtocolLowPowerAndLossyNetworks.Down);
+                                                break;
+
+                                            case "ipv6.opt.rpl.flag.r":
+                                                optionSubfield.AssertShowDecimal(optionRoutingProtocolLowPowerAndLossyNetworks.RankError);
+                                                break;
+
+                                            case "ipv6.opt.rpl.flag.f":
+                                                optionSubfield.AssertShowDecimal(optionRoutingProtocolLowPowerAndLossyNetworks.ForwardingError);
+                                                break;
+
+                                            case "ipv6.opt.rpl.flag.rsv":
+                                                optionSubfield.AssertShowDecimal(0);
+                                                break;
+
+                                            case "ipv6.opt.rpl.instance_id":
+                                                optionSubfield.AssertShowDecimal(
+                                                    optionRoutingProtocolLowPowerAndLossyNetworks.RoutingProtocolLowPowerAndLossyNetworksInstanceId);
+                                                break;
+
+                                            case "ipv6.opt.rpl.sender_rank":
+                                                optionSubfield.AssertShowDecimal(optionRoutingProtocolLowPowerAndLossyNetworks.SenderRank);
+                                                break;
+
+                                            default:
+                                                throw new InvalidOperationException("Invalid ipv6 option subfield " + optionSubfield.Name());
+                                        }
+                                    }
+                                    ++optionsIndex;
+                                    // TODO: change to break; after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10559 is fixed.
+                                    return; 
+
+                                case "ipv6.opt.calipso.doi":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal((uint)optionCalipso.DomainOfInterpretation);
+                                    break;
+
+                                case "ipv6.opt.calipso.cmpt.length":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionCalipso.CompartmentLength);
+                                    break;
+
+                                case "ipv6.opt.calipso.sens_level":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionCalipso.SensitivityLevel);
+                                    break;
+
+                                case "ipv6.opt.calipso.checksum":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionCalipso.Checksum);
+                                    break;
+
+                                case "ipv6.opt.calipso.cmpt_bitmap":
+                                    headerSubfield.AssertNoFields();
+                                    // TODO: Uncomment and avoid returning when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10561 is fixed.
+                                    // headerSubfield.AssertValue(optionCalipso.CompartmentBitmap);
+                                    return;
+
+                                case "ipv6.opt.router_alert":
+                                    headerSubfield.AssertNoFields();
+                                    var optionRouterAlert = (IpV6OptionRouterAlert)option;
+                                    headerSubfield.AssertShowDecimal((ushort)optionRouterAlert.RouterAlertType);
+                                    ++optionsIndex;
+                                    break;
+
+                                case "ipv6.opt.padn":
+                                    headerSubfield.AssertNoFields();
+                                    var optionPadN = (IpV6OptionPadN)option;
+                                    headerSubfield.AssertValue(new byte[optionPadN.PaddingDataLength]);
+                                    ++optionsIndex;
+                                    break;
+
+                                case "ipv6.opt.qs_func":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal((byte)optionQuickStart.QuickStartFunction);
+                                    break;
+
+                                case "ipv6.opt.qs_rate":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionQuickStart.Rate);
+                                    break;
+                                
+                                case "ipv6.opt.qs_ttl":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionQuickStart.Ttl);
+                                    break;
+                                
+                                case "ipv6.opt.qs_ttl_diff":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal((256 + ipV6Datagram.HopLimit - optionQuickStart.Ttl) % 256);
+                                    break;
+
+                                case "ipv6.opt.qs_unused":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(optionQuickStart.Ttl);
+                                    break;
+
+                                case "ipv6.opt.qs_nonce":
+                                    headerSubfield.AssertNoFields();
+                                    // TODO: Stop returning and uncomment the code when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10575 is fixed.
+                                    return;
+
+                                case "ipv6.opt.pad1":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShow("");
+                                    Assert.IsTrue(option is IpV6OptionPad1);
+                                    ++optionsIndex;
+                                    break;
+
+                                case "ipv6.opt.jumbo":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(((IpV6OptionJumboPayload)option).JumboPayloadLength);
+                                    ++optionsIndex;
+                                    break;
+
+                                case "ipv6.mipv6_home_address":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShow(((IpV6OptionHomeAddress)option).HomeAddress.GetWiresharkString());
+                                    ++optionsIndex;
+                                    break;
+                               
+                                case "ipv6.opt.unknown":
+                                    headerSubfield.AssertNoFields();
+                                    Assert.IsTrue(new[]
+                                                      {
+                                                          IpV6OptionType.LineIdentification,
+                                                          IpV6OptionType.IdentifierLocatorNetworkProtocolNonce,
+                                                          IpV6OptionType.SimplifiedMulticastForwardingDuplicatePacketDetection,
+                                                          IpV6OptionType.EndpointIdentification,
+                                                      }.Contains(option.OptionType),
+                                                  option.OptionType.ToString());
+                                    ++optionsIndex;
+                                    break;
+
+                                default:
+                                    throw new InvalidOperationException("Invalid ipv6 header subfield " + headerSubfield.Name());
+                            }
+                        }
                         break;
 
                     default:
@@ -350,7 +557,7 @@ namespace PcapDotNet.Core.Test
                     throw new InvalidOperationException("Invalid ipv6 header unnamed field show name " + headerFieldShowName);
             }
         }
-
+        
         private int _currentExtensionHeaderIndex;
     }
 }

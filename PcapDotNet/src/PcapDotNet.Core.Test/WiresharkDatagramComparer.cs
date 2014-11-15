@@ -57,7 +57,7 @@ namespace PcapDotNet.Core.Test
             return success;
         }
 
-        public static WiresharkDatagramComparer GetComparer(string name, int count, bool parentLayerSuccess)
+        public static WiresharkDatagramComparer GetComparer(string name, int count, string parentName, bool parentLayerSuccess)
         {
             switch (name)
             {
@@ -78,7 +78,11 @@ namespace PcapDotNet.Core.Test
 
                 case "ah":
                     if (parentLayerSuccess)
-                        return new WiresharkDatagramComparerIpV6AuthenticationHeader(count);
+                    {
+                        // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10705 is fixed.
+                        if (parentName == "ipv6")
+                            return new WiresharkDatagramComparerIpV6AuthenticationHeader(count);
+                    }
                     return null;
 
                 case "mipv6":

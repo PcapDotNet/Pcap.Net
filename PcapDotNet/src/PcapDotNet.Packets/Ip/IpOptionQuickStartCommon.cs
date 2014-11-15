@@ -13,6 +13,8 @@ namespace PcapDotNet.Packets.Ip
         /// </summary>
         public const byte RateMaximumValue = 0x0F;
 
+        public const uint NonceMaximumValue = 0x3FFFFFFF;
+
         internal const int DataLength = 6;
 
         private static class Offset
@@ -29,19 +31,25 @@ namespace PcapDotNet.Packets.Ip
             public const byte Rate = 0x0F;
         }
 
+        private static class Shift
+        {
+            public const int Function = 4;
+            public const int Nonce = 2;
+        }
+
         internal static void AssertValidParameters(IpV4OptionQuickStartFunction function, byte rate, uint nonce)
         {
             if (function != IpV4OptionQuickStartFunction.RateRequest &&
                 function != IpV4OptionQuickStartFunction.RateReport)
             {
-                throw new ArgumentException("Illegal function " + function, "function");
+                throw new ArgumentException(string.Format("Illegal function {0}", function), "function");
             }
 
             if (rate > RateMaximumValue)
-                throw new ArgumentOutOfRangeException("rate", rate, "Rate maximum value is " + RateMaximumValue);
+                throw new ArgumentOutOfRangeException("rate", rate, string.Format("Rate maximum value is {0}", RateMaximumValue));
 
-            if ((nonce & 0x00000003) != 0)
-                throw new ArgumentException("nonce last two bits are reserved and must be zero", "nonce");
+            if (nonce > NonceMaximumValue)
+                throw new ArgumentException(string.Format("nonce cannot be bigger than {0}", NonceMaximumValue), "nonce");
         }
 
         internal static int CalcRateKbps(byte rate)
@@ -54,17 +62,17 @@ namespace PcapDotNet.Packets.Ip
 
         internal static void ReadData(DataSegment data, out IpV4OptionQuickStartFunction function, out byte rate, out byte ttl, out uint nonce)
         {
-            function = (IpV4OptionQuickStartFunction)(data[Offset.Function] & Mask.Function);
+            function = (IpV4OptionQuickStartFunction)((data[Offset.Function] & Mask.Function) >> Shift.Function);
             rate = (byte)(data[Offset.Rate] & Mask.Rate);
             ttl = data[Offset.Ttl];
-            nonce = data.ReadUInt(Offset.Nonce, Endianity.Big);
+            nonce = data.ReadUInt(Offset.Nonce, Endianity.Big) >> Shift.Nonce;
         }
 
         internal static void WriteData(byte[] buffer, ref int offset, IpV4OptionQuickStartFunction function, byte rate, byte ttl, uint nonce)
         {
-            buffer[offset + Offset.Function] = (byte)(((byte)function & Mask.Function) | (rate & Mask.Rate));
+            buffer[offset + Offset.Function] = (byte)((((byte)function << Shift.Function) & Mask.Function) | (rate & Mask.Rate));
             buffer[offset + Offset.Ttl] = ttl;
-            buffer.Write(offset + Offset.Nonce, nonce, Endianity.Big);
+            buffer.Write(offset + Offset.Nonce, nonce << Shift.Nonce, Endianity.Big);
             offset += DataLength;
         }
     }

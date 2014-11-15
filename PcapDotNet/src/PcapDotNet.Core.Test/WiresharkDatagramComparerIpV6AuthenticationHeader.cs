@@ -61,7 +61,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ah.spi":
-                    field.AssertShowHex(authenticationHeader.SecurityParametersIndex);
+                    field.AssertShowDecimal(authenticationHeader.SecurityParametersIndex);
                     break;
 
                 case "ah.sequence":
