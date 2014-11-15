@@ -188,7 +188,7 @@ namespace PcapDotNet.Core.Test
                 case "tcp.checksum":
                     field.AssertShowDecimal(tcpDatagram.Checksum);
                     IpV4Datagram ipV4Datagram = ipDatagram as IpV4Datagram;
-                    if (ipV4Datagram != null && !ipV4Datagram.Options.IsBadForWireshark())
+                    if (ipV4Datagram != null)
                     {
                         foreach (var checksumField in field.Fields())
                         {
