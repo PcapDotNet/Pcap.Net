@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ip;
 using PcapDotNet.Packets.IpV4;
@@ -283,23 +285,10 @@ namespace PcapDotNet.Core.Test
                     case "":
                         switch (option.OptionType)
                         {
-                            case TcpOptionType.SelectiveNegativeAcknowledgements: // TODO: Support Selective Negative Acknowledgements.
-                                Assert.IsTrue(field.Show().StartsWith(option.GetWiresharkString()));
-                                field.AssertNoFields();
-                                break;
-                            
-                            case (TcpOptionType)78: // TODO: Support Riverbed.
-                                break;
-
-                            default:
-                                field.AssertShow(option.GetWiresharkString());
-                                break;
-                        }
-
-                        switch (option.OptionType)
-                        {
                             case TcpOptionType.WindowScale:
                                 TcpOptionWindowScale windowScale = (TcpOptionWindowScale)option;
+                                byte scaleFactorLog = windowScale.ScaleFactorLog;
+                                field.AssertShow(string.Format("Window scale: {0} (multiply by {1})", scaleFactorLog, (1L << (scaleFactorLog % 32))));
                                 foreach (var subField in field.Fields())
                                 {
                                     if (HandleOptionCommonFields(subField, option))
@@ -322,6 +311,10 @@ namespace PcapDotNet.Core.Test
 
                             case TcpOptionType.SelectiveAcknowledgment:
                                 var selectiveAcknowledgmentOption = (TcpOptionSelectiveAcknowledgment)option;
+                                IEnumerable<TcpOptionSelectiveAcknowledgmentBlock> blocks = selectiveAcknowledgmentOption.Blocks;
+                                field.AssertShow("SACK:" + (blocks.Count() == 0
+                                                                ? string.Empty
+                                                                : ((TcpOptionSelectiveAcknowledgment)option).Blocks.SequenceToString(" ", " ")));
                                 int blockIndex = 0;
                                 foreach (var subField in field.Fields())
                                 {
@@ -355,6 +348,7 @@ namespace PcapDotNet.Core.Test
 
                             case TcpOptionType.Timestamp:
                                 var timestampOption = (TcpOptionTimestamp)option;
+                                field.AssertShow("Timestamps: TSval " + timestampOption.TimestampValue + ", TSecr " + timestampOption.TimestampEchoReply);
                                 foreach (var subField in field.Fields())
                                 {
                                     if (HandleOptionCommonFields(subField, option))
@@ -490,6 +484,23 @@ namespace PcapDotNet.Core.Test
                                 }
                                 break;
 
+                            case TcpOptionType.SelectiveAcknowledgmentPermitted:
+                                field.AssertShow("SACK permitted");
+                                field.AssertNoFields();
+                                break;
+
+                            case TcpOptionType.SelectiveNegativeAcknowledgements: // TODO: Support Selective Negative Acknowledgements.
+                                Assert.IsTrue(field.Show().StartsWith("SACK permitted"));
+                                field.AssertNoFields();
+                                break;
+
+                            case (TcpOptionType)20:
+                                // TODO: Support 20.
+                                field.AssertShow("SCPS capabilities" + (option.Length >= 4
+                                                                            ? string.Empty
+                                                                            : " (with option length = " + option.Length + " bytes; should be >= 4)"));
+                                break;
+
                             case (TcpOptionType)22:
                                 field.AssertShow("SCPS record boundary (with option length = " + option.Length + " bytes; should be 2)");
                                 // TODO: Support 22.
@@ -500,8 +511,28 @@ namespace PcapDotNet.Core.Test
                                 // TODO: Support 23.
                                 break;
 
+                            case (TcpOptionType)30:
+                                // TODO: Support 30.
+                                Assert.IsTrue(field.Show().StartsWith("Multipath TCP: "));
+                                break;
+
+                            case (TcpOptionType)78:
+                                field.AssertShow("Riverbed Transparency (with option length = " + option.Length + " bytes; should be 16)");
+                                // TODO: Support 78 - Support Riverbed.
+                                break;
+
+                            case TcpOptionType.PartialOrderConnectionPermitted: // 9.
+                            case TcpOptionType.PartialOrderServiceProfile:      // 10.
+                            case TcpOptionType.AlternateChecksumRequest:        // 14.
+                            case TcpOptionType.AlternateChecksumData:           // 15.
+                            case TcpOptionType.Mood:                            // 25.
+                                field.AssertShow(string.Format("Unknown (0x{0}) ({1} bytes)", ((byte)option.OptionType).ToString("x2"), option.Length));
+                                field.AssertNoFields();
+                                break;
+
                             default:
                                 field.AssertNoFields();
+                                field.AssertShow("Unknown (0x" + ((byte)option.OptionType).ToString("x") + ") (" + option.Length + " bytes)");
                                 break;
                         }
                         ++currentOptionIndex;
