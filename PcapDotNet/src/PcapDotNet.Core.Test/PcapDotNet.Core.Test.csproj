@@ -140,7 +140,6 @@
     <Compile Include="MarshalingServicesTests.cs" />
     <Compile Include="NetworkInterfaceExtensionsTests.cs" />
     <Compile Include="PacketTimestampTests.cs" />
-    <Compile Include="TcpOptionExtensions.cs" />
     <Compile Include="WiresharkDatagramComparer.cs" />
     <Compile Include="WiresharkDatagramComparerArp.cs" />
     <Compile Include="WiresharkDatagramComparerDns.cs" />

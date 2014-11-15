@@ -220,14 +220,12 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ipv6.shim6":
-                    // TODO: Fix according to https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=9995
+                    // TODO: Implement Shim6.
                     IpV4Protocol nextHeader = _currentExtensionHeaderIndex > 0
                                                   ? ipV6Datagram.ExtensionHeaders[_currentExtensionHeaderIndex - 1].NextHeader.Value
                                                   : ipV6Datagram.NextHeader;
-
-                    Assert.IsTrue(nextHeader == IpV4Protocol.AnyHostInternal ||
-                                  nextHeader == IpV4Protocol.Shim6);
-                    return false;
+                    Assert.IsTrue(nextHeader == IpV4Protocol.Shim6);
+                    break;
 
                 case "ipv6.unknown_hdr":
                     Assert.AreEqual(ipV6Datagram.ExtensionHeaders.Count(), _currentExtensionHeaderIndex);
