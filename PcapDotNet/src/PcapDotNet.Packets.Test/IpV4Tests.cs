@@ -481,7 +481,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
         public void IpV4OptionQuickStartBadNonceTest()
         {
-            IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 1, 1, 2);
+            IpV4OptionQuickStart option = new IpV4OptionQuickStart(IpV4OptionQuickStartFunction.RateRequest, 1, 1, 0x40000000);
             Assert.IsNotNull(option);
             Assert.Fail();
         }

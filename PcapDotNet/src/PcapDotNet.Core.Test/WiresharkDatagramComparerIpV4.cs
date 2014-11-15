@@ -432,7 +432,7 @@ namespace PcapDotNet.Core.Test
                     case IpV4OptionType.RouterAlert:
                         var routerAlert = (IpV4OptionRouterAlert)option;
                         field.AssertShow("Router Alert (" + option.Length + " bytes): " +
-                                         ((routerAlert.Value != 0) ? "Reserved (" + routerAlert.Value + ")" : "Every router examines packet"));
+                                         ((routerAlert.Value != 0) ? "Reserved (" + routerAlert.Value + ")" : "Router shall examine packet (0)"));
                         foreach (var subfield in field.Fields())
                         {
                             if (HandleCommonOptionSubfield(subfield, option))
@@ -604,6 +604,14 @@ namespace PcapDotNet.Core.Test
                     case (IpV4OptionType)11:
                         // TODO: Support 11.
                         field.AssertShow("MTU Probe (with option length = " + option.Length + " bytes; should be 4)");
+                        break;
+
+                    case (IpV4OptionType)12:
+                        // TODO: Support 12.
+                        if (option.Length != 4)
+                            field.AssertShow("MTU Reply (with option length = " + option.Length + " bytes; should be 4)");
+                        else
+                            Assert.IsTrue(field.Show().StartsWith("MTU Reply (4 bytes): "));
                         break;
 
                     case (IpV4OptionType)133:

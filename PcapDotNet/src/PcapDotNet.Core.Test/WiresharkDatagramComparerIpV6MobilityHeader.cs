@@ -1870,7 +1870,8 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case IpV6MobilityOptionType.Experimental:
-                                                optionField.AssertShow("Experimental");
+                                                optionField.AssertShow("Experimental" +
+                                                                       (option.Length == 2 ? " (with option length = 0 bytes; should be >= 1)" : ""));
                                                 var experimental = (IpV6MobilityOptionExperimental)option;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {

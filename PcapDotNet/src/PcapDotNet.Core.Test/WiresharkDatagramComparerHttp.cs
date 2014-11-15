@@ -184,7 +184,8 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "http.request.full_uri":
-                    Assert.AreEqual(fieldShow, ("http://" + httpDatagram.Header["Host"].ValueString + ((HttpRequestDatagram)httpDatagram).Uri).ToWiresharkLiteral());
+                    // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10681 is fixed.
+                    // Assert.AreEqual(fieldShow, ("http://" + httpDatagram.Header["Host"].ValueString + ((HttpRequestDatagram)httpDatagram).Uri).ToWiresharkLiteral());
                     break;
 
                 default:

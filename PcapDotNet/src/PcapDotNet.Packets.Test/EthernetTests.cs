@@ -109,9 +109,10 @@ namespace PcapDotNet.Packets.Test
                                                         Data = new Datagram(new byte[100])
                                                     });
             Assert.IsTrue(packet.IsValid);
-            Assert.IsNull(packet.Ethernet.TrailerWithFrameCheckSequence);
+            Assert.IsNull(packet.Ethernet.Padding);
             Assert.IsNull(packet.Ethernet.Trailer);
             Assert.IsNull(packet.Ethernet.FrameCheckSequence);
+            Assert.IsNull(packet.Ethernet.ExtraData);
         }
     }
 }

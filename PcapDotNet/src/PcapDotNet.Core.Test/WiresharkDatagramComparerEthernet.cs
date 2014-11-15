@@ -26,17 +26,21 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "eth.type":
+                    field.AssertNoFields();
                     field.AssertShowDecimal((ushort)ethernetDatagram.EtherType);
                     break;
 
                 case "eth.trailer":
-                    if (ethernetDatagram.Trailer != null)
-                        field.AssertValue(ethernetDatagram.Trailer);
+                    field.AssertValue(ethernetDatagram.Trailer);
                     break;
 
-                case "":
-                    if (ethernetDatagram.Trailer != null)
-                        field.AssertValue(ethernetDatagram.FrameCheckSequence);
+                case "eth.fcs":
+                    field.AssertValue(ethernetDatagram.FrameCheckSequence);
+                    break;
+
+                case "eth.padding":
+                    field.AssertNoFields();
+                    field.AssertValue(ethernetDatagram.Padding);
                     break;
 
                 default:
