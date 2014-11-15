@@ -28,14 +28,7 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "tcp.len":
-                    if (tcpDatagram.Payload == null)
-                    {
-                        // todo seems like a bug in tshark https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=5235
-                        break;
-//                            field.AssertShowDecimal(tcpDatagram.Length);
-                    }
-                    else
-                        field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                    field.AssertShowDecimal(tcpDatagram.Payload.Length);
                     field.AssertNoFields();
                     break;
 
