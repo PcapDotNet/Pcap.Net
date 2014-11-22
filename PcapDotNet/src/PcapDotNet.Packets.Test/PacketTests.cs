@@ -45,7 +45,9 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void RandomPacketTest()
         {
-            Random random = new Random();
+            int seed = new Random().Next();
+            Console.WriteLine("Seed: " + seed);
+            Random random = new Random(seed);
 
             for (int i = 0; i != 1000; ++i)
             {
