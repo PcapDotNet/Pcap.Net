@@ -101,6 +101,8 @@ namespace PcapDotNet.Packets.TestUtils
                 impossibleOptionTypes.Add(TcpOptionType.Md5Signature);
             if (maximumOptionLength < TcpOptionMood.OptionMaximumLength)
                 impossibleOptionTypes.Add(TcpOptionType.Mood);
+            if (maximumOptionLength < TcpOptionAuthentication.OptionMinimumLength)
+                impossibleOptionTypes.Add(TcpOptionType.TcpAuthentication);
 
             impossibleOptionTypes.Add(TcpOptionType.QuickStartResponse);
             impossibleOptionTypes.Add(TcpOptionType.UserTimeout);
@@ -166,6 +168,9 @@ namespace PcapDotNet.Packets.TestUtils
 
                 case TcpOptionType.Mood:
                     return new TcpOptionMood(random.NextEnum(TcpOptionMoodEmotion.None));
+
+                case TcpOptionType.TcpAuthentication:
+                    return new TcpOptionAuthentication(random.NextByte(), random.NextByte(), random.NextBytes(random.Next(maximumOptionLength - TcpOptionAuthentication.OptionMinimumLength + 1)));
 
                 default:
                     throw new InvalidOperationException("optionType = " + optionType);

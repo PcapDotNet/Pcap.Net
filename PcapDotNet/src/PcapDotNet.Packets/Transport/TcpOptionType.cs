@@ -110,5 +110,10 @@ namespace PcapDotNet.Packets.Transport
         /// User Timeout Option (RFC5482)
         /// </summary>
         UserTimeout = 28,
+
+        /// <summary>
+        /// TCP Authentication Option (RFC5925)
+        /// </summary>
+        TcpAuthentication = 29,
     }
 }
