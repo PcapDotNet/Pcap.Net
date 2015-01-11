@@ -519,6 +519,7 @@ namespace PcapDotNet.Core.Test
                             case TcpOptionType.AlternateChecksumRequest:        // 14.
                             case TcpOptionType.AlternateChecksumData:           // 15.
                             case TcpOptionType.Mood:                            // 25.
+                            case TcpOptionType.TcpAuthentication:               // 29.
                                 field.AssertShow(string.Format("Unknown (0x{0}) ({1} bytes)", ((byte)option.OptionType).ToString("x2"), option.Length));
                                 field.AssertNoFields();
                                 break;

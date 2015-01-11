@@ -509,6 +509,7 @@
     <Compile Include="IpV4\IpV4Layer.cs" />
     <Compile Include="IpV4\IpV4OptionUnknown.cs" />
     <Compile Include="Ip\IpOptionQuickStartCommon.cs" />
+    <Compile Include="Transport\TcpOptionAuthentication.cs" />
     <Compile Include="Transport\TcpOptionTypeRegistrationAttribute.cs" />
     <Compile Include="IpV6\IpV6Address.cs" />
     <Compile Include="IpV6\IpV6Datagram.cs" />
