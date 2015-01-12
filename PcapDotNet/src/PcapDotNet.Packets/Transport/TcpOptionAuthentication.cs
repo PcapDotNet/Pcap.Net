@@ -128,7 +128,7 @@ namespace PcapDotNet.Packets.Transport
 
         internal override int GetDataHashCode()
         {
-            return MessageAuthenticationCode.Concatenate(KeyId, RequestedNextKeyId).BytesSequenceGetHashCode();
+            return MessageAuthenticationCode.Concat(KeyId, RequestedNextKeyId).BytesSequenceGetHashCode();
         }
 
         internal override void Write(byte[] buffer, ref int offset)
