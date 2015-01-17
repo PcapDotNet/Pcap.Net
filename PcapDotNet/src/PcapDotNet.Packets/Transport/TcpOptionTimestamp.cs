@@ -4,12 +4,20 @@ using PcapDotNet.Packets.Ip;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// RFC 1323.
     /// TCP Timestamps Option (TSopt):
     /// <pre>
-    /// +-------+-------+---------------------+---------------------+
-    /// |Kind=8 |  10   |   TS Value (TSval)  |TS Echo Reply (TSecr)|
-    /// +-------+-------+---------------------+---------------------+
-    ///     1       1              4                     4
+    /// +-----+------+--------+
+    /// | Bit | 0-7  | 8-15   |
+    /// +-----+------+--------+
+    /// | 0   | Kind | Length |
+    /// +-----+------+--------+
+    /// | 16  | TS Value      |
+    /// |     | (TSval)       |
+    /// +-----+---------------+
+    /// | 48  | TS Echo Reply |
+    /// |     | (TSecr)       |
+    /// +-----+---------------+
     /// </pre>
     /// 
     /// <para>

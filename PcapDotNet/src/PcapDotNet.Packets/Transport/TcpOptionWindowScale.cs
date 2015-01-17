@@ -12,9 +12,15 @@ namespace PcapDotNet.Packets.Transport
     /// The scale factor is limited to a power of two and encoded logarithmically, so it may be implemented by binary shift operations.
     /// 
     /// <pre>
-    /// +---------+---------+---------+
-    /// | Kind=3  |Length=3 |shift.cnt|
-    /// +---------+---------+---------+
+    /// +-----+-----------+
+    /// | Bit | 0-7       |
+    /// +-----+-----------+
+    /// | 0   | Kind      |
+    /// +-----+-----------+
+    /// | 8   | Length    |
+    /// +-----+-----------+
+    /// | 16  | shift.cnt |
+    /// +-----+-----------+
     /// </pre>
     /// 
     /// <para>
