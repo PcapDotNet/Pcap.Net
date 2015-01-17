@@ -114,5 +114,21 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNull(packet.Ethernet.FrameCheckSequence);
             Assert.IsNull(packet.Ethernet.ExtraData);
         }
+
+        [TestMethod]
+        public void EmptyPadding()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer
+                                                {
+                                                    EtherType = EthernetType.AppleTalk
+                                                },
+                                                new PayloadLayer
+                                                {
+                                                    Data = new Datagram(new byte[10])
+                                                });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(DataSegment.Empty, packet.Ethernet.Padding);
+        }
     }
 }
