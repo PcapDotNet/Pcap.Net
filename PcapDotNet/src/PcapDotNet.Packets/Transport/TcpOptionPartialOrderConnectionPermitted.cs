@@ -6,9 +6,11 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// TCP POC-permitted Option (RFC 1693)
     /// <pre>
-    /// +-----------+-------------+
-    /// |  Kind=9   |  Length=2   |
-    /// +-----------+-------------+
+    /// +-----+------+--------+
+    /// | Bit | 0-7  | 8-15   |
+    /// +-----+------+--------+
+    /// | 0   | Kind | Length |
+    /// +-----+------+--------+
     /// </pre>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.PartialOrderConnectionPermitted)]

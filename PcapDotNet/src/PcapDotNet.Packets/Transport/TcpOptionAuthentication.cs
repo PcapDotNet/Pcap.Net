@@ -13,15 +13,20 @@ namespace PcapDotNet.Packets.Transport
     /// <para>
     /// The format of the TCP Authentication Option is:
     /// <pre>
-    /// +------------+------------+------------+------------+
-    /// |  Kind=29   |  Length=N  |   KeyId    | RNextKeyId |
-    /// +------------+------------+------------+------------+
-    /// |                     MAC           ...
-    /// +-----------------------------------...
-    /// 
-    ///    ...-----------------+
-    ///    ...  MAC (con't)    |
-    ///    ...-----------------+
+    /// +-----+------------+
+    /// | Bit | 0-7        |
+    /// +-----+------------+
+    /// | 0   | Kind       | 
+    /// +-----+------------+
+    /// | 8   | Length     |
+    /// +-----+------------+
+    /// | 16  | KeyId      |
+    /// +-----+------------+
+    /// | 24  | RNextKeyId |
+    /// +-----+------------+
+    /// | 32  | MAC        |
+    /// | ... |            |
+    /// +-----+------------+
     /// </pre>
     /// </para>
     /// 
@@ -41,7 +46,7 @@ namespace PcapDotNet.Packets.Transport
         /// <summary>
         /// The minimum number of bytes this option takes.
         /// </summary>
-        public const int OptionMinimumLength = OptionHeaderLength + 2;
+        public const int OptionMinimumLength = OptionHeaderLength + sizeof(byte) + sizeof(byte);
 
         /// <summary>
         /// The minimum number of bytes this option's value takes.

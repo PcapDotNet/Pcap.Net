@@ -7,15 +7,23 @@ using PcapDotNet.Packets.Ip;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// RFC 5841.
     /// TCP Mood Option:
     /// <pre>
-    /// +---------+--------+------------+
-    /// | Kind=25 | Length | ASCII Mood |
-    /// +---------+--------+------------+
+    /// +-----+--------+
+    /// | Bit | 0-7    |
+    /// +-----+--------+
+    /// | 0   | Kind   |
+    /// +-----+--------+
+    /// | 8   | Length |
+    /// +-----+--------+
+    /// | 16  | ASCII  |
+    /// | ... | Mood   |
+    /// +-----+--------+
     /// </pre>
     /// 
     /// <para>
-    ///  It is proposed that option 25 (released 2000-12-18) be used to define packet mood.
+    /// It is proposed that option 25 (released 2000-12-18) be used to define packet mood.
     /// This option would have a length value of 4 or 5 bytes.
     /// All the simple emotions described as expressible via this mechanism can be displayed with two or three 7-bit, ASCII-encoded characters.
     /// Multiple mood options may appear in a TCP header, so as to express more complex moods than those defined here (for instance if a packet were happy and surprised).

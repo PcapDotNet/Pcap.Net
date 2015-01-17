@@ -13,9 +13,16 @@ namespace PcapDotNet.Packets.Transport
     /// <para>
     /// The format of the TCP Alternate Checksum Data Option is:
     /// <pre>
-    /// +---------+---------+---------+     +---------+
-    /// | Kind=15 |Length=N |  data   | ... |  data   |
-    /// +---------+---------+---------+     +---------+
+    /// +-----+--------+
+    /// | Bit | 0-7    |
+    /// +-----+--------+
+    /// | 0   | Kind   |
+    /// +-----+--------+
+    /// | 8   | Length |
+    /// +-----+--------+
+    /// | 16  | Data   |
+    /// | ... |        |
+    /// +-----+--------+
     /// </pre>
     /// </para>
     /// 

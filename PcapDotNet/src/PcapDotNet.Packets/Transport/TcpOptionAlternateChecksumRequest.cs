@@ -6,9 +6,15 @@ namespace PcapDotNet.Packets.Transport
     /// <summary>
     /// TCP Alternate Checksum Request Option (RFC 1146).
     /// <pre>
-    /// +----------+----------+----------+
-    /// |  Kind=14 | Length=3 |  chksum  |
-    /// +----------+----------+----------+
+    /// +-----+----------+
+    /// | Bit | 0-7      |
+    /// +-----+----------+
+    /// | 0   | Kind     |
+    /// +-----+----------+
+    /// | 8   | Length   |
+    /// +-----+----------+
+    /// | 16  | Checksum |
+    /// +-----+----------+
     /// </pre>
     /// 
     /// <para>

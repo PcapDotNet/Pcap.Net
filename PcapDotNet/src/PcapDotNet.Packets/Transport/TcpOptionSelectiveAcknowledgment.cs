@@ -8,24 +8,29 @@ using PcapDotNet.Packets.Ip;
 namespace PcapDotNet.Packets.Transport
 {
     /// <summary>
+    /// RFC 2018.
     /// The SACK option is to be used to convey extended acknowledgment information from the receiver to the sender over an established TCP connection.
     /// 
     /// <pre>
-    ///                   +--------+--------+
-    ///                   | Kind=5 | Length |
-    /// +--------+--------+--------+--------+
-    /// |      Left Edge of 1st Block       |
-    /// +--------+--------+--------+--------+
-    /// |      Right Edge of 1st Block      |
-    /// +--------+--------+--------+--------+
-    /// |                                   |
-    /// /            . . .                  /
-    /// |                                   |
-    /// +--------+--------+--------+--------+
-    /// |      Left Edge of nth Block       |
-    /// +--------+--------+--------+--------+
-    /// |      Right Edge of nth Block      |
-    /// +--------+--------+--------+--------+
+    /// +-----+------+--------+
+    /// | Bit | 0-7  | 8-15   |
+    /// +-----+------+--------+
+    /// | 0   | Kind | Length |
+    /// +-----+------+--------+
+    /// | 16  | Left Edge of  |
+    /// |     | 1st Block     |
+    /// +-----+---------------+
+    /// | 48  | Right Edge of |
+    /// |     | 1st Block     |
+    /// +-----+---------------+
+    /// ...
+    /// +-----+---------------+
+    /// |     | Left Edge of  |
+    /// |     | nth Block     |
+    /// +-----+---------------+
+    /// |     | Right Edge of |
+    /// |     | nth Block     |
+    /// +-----+---------------+
     /// </pre>
     /// 
     /// <para>

@@ -10,9 +10,11 @@ namespace PcapDotNet.Packets.Transport
     /// It MUST NOT be sent on non-SYN segments.
     /// 
     /// <pre>
-    /// +---------+---------+
-    /// | Kind=4  | Length=2|
-    /// +---------+---------+
+    /// +-----+------+--------+
+    /// | Bit | 0-7  | 8-15   |
+    /// +-----+------+--------+
+    /// | 0   | Kind | Length |
+    /// +-----+------+--------+
     /// </pre>
     /// </summary>
     [TcpOptionTypeRegistration(TcpOptionType.SelectiveAcknowledgmentPermitted)]
