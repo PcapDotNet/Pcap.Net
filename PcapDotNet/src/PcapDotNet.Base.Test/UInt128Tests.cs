@@ -244,6 +244,24 @@ namespace PcapDotNet.Base.Test
         }
 
         [TestMethod]
+        public void BitwiseOrTest()
+        {
+            const string ValueString = "0123456789ABCDEFFEDCBA9876543210";
+            UInt128 value = UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            Assert.AreEqual(UInt128.Parse(ValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture), value);
+
+            for (int i = 0; i <= 32; ++i)
+            {
+                string orValueString = new string('0', i) + new string('F', ValueString.Length - i);
+                UInt128 orValue = UInt128.Parse("0" + orValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                string expectedValueString = ValueString.Substring(0, i) + new string('F', ValueString.Length - i);
+                UInt128 expectedValue = UInt128.Parse(expectedValueString, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                UInt128 actualValue = value | orValue;
+                Assert.AreEqual(expectedValue, actualValue, i.ToString());
+            }
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void ParseNullTest()
         {
