@@ -67,6 +67,8 @@ namespace PcapDotNet.Base.Test
             Assert.IsFalse(new SerialNumber32(1) != new SerialNumber32(0).Add(1));
             Assert.IsTrue(new SerialNumber32(2) == new SerialNumber32(1).Add(1));
             Assert.IsFalse(new SerialNumber32(1).Equals(1.0));
+
+            Assert.AreEqual("1", new SerialNumber32(1).ToString());
         }
 
         [TestMethod]
