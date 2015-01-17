@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Ip
@@ -13,6 +14,9 @@ namespace PcapDotNet.Packets.Ip
         /// </summary>
         public const byte RateMaximumValue = 0x0F;
 
+        /// <summary>
+        /// The maximum value for the nonce field.
+        /// </summary>
         public const uint NonceMaximumValue = 0x3FFFFFFF;
 
         internal const int DataLength = 6;
@@ -42,14 +46,14 @@ namespace PcapDotNet.Packets.Ip
             if (function != IpV4OptionQuickStartFunction.RateRequest &&
                 function != IpV4OptionQuickStartFunction.RateReport)
             {
-                throw new ArgumentException(string.Format("Illegal function {0}", function), "function");
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Illegal function {0}", function), "function");
             }
 
             if (rate > RateMaximumValue)
-                throw new ArgumentOutOfRangeException("rate", rate, string.Format("Rate maximum value is {0}", RateMaximumValue));
+                throw new ArgumentOutOfRangeException("rate", rate, string.Format(CultureInfo.InvariantCulture, "Rate maximum value is {0}", RateMaximumValue));
 
             if (nonce > NonceMaximumValue)
-                throw new ArgumentException(string.Format("nonce cannot be bigger than {0}", NonceMaximumValue), "nonce");
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "nonce cannot be bigger than {0}", NonceMaximumValue), "nonce");
         }
 
         internal static int CalcRateKbps(byte rate)
