@@ -158,6 +158,7 @@ namespace PcapDotNet.Core.Test
 
                 default:
                     if (!field.Name().StartsWith("lt2p.") &&
+                        field.Name() != "pweth" &&
                         !field.Name().StartsWith("pweth."))
                         throw new InvalidOperationException("Invalid icmp field " + field.Name());
                     break;

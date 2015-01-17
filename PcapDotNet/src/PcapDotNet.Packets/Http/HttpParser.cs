@@ -308,7 +308,7 @@ namespace PcapDotNet.Packets.Http
 
             // Parse first "
             if (!Bytes(AsciiBytes.DoubleQuotationMark).Success)
-                return this;
+                return this;  // This cannot happen, since we call this method only when we have '"'.
 
             while (IsNext())
             {
