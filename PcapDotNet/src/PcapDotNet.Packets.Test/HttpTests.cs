@@ -109,6 +109,8 @@ namespace PcapDotNet.Packets.Test
 
                     foreach (var field in httpLayer.Header)
                         Assert.IsFalse(field.Equals("abc"));
+                    foreach (var field in (IEnumerable)httpLayer.Header)
+                        Assert.IsFalse(field.Equals("abc"));
 
                     MoreAssert.AreSequenceEqual(httpLayer.Header.Select(field => field.GetHashCode()), httpDatagram.Header.Select(field => field.GetHashCode()));
 
@@ -143,6 +145,7 @@ namespace PcapDotNet.Packets.Test
             TestHttpRequest("GET /url H", "GET", "/url");
             TestHttpRequest("GET /url HTTP/", "GET", "/url");
             TestHttpRequest("GET /url HTTP/1.0", "GET", "/url", HttpVersion.Version10);
+            TestHttpRequest("GET /url HTTP/1234567890.0", "GET", "/url"); // Version 
             TestHttpRequest("GET /url HTTP/1.1", "GET", "/url", HttpVersion.Version11);
             TestHttpRequest("GET /url HTTP/1.1A", "GET", "/url", HttpVersion.Version11);
             TestHttpRequest("GET /url  HTTP/1.1", "GET", "/url");
@@ -288,6 +291,12 @@ namespace PcapDotNet.Packets.Test
                              HttpVersion.Version11, 200, "OK",
                              new HttpHeader(
                                  new HttpTransferEncodingField("chunked", "a", "b", "c", "d", "e;f=g;h=\"ijk lmn\"")));
+
+            // Illegal byte in double quotes.
+            TestHttpResponse("HTTP/1.1 200 OK\r\n" +
+                             "Transfer-Encoding: chunked,a,   b   , c\r\n\t,d   , e;f=g;h=\"\x1Fjk lmn\"\r\n",
+                             HttpVersion.Version11, 200, "OK",
+                             new HttpHeader());
 
             // Respone Body
 
