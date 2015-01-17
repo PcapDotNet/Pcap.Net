@@ -247,12 +247,12 @@ namespace PcapDotNet.Core.Test
         {
             _hipRendezvousServersIndex = 0;
             _wksBitmapIndex = 0;
-            _nxtTypeIndex = 0;
+            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
+//            _nxtTypeIndex = 0;
             _spfTypeIndex = 0;
             _txtTypeIndex = 0;
             _nSecTypeIndex = 0;
             _nSec3TypeIndex = 0;
-            _txtIndex = 0;
             _aplItemIndex = 0;
             _optOptionIndex = 0;
         }
@@ -1753,12 +1753,12 @@ namespace PcapDotNet.Core.Test
 
         private int _hipRendezvousServersIndex;
         private int _wksBitmapIndex;
-        private int _nxtTypeIndex;
+        // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
+//        private int _nxtTypeIndex;
         private int _spfTypeIndex;
         private int _txtTypeIndex;
         private int _nSecTypeIndex;
         private int _nSec3TypeIndex;
-        private int _txtIndex;
         private int _aplItemIndex;
         private int _optOptionIndex;
     }
