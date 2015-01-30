@@ -76,7 +76,7 @@ namespace PcapDotNet.Packets.TestUtils
                 return random.NextIpV4OptionUnknown(maximumOptionLength);
 
             // TODO: Support MtuProbe.
-            List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType> {IpV4OptionType.MtuProbe};
+            List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType> {IpV4OptionType.MaximumTransmissionUnitProbe};
             if (maximumOptionLength < IpV4OptionBasicSecurity.OptionMinimumLength)
                 impossibleOptionTypes.Add(IpV4OptionType.BasicSecurity);
             if (maximumOptionLength < IpV4OptionRoute.OptionMinimumLength)

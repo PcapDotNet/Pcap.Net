@@ -67,7 +67,7 @@ namespace PcapDotNet.Packets.IpV4
         /// RFCs 1063, 1191.
         /// Obsoleted.
         /// </summary>
-        MtuProbe = 11,
+        MaximumTransmissionUnitProbe = 11,
 
         /// <summary>
         /// Quick Start (QS). RFC 4782.  
