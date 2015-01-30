@@ -587,7 +587,7 @@ namespace PcapDotNet.Core.Test
                         }
                         break;
 
-                    case IpV4OptionType.MtuProbe:
+                    case IpV4OptionType.MaximumTransmissionUnitProbe:
                         // TODO: Support MTU Proble.
                         Assert.IsTrue(field.Show().StartsWith("MTU Probe (" + option.Length + " bytes): "));
                         break;
