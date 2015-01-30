@@ -57,9 +57,27 @@ namespace PcapDotNet.Packets.IpV4
         NoOperation = 1,
 
         /// <summary>
+        /// Record Route.  
+        /// Used to trace the route an internet datagram takes.
+        /// </summary>
+        RecordRoute = 7,
+
+        /// <summary>
+        /// MTU Probe.
+        /// RFCs 1063, 1191.
+        /// Obsoleted.
+        /// </summary>
+        MtuProbe = 11,
+
+        /// <summary>
         /// Quick Start (QS). RFC 4782.  
         /// </summary>
         QuickStart = 25,
+
+        /// <summary>
+        /// Internet Timestamp.
+        /// </summary>
+        InternetTimestamp = 68,
 
         /// <summary>
         /// Traceroute Using an IP Option.
@@ -86,21 +104,10 @@ namespace PcapDotNet.Packets.IpV4
         StrictSourceRouting = 137,
 
         /// <summary>
-        /// Record Route.  
-        /// Used to trace the route an internet datagram takes.
-        /// </summary>
-        RecordRoute = 7,
-
-        /// <summary>
         /// Stream ID.  
         /// Used to carry the stream identifier.
         /// </summary>
         StreamIdentifier = 136,
-
-        /// <summary>
-        /// Internet Timestamp.
-        /// </summary>
-        InternetTimestamp = 68,
 
         /// <summary>
         /// Router Alert Option (RFC 2113).

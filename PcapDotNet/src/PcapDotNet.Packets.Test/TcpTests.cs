@@ -72,9 +72,6 @@ namespace PcapDotNet.Packets.Test
 
                 PayloadLayer payloadLayer = random.NextPayloadLayer(random.Next(60000));
 
-                if (i < 2)
-                    continue;
-
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, tcpLayer, payloadLayer);
 
                 Assert.IsTrue(packet.IsValid);
@@ -104,7 +101,7 @@ namespace PcapDotNet.Packets.Test
                 Assert.AreNotEqual(random.NextTcpLayer(), packet.Ethernet.Ip.Tcp.ExtractLayer(), "TCP Layer");
                 Assert.AreEqual(tcpLayer.GetHashCode(), packet.Ethernet.Ip.Tcp.ExtractLayer().GetHashCode(), "TCP Layer");
                 Assert.AreNotEqual(random.NextTcpLayer().GetHashCode(), packet.Ethernet.Ip.Tcp.ExtractLayer().GetHashCode(), "TCP Layer");
-                Assert.AreEqual(packet.Ethernet.Ip.Tcp.SequenceNumber + packet.Ethernet.Ip.Tcp.PayloadLength, packet.Ethernet.Ip.Tcp.NextSequenceNumber);
+                Assert.AreEqual((uint)(packet.Ethernet.Ip.Tcp.SequenceNumber + packet.Ethernet.Ip.Tcp.PayloadLength), packet.Ethernet.Ip.Tcp.NextSequenceNumber);
                 foreach (TcpOption option in packet.Ethernet.Ip.Tcp.Options.OptionsCollection)
                 {
                     Assert.AreEqual(option, option);

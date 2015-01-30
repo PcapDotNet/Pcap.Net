@@ -213,7 +213,7 @@ namespace PcapDotNet.Packets.Dns
         private static void DnsTypeToByteOffsetAndMask(out int byteOffset, out byte mask, DnsType dnsType)
         {
             byteOffset = (ushort)dnsType / 8;
-            mask = (byte)(1 << ((ushort)dnsType % 8));
+            mask = (byte)(0x80 >> ((ushort)dnsType % 8));
         }
     }
 }

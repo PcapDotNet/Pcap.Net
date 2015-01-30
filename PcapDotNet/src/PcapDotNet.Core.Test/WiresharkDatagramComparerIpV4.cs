@@ -587,9 +587,9 @@ namespace PcapDotNet.Core.Test
                         }
                         break;
 
-                    case (IpV4OptionType)11:
-                        // TODO: Support 11.
-                        field.AssertShow("MTU Probe (with option length = " + option.Length + " bytes; should be 4)");
+                    case IpV4OptionType.MtuProbe:
+                        // TODO: Support MTU Proble.
+                        Assert.IsTrue(field.Show().StartsWith("MTU Probe (" + option.Length + " bytes): "));
                         break;
 
                     case (IpV4OptionType)12:
@@ -610,8 +610,8 @@ namespace PcapDotNet.Core.Test
 
                     case (IpV4OptionType)134:
                         // TODO: Support 134.
-                        field.AssertShow("Commercial Security" +
-                                         (option.Length >= 10 ? string.Empty : " (with option length = " + option.Length + " bytes; should be >= 10)"));
+                        field.AssertShow("Commercial Security " +
+                                         (option.Length >= 10 ? "(" + option.Length + " bytes)" : "(with option length = " + option.Length + " bytes; should be >= 10)"));
                         break;
 
                     case (IpV4OptionType)149:

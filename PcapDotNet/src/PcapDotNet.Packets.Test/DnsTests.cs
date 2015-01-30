@@ -260,6 +260,7 @@ namespace PcapDotNet.Packets.Test
             Assert.IsTrue(resourceData.IsTypePresentForOwner(DnsType.Aaaa));
             Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.Ns));
             Assert.IsFalse(resourceData.IsTypePresentForOwner(DnsType.UInfo));
+            MoreAssert.AreSequenceEqual(new[] {DnsType.A, DnsType.Aaaa}, resourceData.TypesExist);
 
             bitmap = DnsResourceDataNextDomain.CreateTypeBitmap(new DnsType[] { 0 });
             Assert.AreEqual(DataSegment.Empty, bitmap);
