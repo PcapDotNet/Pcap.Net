@@ -201,11 +201,6 @@ namespace PcapDotNet.Packets.IpV4
             return Equals(other as IpV4OptionTimestamp);
         }
 
-        internal override int GetDataHashCode()
-        {
-            return Sequence.GetHashCode(BitSequence.Merge((byte)TimestampType, Overflow), PointedIndex);
-        }
-
         internal sealed override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
