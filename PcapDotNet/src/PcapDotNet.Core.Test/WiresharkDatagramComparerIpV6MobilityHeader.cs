@@ -151,6 +151,11 @@ namespace PcapDotNet.Core.Test
                     field.AssertShowDecimal(mobilityHeader.Checksum);
                     break;
 
+                case "mip6.em.data":
+                    IpV6ExtensionHeaderMobilityExperimental experimentalHeader = (IpV6ExtensionHeaderMobilityExperimental)mobilityHeader;
+                    field.AssertValue(experimentalHeader.MessageData);
+                    break;
+
                 case "":
                     switch (field.Show())
                     {
@@ -1253,9 +1258,12 @@ namespace PcapDotNet.Core.Test
                                                             optionSubfield.AssertShowDecimal(ipV6AddressPrefix.PrefixLength);
                                                             break;
 
-                                                        case "":
-                                                            optionSubfield.AssertShow("IPv6 Address/Prefix");
-                                                            // TODO: Compare the AddressPrefix property after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10576 is fixed.
+                                                        case "mip6.mhipv6ap.ipv6_address":
+                                                            optionSubfield.AssertValue(ipV6AddressPrefix.AddressOrPrefix.ToValue());
+                                                            break;
+
+                                                        case "mip6.mhipv6ap.ipv6_address_prefix":
+                                                            Assert.IsTrue(optionSubfield.Value().EndsWith(ipV6AddressPrefix.AddressOrPrefix.ToValue().ToString("x32")));
                                                             break;
 
                                                         default:
@@ -1383,6 +1391,9 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.AccessNetworkIdentifier:
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "_ws.expert":
@@ -1460,6 +1471,14 @@ namespace PcapDotNet.Core.Test
 
                                                         case "mip6.redir.reserved":
                                                             optionSubfield.AssertShowDecimal(0);
+                                                            break;
+
+                                                        case "mip6.redir.addr_r2lma_ipv4":
+                                                            optionSubfield.AssertShow(redirect.LocalMobilityAddressIpV4.ToString());
+                                                            break;
+
+                                                        case "mip6.redir.addr_r2lma_ipv6":
+                                                            optionSubfield.AssertValue(redirect.LocalMobilityAddressIpV6.Value.ToValue());
                                                             break;
 
                                                         default:
@@ -1774,8 +1793,21 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.TransientBinding:
                                                 optionField.AssertShow("Transient Binding(2 bytes)");
-                                                optionField.AssertNumFields(1);
-                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.Timestamp:
@@ -1844,8 +1876,21 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.FlowIdentification:
                                                 optionField.AssertShow("Flow Identification(" + (option.Length - 2) + " bytes)");
-                                                optionField.AssertNumFields(1);
-                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.NatDetection:
@@ -1880,8 +1925,21 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.FlowSummary:
                                                 optionField.AssertShow("Flow Summary(" + (option.Length - 2) + " bytes)");
-                                                optionField.AssertNumFields(1);
-                                                optionField.Fields().First().AssertName("_ws.expert");
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.Experimental:
@@ -1910,8 +1968,23 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.MobileAccessGatewayIpV6Address:
                                                 optionField.AssertShow("MAG IPv6 Address(18 bytes)");
-                                                optionField.AssertNumFields(1);
-                                                optionField.Fields().First().AssertName("_ws.expert");
+
+                                                // TODO: Dedup this code.
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.CareOfTestInit:
@@ -1932,8 +2005,22 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.MobileNodeLinkLocalAddressInterfaceIdentifier:
                                                 optionField.AssertShow("Mobile Node Link-local Address Interface Identifier(10 bytes)");
-                                                optionField.AssertNumFields(1);
-                                                optionField.Fields().First().AssertName("_ws.expert");
+
+                                                foreach (XElement optionSubfield in optionField.Fields())
+                                                {
+                                                    if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
+                                                        continue;
+
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "_ws.expert":
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
+                                                }
                                                 break;
 
                                             case IpV6MobilityOptionType.AlternateCareOfAddress:

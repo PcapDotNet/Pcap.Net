@@ -178,14 +178,12 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.qry.name.len":
-                            // TODO: Remove the IsRoot condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10674 is fixed.
-                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.IsRoot ? 6 : resourceRecord.DomainName.NonCompressedLength - 2);
+                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.IsRoot ? 0 : resourceRecord.DomainName.NonCompressedLength - 2);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
                         case "dns.count.labels":
-                            // TODO: Remove the IsRoot condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10674 is fixed.
-                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.IsRoot ? 1 : resourceRecord.DomainName.LabelsCount);
+                            resourceRecordAttributeField.AssertShowDecimal(resourceRecord.DomainName.LabelsCount);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
@@ -1122,7 +1120,10 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.apl.afdpart.data":
+                        case "dns.apl.afdpart.ipv4":
                         case "dns.apl.afdpart.ipv6":
+                            if (dataFieldName != "dns.apl.afdpart.data")
+                                Assert.AreEqual(AddressFamily.IpV4, aplData.Items[_aplItemIndex - 1].AddressFamily);
                             dataField.AssertValue(aplData.Items[_aplItemIndex - 1].AddressFamilyDependentPart);
                             break;
 
