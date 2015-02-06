@@ -256,6 +256,8 @@ namespace PcapDotNet.Core.Test
             int currentOptionIndex = 0;
             foreach (var field in element.Fields())
             {
+                if (field.Name() == "_ws.expert")
+                    continue;
                 if (currentOptionIndex >= options.Count)
                 {
                     Assert.IsFalse(options.IsValid, "Options IsValid");
