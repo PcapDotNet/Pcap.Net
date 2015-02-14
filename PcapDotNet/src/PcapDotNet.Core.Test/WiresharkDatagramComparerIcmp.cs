@@ -42,7 +42,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "data":
-                    var casted1 = icmpDatagram as IcmpIpV4HeaderPlus64BitsPayloadDatagram;
+                    var casted1 = icmpDatagram as IcmpIpV4PayloadDatagram;
                     if (casted1 != null)
                     {
                         if (casted1.IpV4.Protocol != IpV4Protocol.IpComp) // TODO: Support IpComp.

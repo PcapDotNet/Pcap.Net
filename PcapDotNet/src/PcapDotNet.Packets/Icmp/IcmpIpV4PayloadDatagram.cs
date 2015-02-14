@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.Icmp
             get
             {
                 if (_ipV4 == null && Length >= HeaderLength)
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, IpV4Length);
                 return _ipV4;
             }
         }
@@ -47,6 +47,8 @@ namespace PcapDotNet.Packets.Icmp
             IpV4Datagram ip = IpV4;
             return (ip.Length >= IpV4Datagram.HeaderMinimumLength && ip.Length >= ip.HeaderLength);
         }
+
+        internal virtual int IpV4Length { get { return Length - HeaderLength; } }
 
         private IpV4Datagram _ipV4;
     }

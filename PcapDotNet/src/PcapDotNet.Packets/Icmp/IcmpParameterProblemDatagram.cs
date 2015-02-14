@@ -1,27 +1,30 @@
+using System;
+
 namespace PcapDotNet.Packets.Icmp
 {
     /// <summary>
-    /// RFC 792.
+    /// RFCs 792, 4884.
     /// <pre>
-    /// +-----+---------+------+-----------+
-    /// | Bit | 0-7     | 8-15 | 16-31     |
-    /// +-----+---------+------+-----------+
-    /// | 0   | Type    | Code | Checksum  |
-    /// +-----+---------+------+-----------+
-    /// | 32  | Pointer | unused           |
-    /// +-----+---------+------------------+
-    /// | 64  | Internet Header            |
-    /// |     | + 64 bits of               |
-    /// |     | Original Data Datagram     |
-    /// +-----+----------------------------+
+    /// +-----+---------+--------+----------+
+    /// | Bit | 0-7     | 8-15   | 16-31    |
+    /// +-----+---------+--------+----------+
+    /// | 0   | Type    | Code   | Checksum |
+    /// +-----+---------+--------+----------+
+    /// | 32  | Pointer | Length | unused   |
+    /// +-----+---------+-------------------+
+    /// | 64  | Internet Header             |
+    /// |     | + leading octets of         |
+    /// |     | original datagram           |
+    /// +-----+-----------------------------+
     /// </pre>
     /// </summary>
     [IcmpDatagramRegistration(IcmpMessageType.ParameterProblem)]
-    public sealed class IcmpParameterProblemDatagram : IcmpIpV4HeaderPlus64BitsPayloadDatagram
+    public sealed class IcmpParameterProblemDatagram : IcmpIpV4PayloadDatagram
     {
         private static class Offset
         {
             public const int Pointer = 4;
+            public const int OriginalDatagramLength = Pointer + sizeof(byte);
         }
 
         /// <summary>
@@ -34,6 +37,15 @@ namespace PcapDotNet.Packets.Icmp
         }
 
         /// <summary>
+        /// Length of the padded "original datagram".
+        /// Must divide by 4 and cannot exceed OriginalDatagramLengthMaxValue.
+        /// </summary>
+        public int OriginalDatagramLength
+        {
+            get { return this[Offset.OriginalDatagramLength] * sizeof(uint); }
+        }
+
+        /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
         public override ILayer ExtractLayer()
@@ -41,7 +53,8 @@ namespace PcapDotNet.Packets.Icmp
             return new IcmpParameterProblemLayer
                        {
                            Checksum = Checksum,
-                           Pointer = Pointer
+                           Pointer = Pointer,
+                           OriginalDatagramLength = OriginalDatagramLength,
                        };
         }
 
@@ -52,12 +65,17 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         protected override bool CalculateIsValid()
         {
-            return base.CalculateIsValid() && Pointer < IpV4.Length;
+            return base.CalculateIsValid() && Pointer < IpV4.Length && OriginalDatagramLength == IpV4.Length;
         }
 
         internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
         {
             return new IcmpParameterProblemDatagram(buffer, offset, length);
+        }
+
+        internal override int IpV4Length
+        {
+            get { return Math.Min(Length - HeaderLength, OriginalDatagramLength); }
         }
 
         private IcmpParameterProblemDatagram(byte[] buffer, int offset, int length)
