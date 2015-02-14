@@ -102,11 +102,18 @@ namespace PcapDotNet.Core.Test
                     if (_currentExtensionHeaderIndex >= ipV6Datagram.ExtensionHeaders.Headers.Count)
                     {
                         Assert.IsFalse(ipV6Datagram.ExtensionHeaders.IsValid);
-                        int length = int.Parse(
-                            field.Fields().Where(subfield => subfield.Name() == "" && subfield.Show().StartsWith("Length:")).Select(
-                                subfield => subfield.Show().Split(new[] {':', '(', ' '}, StringSplitOptions.RemoveEmptyEntries)[2]).First());
                         int maxLength = ipV6Datagram.Length - IpV6Datagram.HeaderLength - ipV6Datagram.ExtensionHeaders.BytesLength;
-                        MoreAssert.IsBigger(maxLength, length);
+                        if (field.Fields().Any(subfield => subfield.Name() == ""))
+                        {
+                            int length = int.Parse(
+                                field.Fields().Where(subfield => subfield.Name() == "" && subfield.Show().StartsWith("Length:")).Select(
+                                    subfield => subfield.Show().Split(new[] {':', '(', ' '}, StringSplitOptions.RemoveEmptyEntries)[2]).First());
+
+                            MoreAssert.IsBigger(maxLength, length);
+                        } else
+                        {
+                            Assert.AreEqual(6, maxLength);
+                        }
                     }
                     else
                     {
@@ -396,9 +403,9 @@ namespace PcapDotNet.Core.Test
 
                                 case "ipv6.opt.calipso.cmpt_bitmap":
                                     headerSubfield.AssertNoFields();
-                                    // TODO: Uncomment and avoid returning when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10561 is fixed.
-                                    // headerSubfield.AssertValue(optionCalipso.CompartmentBitmap);
-                                    return;
+                                    headerSubfield.AssertValue(optionCalipso.CompartmentBitmap);
+                                    ++optionsIndex;
+                                    break;
 
                                 case "ipv6.opt.router_alert":
                                     headerSubfield.AssertNoFields();
@@ -441,8 +448,14 @@ namespace PcapDotNet.Core.Test
 
                                 case "ipv6.opt.qs_nonce":
                                     headerSubfield.AssertNoFields();
-                                    // TODO: Stop returning and uncomment the code when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10575 is fixed.
-                                    return;
+                                    headerSubfield.AssertShowDecimal(optionQuickStart.Nonce);
+                                    break;
+
+                                case "ipv6.opt.qs_reserved":
+                                    headerSubfield.AssertNoFields();
+                                    headerSubfield.AssertShowDecimal(0);
+                                    ++optionsIndex;
+                                    break;
 
                                 case "ipv6.opt.pad1":
                                     headerSubfield.AssertNoFields();

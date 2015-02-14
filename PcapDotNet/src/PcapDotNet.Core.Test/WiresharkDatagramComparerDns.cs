@@ -373,8 +373,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.wks.protocol":
-                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10675 is fixed.
-//                            dataField.AssertShowDecimal((byte)wksData.Protocol);
+                            dataField.AssertShowDecimal((byte)wksData.Protocol);
                             break;
 
                         case "dns.wks.bits":
@@ -567,8 +566,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.idsn.sa.address":
-                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10650 is fixed.
-//                            dataField.AssertValue(isdnData.Subaddress);
+                            dataField.AssertValue(isdnData.Subaddress);
                             break;
 
                         default:
@@ -820,7 +818,35 @@ namespace PcapDotNet.Core.Test
                             dataField.AssertShowDecimal(locData.Version);
                             break;
 
+                        // TODO: Remove this case when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10960 is fixed.
                         case "dns.loc.unknown_data":
+                            break;
+
+                        case "dns.loc.size":
+                            string sizeValue = dataField.Showname().Split(new[] {'(', ')'})[1];
+                            Assert.AreEqual((locData.Size / 100) + " m", sizeValue);
+                            break;
+
+                        case "dns.loc.horizontal_precision":
+                            string horizontalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
+                            Assert.AreEqual((locData.HorizontalPrecision / 100).ToString(), horizontalPrecisionValue);
+                            break;
+
+                        case "dns.loc.vertial_precision":
+                            string verticalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
+                            Assert.AreEqual((locData.VerticalPrecision / 100).ToString(), verticalPrecisionValue);
+                            break;
+
+                        case "dns.loc.latitude":
+                            dataField.AssertShowDecimal(locData.Latitude);
+                            break;
+
+                        case "dns.loc.longitude":
+                            dataField.AssertShowDecimal(locData.Longitude);
+                            break;
+
+                        case "dns.loc.altitude":
+                            dataField.AssertShowDecimal(locData.Altitude);
                             break;
 
                         default:
@@ -915,8 +941,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.naptr.replacement_length":
-                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10700 is fixed.
-//                            dataField.AssertShowDecimal(naPtrData.Replacement.NonCompressedLength);
+                            dataField.AssertShowDecimal(naPtrData.Replacement.NonCompressedLength);
                             break;
 
                         case "dns.naptr.replacement":
@@ -981,8 +1006,7 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.a6.address_suffix":
-                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10652 is fixed.
-//                            Assert.AreEqual(new IpV6Address(dataFieldShow), a6Data.AddressSuffix);
+                            Assert.AreEqual(new IpV6Address(dataFieldShow), a6Data.AddressSuffix);
                             break;
 
                         case "dns.a6.prefix_name":
@@ -1123,7 +1147,10 @@ namespace PcapDotNet.Core.Test
                         case "dns.apl.afdpart.ipv4":
                         case "dns.apl.afdpart.ipv6":
                             if (dataFieldName != "dns.apl.afdpart.data")
-                                Assert.AreEqual(AddressFamily.IpV4, aplData.Items[_aplItemIndex - 1].AddressFamily);
+                            {
+                                Assert.AreEqual(dataFieldName == "dns.apl.afdpart.ipv4" ? AddressFamily.IpV4 : AddressFamily.IpV6,
+                                                aplData.Items[_aplItemIndex - 1].AddressFamily);
+                            }
                             dataField.AssertValue(aplData.Items[_aplItemIndex - 1].AddressFamilyDependentPart);
                             break;
 

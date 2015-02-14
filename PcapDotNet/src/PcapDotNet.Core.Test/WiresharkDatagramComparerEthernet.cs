@@ -31,7 +31,9 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "eth.trailer":
-                    field.AssertValue(ethernetDatagram.Trailer);
+                    // TODO: Support RARP.
+                    if (ethernetDatagram.EtherType != EthernetType.ReverseArp)
+                        field.AssertValue(ethernetDatagram.Trailer);
                     break;
 
                 case "eth.fcs":

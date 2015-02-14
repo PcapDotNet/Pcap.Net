@@ -602,9 +602,6 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "Mobility Options":
-                            // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10703 is fixed.
-                            if (mobilityHeader.MobilityHeaderType == IpV6MobilityHeaderType.Experimental)
-                                break;
                             int optionIndex = 0;
                             foreach (XElement optionField in field.Fields())
                             {
@@ -660,16 +657,8 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.IpV4DefaultRouterAddress:
                                                 var ipV4DefaultRouterAddress = (IpV6MobilityOptionIpV4DefaultRouterAddress)option;
                                                 optionField.AssertShow("IPv4 Default-Router Address: " + ipV4DefaultRouterAddress.DefaultRouterAddress);
-                                                bool encounteredOptionTypeInIpV4DefaultRouterAddress = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10631 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInIpV4DefaultRouterAddress)
-                                                            continue;
-                                                        encounteredOptionTypeInIpV4DefaultRouterAddress = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
                                                     optionSubfield.AssertNoFields();
@@ -744,16 +733,8 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.IpV4HomeAddressRequest:
                                                 var ipV4HomeAddressRequest = (IpV6MobilityOptionIpV4HomeAddressRequest)option;
                                                 optionField.AssertShow("IPv4 Home Address Request: " + ipV4HomeAddressRequest.HomeAddress);
-                                                bool encounteredOptionTypeInIpV4HomeAddressRequest = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInIpV4HomeAddressRequest)
-                                                            continue;
-                                                        encounteredOptionTypeInIpV4HomeAddressRequest = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -875,16 +856,8 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.VendorSpecific:
                                                 Assert.IsTrue(optionField.Show().StartsWith("Vendor Specific: "));
                                                 IpV6MobilityOptionVendorSpecific vendorSpecific = (IpV6MobilityOptionVendorSpecific)option;
-                                                bool encounteredOptionType = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionType)
-                                                            continue;
-                                                        encounteredOptionType = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
                                                     optionSubfield.AssertNoFields();
@@ -1012,16 +985,8 @@ namespace PcapDotNet.Core.Test
                                                 optionField.AssertShow("Authorization Data");
                                                 IpV6MobilityOptionBindingAuthorizationData authorizationData =
                                                     (IpV6MobilityOptionBindingAuthorizationData)option;
-                                                bool encounteredOptionTypeInBindingAuthorizationData = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10623 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInBindingAuthorizationData)
-                                                            continue;
-                                                        encounteredOptionTypeInBindingAuthorizationData = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -1054,17 +1019,8 @@ namespace PcapDotNet.Core.Test
                                             case IpV6MobilityOptionType.IpV4HomeAddress:
                                                 optionField.AssertShow("IPv4 Home Address");
                                                 IpV6MobilityOptionIpV4HomeAddress ipV4HomeAddress = (IpV6MobilityOptionIpV4HomeAddress)option;
-                                                bool encounteredOptionTypeInIpV4HomeAddress = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInIpV4HomeAddress)
-                                                            continue;
-                                                        encounteredOptionTypeInIpV4HomeAddress = true;
-                                                    }
-
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -1275,17 +1231,8 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.MobileNodeGroupIdentifier:
                                                 var mobileNodeGroupIdentifier = (IpV6MobilityOptionMobileNodeGroupIdentifier)option;
-                                                bool encounteredOptionTypeInMobileNodeGroupIdentifier = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInMobileNodeGroupIdentifier)
-                                                            continue;
-                                                        encounteredOptionTypeInMobileNodeGroupIdentifier = true;
-                                                    }
-
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -1326,8 +1273,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.badff.auth":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10577 is fixed.
-//                                                            optionSubfield.AssertValue(bindingAuthorizationDataForFmIpV6.Authenticator);
+                                                            optionSubfield.AssertValue(bindingAuthorizationDataForFmIpV6.Authenticator);
                                                             break;
 
                                                         default:
@@ -1352,8 +1298,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.mnlli.lli":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10578 is fixed.
-//                                                            optionSubfield.AssertValue(mobileNodeLinkLayerIdentifier.LinkLayerIdentifier);
+                                                            optionSubfield.AssertValue(mobileNodeLinkLayerIdentifier.LinkLayerIdentifier);
                                                             break;
 
                                                         default:
@@ -1438,8 +1383,7 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.phkt.phkt":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10619 is fixed.
-//                                                            optionSubfield.AssertValue(permanentHomeKeygenToken.PermanentHomeKeygenToken);
+                                                            optionSubfield.AssertValue(permanentHomeKeygenToken.PermanentHomeKeygenToken);
                                                             break;
 
                                                         default:
@@ -1460,13 +1404,11 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.redir.k":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10622 is fixed.
-//                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV6 != null);
+                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV6 != null);
                                                             break;
 
                                                         case "mip6.redir.n":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10622 is fixed.
-//                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV4 != null);
+                                                            optionSubfield.AssertShowDecimal(redirect.LocalMobilityAddressIpV4 != null);
                                                             break;
 
                                                         case "mip6.redir.reserved":
@@ -1499,8 +1441,7 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.mocot.co_keygen_tok":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10624 is fixed.
-//                                                            optionSubfield.AssertValue(careOfTest.CareOfKeygenToken);
+                                                            optionSubfield.AssertValue(careOfTestOption.CareOfKeygenToken);
                                                             break;
 
                                                         default:
@@ -1517,7 +1458,16 @@ namespace PcapDotNet.Core.Test
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
-                                                    // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10625 is fixed.
+                                                    switch (optionSubfield.Name())
+                                                    {
+                                                        case "mip6.mseg_id.timestamp":
+                                                            optionSubfield.AssertValue(replayProtection.Timestamp);
+                                                            break;
+
+                                                        default:
+                                                            throw new InvalidOperationException(string.Format("Invalid IPv6 Mobility option subfield {0}",
+                                                                                                              optionSubfield.Name()));
+                                                    }
                                                 }
                                                 break;
 
@@ -1536,8 +1486,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.auth.mobility_spi":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10626 is fixed.
-//                                                            optionSubfield.AssertShowDecimal(authentication.MobilitySecurityParameterIndex);
+                                                            optionSubfield.AssertShowDecimal(authentication.MobilitySecurityParameterIndex);
                                                             break;
 
                                                         case "mip6.auth.auth_data":
@@ -1579,16 +1528,8 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.IpV4DhcpSupportMode:
                                                 var ipV4DhcpSupportMode = (IpV6MobilityOptionIpV4DhcpSupportMode)option;
-                                                bool encounteredOptionTypeInIpV4DhcpSupportMode = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInIpV4DhcpSupportMode)
-                                                            continue;
-                                                        encounteredOptionTypeInIpV4DhcpSupportMode = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -1612,16 +1553,8 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.DnsUpdate:
                                                 var dnsUpdate = (IpV6MobilityOptionDnsUpdate)option;
-                                                bool encounteredOptionTypeInDnsUpdate = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInDnsUpdate)
-                                                            continue;
-                                                        encounteredOptionTypeInDnsUpdate = true;
-                                                    }
                                                     if (HandleCommonMobilityOptionSubfield(optionSubfield, option))
                                                         continue;
 
@@ -1637,8 +1570,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.dnsu.mn_id":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10629 is fixed.
-//                                                            optionSubfield.AssertValue(dnsUpdate.MobileNodeIdentity);
+                                                            optionSubfield.AssertValue(dnsUpdate.MobileNodeIdentity);
                                                             break;
 
                                                         default:
@@ -1659,22 +1591,20 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mmip6.lmaa.opt_code":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
-//                                                            optionSubfield.AssertShowDecimal((byte)localMobilityAnchorAddress.Code);
+                                                            optionSubfield.AssertShowDecimal((byte)localMobilityAnchorAddress.Code);
                                                             break;
 
                                                         case "mmip6.lmaa.reserved":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
-//                                                            optionSubfield.AssertShowDecimal(0);
+                                                            optionSubfield.AssertShowDecimal(0);
                                                             break;
 
                                                         case "mip6.lmaa.ipv6":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
-//                                                                optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10961 is fixed.
+//                                                            optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
                                                             break;
 
                                                         case "mip6.lmaa.ipv4":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10630 is fixed.
+                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10961 is fixed.
 //                                                            optionSubfield.AssertShow(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV4.Value.ToString());
                                                             break;
 
@@ -1703,40 +1633,25 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mmip6.cr.req_type":
-                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
-                                                            if (requestIndex == contextRequest.Requests.Count)
-                                                                continue;
                                                             optionSubfield.AssertShowDecimal(contextRequest.Requests[requestIndex].RequestType);
                                                             break;
 
                                                         case "mmip6.cr.req_length":
-                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
-                                                            if (requestIndex == contextRequest.Requests.Count)
-                                                                continue;
                                                             optionSubfield.AssertShowDecimal(contextRequest.Requests[requestIndex].OptionLength);
                                                             if (contextRequest.Requests[requestIndex].OptionLength == 0)
                                                                 ++requestIndex;
                                                             break;
 
                                                         case "mip6.vsm.vendorId":
-                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
-                                                            if (requestIndex == contextRequest.Requests.Count)
-                                                                continue;
                                                             optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option.Subsegment(0, 4));
                                                             break;
 
                                                         case "mip6.vsm.subtype":
-                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
-                                                            if (requestIndex == contextRequest.Requests.Count)
-                                                                continue;
                                                             optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option.Subsegment(4, 1));
                                                             ++requestIndex;
                                                             break;
 
                                                         case "":
-                                                            // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10676 is fixed.
-                                                            if (requestIndex == contextRequest.Requests.Count)
-                                                                continue;
                                                             optionSubfield.AssertValue(contextRequest.Requests[requestIndex].Option);
                                                             ++requestIndex;
                                                             break;
@@ -1780,8 +1695,7 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.sign.sign":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10653 is fixed.
-//                                                            optionSubfield.AssertValue(signature.Signature);
+                                                            optionSubfield.AssertValue(signature.Signature);
                                                             break;
 
                                                         default:
@@ -1863,8 +1777,7 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.cgar.cga_par":
-                                                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10654 is fixed.
-//                                                            optionSubfield.AssertValue(cryptographicallyGeneratedAddressParameters.CryptographicallyGeneratedAddressParameters);
+                                                            optionSubfield.AssertValue(cryptographicallyGeneratedAddressParameters.CryptographicallyGeneratedAddressParameters);
                                                             break;
 
                                                         default:
@@ -1955,8 +1868,7 @@ namespace PcapDotNet.Core.Test
                                                     switch (optionSubfield.Name())
                                                     {
                                                         case "mip6.em.data":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10682 is fixed.
-//                                                            optionSubfield.AssertValue(experimental.Data);
+                                                            optionSubfield.AssertValue(experimental.Data);
                                                             break;
 
                                                         default:
@@ -1989,16 +1901,8 @@ namespace PcapDotNet.Core.Test
 
                                             case IpV6MobilityOptionType.CareOfTestInit:
                                                 optionField.AssertShow("Care-of Test Init");
-                                                bool encounteredOptionTypeInCareOfTestInit = false;
                                                 foreach (XElement optionSubfield in optionField.Fields())
                                                 {
-                                                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-                                                    if (optionSubfield.Name() == "mip6.mobility_opt")
-                                                    {
-                                                        if (encounteredOptionTypeInCareOfTestInit)
-                                                            continue;
-                                                        encounteredOptionTypeInCareOfTestInit = true;
-                                                    }
                                                     Assert.IsTrue(HandleCommonMobilityOptionSubfield(optionSubfield, option));
                                                 }
                                                 break;
@@ -2106,8 +2010,7 @@ namespace PcapDotNet.Core.Test
             {
                 case "mip6.mobility_opt":
                     optionSubfield.AssertNoFields();
-                    // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10618 is fixed.
-//                    optionSubfield.AssertShowDecimal((byte)option.OptionType);
+                    optionSubfield.AssertShowDecimal((byte)option.OptionType);
                     return true;
 
                 case "mip6.mobility_opt.len":

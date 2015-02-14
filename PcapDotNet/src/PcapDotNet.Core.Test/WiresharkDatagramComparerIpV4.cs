@@ -23,9 +23,6 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "ip.version":
-                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10706 is fixed.
-                    if (field.Show() != ipV4Datagram.Version.ToString())
-                        return false;
                     field.AssertShowDecimal(ipV4Datagram.Version);
                     field.AssertNoFields();
                     break;
@@ -140,14 +137,20 @@ namespace PcapDotNet.Core.Test
 
                 case "ip.dst":
                 case "ip.dst_host":
-                    field.AssertShow(ipV4Datagram.Destination.ToString());
+                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply option is supported.
+                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply))
+                        field.AssertShow(ipV4Datagram.Destination.ToString());
                     field.AssertNoFields();
                     break;
 
                 case "ip.addr":
                 case "ip.host":
-                    Assert.IsTrue(field.Show() == ipV4Datagram.Source.ToString() ||
-                                  field.Show() == ipV4Datagram.Destination.ToString());
+                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply option is supported.
+                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply))
+                    {
+                        Assert.IsTrue(field.Show() == ipV4Datagram.Source.ToString() ||
+                                      field.Show() == ipV4Datagram.Destination.ToString());
+                    }
                     field.AssertNoFields();
                     break;
 

@@ -156,6 +156,10 @@ namespace PcapDotNet.Core.Test
                 case "icmp.resptime":
                     break;
 
+                // TODO: Remove this case when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10939 is fixed.
+                case "icmp.length":
+                    break;
+
                 default:
                     if (!field.Name().StartsWith("lt2p.") &&
                         field.Name() != "pweth" &&
