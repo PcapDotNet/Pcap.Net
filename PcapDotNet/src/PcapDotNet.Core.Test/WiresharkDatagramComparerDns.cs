@@ -818,34 +818,40 @@ namespace PcapDotNet.Core.Test
                             dataField.AssertShowDecimal(locData.Version);
                             break;
 
-                        // TODO: Remove this case when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10960 is fixed.
                         case "dns.loc.unknown_data":
+                            Assert.AreNotEqual(0, locData.Version);
                             break;
 
                         case "dns.loc.size":
+                            Assert.AreEqual(0, locData.Version);
                             string sizeValue = dataField.Showname().Split(new[] {'(', ')'})[1];
                             Assert.AreEqual((locData.Size / 100) + " m", sizeValue);
                             break;
 
                         case "dns.loc.horizontal_precision":
+                            Assert.AreEqual(0, locData.Version);
                             string horizontalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
                             Assert.AreEqual((locData.HorizontalPrecision / 100).ToString(), horizontalPrecisionValue);
                             break;
 
                         case "dns.loc.vertial_precision":
+                            Assert.AreEqual(0, locData.Version);
                             string verticalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
                             Assert.AreEqual((locData.VerticalPrecision / 100).ToString(), verticalPrecisionValue);
                             break;
 
                         case "dns.loc.latitude":
+                            Assert.AreEqual(0, locData.Version);
                             dataField.AssertShowDecimal(locData.Latitude);
                             break;
 
                         case "dns.loc.longitude":
+                            Assert.AreEqual(0, locData.Version);
                             dataField.AssertShowDecimal(locData.Longitude);
                             break;
 
                         case "dns.loc.altitude":
+                            Assert.AreEqual(0, locData.Version);
                             dataField.AssertShowDecimal(locData.Altitude);
                             break;
 
