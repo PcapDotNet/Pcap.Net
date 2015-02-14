@@ -78,7 +78,12 @@ namespace PcapDotNet.Packets.Test
                 switch (icmpLayer.MessageType)
                 {
                     case IcmpMessageType.ParameterProblem:
-                        ((IcmpParameterProblemLayer)icmpLayer).Pointer %= (byte)icmpPayloadLength;
+                        if (icmpPayloadLength % 4 != 0)
+                            icmpPayloadLayers = icmpPayloadLayers.Concat(new[] {new PayloadLayer {Data = random.NextDatagram(4 - icmpPayloadLength % 4)}});
+                        icmpPayloadLength = icmpPayloadLayers.Select(layer => layer.Length).Sum();
+                        IcmpParameterProblemLayer icmpParameterProblemLayer = (IcmpParameterProblemLayer)icmpLayer;
+                        icmpParameterProblemLayer.Pointer = (byte)(icmpParameterProblemLayer.Pointer % icmpPayloadLength);
+                        icmpParameterProblemLayer.OriginalDatagramLength = icmpPayloadLength;
                         break;
 
                     case IcmpMessageType.SecurityFailures:

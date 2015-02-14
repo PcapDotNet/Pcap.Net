@@ -149,7 +149,7 @@ namespace PcapDotNet.Packets.Icmp
         TimeExceeded = 0x0B,
 
         /// <summary>
-        /// RFC 792.
+        /// RFCs 792, 4884.
         /// 
         /// <para>
         /// If the gateway or host processing a datagram finds a problem with the header parameters such that it cannot complete processing the datagram it must discard the datagram.  

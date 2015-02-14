@@ -36,7 +36,8 @@ namespace PcapDotNet.Packets.TestUtils
                     return new IcmpParameterProblemLayer
                            {
                                Checksum = checksum,
-                               Pointer = random.NextByte()
+                               Pointer = random.NextByte(),
+                               OriginalDatagramLength = random.NextByte() * sizeof(uint),
                            };
 
                 case IcmpMessageType.SourceQuench:
@@ -192,11 +193,18 @@ namespace PcapDotNet.Packets.TestUtils
             {
                 case IcmpMessageType.DestinationUnreachable:
                 case IcmpMessageType.TimeExceeded:
-                case IcmpMessageType.ParameterProblem:
                 case IcmpMessageType.SourceQuench:
                 case IcmpMessageType.Redirect:
                 case IcmpMessageType.SecurityFailures:
                     icmpPayloadLayers = IEnumerableExtensions.Concat(icmpPayloadLayers, random.NextIpV4Layer(), random.NextPayloadLayer(IcmpIpV4HeaderPlus64BitsPayloadDatagram.OriginalDatagramPayloadLength));
+                    break;
+                case IcmpMessageType.ParameterProblem:
+                    IpV4Layer ipV4Layer = random.NextIpV4Layer();
+                    icmpPayloadLayers =
+                        IEnumerableExtensions.Concat(icmpPayloadLayers, ipV4Layer,
+                                                     random.NextPayloadLayer(random.NextInt(0,
+                                                                                            IcmpParameterProblemLayer.OriginalDatagramLengthMaxValue + 1 -
+                                                                                            ipV4Layer.Length)));
                     break;
                 case IcmpMessageType.ConversionFailed:
                     IpV4Layer icmpIpV4Layer = random.NextIpV4Layer();
