@@ -70,6 +70,13 @@ namespace PcapDotNet.Packets.IpV4
         MaximumTransmissionUnitProbe = 11,
 
         /// <summary>
+        /// MTU Reply.
+        /// RFCs 1063, 1191.
+        /// Obsoleted.
+        /// </summary>
+        MaximumTransmissionUnitReply = 12,
+
+        /// <summary>
         /// Quick Start (QS). RFC 4782.  
         /// </summary>
         QuickStart = 25,

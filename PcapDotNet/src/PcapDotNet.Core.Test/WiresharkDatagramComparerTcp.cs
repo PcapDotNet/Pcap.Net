@@ -508,7 +508,7 @@ namespace PcapDotNet.Core.Test
 
                             case (TcpOptionType)30:
                                 // TODO: Support 30.
-                                Assert.IsTrue(field.Show().StartsWith("Multipath TCP: "));
+                                Assert.IsTrue(field.Show().StartsWith("Multipath TCP"));
                                 break;
 
                             case (TcpOptionType)78:
