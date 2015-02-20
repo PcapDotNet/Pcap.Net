@@ -286,8 +286,8 @@ namespace PcapDotNet.Core.Test
                 PacketCommunicatorReceiveResult result = communicator.ReceiveStatistics(out statistics);
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
-                Assert.AreEqual<uint>(0, statistics.AcceptedPackets);
-                Assert.AreEqual<uint>(0, statistics.AcceptedBytes);
+                Assert.AreEqual<ulong>(0, statistics.AcceptedPackets);
+                Assert.AreEqual<ulong>(0, statistics.AcceptedBytes);
 
                 for (int i = 0; i != NumPacketsToSend; ++i)
                     communicator.SendPacket(sentPacket);
@@ -296,9 +296,9 @@ namespace PcapDotNet.Core.Test
 
                 Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
                 MoreAssert.IsInRange(DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(1), statistics.Timestamp);
-                Assert.AreEqual<uint>(NumPacketsToSend, statistics.AcceptedPackets, "AcceptedPackets");
-                // Todo check byte statistics
-//                Assert.AreEqual<uint>((uint)(sentPacket.Length * NumPacketsToSend), statistics.AcceptedBytes,
+                Assert.AreEqual<ulong>(NumPacketsToSend, statistics.AcceptedPackets, "AcceptedPackets");
+                // Todo check byte statistics. See http://www.winpcap.org/pipermail/winpcap-users/2015-February/004931.html
+//                Assert.AreEqual<long>((sentPacket.Length * NumPacketsToSend), statistics.AcceptedBytes,
 //                                      "AcceptedBytes. Diff Per Packet: " +
 //                                      (statistics.AcceptedBytes - sentPacket.Length * NumPacketsToSend) /
 //                                      ((double)NumPacketsToSend));
@@ -705,8 +705,8 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual(expectedResult, result, "Result");
                 Assert.AreEqual(expectedNumStatistics, numStatisticsGot, "NumStatistics");
                 Assert.AreEqual((ulong)expectedNumPackets, totalPackets, "NumPackets");
-                // Todo check bytes statistics
-                //                Assert.AreEqual<ulong>((ulong)(NumPacketsToSend * sentPacket.Length), totalBytes, "NumBytes");
+                // Todo check byte statistics. See http://www.winpcap.org/pipermail/winpcap-users/2015-February/004931.html
+//                Assert.AreEqual((ulong)(numPacketsToSend * sentPacket.Length), totalBytes, "NumBytes");
                 MoreAssert.IsInRange(expectedMinSeconds, expectedMaxSeconds, (finishedWaiting - startWaiting).TotalSeconds);
             }
         }
