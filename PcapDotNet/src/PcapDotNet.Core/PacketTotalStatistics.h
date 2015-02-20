@@ -28,6 +28,7 @@ namespace PcapDotNet { namespace Core
 
         /// <summary>
         /// Number of packets dropped by the interface.
+        /// Not yet supported.
         /// </summary>
         property unsigned int PacketsDroppedByInterface
         {
