@@ -9,12 +9,12 @@ DateTime PacketSampleStatistics::Timestamp::get()
 {
     return _timestamp;
 }
-unsigned long PacketSampleStatistics::AcceptedPackets::get()
+unsigned __int64 PacketSampleStatistics::AcceptedPackets::get()
 {
     return _acceptedPackets;
 }
 
-unsigned long PacketSampleStatistics::AcceptedBytes::get()
+unsigned __int64 PacketSampleStatistics::AcceptedBytes::get()
 {
     return _acceptedBytes;
 }
@@ -30,6 +30,6 @@ PacketSampleStatistics::PacketSampleStatistics(const pcap_pkthdr& packetHeader, 
 {
     PacketTimestamp::PcapTimestampToDateTime(packetHeader.ts, _timestamp);
 
-    _acceptedPackets = *reinterpret_cast<const unsigned long*>(packetData);
-    _acceptedBytes = *reinterpret_cast<const unsigned long*>(packetData + 8);
+    _acceptedPackets = *reinterpret_cast<const unsigned __int64*>(packetData);
+    _acceptedBytes = *reinterpret_cast<const unsigned __int64*>(packetData + 8);
 }

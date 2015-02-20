@@ -21,17 +21,17 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// The number of packets received during the last interval.
         /// </summary>
-        property unsigned long AcceptedPackets
+        property unsigned __int64 AcceptedPackets
         {
-            unsigned long get();
+            unsigned __int64 get();
         }
 
         /// <summary>
         /// The number of bytes received during the last interval.
         /// </summary>
-        property unsigned long AcceptedBytes
+        property unsigned __int64 AcceptedBytes
         {
-            unsigned long get();
+            unsigned __int64 get();
         }
 
         virtual System::String^ ToString() override;
@@ -41,7 +41,7 @@ namespace PcapDotNet { namespace Core
 
     private:
         System::DateTime _timestamp;
-        unsigned long _acceptedPackets;
-        unsigned long _acceptedBytes;
+        unsigned __int64 _acceptedPackets;
+        unsigned __int64 _acceptedBytes;
     };
 }}
