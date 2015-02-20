@@ -26,6 +26,7 @@ namespace PcapDotNet { namespace Core
             unsigned int get();
         }
 
+        // TODO: Update documentation when support is added.
         /// <summary>
         /// Number of packets dropped by the interface.
         /// Not yet supported.
