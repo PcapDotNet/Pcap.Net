@@ -1,3 +1,4 @@
+using System;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
@@ -31,9 +32,15 @@ namespace PcapDotNet.Packets.Icmp
             {
                 if (_ipV4 == null && Length >= HeaderLength)
                 {
-                    _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
-                    // TODO: Do this processing without recreating the datagram again.
-                    ProcessIpV4Payload(ref _ipV4);
+                    if (IsIpV4PayloadLimited)
+                    {
+                        int ipV4HeaderLength = IpV4Datagram.GetHeaderLength(Subsegment(HeaderLength, Length - HeaderLength));
+                        _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Math.Min(Length - HeaderLength, ipV4HeaderLength + IpV4PayloadLimit));
+                    }
+                    else
+                    {
+                        _ipV4 = new IpV4Datagram(Buffer, StartOffset + HeaderLength, Length - HeaderLength);
+                    }
                 }
                 return _ipV4;
             }
@@ -52,8 +59,14 @@ namespace PcapDotNet.Packets.Icmp
             return (ip.Length >= IpV4Datagram.HeaderMinimumLength && ip.Length >= ip.HeaderLength);
         }
 
-        internal virtual void ProcessIpV4Payload(ref IpV4Datagram ipV4)
+        internal virtual int IpV4PayloadLimit
         {
+            get { throw new NotImplementedException(); }
+        }
+
+        internal virtual bool IsIpV4PayloadLimited
+        {
+            get { return false; }
         }
 
         private IpV4Datagram _ipV4;

@@ -39,5 +39,15 @@ namespace PcapDotNet.Packets.Icmp
 
             return IpV4.Payload.Length == OriginalDatagramPayloadLength;
         }
+
+        internal override bool IsIpV4PayloadLimited
+        {
+            get { return true; }
+        }
+
+        internal override int IpV4PayloadLimit
+        {
+            get { return OriginalDatagramPayloadLength; }
+        }
     }
 }
