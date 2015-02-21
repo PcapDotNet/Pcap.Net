@@ -94,6 +94,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsOptionCode.NameServerIdentifier:
                     return new DnsOptionAnything(DnsOptionCode.NameServerIdentifier, random.NextDataSegment(random.NextInt(0, 100)));
 
+                case DnsOptionCode.ClientSubnet:
+                    return new DnsOptionClientSubnet(random.NextEnum<AddressFamily>(), random.NextByte(), random.NextByte(), random.NextDataSegment(random.NextInt(0, 50)));
+
                 default:
                     throw new InvalidOperationException("Invalid value");
             }

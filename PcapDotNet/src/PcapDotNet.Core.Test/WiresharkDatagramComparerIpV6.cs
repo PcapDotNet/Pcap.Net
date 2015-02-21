@@ -103,14 +103,12 @@ namespace PcapDotNet.Core.Test
                     {
                         Assert.IsFalse(ipV6Datagram.ExtensionHeaders.IsValid);
                         int maxLength = ipV6Datagram.Length - IpV6Datagram.HeaderLength - ipV6Datagram.ExtensionHeaders.BytesLength;
-                        if (field.Fields().Any(subfield => subfield.Name() == ""))
+                        if (field.Fields().Any(subfield => subfield.Name() == "ipv6.opt.length"))
                         {
-                            int length = int.Parse(
-                                field.Fields().Where(subfield => subfield.Name() == "" && subfield.Show().StartsWith("Length:")).Select(
-                                    subfield => subfield.Show().Split(new[] {':', '(', ' '}, StringSplitOptions.RemoveEmptyEntries)[2]).First());
-
+                            int length = int.Parse(field.Fields().First(subfield => subfield.Name() == "ipv6.opt.length").Show());
                             MoreAssert.IsBigger(maxLength, length);
-                        } else
+                        }
+                        else 
                         {
                             Assert.AreEqual(6, maxLength);
                         }

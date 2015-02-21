@@ -58,11 +58,13 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             case "ip.flags.df":
-                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.DoNotFragment) == IpV4FragmentationOptions.DoNotFragment);
+                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.DoNotFragment) ==
+                                                           IpV4FragmentationOptions.DoNotFragment);
                                 break;
 
                             case "ip.flags.mf":
-                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.MoreFragments) == IpV4FragmentationOptions.MoreFragments);
+                                subfield.AssertShowDecimal((ipV4Datagram.Fragmentation.Options & IpV4FragmentationOptions.MoreFragments) ==
+                                                           IpV4FragmentationOptions.MoreFragments);
                                 break;
 
                             default:
@@ -137,16 +139,20 @@ namespace PcapDotNet.Core.Test
 
                 case "ip.dst":
                 case "ip.dst_host":
-                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply option is supported.
-                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply))
+                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply and CommercialSecurity options are supported.
+                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply ||
+                                                                                            option.OptionType == IpV4OptionType.CommercialSecurity))
+                    {
                         field.AssertShow(ipV4Datagram.Destination.ToString());
+                    }
                     field.AssertNoFields();
                     break;
 
                 case "ip.addr":
                 case "ip.host":
-                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply option is supported.
-                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply))
+                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10959 is fixed or (worst case) when MTU Reply and CommercialSecurity options are supported.
+                    if (ipV4Datagram.Options == null || !ipV4Datagram.Options.Any(option => option.OptionType == IpV4OptionType.MaximumTransmissionUnitReply ||
+                                                                                            option.OptionType == IpV4OptionType.CommercialSecurity))
                     {
                         Assert.IsTrue(field.Show() == ipV4Datagram.Source.ToString() ||
                                       field.Show() == ipV4Datagram.Destination.ToString());
@@ -184,7 +190,7 @@ namespace PcapDotNet.Core.Test
                                   field.Show().StartsWith("Unknown") ||
                                   field.Show().StartsWith("Security") ||
                                   field.Show().StartsWith("Router Alert (with option length = ") ||
-                                  field.Show().StartsWith("Stream identifier (with option length = ") ||
+                                  field.Show().StartsWith("Stream ID (with option length = ") ||
                                   field.Show().Contains("with too") ||
                                   field.Show().Contains(" bytes says option goes past end of options") ||
                                   field.Show().Contains("(length byte past end of options)") ||
