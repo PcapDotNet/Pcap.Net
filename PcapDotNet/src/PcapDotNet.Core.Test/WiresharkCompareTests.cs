@@ -222,10 +222,8 @@ namespace PcapDotNet.Core.Test
             Packet packet;
             do
             {
-                // TODO. BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
                 DateTime packetTimestamp =
-                    random.NextDateTime(new DateTime(2010, 1, 1), new DateTime(2010, 12, 31)).ToUniversalTime().ToLocalTime();
-                //random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
+                    random.NextDateTime(PacketTimestamp.MinimumPacketTimestamp, PacketTimestamp.MaximumPacketTimestamp).ToUniversalTime().ToLocalTime();
 
                 List<ILayer> layers = new List<ILayer>();
                 EthernetLayer ethernetLayer = random.NextEthernetLayer();
