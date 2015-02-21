@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public int HeaderLength
         {
-            get { return (this[Offset.VersionAndHeaderLength] & 0x0F) * 4; }
+            get { return ReadHeaderLength(this); }
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace PcapDotNet.Packets.IpV4
         /// </summary>
         public override int TotalLength
         {
-            get { return ReadUShort(Offset.TotalLength, Endianity.Big); }
+            get { return ReadTotalLength(this); }
         }
 
         /// <summary>
@@ -228,12 +228,23 @@ namespace PcapDotNet.Packets.IpV4
             return Subsegment(HeaderLength, Length - HeaderLength);
         }
 
-        internal static int GetTotalLength(Datagram ipV4Datagram)
+        internal static int GetHeaderLength(DataSegment ipV4Datagram)
         {
             if (ipV4Datagram.Length < HeaderMinimumLength)
                 return ipV4Datagram.Length;
 
-            ushort totalLength = ipV4Datagram.ReadUShort(Offset.TotalLength, Endianity.Big);
+            int headerLength = ReadHeaderLength(ipV4Datagram);
+            if (ipV4Datagram.Length < headerLength)
+                return ipV4Datagram.Length;
+            return headerLength;
+        }
+
+        internal static int GetTotalLength(DataSegment ipV4Datagram)
+        {
+            if (ipV4Datagram.Length < HeaderMinimumLength)
+                return ipV4Datagram.Length;
+
+            ushort totalLength = ReadTotalLength(ipV4Datagram);
             if (ipV4Datagram.Length < totalLength)
                 return ipV4Datagram.Length;
 
@@ -321,6 +332,16 @@ namespace PcapDotNet.Packets.IpV4
         protected override ushort CalculateTransportChecksum()
         {
             return CalculateTransportChecksum(Buffer, StartOffset, HeaderLength, (ushort)Transport.Length, Transport.ChecksumOffset, Transport.IsChecksumOptional, Destination);
+        }
+
+        private static int ReadHeaderLength(DataSegment ipV4Datagram)
+        {
+            return (ipV4Datagram[Offset.VersionAndHeaderLength] & 0x0F) * 4;
+        }
+
+        private static ushort ReadTotalLength(DataSegment ipV4Datagram)
+        {
+            return ipV4Datagram.ReadUShort(Offset.TotalLength, Endianity.Big);
         }
 
         private ushort CalculateHeaderChecksum()

@@ -74,10 +74,14 @@ namespace PcapDotNet.Packets.Icmp
             return new IcmpParameterProblemDatagram(buffer, offset, length);
         }
 
-        internal override void ProcessIpV4Payload(ref IpV4Datagram ipV4)
+        internal override bool IsIpV4PayloadLimited
         {
-            if (ipV4.Payload.Length > OriginalDatagramLength)
-                ipV4 = new IpV4Datagram(ipV4.Buffer, ipV4.StartOffset, ipV4.HeaderLength + OriginalDatagramLength);
+            get { return true; }
+        }
+
+        internal override int IpV4PayloadLimit
+        {
+            get { return OriginalDatagramLength; }
         }
 
         private IcmpParameterProblemDatagram(byte[] buffer, int offset, int length)

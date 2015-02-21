@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Test
                         icmpPayloadLength = icmpPayloadLayers.Select(layer => layer.Length).Sum();
                         IcmpParameterProblemLayer icmpParameterProblemLayer = (IcmpParameterProblemLayer)icmpLayer;
                         icmpParameterProblemLayer.Pointer = (byte)(icmpParameterProblemLayer.Pointer % icmpPayloadLength);
-                        icmpParameterProblemLayer.OriginalDatagramLength = icmpPayloadLength;
+                        icmpParameterProblemLayer.OriginalDatagramLength = icmpPayloadLength - icmpPayloadLayers.First().Length;
                         break;
 
                     case IcmpMessageType.SecurityFailures:
