@@ -105,6 +105,12 @@ namespace PcapDotNet.Packets.IpV4
         LooseSourceRouting = 131,
 
         /// <summary>
+        /// http://tools.ietf.org/html/draft-ietf-cipso-ipsecurity
+        /// CIPSO  - Commercial Security.
+        /// </summary>
+        CommercialSecurity = 134,
+
+        /// <summary>
         /// Strict Source Routing.  
         /// Used to route the internet datagram based on information supplied by the source.
         /// </summary>

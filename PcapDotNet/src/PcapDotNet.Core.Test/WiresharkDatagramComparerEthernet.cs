@@ -37,7 +37,9 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "eth.fcs":
-                    field.AssertValue(ethernetDatagram.FrameCheckSequence);
+                    // TODO: Support RARP.
+                    if (ethernetDatagram.EtherType != EthernetType.ReverseArp)
+                        field.AssertValue(ethernetDatagram.FrameCheckSequence);
                     break;
 
                 case "eth.padding":

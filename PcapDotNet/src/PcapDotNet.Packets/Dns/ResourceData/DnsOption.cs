@@ -83,6 +83,9 @@ namespace PcapDotNet.Packets.Dns
                 case DnsOptionCode.UpdateLease:
                     return DnsOptionUpdateLease.Read(data);
 
+                case DnsOptionCode.ClientSubnet:
+                    return DnsOptionClientSubnet.Read(data);
+
                 case DnsOptionCode.NameServerIdentifier:
                 default:
                     return new DnsOptionAnything(code, data);

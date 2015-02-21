@@ -157,10 +157,11 @@ namespace PcapDotNet.Core.Test
             }
             else if (resourceRecordFieldsArray.Length < resourceRecordsArray.Length)
             {
-                // TODO: This case should never happen when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
-                XElement lastDnsType = resourceRecordFieldsArray.Last().Fields().Skip(1).First();
-                lastDnsType.AssertName("dns.resp.type");
-                lastDnsType.AssertShowDecimal((ushort)DnsType.NextDomain);
+                // TODO: This case should never happen when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 and https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10988 are fixed.
+                XElement lastDnsTypeField = resourceRecordFieldsArray.Last().Fields().Skip(1).First();
+                lastDnsTypeField.AssertName("dns.resp.type");
+                DnsType lastDnsType = (DnsType)ushort.Parse(lastDnsTypeField.Show());
+                Assert.IsTrue(new[] {DnsType.NextDomain, DnsType.Opt}.Contains(lastDnsType));
             }
             for (int i = 0; i != resourceRecordsArray.Length; ++i)
             {
@@ -208,7 +209,7 @@ namespace PcapDotNet.Core.Test
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
-                        case "dns.resp.cache_flush": // TODO: Find out what does this field symbolize.
+                        case "dns.resp.cache_flush": // TODO: Support MDNS.
                             resourceRecordAttributeField.AssertShowDecimal((ushort)resourceRecord.DnsClass >> 15);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
@@ -229,6 +230,12 @@ namespace PcapDotNet.Core.Test
                             Assert.AreEqual(resourceRecord.DnsType, DnsType.ServerSelection);
                             resourceRecordAttributeField.AssertShow(
                                 resourceRecord.DomainName.ToString().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Skip(2).SequenceToString("."));
+                            resourceRecordAttributeField.AssertNoFields();
+                            break;
+
+                        case "dns.qry.qu":
+                            // TODO: Support MDNS.
+                            resourceRecordAttributeField.AssertShowDecimal(((ushort)resourceRecord.DnsClass >> 15) == 1);
                             resourceRecordAttributeField.AssertNoFields();
                             break;
 
@@ -825,19 +832,19 @@ namespace PcapDotNet.Core.Test
                         case "dns.loc.size":
                             Assert.AreEqual(0, locData.Version);
                             string sizeValue = dataField.Showname().Split(new[] {'(', ')'})[1];
-                            Assert.AreEqual((locData.Size / 100) + " m", sizeValue);
+                            Assert.AreEqual(GetPrecisionValueString(locData.Size) + " m", sizeValue);
                             break;
 
                         case "dns.loc.horizontal_precision":
                             Assert.AreEqual(0, locData.Version);
                             string horizontalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
-                            Assert.AreEqual((locData.HorizontalPrecision / 100).ToString(), horizontalPrecisionValue);
+                            Assert.AreEqual(GetPrecisionValueString(locData.HorizontalPrecision), horizontalPrecisionValue);
                             break;
 
                         case "dns.loc.vertial_precision":
                             Assert.AreEqual(0, locData.Version);
                             string verticalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
-                            Assert.AreEqual((locData.VerticalPrecision / 100).ToString(), verticalPrecisionValue);
+                            Assert.AreEqual(GetPrecisionValueString(locData.VerticalPrecision), verticalPrecisionValue);
                             break;
 
                         case "dns.loc.latitude":
@@ -1077,19 +1084,26 @@ namespace PcapDotNet.Core.Test
                         case "dns.opt":
                             foreach (XElement subfield in dataField.Fields())
                             {
-                                subfield.AssertNoFields();
                                 DnsOption dnsOption = optData.Options.Options[_optOptionIndex];
+                                var clientSubnet = dnsOption as DnsOptionClientSubnet;
                                 switch (subfield.Name())
                                 {
                                     case "dns.opt.code":
+                                        subfield.AssertNoFields();
                                         subfield.AssertShowDecimal((ushort)dnsOption.Code);
                                         break;
 
                                     case "dns.opt.len":
                                         subfield.AssertShowDecimal(dnsOption.DataLength);
+                                        if (subfield.Fields().Any())
+                                        {
+                                            Assert.AreEqual(1, subfield.Fields().Count());
+                                            subfield.Fields().First().AssertName("_ws.expert");
+                                        }
                                         break;
 
                                     case "dns.opt.data":
+                                        subfield.AssertNoFields();
                                         switch (dnsOption.Code)
                                         {
                                             case DnsOptionCode.UpdateLease:
@@ -1097,21 +1111,63 @@ namespace PcapDotNet.Core.Test
                                                 break;
 
                                             case DnsOptionCode.LongLivedQuery:
-                                                byte[] expectedLongLivedQueryValue =
-                                                    new byte[sizeof(ushort) + sizeof(ushort) + sizeof(ushort) + sizeof(ulong) + sizeof(uint)];
+                                                byte[] expectedLongLivedQueryValue = new byte[dnsOption.DataLength];
                                                 var longLivedQuery = (DnsOptionLongLivedQuery)dnsOption;
-                                                int offset = 0;
-                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.Version, Endianity.Big);
-                                                expectedLongLivedQueryValue.Write(ref offset, (ushort)longLivedQuery.OpCode, Endianity.Big);
-                                                expectedLongLivedQueryValue.Write(ref offset, (ushort)longLivedQuery.ErrorCode, Endianity.Big);
-                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.Id, Endianity.Big);
-                                                expectedLongLivedQueryValue.Write(ref offset, longLivedQuery.LeaseLife, Endianity.Big);
+                                                int longLivedQueryOffset = 0;
+                                                expectedLongLivedQueryValue.Write(ref longLivedQueryOffset, longLivedQuery.Version, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref longLivedQueryOffset, (ushort)longLivedQuery.OpCode, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref longLivedQueryOffset, (ushort)longLivedQuery.ErrorCode, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref longLivedQueryOffset, longLivedQuery.Id, Endianity.Big);
+                                                expectedLongLivedQueryValue.Write(ref longLivedQueryOffset, longLivedQuery.LeaseLife, Endianity.Big);
                                                 subfield.AssertValue(expectedLongLivedQueryValue);
+                                                break;
+
+                                            case DnsOptionCode.ClientSubnet:
+                                                byte[] expectedClientSubnetValue = new byte[dnsOption.DataLength];
+                                                int clientSubnetOffset = 0;
+                                                expectedClientSubnetValue.Write(ref clientSubnetOffset, (ushort)clientSubnet.Family, Endianity.Big);
+                                                expectedClientSubnetValue.Write(ref clientSubnetOffset, clientSubnet.SourceNetmask);
+                                                expectedClientSubnetValue.Write(ref clientSubnetOffset, clientSubnet.ScopeNetmask);
+                                                expectedClientSubnetValue.Write(ref clientSubnetOffset, clientSubnet.Address);
+                                                subfield.AssertValue(expectedClientSubnetValue);
                                                 break;
 
                                             default:
                                                 subfield.AssertValue(((DnsOptionAnything)dnsOption).Data);
                                                 break;
+                                        }
+                                        if (dnsOption.Code != DnsOptionCode.ClientSubnet)
+                                            ++_optOptionIndex;
+                                        break;
+
+                                    case "dns.opt.client.family":
+                                        subfield.AssertNoFields();
+                                        subfield.AssertShowDecimal((ushort)clientSubnet.Family);
+                                        break;
+
+                                    case "dns.opt.client.netmask":
+                                        subfield.AssertNoFields();
+                                        subfield.AssertShowDecimal(clientSubnet.SourceNetmask);
+                                        break;
+
+                                    case "dns.opt.client.scope":
+                                        subfield.AssertNoFields();
+                                        subfield.AssertShowDecimal(clientSubnet.ScopeNetmask);
+                                        break;
+
+                                    case "dns.opt.client.addr":
+                                    case "dns.opt.client.addr4":
+                                    case "dns.opt.client.addr6":
+                                        subfield.AssertNoFields();
+                                        if (clientSubnet.Address.Length <= 16)
+                                        {
+                                            subfield.AssertValue(clientSubnet.Address);
+                                        }
+                                        else
+                                        {
+                                            subfield.AssertValue(clientSubnet.Address.Take(16));
+                                            // TODO: Remove this return when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10988 is fixed.
+                                            return false;
                                         }
                                         ++_optOptionIndex;
                                         break;
@@ -1773,16 +1829,13 @@ namespace PcapDotNet.Core.Test
         private static string GetPrecisionValueString(ulong value)
         {
             double resultValue = value / 100.0;
-            string valueDescription = " m";
 
-            if (resultValue >= 1000000)
-            {
-                int log = (int)Math.Log10(resultValue);
-                resultValue /= Math.Pow(10, log);
-                valueDescription = "e+00" + log + valueDescription;
-            }
+            if (resultValue < 1000000)
+                return resultValue.ToString();
 
-            return resultValue + valueDescription;
+            int log = (int)Math.Log10(resultValue);
+            resultValue /= Math.Pow(10, log);
+            return resultValue + "e+00" + log;
         }
 
         private int _hipRendezvousServersIndex;

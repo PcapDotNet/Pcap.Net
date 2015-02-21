@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
+using System.Linq;
 
 namespace PcapDotNet.Core.Test
 {
@@ -42,11 +42,28 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "data":
-                    var casted1 = icmpDatagram as IcmpIpV4PayloadDatagram;
-                    if (casted1 != null)
+                    var icmpIpV4PayloadDatagram = icmpDatagram as IcmpIpV4PayloadDatagram;
+                    if (icmpIpV4PayloadDatagram != null)
                     {
-                        if (casted1.IpV4.Protocol != IpV4Protocol.IpComp) // TODO: Support IpComp.
-                            field.AssertDataField(casted1.IpV4.Payload);
+                        if (!new[]
+                                 {
+                                     IpV4Protocol.IpComp, // TODO: Support IpComp.
+                                     IpV4Protocol.Ax25, // TODO: Support Ax25.
+                                     IpV4Protocol.FibreChannel, // TODO: Support FibreChannel.
+                                 }.Contains(icmpIpV4PayloadDatagram.IpV4.Protocol))
+                        {
+                            if (icmpIpV4PayloadDatagram.IpV4.Protocol == IpV4Protocol.Udp)
+                            {
+                                // Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10990 is fixed.
+                                //                                field.AssertDataField(casted1.IpV4.Udp.Payload);
+                            }
+                            else
+                            {
+                                // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10991 and https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10992 are fixed.
+                                if (!(icmpIpV4PayloadDatagram is IcmpParameterProblemDatagram || icmpIpV4PayloadDatagram is IcmpRedirectDatagram))
+                                    field.AssertDataField(icmpIpV4PayloadDatagram.IpV4.Payload);
+                            }
+                        }
                     }
                     else
                     {

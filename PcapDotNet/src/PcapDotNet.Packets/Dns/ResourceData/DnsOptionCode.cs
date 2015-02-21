@@ -28,5 +28,10 @@
         /// NSID.
         /// </summary>
         NameServerIdentifier = 3,
+
+        /// <summary>
+        /// https://tools.ietf.org/html/draft-ietf-dnsop-edns-client-subnet
+        /// </summary>
+        ClientSubnet = 8,
     }
 }

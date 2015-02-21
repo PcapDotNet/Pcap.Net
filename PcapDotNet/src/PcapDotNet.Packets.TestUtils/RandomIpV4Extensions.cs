@@ -75,11 +75,12 @@ namespace PcapDotNet.Packets.TestUtils
             if (maximumOptionLength >= IpV4OptionUnknown.OptionMinimumLength && random.Next(100) > 90)
                 return random.NextIpV4OptionUnknown(maximumOptionLength);
 
-            // TODO: Support MTU Probe and MTU Reply.
+            // TODO: Support MTU Probe, MTU Reply and CommercialSecurity.
             List<IpV4OptionType> impossibleOptionTypes = new List<IpV4OptionType>
                                                              {
                                                                  IpV4OptionType.MaximumTransmissionUnitProbe,
-                                                                 IpV4OptionType.MaximumTransmissionUnitReply
+                                                                 IpV4OptionType.MaximumTransmissionUnitReply,
+                                                                 IpV4OptionType.CommercialSecurity,
                                                              };
             if (maximumOptionLength < IpV4OptionBasicSecurity.OptionMinimumLength)
                 impossibleOptionTypes.Add(IpV4OptionType.BasicSecurity);

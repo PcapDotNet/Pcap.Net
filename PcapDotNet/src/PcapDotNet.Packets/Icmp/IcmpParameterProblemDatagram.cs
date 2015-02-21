@@ -1,4 +1,5 @@
 using System;
+using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -65,7 +66,7 @@ namespace PcapDotNet.Packets.Icmp
         /// </summary>
         protected override bool CalculateIsValid()
         {
-            return base.CalculateIsValid() && Pointer < IpV4.Length && OriginalDatagramLength == IpV4.Length;
+            return base.CalculateIsValid() && Pointer < IpV4.Length && OriginalDatagramLength == IpV4.Payload.Length;
         }
 
         internal override IcmpDatagram CreateInstance(byte[] buffer, int offset, int length)
@@ -73,9 +74,10 @@ namespace PcapDotNet.Packets.Icmp
             return new IcmpParameterProblemDatagram(buffer, offset, length);
         }
 
-        internal override int IpV4Length
+        internal override void ProcessIpV4Payload(ref IpV4Datagram ipV4)
         {
-            get { return Math.Min(Length - HeaderLength, OriginalDatagramLength); }
+            if (ipV4.Payload.Length > OriginalDatagramLength)
+                ipV4 = new IpV4Datagram(ipV4.Buffer, ipV4.StartOffset, ipV4.HeaderLength + OriginalDatagramLength);
         }
 
         private IcmpParameterProblemDatagram(byte[] buffer, int offset, int length)
