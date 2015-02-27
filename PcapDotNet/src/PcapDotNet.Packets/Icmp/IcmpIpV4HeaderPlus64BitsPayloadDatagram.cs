@@ -48,6 +48,7 @@ namespace PcapDotNet.Packets.Icmp
         internal override int IpV4PayloadLimit
         {
             get { return OriginalDatagramPayloadLength; }
-        }
+        }
+
     }
 }
