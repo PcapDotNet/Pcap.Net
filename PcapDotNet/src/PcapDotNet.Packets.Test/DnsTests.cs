@@ -1027,6 +1027,38 @@ namespace PcapDotNet.Packets.Test
             TestResourceRecordIsNotCreatedWithNewLength(DnsType.RouteThrough, resourceData, 1);
         }
 
+        [TestMethod]
+        public void DnsResourceDataKeyKeyTagTest()
+        {
+            var resourceData = new DnsResourceDataKey(false, false, false, false, false, false, DnsKeyNameType.UserOrAccountAtEndEntity,
+                                                      DnsKeySignatoryAttributes.General, DnsKeyProtocol.IpSec, DnsAlgorithm.RsaSha1, null,
+                                                      new DataSegment(new byte[] {1, 2, 3, 4}));
+            Assert.AreEqual(2060, resourceData.KeyTag);
+
+            resourceData = new DnsResourceDataKey(true, true, true, true, true, true, DnsKeyNameType.UserOrAccountAtEndEntity,
+                                                  DnsKeySignatoryAttributes.General, DnsKeyProtocol.IpSec, DnsAlgorithm.RsaSha1, 123,
+                                                  new DataSegment(new byte[] {1, 2, 3, 4}));
+            Assert.AreEqual(64839, resourceData.KeyTag);
+
+            resourceData = new DnsResourceDataKey(true, true, true, true, true, true, DnsKeyNameType.UserOrAccountAtEndEntity,
+                                                  DnsKeySignatoryAttributes.General, DnsKeyProtocol.IpSec, DnsAlgorithm.RsaMd5, 123,
+                                                  new DataSegment(new byte[] {1, 2, 3, 4}));
+            Assert.AreEqual(515, resourceData.KeyTag);
+        }
+
+        [TestMethod]
+        public void DnsResourceDataDnsKeyKeyTagTest()
+        {
+            var resourceData = new DnsResourceDataDnsKey(false, false, false, 123, DnsAlgorithm.RsaSha256, new DataSegment(new byte[] { 1, 2, 3, 4 }));
+            Assert.AreEqual(32526, resourceData.KeyTag);
+
+            resourceData = new DnsResourceDataDnsKey(true, true, true, 123, DnsAlgorithm.RsaSha256, new DataSegment(new byte[] { 1, 2, 3, 4 }));
+            Assert.AreEqual(32911, resourceData.KeyTag);
+
+            resourceData = new DnsResourceDataDnsKey(true, true, true, 123, DnsAlgorithm.RsaMd5, new DataSegment(new byte[] { 1, 2, 3, 4 }));
+            Assert.AreEqual(515, resourceData.KeyTag);
+        }
+
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
         {
             dnsLayer.DomainNameCompressionMode = DnsDomainNameCompressionMode.Nothing;
