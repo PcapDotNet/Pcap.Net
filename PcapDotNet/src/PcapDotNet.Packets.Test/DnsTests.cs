@@ -1059,6 +1059,33 @@ namespace PcapDotNet.Packets.Test
             Assert.AreEqual(515, resourceData.KeyTag);
         }
 
+        [TestMethod]
+        public void DnsOptionClientSubnetTooShort()
+        {
+            DnsLayer dnsLayer =
+                new DnsLayer
+                    {
+                        Answers =
+                            new List<DnsDataResourceRecord>(
+                            new[]
+                                {
+                                    new DnsDataResourceRecord(new DnsDomainName("a"), DnsType.Opt, DnsClass.Internet, 10,
+                                                              new DnsResourceDataOptions(
+                                                                  new DnsOptions(new DnsOptionClientSubnet(AddressFamily.IpV4, 1, 2,
+                                                                                                           new DataSegment(new byte[] {3, 4, 5, 6})))))
+                                }),
+                    };
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(), new IpV4Layer(), new UdpLayer(),
+                                                dnsLayer);
+            packet = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsTrue(packet.Ethernet.IpV4.Udp.Dns.IsValid);
+            packet.Buffer[66] -= 5;
+            packet.Buffer[70] -= 5;
+            packet = new Packet(packet.Buffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(packet.Ethernet.IpV4.Udp.Dns.IsValid);
+        }
+
         private static void TestDomainNameCompression(int expectedCompressionBenefit, DnsLayer dnsLayer)
         {
             dnsLayer.DomainNameCompressionMode = DnsDomainNameCompressionMode.Nothing;
