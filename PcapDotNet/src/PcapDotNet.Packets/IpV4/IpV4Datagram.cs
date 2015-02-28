@@ -347,7 +347,7 @@ namespace PcapDotNet.Packets.IpV4
         private ushort CalculateHeaderChecksum()
         {
             uint sum = Sum16Bits(Buffer, StartOffset, Math.Min(Offset.HeaderChecksum, Length)) +
-                       Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + 2, RealHeaderLength - Offset.HeaderChecksum - 2);
+                       Sum16Bits(Buffer, StartOffset + Offset.HeaderChecksum + sizeof(ushort), RealHeaderLength - Offset.HeaderChecksum - sizeof(ushort));
 
             return Sum16BitsToChecksum(sum);
         }

@@ -40,8 +40,11 @@ namespace PcapDotNet.Core.Test
 
                 case "vlan.len":
                     field.AssertShowDecimal((ushort)vLanTaggedFrameDatagram.EtherType);
-                    field.AssertNumFields(1);
-                    field.Fields().First().AssertName("_ws.expert");
+                    if (field.Fields().Any())
+                    {
+                        field.AssertNumFields(1);
+                        field.Fields().First().AssertName("_ws.expert");
+                    }
                     break;
 
                 case "vlan.trailer":

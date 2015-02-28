@@ -208,6 +208,23 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        public ushort KeyTag
+        {
+            get
+            {
+                if (Algorithm == DnsAlgorithm.RsaMd5)
+                    return PublicKey.ReadUShort(PublicKey.Length - 3, Endianity.Big);
+                ushort flags = BitSequence.Merge((byte)((AuthenticationProhibited ? Mask.AuthenticationProhibited : 0) |
+                                                        (ConfidentialityProhibited ? Mask.ConfidentialityProhibited : 0) |
+                                                        (Experimental ? Mask.Experimental : 0) | (FlagsExtension.HasValue ? Mask.IsFlagsExtension : 0) |
+                                                        (UserAssociated ? Mask.UserAssociated : 0) | (byte)NameType),
+                                                 (byte)((IpSec ? Mask.IpSec : 0) | (Email ? Mask.Email : 0) | (byte)Signatory));
+                ushort protocolAndAlgorithm = BitSequence.Merge((byte)Protocol, (byte)Algorithm);
+                uint sum = (uint)(flags + protocolAndAlgorithm + (FlagsExtension.HasValue ? FlagsExtension.Value : 0) + PublicKey.Sum16Bits());
+                return (ushort)(sum + (sum >> 16));
+            }
+        }
+
         /// <summary>
         /// Two DnsResourceDataKey are equal iff their authentication prohibited, confidentiality prohibited, experimental, user associated, IPSec, email, 
         /// name type, signatory, protocol, algorithm, flags extension and public key fields are equal.

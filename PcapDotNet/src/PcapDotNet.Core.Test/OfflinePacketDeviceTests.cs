@@ -82,8 +82,7 @@ namespace PcapDotNet.Core.Test
         [TestMethod]
         public void OpenOfflineMultipleTimesUnicode()
         {
-            // TODO: Fix so we can go beyond 509 when using unicode filenames.
-            //       See http://www.winpcap.org/pipermail/winpcap-bugs/2012-December/001547.html
+            // TODO: Fix so we can go beyond 509 when using unicode filenames. See http://www.winpcap.org/pipermail/winpcap-bugs/2012-December/001547.html
             TestOpenMultipleTimes(100, @"דמפ.pcap");
         }
 
