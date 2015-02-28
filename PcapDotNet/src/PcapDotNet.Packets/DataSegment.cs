@@ -332,6 +332,11 @@ namespace PcapDotNet.Packets
             return Buffer.ReadIpV6Address(StartOffset + offset, endianity);
         }
 
+        internal uint Sum16Bits()
+        {
+            return Sum16Bits(Buffer, StartOffset, Length);
+        }
+
         /// <summary>
         /// Converts the given 16 bits sum to a checksum.
         /// Sums the two 16 bits in the 32 bits value and if the result is bigger than a 16 bits value repeat.
@@ -339,7 +344,7 @@ namespace PcapDotNet.Packets
         /// </summary>
         /// <param name="sum"></param>
         /// <returns></returns>
-        protected static ushort Sum16BitsToChecksum(uint sum)
+        internal static ushort Sum16BitsToChecksum(uint sum)
         {
             // Take only 16 bits out of the 32 bit sum and add up the carrier.
             // if the results overflows - do it again.

@@ -117,6 +117,20 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        public ushort KeyTag
+        {
+            get
+            {
+                if (Algorithm == DnsAlgorithm.RsaMd5)
+                    return PublicKey.ReadUShort(PublicKey.Length - 3, Endianity.Big);
+                ushort flags = BitSequence.Merge((byte)(ZoneKey ? Mask.ZoneKey : 0),
+                                                 (byte)((Revoke ? Mask.Revoke : 0) | (SecureEntryPoint ? Mask.SecureEntryPoint : 0)));
+                ushort protocolAndAlgorithm = BitSequence.Merge(Protocol, (byte)Algorithm);
+                uint sum = (uint)(flags + protocolAndAlgorithm + PublicKey.Sum16Bits());
+                return (ushort)(sum + (sum >> 16));
+            }
+        }
+
         /// <summary>
         /// Two DnsResourceDataDnsKey are equal iff their zone key, revoke, secure entry point, protocol, algorithm and public key fields are equal.
         /// </summary>

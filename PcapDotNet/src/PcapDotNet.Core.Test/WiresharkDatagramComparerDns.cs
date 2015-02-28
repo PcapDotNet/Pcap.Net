@@ -684,7 +684,7 @@ namespace PcapDotNet.Core.Test
 
                         case "dns.key.key_id":
                             dataField.AssertNoFields();
-                            // TODO: Calculate key tag.
+                            dataField.AssertShowDecimal(keyData.KeyTag);
                             break;
 
                         case "dns.key.public_key":
@@ -1373,8 +1373,8 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.dnskey.key_id":
-                            // TODO: Calculate key tag.
                             dataField.AssertNoFields();
+                            dataField.AssertShowDecimal(dnsKeyData.KeyTag);
                             break;
 
                         case "dns.dnskey.public_key":
