@@ -219,5 +219,21 @@ namespace PcapDotNet.Packets.Test
         {
             Assert.IsInstanceOfType(IcmpDatagram.CreateDatagram(new byte[0], -1, 0), typeof(IcmpUnknownDatagram));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IcmpParameterProblemLayerOriginalDatagramLengthNotRound()
+        {
+            Layer layer = new IcmpParameterProblemLayer {OriginalDatagramLength = 6};
+            Assert.IsNotNull(layer);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
+        public void IcmpParameterProblemLayerOriginalDatagramLengthTooBig()
+        {
+            Layer layer = new IcmpParameterProblemLayer { OriginalDatagramLength = 2000 };
+            Assert.IsNotNull(layer);
+        }
     }
 }
