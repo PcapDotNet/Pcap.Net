@@ -208,6 +208,10 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public DataSegment PublicKey { get; private set; }
 
+        /// <summary>
+        /// Used in other records to efficiently select between multiple keys which may be applicable and thus check that a public key about to be used for the
+        /// computationally expensive effort to check the signature is possibly valid.
+        /// </summary>
         public ushort KeyTag
         {
             get

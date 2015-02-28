@@ -31,13 +31,35 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// The minimum number of bytes this option data can take.
         /// </summary>
-        public const int MininmumDataLength = Offset.Address;
+        public const int MinimumDataLength = Offset.Address;
 
-        public DnsOptionClientSubnet(AddressFamily family, byte sourceMask, byte scopeNetmask, DataSegment address)
+        /// <summary>
+        /// Create a DNS Client Subnet option from family, source netmask, scope netmask and address fields.
+        /// </summary>
+        /// <param name="family">Indicates the family of the address contained in the option.</param>
+        /// <param name="sourceNetmask">
+        /// Representing the length of the netmask pertaining to the query.
+        /// In replies, it mirrors the same value as in the requests.
+        /// It can be set to 0 to disable client-based lookups, in which case the Address field must be absent.
+        /// </param>
+        /// <param name="scopeNetmask">
+        /// Representing the length of the netmask pertaining to the reply.
+        /// In requests, it should be set to the longest cacheable length supported by the Intermediate Nameserver.
+        /// In requests it may be set to 0 to have the Authoritative Nameserver treat the longest cacheable length as the SourceNetmask length.
+        /// In responses, this field is set by the Authoritative Nameserver to indicate the coverage of the response.
+        /// It might or might not match SourceNetmask; it could be shorter or longer.
+        /// </param>
+        /// <param name="address">
+        /// Contains either an IPv4 or IPv6 address, depending on Family, truncated in the request to the number of bits indicated by the Source Netmask field,
+        /// with bits set to 0 to pad up to the end of the last octet used. (This need not be as many octets as a complete address would take.)
+        /// In the reply, if the ScopeNetmask of the request was 0 then Address must contain the same octets as in the request.
+        /// Otherwise, the bits for Address will be significant through the maximum of the SouceNetmask or ScopeNetmask, and 0 filled to the end of an octet.
+        /// </param>
+        public DnsOptionClientSubnet(AddressFamily family, byte sourceNetmask, byte scopeNetmask, DataSegment address)
             : base(DnsOptionCode.ClientSubnet)
         {
             Family = family;
-            SourceNetmask = sourceMask;
+            SourceNetmask = sourceNetmask;
             ScopeNetmask = scopeNetmask;
             Address = address;
         }
@@ -76,7 +98,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public override int DataLength
         {
-            get { return MininmumDataLength + Address.Length; }
+            get { return MinimumDataLength + Address.Length; }
         }
 
         internal override bool EqualsData(DnsOption other)
@@ -99,7 +121,7 @@ namespace PcapDotNet.Packets.Dns
 
         internal static DnsOptionClientSubnet Read(DataSegment data)
         {
-            if (data.Length < MininmumDataLength)
+            if (data.Length < MinimumDataLength)
                 return null;
 
             AddressFamily family = (AddressFamily)data.ReadUShort(Offset.Family, Endianity.Big);

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace PcapDotNet.Packets.Icmp
 {
@@ -28,9 +29,12 @@ namespace PcapDotNet.Packets.Icmp
             set
             {
                 if (value % sizeof(uint) != 0)
-                    throw new ArgumentOutOfRangeException("value", value, string.Format("Must divide by {0}.", sizeof(uint)));
+                    throw new ArgumentOutOfRangeException("value", value, string.Format(CultureInfo.InvariantCulture, "Must divide by {0}.", sizeof(uint)));
                 if (value > OriginalDatagramLengthMaxValue)
-                    throw new ArgumentOutOfRangeException("value", value, string.Format("Must not exceed {0}.", OriginalDatagramLengthMaxValue));
+                {
+                    throw new ArgumentOutOfRangeException("value", value,
+                                                          string.Format(CultureInfo.InvariantCulture, "Must not exceed {0}.", OriginalDatagramLengthMaxValue));
+                }
                 _originalDatagramLength = value;
             }
         }
