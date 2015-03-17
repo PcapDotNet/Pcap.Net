@@ -35,7 +35,7 @@ pcap_t* OfflinePacketCommunicator::OpenFile(String^ fileName)
     pcap_t *pcapDescriptor;
     if (!StringExtensions::AreAllCharactersInRange(fileName, 0, 255)) {
         std::wstring unamangedFilename = MarshalingServices::ManagedToUnmanagedWideString(fileName);
-        FILE* file = _wfopen(unamangedFilename.c_str(), L"rb");
+        file = _wfopen(unamangedFilename.c_str(), L"rb");
         if (file == NULL)
             throw gcnew InvalidOperationException(String::Format(CultureInfo::InvariantCulture, "Failed opening file {0}.", fileName));
         pcapDescriptor = pcap_fopen_offline(file, errorBuffer);
