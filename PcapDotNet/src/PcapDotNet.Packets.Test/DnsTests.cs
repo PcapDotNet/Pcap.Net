@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets.Test
                 do
                 {
                     dnsLayer = random.NextDnsLayer();
-                } while (dnsLayer.Length > 65000);
+                } while (dnsLayer.Length > 65000 - ipLayer.Length);
 
                 Packet packet = PacketBuilder.Build(DateTime.Now, ethernetLayer, ipLayer, udpLayer, dnsLayer);
 
