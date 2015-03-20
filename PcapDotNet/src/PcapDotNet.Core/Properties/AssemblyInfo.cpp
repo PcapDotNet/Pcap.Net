@@ -2,7 +2,6 @@ using namespace System;
 using namespace System::Reflection;
 using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
-using namespace System::Security::Permissions;
 
 //
 // General Information about an assembly is controlled through the following
