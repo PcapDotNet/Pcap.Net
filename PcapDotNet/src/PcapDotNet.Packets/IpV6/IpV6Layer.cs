@@ -129,6 +129,13 @@ namespace PcapDotNet.Packets.IpV6
             if (nextLayer != null && ExtensionHeaders.LastHeader == IpV4Protocol.EncapsulatingSecurityPayload)
                 throw new ArgumentException("Cannot have a layer after IpV6Layer with EncapsulatingSecurityPayload extension header.", "nextLayer");
 
+            if (payloadLength + ExtensionHeaders.BytesLength > ushort.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("payloadLength", payloadLength,
+                                                      "Consider the extension headers, this must be no more than " +
+                                                      (ushort.MaxValue - ExtensionHeaders.BytesLength));
+            }
+
             IpV6Datagram.WriteHeader(buffer, offset,
                                      TrafficClass, FlowLabel, (ushort)(payloadLength + ExtensionHeaders.BytesLength), NextHeader, nextLayerProtocol, HopLimit, Source, CurrentDestination, ExtensionHeaders);
         }
