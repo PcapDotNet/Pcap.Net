@@ -38,3 +38,5 @@ Not including:
 * HTTP
 
 [![Follow Pcap.Net on Google+](https://ssl.gstatic.com/images/icons/gplus-32.png)](https://plus.google.com/111766834267147414574) [Follow Pcap.Net on Google+](https://plus.google.com/111766834267147414574)
+
+<a href='https://pledgie.com/campaigns/28716'><img alt='Click here to lend your support to: Pcap.Net and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/28716.png?skin_name=chrome' border='0' ></a>
