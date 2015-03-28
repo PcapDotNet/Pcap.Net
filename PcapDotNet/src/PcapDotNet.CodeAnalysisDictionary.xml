@@ -31,6 +31,7 @@
       <Word>dce</Word>
       <Word>dcn</Word>
       <Word>docsis</Word>
+      <Word>dii</Word>
       <Word>dss</Word>
       <Word>emcon</Word>
       <Word>endianity</Word>
@@ -115,6 +116,8 @@
     </Deprecated>
     <Compound>
       <Term CompoundAlternate="AddressOr">addressor</Term>
+      <Term CompoundAlternate="OrIn">orin</Term>
+      <Term CompoundAlternate="QIn">qin</Term>
     </Compound>
     <DiscreteExceptions>
       <!--Term>netmask</Term-->
