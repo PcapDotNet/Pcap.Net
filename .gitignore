@@ -1,0 +1,17 @@
+PcapDotNet/3rdParty/
+PcapDotNet/bin/
+PcapDotNet/src/PcapDotNet.Core/Debug
+PcapDotNet/src/PcapDotNet.Core.Extensions/obj
+PcapDotNet/src/PcapDotNet.Core.Test/bin
+PcapDotNet/src/PcapDotNet.Core.Test/obj
+PcapDotNet/src/TestResults
+TemporaryGeneratedFile_*
+*.cache
+*.csproj.FileListAbsolute.txt
+*.dll
+*.opensdf
+*.pdb
+*.sdf
+*.snk
+*.suo
+*.vcxproj.user
