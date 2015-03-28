@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PcapDotNet.Packets</RootNamespace>
     <AssemblyName>PcapDotNet.Packets</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -54,6 +54,7 @@
     </CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Debug\PcapDotNet.Packets.XML</DocumentationFile>
     <CodeAnalysisRuleSet>..\PcapDotNet.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -68,6 +69,7 @@
     </CodeAnalysisRules>
     <DocumentationFile>..\..\bin\Release\PcapDotNet.Packets.XML</DocumentationFile>
     <CodeAnalysisRuleSet>..\PcapDotNet.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -110,7 +112,7 @@
     <Compile Include="Dns\ResourceData\DnsAddressPrefix.cs" />
     <Compile Include="Dns\ResourceData\DnsAfsDatabaseSubtype.cs" />
     <Compile Include="Dns\ResourceData\DnsAlgorithm.cs" />
-    <Compile Include="Dns\ResourceData\DnsAtmAddressFormat.cs" />
+    <Compile Include="Dns\ResourceData\DnsAsynchronousTransferModeAddressFormat.cs" />
     <Compile Include="Dns\ResourceData\DnsCertificateType.cs" />
     <Compile Include="Dns\ResourceData\DnsCertificationAuthorityAuthorizationFlags.cs" />
     <Compile Include="Dns\ResourceData\DnsDigestType.cs" />
@@ -144,7 +146,7 @@
     <Compile Include="Dns\DnsResponseCode.cs" />
     <Compile Include="Dns\DnsType.cs" />
     <Compile Include="Dns\ListSegment.cs" />
-    <Compile Include="Dns\ResourceData\DnsResourceDataAtmAddress.cs" />
+    <Compile Include="Dns\ResourceData\DnsResourceDataAsynchronousTransferModeAddress.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataCertificate.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataCertificationAuthorityAuthorization.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataDelegationSigner.cs" />
@@ -499,7 +501,7 @@
     <Compile Include="IpV6\ExtensionHeaders\IpV6RoutingType.cs" />
     <Compile Include="IpV6\Options\IpV6TaggerIdType.cs" />
     <Compile Include="IpV6\Options\V6Options.cs" />
-    <Compile Include="IpV6\Options\PppFrameCheckSequenceCalculator.cs" />
+    <Compile Include="IpV6\Options\PointToPointProtocolFrameCheckSequenceCalculator.cs" />
     <Compile Include="Ip\V4Option.cs" />
     <Compile Include="Ip\IIpOptionQuickStart.cs" />
     <Compile Include="IpV4\IpV4OptionTypeRegistrationAttribute.cs" />

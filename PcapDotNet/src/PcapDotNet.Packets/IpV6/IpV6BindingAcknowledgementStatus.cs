@@ -137,8 +137,9 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 4285.
+        /// MIPV6-AUTH-FAIL.
         /// </summary>
-        MIpV6AuthFail = 146,
+        MobileIpV6AuthenticationFailed = 146,
 
         /// <summary>
         /// RFC 4866.
@@ -204,8 +205,9 @@ namespace PcapDotNet.Packets.IpV6
 
         /// <summary>
         /// RFC 5213.
+        /// BCE_PBU_PREFIX_SET_DO_NOT_MATCH.
         /// </summary>
-        BceProxyBindingUpdatePrefixSetDoNotMatch = 159,
+        BindingCacheEntryProxyBindingUpdatePrefixSetDoNotMatch = 159,
 
         /// <summary>
         /// RFC 5213.

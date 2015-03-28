@@ -143,7 +143,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Null:
                     return new DnsResourceDataAnything(random.NextDataSegment(random.Next(65536)));
 
-                case DnsType.Wks:
+                case DnsType.WellKnownService:
                     return new DnsResourceDataWellKnownService(random.NextIpV4Address(), random.NextEnum<IpV4Protocol>(),
                                                                random.NextDataSegment(random.Next(10)));
 
@@ -157,7 +157,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DnsResourceDataMailExchange(random.NextUShort(), random.NextDnsDomainName());
 
                 case DnsType.Txt:
-                case DnsType.Spf:
+                case DnsType.SenderPolicyFramework:
                     return new DnsResourceDataText(((Func<DataSegment>)(() => random.NextDataSegment(random.Next(10)))).GenerateArray(10).AsReadOnly());
 
                 case DnsType.ResponsiblePerson:
@@ -195,7 +195,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.PointerX400:
                     return new DnsResourceDataX400Pointer(random.NextUShort(), random.NextDnsDomainName(), random.NextDnsDomainName());
 
-                case DnsType.GPos:
+                case DnsType.GeographicalPosition:
                     return new DnsResourceDataGeographicalPosition((random.NextInt(-90, 90) * random.NextDouble()).ToString("0.##########"),
                                                                    (random.NextInt(-180, 180) * random.NextDouble()).ToString("0.##########"),
                                                                    (random.NextInt(-500, 50000) * random.NextDouble()).ToString("0.##########"));
@@ -203,7 +203,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Aaaa:
                     return new DnsResourceDataIpV6(random.NextIpV6Address());
 
-                case DnsType.Loc:
+                case DnsType.Location:
                     return new DnsResourceDataLocationInformation(random.NextByte(),
                                                                   (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
                                                                   (ulong)(random.NextInt(0, 10) * Math.Pow(10, random.NextInt(0, 10))),
@@ -224,8 +224,9 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.ServerSelection:
                     return new DnsResourceDataServerSelection(random.NextUShort(), random.NextUShort(), random.NextUShort(), random.NextDnsDomainName());
 
-                case DnsType.AtmA:
-                    return new DnsResourceDataAtmAddress(random.NextEnum<DnsAtmAddressFormat>(), random.NextDataSegment(random.Next(100)));
+                case DnsType.AsynchronousTransferModeAddress:
+                    return new DnsResourceDataAsynchronousTransferModeAddress(random.NextEnum<DnsAsynchronousTransferModeAddressFormat>(),
+                                                                              random.NextDataSegment(random.Next(100)));
 
                 case DnsType.NaPtr:
                     IEnumerable<byte> possibleFlags =
@@ -258,7 +259,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case DnsType.Opt:
                     return new DnsResourceDataOptions(random.NextDnsOptions());
 
-                case DnsType.Apl:
+                case DnsType.AddressPrefixList:
                     return new DnsResourceDataAddressPrefixList(
                         ((Func<DnsAddressPrefix>)
                          (() =>
@@ -266,7 +267,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                random.NextDataSegment(random.Next(0, 128))))).GenerateArray(random.Next(10)));
 
                 case DnsType.DelegationSigner:
-                case DnsType.Cds:
+                case DnsType.ChildDelegationSigner:
                 case DnsType.TrustAnchor:
                 case DnsType.DnsSecLookAsideValidation:
                     return new DnsResourceDataDelegationSigner(random.NextUShort(), random.NextEnum<DnsAlgorithm>(), random.NextEnum<DnsDigestType>(),

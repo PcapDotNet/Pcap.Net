@@ -349,7 +349,7 @@ namespace PcapDotNet.Packets.Test
         public void IpV6ExtensionHeaderFragmentDataEquals()
         {
             Assert.AreNotEqual(new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Skip, 0, false, 0),
-                               new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Sm, 0, false, 0));
+                               new IpV6ExtensionHeaderFragmentData(IpV4Protocol.SimpleMulticast, 0, false, 0));
             Assert.AreNotEqual(new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Skip, 0, false, 0),
                                new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Skip, 1, false, 0));
             Assert.AreNotEqual(new IpV6ExtensionHeaderFragmentData(IpV4Protocol.Skip, 0, false, 0),
@@ -2848,7 +2848,7 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
         public void PppFrameCheckSequenceCalculatorCalculateFrameCheckSequence16NullBytes()
         {
-            Assert.IsNull(PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(0, null));
+            Assert.IsNull(PointToPointProtocolFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(0, null));
             Assert.Fail();
         }
     }

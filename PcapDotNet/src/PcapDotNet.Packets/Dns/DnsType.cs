@@ -86,10 +86,11 @@
 
         /// <summary>
         /// RFC 1035.
+        /// WKS.
         /// A well known service description..
         /// Payload type: DnsResourceDataWellKnownService.
         /// </summary>
-        Wks = 11,
+        WellKnownService = 11,
 
         /// <summary>
         /// RFC 1035.
@@ -199,10 +200,11 @@
 
         /// <summary>
         /// RFC 1712.
+        /// GPos.
         /// Geographical Position.
         /// Payload type: DnsResourceDataGeographicalPosition.
         /// </summary>
-        GPos = 27,
+        GeographicalPosition = 27,
 
         /// <summary>
         /// RFC 3596.
@@ -213,10 +215,11 @@
 
         /// <summary>
         /// RFC 1876.
+        /// LOC.
         /// Location Information.
         /// Payload type: DnsResourceDataLocationInformation.
         /// </summary>
-        Loc = 29,
+        Location = 29,
 
         /// <summary>
         /// RFC 2535, 3755.
@@ -248,10 +251,11 @@
 
         /// <summary>
         /// ATMDOC.
+        /// ATMA.
         /// ATM Address.
-        /// Payload type: DnsResourceDataAtmAddress.
+        /// Payload type: DnsResourceDataAsynchronousTransferModeAddress.
         /// </summary>
-        AtmA = 34,
+        AsynchronousTransferModeAddress = 34,
 
         /// <summary>
         /// RFCs 2168, 2915, 3403.
@@ -304,10 +308,11 @@
 
         /// <summary>
         /// RFC 3123.
+        /// APL.
         /// Address Prefix List.
         /// Payload type: DnsResourceDataAddressPrefixList.
         /// </summary>
-        Apl = 42,
+        AddressPrefixList = 42,
 
         /// <summary>
         /// RFCs 3658, 4034.
@@ -406,17 +411,19 @@
 
         /// <summary>
         /// Barwood.
+        /// CDS.
         /// Child DS.
         /// Payload type: DnsResourceDataDelegationSigner.
         /// </summary>
-        Cds = 59,
+        ChildDelegationSigner = 59,
 
         /// <summary>
         /// RFC 4408.
+        /// SPF.
         /// Sender Policy Framework.
         /// Payload type: DnsResourceDataText.
         /// </summary>
-        Spf = 99,
+        SenderPolicyFramework = 99,
 
         /// <summary>
         /// IANA-Reserved.

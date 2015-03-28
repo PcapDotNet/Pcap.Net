@@ -31,7 +31,7 @@ namespace PcapDotNet.Core.Test
             // TODO: Remove after https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=9996 is fixed.
             if (ipV6Datagram.ExtensionHeaders.Select(extensionHeader => extensionHeader.NextHeader).Concat(ipV6Datagram.NextHeader).Any(
                 protocol => protocol == IpV4Protocol.WidebandMonitoring ||
-                            protocol == IpV4Protocol.SunNd ||
+                            protocol == IpV4Protocol.SunNetworkDisk ||
                             protocol == IpV4Protocol.Swipe ||
                             protocol == IpV4Protocol.AnyHostInternal ||
                             protocol == IpV4Protocol.SourceDemandRoutingProtocol ||
@@ -96,7 +96,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.InteractiveAgentTransferProtocol ||
                             protocol == IpV4Protocol.InternetPluribusPacketCore ||
                             protocol == IpV4Protocol.InternetworkPacketExchangeInIp ||
-                            protocol == IpV4Protocol.IsIsOverIpV4 ||
+                            protocol == IpV4Protocol.IntermediateSystemToIntermediateSystemOverIpV4 ||
                             protocol == IpV4Protocol.ComputerProtocolNetworkExecutive ||
                             protocol == IpV4Protocol.EncapsulationHeader ||
                             protocol == IpV4Protocol.GatewayToGateway ||
@@ -106,7 +106,7 @@ namespace PcapDotNet.Core.Test
                             protocol == IpV4Protocol.InternetReliableTransactionProtocol ||
                             protocol == IpV4Protocol.MeritInternodalProtocol ||
                             protocol == IpV4Protocol.Skip ||
-                            protocol == IpV4Protocol.Bna ||
+                            protocol == IpV4Protocol.BurroughsNetworkArchitecture ||
                             protocol == IpV4Protocol.InterDomainRoutingProtocol ||
                             protocol == IpV4Protocol.ActiveNetworks ||
                             protocol == IpV4Protocol.SpectraLinkRadioProtocol ||

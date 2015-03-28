@@ -13,7 +13,7 @@
         /// <summary>
         /// Connection with TLS.
         /// </summary>
-        Tls = 1,
+        TransportLayerSecurity = 1,
 
         /// <summary>
         /// Connection with email.

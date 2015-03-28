@@ -58,7 +58,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// [RFC1577]
         /// </summary>
-        NegativeAtmReply = 10,
+        NegativeAsynchronousTransferModeReply = 10,
 
         //MARS-Request          = 11       
         //MARS-Multi            = 12       

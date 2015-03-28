@@ -110,7 +110,7 @@ namespace PcapDotNet.Packets.Dns
         }
 
         internal DnsResourceDataSink()
-            : this(DnsSinkCodingSubCoding.Asn1SnmpBasicEncodingRules, DataSegment.Empty)
+            : this(DnsSinkCodingSubCoding.Asn1SimpleNetworkManagementProtocolBasicEncodingRules, DataSegment.Empty)
         {
         }
 

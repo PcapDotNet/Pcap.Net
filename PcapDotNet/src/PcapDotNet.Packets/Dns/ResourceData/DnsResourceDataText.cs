@@ -9,7 +9,7 @@ namespace PcapDotNet.Packets.Dns
     /// The format of each DNS string is one byte for the length of the string and then the specified number of bytes.
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.Txt)]
-    [DnsTypeRegistration(Type = DnsType.Spf)]
+    [DnsTypeRegistration(Type = DnsType.SenderPolicyFramework)]
     public sealed class DnsResourceDataText : DnsResourceDataStrings
     {
         /// <summary>

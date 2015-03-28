@@ -22,13 +22,7 @@ namespace PcapDotNet { namespace Core
     /// </summary>
     public ref class PacketCommunicator abstract : System::IDisposable
     {
-	private: 
-		static PacketCommunicator()
-		{
-		}
-
 	public:
-
         /// <summary>
         /// The link layer of an adapter.
         /// </summary>

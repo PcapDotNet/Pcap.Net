@@ -13,7 +13,7 @@
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// </summary>
-        Asn1Snmp = 0x01,
+        Asn1SimpleNetworkManagementProtocol = 0x01,
 
         /// <summary>
         /// OSI ASN.1 1990 [ASN.1].

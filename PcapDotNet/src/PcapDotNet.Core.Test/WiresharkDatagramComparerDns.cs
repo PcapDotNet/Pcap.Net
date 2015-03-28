@@ -370,7 +370,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Wks:
+                case DnsType.WellKnownService:
                     var wksData = (DnsResourceDataWellKnownService)data;
                     dataField.AssertNoFields();
                     switch (dataField.Name())
@@ -414,11 +414,11 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.hinfo.os_length":
-                            dataField.AssertShowDecimal(hInfoData.Os.Length);
+                            dataField.AssertShowDecimal(hInfoData.OperatingSystem.Length);
                             break;
 
                         case "dns.hinfo.os":
-                            dataField.AssertValue(hInfoData.Os);
+                            dataField.AssertValue(hInfoData.OperatingSystem);
                             break;
 
                         default:
@@ -481,7 +481,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Spf: // 99.
+                case DnsType.SenderPolicyFramework: // 99.
                     var spfData = (DnsResourceDataText)data;
                     dataField.AssertNoFields();
                     switch (dataField.Name())
@@ -776,7 +776,7 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertNoFields();
                     break;
 
-                case DnsType.GPos:
+                case DnsType.GeographicalPosition:
                     dataField.AssertNoFields();
                     var gposData = (DnsResourceDataGeographicalPosition)data;
                     switch (dataFieldName)
@@ -816,7 +816,7 @@ namespace PcapDotNet.Core.Test
                     dataField.AssertNoFields();
                     break;
 
-                case DnsType.Loc:
+                case DnsType.Location:
                     var locData = (DnsResourceDataLocationInformation)data;
                     dataField.AssertNoFields();
                     switch (dataFieldName)
@@ -1183,7 +1183,7 @@ namespace PcapDotNet.Core.Test
                     }
                     break;
 
-                case DnsType.Apl:
+                case DnsType.AddressPrefixList:
                     var aplData = (DnsResourceDataAddressPrefixList)data;
                     switch (dataFieldName)
                     {
@@ -1713,12 +1713,12 @@ namespace PcapDotNet.Core.Test
 
                 case DnsType.EId:                                 // 31.
                 case DnsType.NimrodLocator:                       // 32.
-                case DnsType.AtmA:                                // 34.
+                case DnsType.AsynchronousTransferModeAddress:     // 34.
                 case DnsType.Sink:                                // 40.
                 case DnsType.NInfo:                               // 56.
                 case DnsType.RKey:                                // 57.
                 case DnsType.TrustAnchorLink:                     // 58.
-                case DnsType.Cds:                                 // 59.
+                case DnsType.ChildDelegationSigner:               // 59.
                 case DnsType.UInfo:                               // 100.
                 case DnsType.Uid:                                 // 101.
                 case DnsType.Gid:                                 // 102.
@@ -1766,6 +1766,7 @@ namespace PcapDotNet.Core.Test
                 {"MB", DnsType.Mailbox},                                // 7
                 {"MG", DnsType.MailGroup},                              // 8
                 {"MR", DnsType.MailRename},                             // 9
+                {"WKS", DnsType.WellKnownService},                      // 11
                 {"MX", DnsType.MailExchange},                           // 15
                 {"RP", DnsType.ResponsiblePerson},                      // 17
                 {"AFSDB", DnsType.AfsDatabase},                         // 18
@@ -1774,16 +1775,22 @@ namespace PcapDotNet.Core.Test
                 {"NSAP-PTR", DnsType.NetworkServiceAccessPointPointer}, // 23
                 {"SIG", DnsType.Signature},                             // 24
                 {"PX", DnsType.PointerX400},                            // 26
+                {"GPOS", DnsType.GeographicalPosition},                 // 27
+                {"LOC", DnsType.Location},                              // 29
                 {"NXT", DnsType.NextDomain},                            // 30
                 {"NIMLOC", DnsType.NimrodLocator},                      // 32
                 {"SRV", DnsType.ServerSelection},                       // 33
+                {"ATMA", DnsType.AsynchronousTransferModeAddress},      // 34
                 {"KX", DnsType.KeyExchanger},                           // 36
+                {"APL", DnsType.AddressPrefixList},                     // 42
                 {"DS", DnsType.DelegationSigner},                       // 43
                 {"SSHFP", DnsType.SshFingerprint},                      // 44
                 {"RRSIG", DnsType.ResourceRecordSignature},             // 46
                 {"DHCID", DnsType.DynamicHostConfigurationId},          // 49
                 {"NSEC3PARAM", DnsType.NSec3Parameters},                // 51
                 {"TALINK", DnsType.TrustAnchorLink},                    // 58
+                {"CDS", DnsType.ChildDelegationSigner},                 // 59
+                {"SPF", DnsType.SenderPolicyFramework},                 // 99
                 {"UNSPEC", DnsType.Unspecified},                        // 103
                 {"TSIG", DnsType.TransactionSignature},                 // 250
                 {"*", DnsType.Any},                                     // 255

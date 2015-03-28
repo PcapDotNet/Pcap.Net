@@ -66,7 +66,7 @@
         /// RFC 2136.
         /// Server Not Authoritative for zone.
         /// </summary>
-        NotAuth = 9,
+        NotAuthoritative = 9,
 
         /// <summary>
         /// RFC 2136.
