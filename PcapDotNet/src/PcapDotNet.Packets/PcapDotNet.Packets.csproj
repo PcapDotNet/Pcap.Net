@@ -112,7 +112,7 @@
     <Compile Include="Dns\ResourceData\DnsAddressPrefix.cs" />
     <Compile Include="Dns\ResourceData\DnsAfsDatabaseSubtype.cs" />
     <Compile Include="Dns\ResourceData\DnsAlgorithm.cs" />
-    <Compile Include="Dns\ResourceData\DnsAtmAddressFormat.cs" />
+    <Compile Include="Dns\ResourceData\DnsAsynchronousTransferModeAddressFormat.cs" />
     <Compile Include="Dns\ResourceData\DnsCertificateType.cs" />
     <Compile Include="Dns\ResourceData\DnsCertificationAuthorityAuthorizationFlags.cs" />
     <Compile Include="Dns\ResourceData\DnsDigestType.cs" />
@@ -146,7 +146,7 @@
     <Compile Include="Dns\DnsResponseCode.cs" />
     <Compile Include="Dns\DnsType.cs" />
     <Compile Include="Dns\ListSegment.cs" />
-    <Compile Include="Dns\ResourceData\DnsResourceDataAtmAddress.cs" />
+    <Compile Include="Dns\ResourceData\DnsResourceDataAsynchronousTransferModeAddress.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataCertificate.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataCertificationAuthorityAuthorization.cs" />
     <Compile Include="Dns\ResourceData\DnsResourceDataDelegationSigner.cs" />
@@ -501,7 +501,7 @@
     <Compile Include="IpV6\ExtensionHeaders\IpV6RoutingType.cs" />
     <Compile Include="IpV6\Options\IpV6TaggerIdType.cs" />
     <Compile Include="IpV6\Options\V6Options.cs" />
-    <Compile Include="IpV6\Options\PppFrameCheckSequenceCalculator.cs" />
+    <Compile Include="IpV6\Options\PointToPointProtocolFrameCheckSequenceCalculator.cs" />
     <Compile Include="Ip\V4Option.cs" />
     <Compile Include="Ip\IIpOptionQuickStart.cs" />
     <Compile Include="IpV4\IpV4OptionTypeRegistrationAttribute.cs" />
