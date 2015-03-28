@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Test
         public void DataLinkTest()
         {
             Assert.AreEqual(DataLinkKind.Ethernet.ToString(), DataLink.Ethernet.ToString());
-            Assert.AreEqual(DataLinkKind.PppWithDirection.ToString(), new DataLink(DataLinkKind.PppWithDirection).ToString());
+            Assert.AreEqual(DataLinkKind.PointToPointProtocolWithDirection.ToString(), new DataLink(DataLinkKind.PointToPointProtocolWithDirection).ToString());
             foreach (DataLink dataLink in new[] { DataLink.Ethernet, DataLink.IpV4 })
             {
                 Assert.AreEqual(dataLink, dataLink);

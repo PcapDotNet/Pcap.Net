@@ -254,7 +254,7 @@ namespace PcapDotNet.Packets.IpV6
             byte[] domainOfInterpretationBytes = new byte[sizeof(uint)];
             domainOfInterpretationBytes.Write(0, (uint)domainOfInterpretation, Endianity.Big);
             ushort checksum =
-                PppFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(
+                PointToPointProtocolFrameCheckSequenceCalculator.CalculateFrameCheckSequence16(
                     new byte[0].Concat((byte)IpV6OptionType.Calipso,
                                        (byte)(OptionDataMinimumLength + compartmentBitmap.Length)).Concat(
                                            domainOfInterpretationBytes)

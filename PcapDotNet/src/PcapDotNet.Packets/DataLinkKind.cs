@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets
         /// PPP, as per RFC 1661 and RFC 1662, preceded with a one-byte pseudo-header with a zero value meaning "received by this host" 
         /// and a non-zero value meaning "sent by this host".
         /// </summary>
-        PppWithDirection,
+        PointToPointProtocolWithDirection,
 
         /// <summary>
         /// Linux cooked-mode capture.

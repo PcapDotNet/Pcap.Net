@@ -15,8 +15,8 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+---------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.AtmA)]
-    public sealed class DnsResourceDataAtmAddress : DnsResourceDataSimple, IEquatable<DnsResourceDataAtmAddress>
+    [DnsTypeRegistration(Type = DnsType.AsynchronousTransferModeAddress)]
+    public sealed class DnsResourceDataAsynchronousTransferModeAddress : DnsResourceDataSimple, IEquatable<DnsResourceDataAsynchronousTransferModeAddress>
     {
         private static class Offset
         {
@@ -38,7 +38,7 @@ namespace PcapDotNet.Packets.Dns
         /// This ATM address appears in ATM End System Address Octets field (AESA format) or the Address/Number Digits field (E.164 format) of the Called party number information element [ATMUNI3.1].
         /// Subaddress information is intentionally not included because E.164 subaddress information is used for routing.
         /// </param>
-        public DnsResourceDataAtmAddress(DnsAtmAddressFormat format, DataSegment address)
+        public DnsResourceDataAsynchronousTransferModeAddress(DnsAsynchronousTransferModeAddressFormat format, DataSegment address)
         {
             Format = format;
             Address = address;
@@ -47,7 +47,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// The format of Address.
         /// </summary>
-        public DnsAtmAddressFormat Format { get; private set; }
+        public DnsAsynchronousTransferModeAddressFormat Format { get; private set; }
 
         /// <summary>
         /// Variable length string of octets containing the ATM address of the node to which this RR pertains.
@@ -62,7 +62,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// Two DnsResourceDataAtmAddress are equal iff their format and address fields are equal.
         /// </summary>
-        public bool Equals(DnsResourceDataAtmAddress other)
+        public bool Equals(DnsResourceDataAsynchronousTransferModeAddress other)
         {
             return other != null &&
                    Format.Equals(other.Format) &&
@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets.Dns
         /// </summary>
         public override bool Equals(object obj)
         {
-            return Equals(obj as DnsResourceDataAtmAddress);
+            return Equals(obj as DnsResourceDataAsynchronousTransferModeAddress);
         }
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace PcapDotNet.Packets.Dns
             return Sequence.GetHashCode(Format, Address);
         }
 
-        internal DnsResourceDataAtmAddress()
-            : this(DnsAtmAddressFormat.AtmEndSystemAddress, DataSegment.Empty)
+        internal DnsResourceDataAsynchronousTransferModeAddress()
+            : this(DnsAsynchronousTransferModeAddressFormat.AsynchronousTransferModeEndSystemAddress, DataSegment.Empty)
         {
         }
 
@@ -106,10 +106,10 @@ namespace PcapDotNet.Packets.Dns
             if (data.Length < ConstantPartLength)
                 return null;
 
-            DnsAtmAddressFormat format = (DnsAtmAddressFormat)data[Offset.Format];
+            DnsAsynchronousTransferModeAddressFormat format = (DnsAsynchronousTransferModeAddressFormat)data[Offset.Format];
             DataSegment address = data.Subsegment(Offset.Address, data.Length - ConstantPartLength);
 
-            return new DnsResourceDataAtmAddress(format, address);
+            return new DnsResourceDataAsynchronousTransferModeAddress(format, address);
         }
     }
 }

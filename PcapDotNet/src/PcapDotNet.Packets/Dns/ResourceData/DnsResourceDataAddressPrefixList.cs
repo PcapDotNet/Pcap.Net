@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Apl)]
+    [DnsTypeRegistration(Type = DnsType.AddressPrefixList)]
     public sealed class DnsResourceDataAddressPrefixList: DnsResourceDataSimple, IEquatable<DnsResourceDataAddressPrefixList>
     {
         /// <summary>

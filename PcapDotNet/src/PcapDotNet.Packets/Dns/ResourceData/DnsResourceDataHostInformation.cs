@@ -21,9 +21,9 @@ namespace PcapDotNet.Packets.Dns
         /// Constructs the resource data from the CPU and OS parameters.
         /// </summary>
         /// <param name="cpu">A string which specifies the CPU type.</param>
-        /// <param name="os">A string which specifies the operating system type.</param>
-        public DnsResourceDataHostInformation(DataSegment cpu, DataSegment os)
-            : base(cpu, os)
+        /// <param name="operatingSystem">A string which specifies the operating system type.</param>
+        public DnsResourceDataHostInformation(DataSegment cpu, DataSegment operatingSystem)
+            : base(cpu, operatingSystem)
         {
         }
 
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dns
         /// <summary>
         /// A string which specifies the operating system type.
         /// </summary>
-        public DataSegment Os { get { return Strings[1]; } }
+        public DataSegment OperatingSystem { get { return Strings[1]; } }
 
         internal DnsResourceDataHostInformation()
             : this(DataSegment.Empty, DataSegment.Empty)

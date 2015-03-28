@@ -3,12 +3,12 @@
     /// <summary>
     /// The ATM address format values.
     /// </summary>
-    public enum DnsAtmAddressFormat : byte
+    public enum DnsAsynchronousTransferModeAddressFormat : byte
     {
         /// <summary>
-        /// ATM  End  System Address (AESA) format.
+        /// ATM End System Address (AESA) format.
         /// </summary>
-        AtmEndSystemAddress = 0,
+        AsynchronousTransferModeEndSystemAddress = 0,
 
         /// <summary>
         /// E.164 format.

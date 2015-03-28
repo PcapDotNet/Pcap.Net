@@ -207,7 +207,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// BNA   
         /// </summary>
-        Bna = 0x31,
+        BurroughsNetworkArchitecture = 0x31,
         /// <summary>
         /// ESP. Encapsulating Security Payload RFC 2406.
         /// </summary>
@@ -319,7 +319,7 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// SUN ND PROTOCOL-Temporary   
         /// </summary>
-        SunNd = 0x4D,
+        SunNetworkDisk = 0x4D,
         /// <summary>
         /// WIDEBAND Monitoring   
         /// </summary>
@@ -499,15 +499,15 @@ namespace PcapDotNet.Packets.IpV4
         /// <summary>
         /// SM   
         /// </summary>
-        Sm = 0x7A,
+        SimpleMulticast = 0x7A,
         /// <summary>
         /// Performance Transparency Protocol   
         /// </summary>
         PerformanceTransparencyProtocol = 0x7B,
         /// <summary>
-        /// IS-IS over IPv4   
+        /// IS-IS over IPv4
         /// </summary>
-        IsIsOverIpV4 = 0x7C,
+        IntermediateSystemToIntermediateSystemOverIpV4 = 0x7C,
         /// <summary>
         ///   
         /// </summary>

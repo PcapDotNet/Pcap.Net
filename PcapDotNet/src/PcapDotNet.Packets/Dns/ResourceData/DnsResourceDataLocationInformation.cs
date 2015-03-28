@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+---------------------------------------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Loc)]
+    [DnsTypeRegistration(Type = DnsType.Location)]
     public sealed class DnsResourceDataLocationInformation : DnsResourceDataSimple, IEquatable<DnsResourceDataLocationInformation>
     {
         /// <summary>

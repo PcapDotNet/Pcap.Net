@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.Arp
         /// <summary>
         /// MIL-STD-188-220
         /// </summary>
-        MilStd188Hyphen220 = 22,
+        MilStandard188Hyphen220 = 22,
 
         /// <summary>
         /// Metricom

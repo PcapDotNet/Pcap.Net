@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.IpV6
         /// <summary>
         /// Possible Out-of-Sync BCE State.
         /// </summary>
-        PossibleOutOfSyncBceState = 7,
+        PossibleOutOfSyncBindingCacheEntryState = 7,
 
         /// <summary>
         /// Global Revocation Trigger Value.

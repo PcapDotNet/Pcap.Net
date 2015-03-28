@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----+----------+---------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.Wks)]
+    [DnsTypeRegistration(Type = DnsType.WellKnownService)]
     public sealed class DnsResourceDataWellKnownService : DnsResourceDataSimple, IEquatable<DnsResourceDataWellKnownService>
     {
         private static class Offset

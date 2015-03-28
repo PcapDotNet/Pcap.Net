@@ -6,7 +6,7 @@ namespace PcapDotNet.Packets.IpV6
     /// <summary>
     /// RFC 1662.
     /// </summary>
-    public static class PppFrameCheckSequenceCalculator
+    public static class PointToPointProtocolFrameCheckSequenceCalculator
     {
         private const ushort InitialValue = 0xffff;
 

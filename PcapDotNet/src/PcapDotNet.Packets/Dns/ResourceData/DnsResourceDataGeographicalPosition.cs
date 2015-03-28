@@ -16,7 +16,7 @@ namespace PcapDotNet.Packets.Dns
     /// +-----------+
     /// </pre>
     /// </summary>
-    [DnsTypeRegistration(Type = DnsType.GPos)]
+    [DnsTypeRegistration(Type = DnsType.GeographicalPosition)]
     public sealed class DnsResourceDataGeographicalPosition : DnsResourceDataSimple, IEquatable<DnsResourceDataGeographicalPosition>
     {
         /// <summary>

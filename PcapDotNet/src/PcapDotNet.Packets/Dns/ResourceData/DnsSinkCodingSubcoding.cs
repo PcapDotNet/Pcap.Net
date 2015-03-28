@@ -14,37 +14,37 @@
         /// The SNMP subset of ASN.1.
         /// Basic Encoding Rules.
         /// </summary>
-        Asn1SnmpBasicEncodingRules = 0x0101,
+        Asn1SimpleNetworkManagementProtocolBasicEncodingRules = 0x0101,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Distinguished Encoding Rules.
         /// </summary>
-        Asn1SnmpDistinguishedEncodingRules = 0x0102,
+        Asn1SimpleNetworkManagementProtocolDistinguishedEncodingRules = 0x0102,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Packed Encoding Rules Aligned.
         /// </summary>
-        Asn1SnmpPer = 0x0103,
+        Asn1SimpleNetworkManagementProtocolPer = 0x0103,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Packed Encoding Rules Unaligned.
         /// </summary>
-        Asn1SnmpPerUnaligned = 0x0104,
+        Asn1SimpleNetworkManagementProtocolPerUnaligned = 0x0104,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// Canonical Encoding Rules.
         /// </summary>
-        Asn1SnmpCanonicalEncodingRules = 0x0105,
+        Asn1SimpleNetworkManagementProtocolCanonicalEncodingRules = 0x0105,
 
         /// <summary>
         /// The SNMP subset of ASN.1.
         /// An OID preceded by a one byte unsigned length appears at the beginning of the data area to indicate which private encoding.
         /// </summary>
-        Asn1SnmpPrivate = 0x01FE,
+        Asn1SimpleNetworkManagementProtocolPrivate = 0x01FE,
 
         /// <summary>
         /// OSI ASN.1 1990 [ASN.1].

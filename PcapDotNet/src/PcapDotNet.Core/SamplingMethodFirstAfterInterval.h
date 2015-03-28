@@ -14,9 +14,9 @@ namespace PcapDotNet { namespace Core
         /// <summary>
         /// Constructs by giving an interval in milliseconds.
         /// </summary>
-        /// <param name="intervalInMs">The number of milliseconds to wait between packets sampled.</param>
+        /// <param name="intervalInMilliseconds">The number of milliseconds to wait between packets sampled.</param>
         /// <exception cref="System::ArgumentOutOfRangeException">The given number of milliseconds is negative.</exception>
-        SamplingMethodFirstAfterInterval(int intervalInMs);
+        SamplingMethodFirstAfterInterval(int intervalInMilliseconds);
 
         /// <summary>
         /// Constructs by giving an interval as TimeSpan.
@@ -41,6 +41,6 @@ namespace PcapDotNet { namespace Core
         }
 
     private:
-        int _intervalInMs;
+        int _intervalInMilliseconds;
     };
 }}

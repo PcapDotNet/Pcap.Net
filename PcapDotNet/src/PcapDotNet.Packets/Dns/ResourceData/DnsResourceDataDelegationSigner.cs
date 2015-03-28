@@ -18,7 +18,7 @@ namespace PcapDotNet.Packets.Dns
     /// </pre>
     /// </summary>
     [DnsTypeRegistration(Type = DnsType.DelegationSigner)]
-    [DnsTypeRegistration(Type = DnsType.Cds)]
+    [DnsTypeRegistration(Type = DnsType.ChildDelegationSigner)]
     [DnsTypeRegistration(Type = DnsType.TrustAnchor)]
     [DnsTypeRegistration(Type = DnsType.DnsSecLookAsideValidation)]
     public sealed class DnsResourceDataDelegationSigner : DnsResourceDataSimple, IEquatable<DnsResourceDataDelegationSigner>

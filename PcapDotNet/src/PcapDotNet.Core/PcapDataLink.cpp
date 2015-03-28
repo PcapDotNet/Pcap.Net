@@ -56,7 +56,7 @@ DataLinkKind PcapDataLink::Kind::get()
 		return DataLinkKind::Docsis;
 
     case DLT_PPP_WITH_DIR:
-        return DataLinkKind::PppWithDirection;
+        return DataLinkKind::PointToPointProtocolWithDirection;
 
     case DLT_LINUX_SLL:
         return DataLinkKind::LinuxSll;
@@ -155,7 +155,7 @@ int PcapDataLink::KindToValue(DataLinkKind kind)
 	case DataLinkKind::Docsis:
         return DLT_DOCSIS;
 
-    case DataLinkKind::PppWithDirection:
+    case DataLinkKind::PointToPointProtocolWithDirection:
         return DLT_PPP_WITH_DIR;
 
     case DataLinkKind::LinuxSll:

@@ -554,7 +554,7 @@ namespace PcapDotNet.Packets.Test
         public void DnsResourceDataLocationInformationParseWrongLengthTest()
         {
             var resourceData = new DnsResourceDataLocationInformation(0, 1000, 2000, 3000, 100, 200, 300);
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Loc, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Location, resourceData, 1);
         }
 
         [TestMethod]
@@ -750,8 +750,8 @@ namespace PcapDotNet.Packets.Test
         public void DnsResourceDataAddressPrefixListParseWrongLengthTest()
         {
             var resourceData = new DnsResourceDataAddressPrefixList(new DnsAddressPrefix(AddressFamily.IpV4, 0, false, new DataSegment(new byte[5])));
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, 1);
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Apl, resourceData, -1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.AddressPrefixList, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.AddressPrefixList, resourceData, -1);
         }
 
         [TestMethod]
@@ -784,10 +784,10 @@ namespace PcapDotNet.Packets.Test
         public void DnsResourceDataGeographicalPositionParseWrongLengthTest()
         {
             var resourceData = new DnsResourceDataGeographicalPosition("5.03", "-44.4", "22.1");
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, 1);
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -5);
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -10);
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GPos, resourceData, -14);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GeographicalPosition, resourceData, 1);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GeographicalPosition, resourceData, -5);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GeographicalPosition, resourceData, -10);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.GeographicalPosition, resourceData, -14);
         }
 
         [TestMethod]
@@ -912,10 +912,10 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void DnsResourceDataAtmAddressParseWrongLengthTest()
+        public void DnsResourceDataAsynchronousTransferModeAddressParseWrongLengthTest()
         {
-            var resourceData = new DnsResourceDataAtmAddress(DnsAtmAddressFormat.E164, new DataSegment(new byte[5]));
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.AtmA, resourceData, -6);
+            var resourceData = new DnsResourceDataAsynchronousTransferModeAddress(DnsAsynchronousTransferModeAddressFormat.E164, new DataSegment(new byte[5]));
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.AsynchronousTransferModeAddress, resourceData, -6);
         }
 
         [TestMethod]
@@ -996,7 +996,7 @@ namespace PcapDotNet.Packets.Test
         public void DnsResourceDataWellKnownServiceParseWrongLengthTest()
         {
             var resourceData = new DnsResourceDataWellKnownService(IpV4Address.Zero, IpV4Protocol.IpV6Opts, new DataSegment(new byte[5]));
-            TestResourceRecordIsNotCreatedWithNewLength(DnsType.Wks, resourceData, -6);
+            TestResourceRecordIsNotCreatedWithNewLength(DnsType.WellKnownService, resourceData, -6);
         }
 
         [TestMethod]

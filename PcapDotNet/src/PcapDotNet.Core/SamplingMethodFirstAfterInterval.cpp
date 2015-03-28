@@ -4,22 +4,22 @@
 using namespace System;
 using namespace PcapDotNet::Core;
 
-SamplingMethodFirstAfterInterval::SamplingMethodFirstAfterInterval(int intervalInMs)
+SamplingMethodFirstAfterInterval::SamplingMethodFirstAfterInterval(int intervalInMilliseconds)
 {
-    if (intervalInMs < 0)
-        throw gcnew ArgumentOutOfRangeException("intervalInMs", intervalInMs, "Must be non negative");
-    _intervalInMs = intervalInMs;
+    if (intervalInMilliseconds < 0)
+        throw gcnew ArgumentOutOfRangeException("intervalInMilliseconds", intervalInMilliseconds, "Must be non negative");
+    _intervalInMilliseconds = intervalInMilliseconds;
 }
 
 SamplingMethodFirstAfterInterval::SamplingMethodFirstAfterInterval(TimeSpan interval)
 {
-    double intervalInMs = interval.TotalMilliseconds;
-    if (intervalInMs > Int32::MaxValue)
+    double intervalInMilliseconds = interval.TotalMilliseconds;
+    if (intervalInMilliseconds > Int32::MaxValue)
         throw gcnew ArgumentOutOfRangeException("interval", interval, "Must be smaller than " + TimeSpan::FromMilliseconds(Int32::MaxValue).ToString());
-    if (intervalInMs < 0)
+    if (intervalInMilliseconds < 0)
         throw gcnew ArgumentOutOfRangeException("interval", interval, "Must be non negative");
 
-    _intervalInMs = (int)intervalInMs;
+    _intervalInMilliseconds = (int)intervalInMilliseconds;
 }
     
 int SamplingMethodFirstAfterInterval::Method::get()
@@ -29,5 +29,5 @@ int SamplingMethodFirstAfterInterval::Method::get()
 
 int SamplingMethodFirstAfterInterval::Value::get()
 {
-    return _intervalInMs;
+    return _intervalInMilliseconds;
 }
