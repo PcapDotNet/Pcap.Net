@@ -80,6 +80,14 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), AllowDerivedTypes = false)]
+        public void PacketConstructorNullDataTest()
+        {
+            Packet packet = new Packet(null, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsNull(packet);
+        }
+
+        [TestMethod]
         public void PacketIListTest()
         {
             byte[] buffer = new byte[]{1,2,3,4,5};

@@ -31,13 +31,13 @@ namespace PcapDotNet.Packets.TestUtils
             return random.NextEnum(EthernetType.None);
         }
 
-        public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, MacAddress ethernetSource, MacAddress ethernetDestination)
+        public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, uint originalLength, MacAddress ethernetSource, MacAddress ethernetDestination)
         {
             if (packetSize < EthernetDatagram.HeaderLengthValue)
                 throw new ArgumentOutOfRangeException("packetSize", packetSize,
                                                       "Must be at least the ethernet header length (" + EthernetDatagram.HeaderLengthValue + ")");
 
-            return PacketBuilder.Build(timestamp,
+            return PacketBuilder.Build(timestamp, originalLength,
                                        new EthernetLayer
                                        {
                                            Source = ethernetSource,
@@ -47,24 +47,44 @@ namespace PcapDotNet.Packets.TestUtils
                                        random.NextPayloadLayer(packetSize - EthernetDatagram.HeaderLengthValue));
         }
 
+        public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, uint originalLength, string ethernetSource, string ethernetDestination)
+        {
+            return random.NextEthernetPacket(packetSize, timestamp, originalLength, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
+        }
+
         public static Packet NextEthernetPacket(this Random random, int packetSize, DateTime timestamp, string ethernetSource, string ethernetDestination)
         {
-            return random.NextEthernetPacket(packetSize, timestamp, new MacAddress(ethernetSource), new MacAddress(ethernetDestination));
+            return random.NextEthernetPacket(packetSize, timestamp, 0, ethernetSource, ethernetDestination);
+        }
+
+        public static Packet NextEthernetPacket(this Random random, int packetSize, uint originalLength, MacAddress ethernetSource, MacAddress ethernetDestination)
+        {
+            return random.NextEthernetPacket(packetSize, DateTime.Now, originalLength, ethernetSource, ethernetDestination);
         }
 
         public static Packet NextEthernetPacket(this Random random, int packetSize, MacAddress ethernetSource, MacAddress ethernetDestination)
         {
-            return random.NextEthernetPacket(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
+            return random.NextEthernetPacket(packetSize, 0, ethernetSource, ethernetDestination);
+        }
+
+        public static Packet NextEthernetPacket(this Random random, int packetSize, uint originalLength, string ethernetSource, string ethernetDestination)
+        {
+            return random.NextEthernetPacket(packetSize, DateTime.Now, originalLength, ethernetSource, ethernetDestination);
         }
 
         public static Packet NextEthernetPacket(this Random random, int packetSize, string ethernetSource, string ethernetDestination)
         {
-            return random.NextEthernetPacket(packetSize, DateTime.Now, ethernetSource, ethernetDestination);
+            return random.NextEthernetPacket(packetSize, 0, ethernetSource, ethernetDestination);
+        }
+
+        public static Packet NextEthernetPacket(this Random random, int packetSize, uint originalLength)
+        {
+            return random.NextEthernetPacket(packetSize, DateTime.Now, originalLength, random.NextMacAddress(), random.NextMacAddress());
         }
 
         public static Packet NextEthernetPacket(this Random random, int packetSize)
         {
-            return random.NextEthernetPacket(packetSize, DateTime.Now, random.NextMacAddress(), random.NextMacAddress());
+            return random.NextEthernetPacket(packetSize, 0);
         }
     }
 }

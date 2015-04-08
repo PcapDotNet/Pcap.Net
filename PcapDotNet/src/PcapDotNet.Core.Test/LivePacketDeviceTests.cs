@@ -59,7 +59,7 @@ namespace PcapDotNet.Core.Test
             const string DestinationMac = "77:88:99:AA:BB:CC";
             const int NumPacketsToSend = 10;
 
-            using (PacketCommunicator communicator = OpenLiveDevice())
+            using (PacketCommunicator communicator = OpenLiveDevice(100))
             {
                 communicator.SetFilter("ether src " + SourceMac + " and ether dst " + DestinationMac);
 
@@ -72,7 +72,7 @@ namespace PcapDotNet.Core.Test
                 Assert.AreEqual<uint>(0, communicator.TotalStatistics.PacketsCaptured);
                 MoreAssert.IsInRange(TimeSpan.FromSeconds(0.99), TimeSpan.FromSeconds(1.075), finishedWaiting - startWaiting);
 
-                Packet sentPacket = _random.NextEthernetPacket(24, SourceMac, DestinationMac);
+                Packet sentPacket = _random.NextEthernetPacket(200, 300, SourceMac, DestinationMac);
 
                 DateTime startSendingTime = DateTime.Now;
 
@@ -86,7 +86,8 @@ namespace PcapDotNet.Core.Test
                     result = communicator.ReceivePacket(out packet);
 
                     Assert.AreEqual(PacketCommunicatorReceiveResult.Ok, result);
-                    Assert.AreEqual(sentPacket.Length, packet.Length);
+                    Assert.AreEqual(100, packet.Length);
+                    Assert.AreEqual<uint>(200, packet.OriginalLength);
                     MoreAssert.IsInRange(startSendingTime - TimeSpan.FromSeconds(1), endSendingTime + TimeSpan.FromSeconds(30), packet.Timestamp);
                 }
                 Assert.AreEqual<uint>(NumPacketsToSend, communicator.TotalStatistics.PacketsCaptured);
@@ -843,7 +844,7 @@ namespace PcapDotNet.Core.Test
             }
         }
 
-        public static PacketCommunicator OpenLiveDevice()
+        public static PacketCommunicator OpenLiveDevice(int snapshotLength)
         {
             NetworkInterface networkInterface =
                 NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
@@ -873,7 +874,7 @@ namespace PcapDotNet.Core.Test
                 }
             }
 
-            PacketCommunicator communicator = device.Open();
+            PacketCommunicator communicator = device.Open(snapshotLength, PacketDeviceOpenAttributes.Promiscuous, 1000);
             try
             {
                 MoreAssert.AreSequenceEqual(new[] {DataLinkKind.Ethernet, DataLinkKind.Docsis}.Select(kind => new PcapDataLink(kind)), communicator.SupportedDataLinks);
@@ -900,7 +901,7 @@ namespace PcapDotNet.Core.Test
                 Assert.IsTrue(communicator.IsFileSystemByteOrder);
                 Assert.AreEqual(PacketCommunicatorMode.Capture, communicator.Mode);
                 Assert.IsFalse(communicator.NonBlocking);
-                Assert.AreEqual(PacketDevice.DefaultSnapshotLength, communicator.SnapshotLength);
+                Assert.AreEqual(snapshotLength, communicator.SnapshotLength);
                 return communicator;
             }
             catch (Exception)
@@ -908,6 +909,11 @@ namespace PcapDotNet.Core.Test
                 communicator.Dispose();
                 throw;
             }
+        }
+
+        public static PacketCommunicator OpenLiveDevice()
+        {
+            return OpenLiveDevice(PacketDevice.DefaultSnapshotLength);
         }
 
         private static readonly Random _random = new Random();
