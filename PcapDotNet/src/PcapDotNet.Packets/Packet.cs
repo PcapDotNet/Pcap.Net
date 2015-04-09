@@ -47,31 +47,73 @@ namespace PcapDotNet.Packets
         /// <param name="data">The bytes of the packet. This array should not be changed after creating the packet until the packet is no longer used.</param>
         /// <param name="timestamp">A timestamp of the packet - when it was captured.</param>
         /// <param name="dataLink">The type of the datalink of the packet.</param>
-        public Packet(byte[] data, DateTime timestamp, DataLinkKind dataLink)
-            :this(data, timestamp, new DataLink(dataLink))
+        /// <param name="originalLength">
+        /// Length this packet (off wire). 
+        /// If the value is less than the data size, it is ignored and the original length is considered to be equal to the data size.
+        /// </param>
+        public Packet(byte[] data, DateTime timestamp, IDataLink dataLink, uint originalLength)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+            _data = data;
+            _timestamp = timestamp;
+            _dataLink = dataLink;
+            OriginalLength = Math.Max((uint)_data.Length, originalLength);
         }
 
         /// <summary>
         /// Create a packet from an array of bytes.
+        /// The original length is considered to be the actual size.
         /// </summary>
         /// <param name="data">The bytes of the packet. This array should not be changed after creating the packet until the packet is no longer used.</param>
         /// <param name="timestamp">A timestamp of the packet - when it was captured.</param>
         /// <param name="dataLink">The type of the datalink of the packet.</param>
         public Packet(byte[] data, DateTime timestamp, IDataLink dataLink)
+            : this(data, timestamp, dataLink, 0)
         {
-            _data = data;
-            _timestamp = timestamp;
-            _dataLink = dataLink;
+        }
+
+        /// <summary>
+        /// Create a packet from an array of bytes, assuming original length is equal to the data size.
+        /// </summary>
+        /// <param name="data">The bytes of the packet. This array should not be changed after creating the packet until the packet is no longer used.</param>
+        /// <param name="timestamp">A timestamp of the packet - when it was captured.</param>
+        /// <param name="dataLink">The type of the datalink of the packet.</param>
+        /// <param name="originalLength">
+        /// Length this packet (off wire). 
+        /// If the value is less than the data size, it is ignored and the original length is considered to be equal to the data size.
+        /// </param>
+        public Packet(byte[] data, DateTime timestamp, DataLinkKind dataLink, uint originalLength)
+            : this(data, timestamp, new DataLink(dataLink), originalLength)
+        {
+        }
+
+        /// <summary>
+        /// Create a packet from an array of bytes, assuming original length is equal to the data size.
+        /// The original length is considered to be the actual size.
+        /// </summary>
+        /// <param name="data">The bytes of the packet. This array should not be changed after creating the packet until the packet is no longer used.</param>
+        /// <param name="timestamp">A timestamp of the packet - when it was captured.</param>
+        /// <param name="dataLink">The type of the datalink of the packet.</param>
+        public Packet(byte[] data, DateTime timestamp, DataLinkKind dataLink)
+            : this(data, timestamp, dataLink, 0)
+        {
         }
 
         /// <summary>
         /// The number of bytes this packet take.
+        /// When capturing, represents the number of bytes captured.
         /// </summary>
         public int Length
         {
             get { return _data.Length; }
         }
+
+        /// <summary>
+        /// Length this packet (off wire).
+        /// When capturing, can be bigger than the number of captured bytes represented in Length.
+        /// </summary>
+        public uint OriginalLength { get; private set; }
 
         /// <summary>
         /// The time this packet was captured.

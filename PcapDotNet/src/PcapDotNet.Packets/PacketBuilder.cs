@@ -48,22 +48,54 @@ namespace PcapDotNet.Packets
         /// Builds a single packet using the given layers with the given timestamp.
         /// </summary>
         /// <param name="timestamp">The packet's timestamp.</param>
+        /// <param name="originalLength">
+        /// Length this packet (off wire). 
+        /// If the value is less than the actual size, it is ignored and the original length is considered to be equal to the actual size.
+        /// </param>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
+        /// <returns>A packet built from the given layers with the given timestamp.</returns>
+        public static Packet Build(DateTime timestamp, uint originalLength, params ILayer[] layers)
+        {
+            return new PacketBuilder(layers).Build(timestamp, originalLength);
+        }
+
+        /// <summary>
+        /// Builds a single packet using the given layers with the given timestamp.
+        /// The original length is considered to be the actual size.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
         /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
         /// <returns>A packet built from the given layers with the given timestamp.</returns>
         public static Packet Build(DateTime timestamp, params ILayer[] layers)
         {
-            return new PacketBuilder(layers).Build(timestamp);
+            return Build(timestamp, 0, layers);
         }
 
         /// <summary>
         /// Builds a single packet using the given layers with the given timestamp.
         /// </summary>
         /// <param name="timestamp">The packet's timestamp.</param>
+        /// <param name="originalLength">
+        /// Length this packet (off wire). 
+        /// If the value is less than the actual size, it is ignored and the original length is considered to be equal to the actual size.
+        /// </param>
+        /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
+        /// <returns>A packet built from the given layers with the given timestamp.</returns>
+        public static Packet Build(DateTime timestamp, uint originalLength, IEnumerable<ILayer> layers)
+        {
+            return new PacketBuilder(layers).Build(timestamp, originalLength);
+        }
+
+        /// <summary>
+        /// Builds a single packet using the given layers with the given timestamp.
+        /// The original length is considered to be the actual size.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
         /// <param name="layers">The layers to build the packet accordingly and by their order.</param>
         /// <returns>A packet built from the given layers with the given timestamp.</returns>
         public static Packet Build(DateTime timestamp, IEnumerable<ILayer> layers)
         {
-            return new PacketBuilder(layers).Build(timestamp);
+            return Build(timestamp, 0, layers);
         }
 
         /// <summary>
@@ -102,8 +134,12 @@ namespace PcapDotNet.Packets
         /// Builds a single packet using the builder's layers with the given timestamp.
         /// </summary>
         /// <param name="timestamp">The packet's timestamp.</param>
+        /// <param name="originalLength">
+        /// Length this packet (off wire). 
+        /// If the value is less than the actual size, it is ignored and the original length is considered to be equal to the actual size.
+        /// </param>
         /// <returns>A packet built from the builder's layers with the given timestamp.</returns>
-        public Packet Build(DateTime timestamp)
+        public Packet Build(DateTime timestamp, uint originalLength)
         {
             int[] layersLength = _layers.Select(layer => layer.Length).ToArray();
             int length = layersLength.Sum();
@@ -112,7 +148,18 @@ namespace PcapDotNet.Packets
             WriteLayers(layersLength, buffer, length);
             FinalizeLayers(buffer, length);
 
-            return new Packet(buffer, timestamp, _dataLink);
+            return new Packet(buffer, timestamp, _dataLink, originalLength);
+        }
+
+        /// <summary>
+        /// Builds a single packet using the builder's layers with the given timestamp.
+        /// The original length is considered to be the actual size.
+        /// </summary>
+        /// <param name="timestamp">The packet's timestamp.</param>
+        /// <returns>A packet built from the builder's layers with the given timestamp.</returns>
+        public Packet Build(DateTime timestamp)
+        {
+            return Build(timestamp, 0);
         }
 
         private void WriteLayers(int[] layersLength, byte[] buffer, int length)
