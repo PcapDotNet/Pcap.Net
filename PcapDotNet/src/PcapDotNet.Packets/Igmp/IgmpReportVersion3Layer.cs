@@ -10,7 +10,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents an IGMP Report version 3 layer.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public sealed class IgmpReportVersion3Layer : IgmpLayer
+    public sealed class IgmpReportVersion3Layer : IgmpVersion1PlusLayer
     {
         /// <summary>
         /// Creates an instance of an IGMP Report Version 3 Layer with a default of no Group Records.
@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// true iff the group records are equal.
         /// </summary>
-        protected override bool EqualFields(IgmpLayer other)
+        protected override bool EqualFields(IgmpVersion1PlusLayer other)
         {
             return EqualFields(other as IgmpReportVersion3Layer);
         }

@@ -21,10 +21,7 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "igmp.version":
-                    if (field.Show() == "0")
-                        return false; // TODO: support IGMP version 0.
-
-                    field.AssertShowDecimal(igmpDatagram.Version);
+                    field.AssertShowDecimal(Math.Max(igmpDatagram.Version, 0));
                     break;
 
                 case "igmp.type":
@@ -68,11 +65,21 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         default:
-                            if (typeof(IgmpMessageType).GetEnumValues<IgmpMessageType>().Contains(igmpDatagram.MessageType))
-                                throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
+                            switch (field.Show())
+                            {
+                                case "Data":
+                                    if (field.Value().Length > 0)
+                                    {
+                                        // TODO: Change following https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11582
+                                        field.AssertValue(field.Value().Length / 2 == igmpDatagram.Length - 21 ? igmpDatagram.Skip(21) : igmpDatagram.Skip(1));
+                                    }
+                                    break;
 
-                            field.AssertValue(igmpDatagram.Skip(1));
-//                                field.AssertShow(igmpDatagram.Skip(1));
+                                default:
+                                    if (typeof(IgmpMessageType).GetEnumValues<IgmpMessageType>().Contains(igmpDatagram.MessageType))
+                                        throw new InvalidOperationException("Invalid message type " + igmpDatagram.MessageType);
+                                    break;
+                            }
                             break;
                     }
 
@@ -99,7 +106,23 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.identifier":
-                    // todo support IGMP version 0 and IGMP identifier.
+                    field.AssertShowDecimal(igmpDatagram.Identifier);
+                    break;
+
+                case "igmp.access_key":
+                    field.AssertValue(igmpDatagram.AccessKey);
+                    break;
+
+                case "igmp.reply":
+                    field.AssertShowDecimal((byte)igmpDatagram.ReplyCode);
+                    break;
+
+                case "igmp.reply.pending":
+                    field.AssertShowDecimal(igmpDatagram.RetryInThisManySeconds);
+                    break;
+
+                case "igmp.group_type":
+                    field.AssertShowDecimal(igmpDatagram.IsPrivate);
                     break;
 
                 case "igmp.mtrace.max_hops":

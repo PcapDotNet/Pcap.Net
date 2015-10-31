@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ethernet;
@@ -102,6 +103,38 @@ namespace PcapDotNet.Packets.Test
                     Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.Ip.Igmp.QueryVersion);
                 switch (igmpLayer.MessageType)
                 {
+                    case IgmpMessageType.CreateGroupRequestVersion0:
+                    case IgmpMessageType.CreateGroupReplyVersion0:
+                    case IgmpMessageType.JoinGroupRequestVersion0:
+                    case IgmpMessageType.JoinGroupReplyVersion0:
+                    case IgmpMessageType.LeaveGroupRequestVersion0:
+                    case IgmpMessageType.LeaveGroupReplyVersion0:
+                    case IgmpMessageType.ConfirmGroupRequestVersion0:
+                    case IgmpMessageType.ConfirmGroupReplyVersion0:
+                        Assert.AreEqual(0, packet.Ethernet.Ip.Igmp.Version);
+                        IgmpVersion0Layer igmpVersion0Layer = (IgmpVersion0Layer)igmpLayer;
+                        Assert.AreEqual(igmpVersion0Layer.IdentifierValue, packet.Ethernet.Ip.Igmp.Identifier);
+                        Assert.AreEqual(igmpVersion0Layer.AccessKeyValue, packet.Ethernet.Ip.Igmp.AccessKey);
+
+                        switch (igmpLayer.MessageType)
+                        {
+                            case IgmpMessageType.CreateGroupRequestVersion0:
+                                Assert.AreEqual(((IgmpCreateGroupRequestVersion0Layer)igmpLayer).IsPrivate, packet.Ethernet.Ip.Igmp.IsPrivate);
+                                break;
+
+                            case IgmpMessageType.CreateGroupReplyVersion0:
+                            case IgmpMessageType.JoinGroupReplyVersion0:
+                            case IgmpMessageType.LeaveGroupReplyVersion0:
+                            case IgmpMessageType.ConfirmGroupReplyVersion0:
+                                IgmpReplyVersion0Layer igmpReplyVersion0Layer = (IgmpReplyVersion0Layer)igmpVersion0Layer;
+                                Assert.AreEqual(igmpReplyVersion0Layer.Code, packet.Ethernet.Ip.Igmp.ReplyCode);
+                                if (packet.Ethernet.Ip.Igmp.ReplyCode == IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds)
+                                    Assert.AreEqual(igmpReplyVersion0Layer.RetryInThisManySeconds, packet.Ethernet.Ip.Igmp.RetryInThisManySeconds);
+                                break;
+                        }
+
+                        break;
+
                     case IgmpMessageType.MembershipQuery:
                         switch (igmpLayer.QueryVersion)
                         {
@@ -358,7 +391,6 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException), AllowDerivedTypes = false)]
         public void IgmpIllegalReportVersionTest()
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpReportVersion1Layer());
@@ -371,8 +403,7 @@ namespace PcapDotNet.Packets.Test
             buffer.Write(EthernetDatagram.HeaderLengthValue + IpV4Datagram.HeaderMinimumLength, 0);
             Packet illegalPacket = new Packet(buffer, packet.Timestamp, packet.DataLink);
             Assert.IsFalse(illegalPacket.IsValid);
-            Assert.IsNull(illegalPacket.Ethernet.IpV4.Igmp.Version);
-            Assert.Fail();
+            Assert.AreEqual(-1, illegalPacket.Ethernet.IpV4.Igmp.Version);
         }
 
         [TestMethod]
@@ -445,11 +476,11 @@ namespace PcapDotNet.Packets.Test
         [TestMethod]
         public void DifferentIgmpSimpleLayersTest()
         {
-            IgmpSimpleLayer layer1 = new IgmpQueryVersion1Layer
+            IgmpVersion1PlusSimpleLayer layer1 = new IgmpQueryVersion1Layer
                                          {
                                              GroupAddress = new IpV4Address("1.2.3.4")
                                          };
-            IgmpSimpleLayer layer2 = new IgmpQueryVersion2Layer
+            IgmpVersion1PlusSimpleLayer layer2 = new IgmpQueryVersion2Layer
                                          {
                                              GroupAddress = new IpV4Address("1.2.3.4"),
                                              MaxResponseTime = TimeSpan.FromMinutes(55)

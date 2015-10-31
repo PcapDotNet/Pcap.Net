@@ -309,7 +309,9 @@
     <Compile Include="Igmp\IgmpReportVersion1Layer.cs" />
     <Compile Include="Igmp\IgmpReportVersion2Layer.cs" />
     <Compile Include="Igmp\IgmpReportVersion3Layer.cs" />
-    <Compile Include="Igmp\IgmpSimpleLayer.cs" />
+    <Compile Include="Igmp\IgmpVersion1PlusLayer.cs" />
+    <Compile Include="Igmp\IgmpVersion1PlusSimpleLayer.cs" />
+    <Compile Include="Igmp\IgmpVersion0ReplyCode.cs" />
     <Compile Include="Igmp\IgmpVersion1Layer.cs" />
     <Compile Include="Igmp\IgmpVersion2Layer.cs" />
     <Compile Include="Igmp\IgmpDatagram.cs" />

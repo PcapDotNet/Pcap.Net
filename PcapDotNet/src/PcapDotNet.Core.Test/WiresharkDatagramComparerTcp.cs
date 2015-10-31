@@ -28,7 +28,7 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "tcp.len":
-                    field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                    field.AssertShowDecimal(tcpDatagram.Length - tcpDatagram.HeaderLength);
                     field.AssertNoFields();
                     break;
 
