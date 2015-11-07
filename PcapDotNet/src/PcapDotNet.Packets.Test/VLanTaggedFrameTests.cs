@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
@@ -12,6 +13,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for VLanTaggedFrameTests.
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class VLanTaggedFrameTests
     {
         /// <summary>

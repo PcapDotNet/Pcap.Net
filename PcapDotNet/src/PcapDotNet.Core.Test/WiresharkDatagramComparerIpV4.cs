@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class WiresharkDatagramComparerIpV4 : WiresharkDatagramComparerSimple
     {
         protected override string PropertyName

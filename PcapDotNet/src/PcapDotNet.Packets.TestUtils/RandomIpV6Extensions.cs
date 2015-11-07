@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Ip;
@@ -9,6 +10,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomIpV6Extensions
     {
         public static IpV6Address NextIpV6Address(this Random random)

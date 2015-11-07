@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +9,7 @@ namespace PcapDotNet.Base.Test
     /// Summary description for MatchExtensionsTest
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MatchExtensionsTest
     {
         /// <summary>

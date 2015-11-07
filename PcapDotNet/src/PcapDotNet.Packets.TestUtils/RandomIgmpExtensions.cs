@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Igmp;
@@ -7,6 +8,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomIgmpExtensions
     {
         public static IgmpGroupRecord NextIgmpGroupRecord(this Random random)

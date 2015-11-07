@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
@@ -14,6 +15,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for IcmpTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class IcmpTests
     {
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Transport;
 
@@ -8,6 +9,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for PacketBuilderTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PacketBuilderTests
     {
         /// <summary>

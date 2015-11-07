@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
@@ -14,6 +15,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for DatagramTests.
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class DatagramTests
     {
         /// <summary>

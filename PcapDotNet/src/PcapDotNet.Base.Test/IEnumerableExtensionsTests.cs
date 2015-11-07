@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,7 +10,8 @@ namespace PcapDotNet.Base.Test
     /// Summary description for IEnumerableExtensionsTests
     /// </summary>
     [TestClass]
-// ReSharper disable InconsistentNaming
+    [ExcludeFromCodeCoverage]
+    // ReSharper disable InconsistentNaming
     public class IEnumerableExtensionsTests
 // ReSharper restore InconsistentNaming
     {

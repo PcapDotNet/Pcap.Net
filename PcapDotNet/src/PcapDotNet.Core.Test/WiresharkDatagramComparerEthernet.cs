@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class WiresharkDatagramComparerEthernet : WiresharkDatagramComparerSimple
     {
         protected override string PropertyName

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for OfflinePacketDeviceTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class OfflinePacketDeviceTests
     {
         /// <summary>

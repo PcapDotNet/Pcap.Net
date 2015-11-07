@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal static class XElementExtensions
     {
         public static IEnumerable<XElement> Fields(this XElement element)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +9,7 @@ namespace PcapDotNet.Base.Test
     /// Summary description for DictionaryExtensionsTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     // ReSharper disable InconsistentNaming
     public class IDictionaryExtensionsTests
     // ReSharper restore InconsistentNaming

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Base.Test
@@ -7,6 +8,7 @@ namespace PcapDotNet.Base.Test
     /// Summary description for FuncExtensionsTest
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class FuncExtensionsTest
     {
         /// <summary>

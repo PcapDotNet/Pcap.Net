@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.TestUtils;
@@ -9,6 +10,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for MacAddressTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MacAddressTests
     {
         /// <summary>

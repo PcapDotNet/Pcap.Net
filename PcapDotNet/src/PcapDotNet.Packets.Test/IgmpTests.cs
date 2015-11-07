@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
@@ -15,6 +16,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for IgmpTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class IgmpTests
     {
         /// <summary>

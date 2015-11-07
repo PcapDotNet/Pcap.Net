@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
@@ -13,6 +14,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for UdpTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UdpTests
     {
         /// <summary>

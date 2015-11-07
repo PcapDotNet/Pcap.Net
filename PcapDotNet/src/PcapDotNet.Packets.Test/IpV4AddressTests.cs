@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.TestUtils;
@@ -9,6 +10,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for IpV4AddressTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class IpV4AddressTests
     {
         /// <summary>

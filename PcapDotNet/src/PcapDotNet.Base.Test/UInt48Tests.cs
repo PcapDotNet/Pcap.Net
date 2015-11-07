@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
@@ -9,6 +10,7 @@ namespace PcapDotNet.Base.Test
     /// Summary description for UInt48Tests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UInt48Tests
     {
         /// <summary>

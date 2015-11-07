@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for PacketTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PacketTests
     {
         /// <summary>
