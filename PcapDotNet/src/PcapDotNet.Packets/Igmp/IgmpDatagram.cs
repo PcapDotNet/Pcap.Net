@@ -858,6 +858,7 @@ namespace PcapDotNet.Packets.Igmp
                             return Length == GetQueryVersion3Length(NumberOfSources);
 
                         default:
+                            // This never happens, since Version != 0 with MessageType = MembershipQuery requires QueryVersion to be 1, 2 or 3.
                             return false;
                     }
 

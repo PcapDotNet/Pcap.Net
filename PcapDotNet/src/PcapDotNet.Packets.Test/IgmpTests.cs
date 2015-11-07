@@ -495,5 +495,20 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(new IgmpGroupRecord(IgmpRecordType.FilterModeChangeToExclude, IpV4Address.Zero, new IpV4Address[0], null));
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void IgmpTooLong()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion1Layer());
+            Assert.IsTrue(packet.IsValid);
+
+            byte[] invalidPacketBuffer = packet.Buffer.ToArray();
+            invalidPacketBuffer[EthernetDatagram.HeaderLengthValue + IpV4Datagram.HeaderMinimumLength] = (byte)IgmpMessageType.MulticastTraceRoute;
+            const ushort newCheckSum = 57599;
+            invalidPacketBuffer[EthernetDatagram.HeaderLengthValue + IpV4Datagram.HeaderMinimumLength + sizeof(ushort)] = newCheckSum >> 8;
+            invalidPacketBuffer[EthernetDatagram.HeaderLengthValue + IpV4Datagram.HeaderMinimumLength + sizeof(ushort) + sizeof(byte)] = newCheckSum & 0xFF;
+            Packet invalidPacket = new Packet(invalidPacketBuffer, DateTime.Now, DataLinkKind.Ethernet);
+            Assert.IsFalse(invalidPacket.IsValid);
+        }
     }
 }
