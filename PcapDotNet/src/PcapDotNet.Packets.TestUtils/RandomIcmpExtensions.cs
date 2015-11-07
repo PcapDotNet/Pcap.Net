@@ -22,7 +22,8 @@ namespace PcapDotNet.Packets.TestUtils
                            {
                                Code = random.NextEnum<IcmpCodeDestinationUnreachable>(),
                                Checksum = checksum,
-                               NextHopMaximumTransmissionUnit = random.NextUShort(),
+                               NextHopMaximumTransmissionUnit =
+                               random.NextUShort(IcmpDestinationUnreachableDatagram.MinimumMaximumTransmissionUnit, ushort.MaxValue),
                            };
 
                 case IcmpMessageType.TimeExceeded:
