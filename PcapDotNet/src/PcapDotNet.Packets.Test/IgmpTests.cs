@@ -103,7 +103,7 @@ namespace PcapDotNet.Packets.Test
                     MoreAssert.IsSmallerOrEqual(IgmpDatagram.MaxMaxResponseTime, packet.Ethernet.Ip.Igmp.MaxResponseTime);
                 if (packet.Ethernet.Ip.Igmp.MessageType != IgmpMessageType.MembershipQuery)
                     Assert.AreEqual(IgmpQueryVersion.None, packet.Ethernet.Ip.Igmp.QueryVersion);
-                switch (igmpLayer.MessageType)
+                switch (igmpLayer.MessageTypeValue)
                 {
                     case IgmpMessageType.CreateGroupRequestVersion0:
                     case IgmpMessageType.CreateGroupReplyVersion0:
@@ -118,7 +118,7 @@ namespace PcapDotNet.Packets.Test
                         Assert.AreEqual(igmpVersion0Layer.IdentifierValue, packet.Ethernet.Ip.Igmp.Identifier);
                         Assert.AreEqual(igmpVersion0Layer.AccessKeyValue, packet.Ethernet.Ip.Igmp.AccessKey);
 
-                        switch (igmpLayer.MessageType)
+                        switch (igmpLayer.MessageTypeValue)
                         {
                             case IgmpMessageType.CreateGroupRequestVersion0:
                                 Assert.AreEqual(((IgmpCreateGroupRequestVersion0Layer)igmpLayer).IsPrivate, packet.Ethernet.Ip.Igmp.IsPrivate);
@@ -172,7 +172,7 @@ namespace PcapDotNet.Packets.Test
                         break;
 
                     default:
-                        Assert.Fail(igmpLayer.MessageType.ToString());
+                        Assert.Fail(igmpLayer.MessageTypeValue.ToString());
                         break;
                 }
                 foreach (IgmpGroupRecordDatagram groupRecord in packet.Ethernet.Ip.Igmp.GroupRecords)
@@ -544,14 +544,14 @@ namespace PcapDotNet.Packets.Test
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpReplyVersion0LayerSetInvalidType()
         {
-            Assert.IsNotNull(new IgmpReplyVersion0Layer {Type = IgmpMessageType.LeaveGroupVersion2});
+            Assert.IsNotNull(new IgmpReplyVersion0Layer {MessageType = IgmpMessageType.LeaveGroupVersion2});
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException), AllowDerivedTypes = false)]
         public void IgmpRequestVersion0LayerSetInvalidType()
         {
-            Assert.IsNotNull(new IgmpRequestVersion0Layer { Type = IgmpMessageType.LeaveGroupVersion2 });
+            Assert.IsNotNull(new IgmpRequestVersion0Layer { MessageType = IgmpMessageType.LeaveGroupVersion2 });
         }
     }
 }

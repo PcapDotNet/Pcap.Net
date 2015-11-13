@@ -286,7 +286,7 @@ namespace PcapDotNet.Packets.Igmp
             get
             {
                 if (MessageType != IgmpMessageType.CreateGroupRequestVersion0)
-                    throw new InvalidOperationException("IsPrivate can only be accessed for CreateGroupRequestVersion0.");
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed for CreateGroupRequestVersion0.");
                 return ReadBool(Offset.Code, Mask.Code);
             }
         }
@@ -303,7 +303,7 @@ namespace PcapDotNet.Packets.Igmp
                     MessageType != IgmpMessageType.LeaveGroupReplyVersion0 &&
                     MessageType != IgmpMessageType.ConfirmGroupReplyVersion0)
                 {
-                    throw new InvalidOperationException("ReplyCode can only be accessed for Version 0 Replies.");
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed for Version 0 Replies.");
                 }
 
                 return (IgmpVersion0ReplyCode)Math.Min(this[Offset.Code], (byte)IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds);
@@ -318,7 +318,7 @@ namespace PcapDotNet.Packets.Igmp
             get
             {
                 if (ReplyCode != IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds)
-                    throw new InvalidOperationException("RetryInThisManySeconds can only be accessed when ReplyCode is RequestPendingRetryInThisManySeconds");
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed when reply code is request pending retry in this many seconds");
                 return this[Offset.Code];
             }
         }
@@ -638,7 +638,7 @@ namespace PcapDotNet.Packets.Igmp
                 case IgmpMessageType.ConfirmGroupReplyVersion0:
                     return new IgmpReplyVersion0Layer
                            {
-                               Type = MessageType,
+                               MessageType = MessageType,
                                Code = ReplyCode,
                                RetryInThisManySeconds = (byte)(ReplyCode == IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds ? RetryInThisManySeconds : 0),
                                Identifier = Identifier,
@@ -650,7 +650,7 @@ namespace PcapDotNet.Packets.Igmp
                 case IgmpMessageType.LeaveGroupRequestVersion0:
                     return new IgmpRequestVersion0Layer
                            {
-                               Type = MessageType,
+                               MessageType = MessageType,
                                Identifier = Identifier,
                                GroupAddress = GroupAddress,
                                AccessKey = AccessKey,

@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Igmp
         protected sealed override void Write(byte[] buffer, int offset)
         {
             IgmpDatagram.WriteVersion1PlusSimpleHeader(buffer, offset,
-                                                       MessageType, MaxResponseTimeValue, GroupAddress);
+                                                       MessageTypeValue, MaxResponseTimeValue, GroupAddress);
         }
 
         /// <summary>

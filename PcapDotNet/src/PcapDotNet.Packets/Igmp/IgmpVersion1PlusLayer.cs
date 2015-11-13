@@ -3,6 +3,9 @@ using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Igmp
 {
+    /// <summary>
+    /// Base class for all IGMP layers of version 1 or higher.
+    /// </summary>
     public abstract class IgmpVersion1PlusLayer : IgmpLayer
     {
         /// <summary>

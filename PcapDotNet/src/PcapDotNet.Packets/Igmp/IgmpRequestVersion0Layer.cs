@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Igmp
@@ -11,55 +12,81 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public override IgmpMessageType MessageType
+        public override IgmpMessageType MessageTypeValue
         {
-            get { return Type; }
+            get { return MessageType; }
         }
 
-        public IgmpMessageType Type
+        /// <summary>
+        /// The type of the IGMP message of concern to the host-router interaction.
+        /// Either JoinGroupRequestVersion0 or LeaveGroupRequestVersion0.
+        /// </summary>
+        public IgmpMessageType MessageType
         {
-            get { return _type; }
+            get { return _messageType; }
             set
             {
                 switch (value)
                 {
                     case IgmpMessageType.JoinGroupRequestVersion0:
                     case IgmpMessageType.LeaveGroupRequestVersion0:
-                        _type = value;
+                        _messageType = value;
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException("value", value, string.Format("Do not use {0} for {1}", GetType(), value));
+                        throw new ArgumentOutOfRangeException("value", value, string.Format(CultureInfo.InvariantCulture, "Do not use {0} for {1}", GetType(), value));
                 }
             }
         }
 
+        /// <summary>
+        /// In a Confirm Group Request message, the identifier field should contain zero.
+        /// In all other Request messages, the identifier field contains a value to distinguish the request from other requests by the same host.
+        /// </summary>
         public uint Identifier { get; set; }
 
+        /// <summary>
+        /// In a Confirm Group Request message, the identifier field contains zero.
+        /// In all other Request messages, the identifier field contains a value to distinguish the request from other requests by the same host.
+        /// </summary>
         public override uint IdentifierValue
         {
             get { return Identifier; }
         }
 
+        /// <summary>
+        /// In a Create Group Request message, the group address field contains zero.
+        /// In all other Request messages, the group address field contains a host group address.
+        /// </summary>
         public IpV4Address GroupAddress { get; set; }
 
+        /// <summary>
+        /// In a Create Group Request message, the access key field contains zero.
+        /// In all other Request messages, the access key field contains the access key assigned to the host group identified in the Group Address field
+        /// (zero for public groups).
+        /// </summary>
         public ulong AccessKey { get; set; }
 
+        /// <summary>
+        /// In a Create Group Request message, the access key field contains zero.
+        /// In all other Request messages, the access key field contains the access key assigned to the host group identified in the Group Address field
+        /// (zero for public groups).
+        /// </summary>
         public override ulong AccessKeyValue
         {
             get { return AccessKey; }
         }
 
-        protected override byte CodeValue
+        internal override byte CodeValue
         {
             get { return 0; }
         }
 
-        protected override IpV4Address GroupAddressValue
+        internal override IpV4Address GroupAddressValue
         {
             get { return GroupAddress; }
         }
 
-        private IgmpMessageType _type = IgmpMessageType.JoinGroupRequestVersion0;
+        private IgmpMessageType _messageType = IgmpMessageType.JoinGroupRequestVersion0;
     }
 }

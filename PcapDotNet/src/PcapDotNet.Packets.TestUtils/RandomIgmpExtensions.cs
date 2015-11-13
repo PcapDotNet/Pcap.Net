@@ -47,7 +47,7 @@ namespace PcapDotNet.Packets.TestUtils
                     IgmpVersion0ReplyCode code = random.NextEnum<IgmpVersion0ReplyCode>();
                     return new IgmpReplyVersion0Layer
                     {
-                        Type = igmpMessageType,
+                        MessageType = igmpMessageType,
                         Code = code,
                         RetryInThisManySeconds = (byte)(code == IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds? random.NextByte((byte)IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds, byte.MaxValue) : 0),
                         Identifier = identifier,
@@ -59,7 +59,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IgmpMessageType.LeaveGroupRequestVersion0:
                     return new IgmpRequestVersion0Layer
                     {
-                        Type = igmpMessageType,
+                        MessageType = igmpMessageType,
                         Identifier = identifier,
                         GroupAddress = igmpGroupAddress,
                         AccessKey = accessKey,

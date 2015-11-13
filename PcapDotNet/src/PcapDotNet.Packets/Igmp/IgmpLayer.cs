@@ -12,7 +12,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public abstract IgmpMessageType MessageType { get; }
+        public abstract IgmpMessageType MessageTypeValue { get; }
 
         /// <summary>
         /// The IGMP version of a Membership Query message.
@@ -38,7 +38,7 @@ namespace PcapDotNet.Packets.Igmp
         public bool Equals(IgmpLayer other)
         {
             return other != null &&
-                   MessageType == other.MessageType &&
+                   MessageTypeValue == other.MessageTypeValue &&
                    QueryVersion == other.QueryVersion &&
                    EqualsVersionSpecific(other);
         }
@@ -57,7 +57,7 @@ namespace PcapDotNet.Packets.Igmp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Sequence.GetHashCode(MessageType, QueryVersion);
+                   Sequence.GetHashCode(MessageTypeValue, QueryVersion);
         }
 
         /// <summary>
