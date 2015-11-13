@@ -149,7 +149,8 @@ namespace PcapDotNet.Packets.Test
                 if (actualIcmpLayer.MessageType != IcmpMessageType.RouterSolicitation)
                 {
                     Assert.AreNotEqual(random.NextIcmpLayer(), actualIcmpLayer);
-                    Assert.AreNotEqual(random.NextIcmpLayer().GetHashCode(), actualIcmpLayer.GetHashCode());
+                    IcmpLayer otherIcmpLayer = random.NextIcmpLayer();
+                    Assert.AreNotEqual(otherIcmpLayer.GetHashCode(), actualIcmpLayer.GetHashCode());
                 }
                 Assert.IsTrue(actualIcmp.IsChecksumCorrect);
                 Assert.AreEqual(icmpLayer.MessageType, actualIcmp.MessageType);

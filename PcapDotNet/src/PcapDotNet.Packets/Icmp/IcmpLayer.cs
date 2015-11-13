@@ -134,7 +134,7 @@ namespace PcapDotNet.Packets.Icmp
         public sealed override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Sequence.GetHashCode(MessageTypeAndCode, Variable) ^ Checksum.GetHashCode();
+                   Sequence.GetHashCode(BitSequence.Merge((ushort)MessageTypeAndCode, Checksum ?? 0), Variable);
         }
 
         /// <summary>
