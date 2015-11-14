@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets.Ethernet;
@@ -14,6 +15,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for IcmpTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class IcmpTests
     {
         /// <summary>
@@ -147,7 +149,8 @@ namespace PcapDotNet.Packets.Test
                 if (actualIcmpLayer.MessageType != IcmpMessageType.RouterSolicitation)
                 {
                     Assert.AreNotEqual(random.NextIcmpLayer(), actualIcmpLayer);
-                    Assert.AreNotEqual(random.NextIcmpLayer().GetHashCode(), actualIcmpLayer.GetHashCode());
+                    IcmpLayer otherIcmpLayer = random.NextIcmpLayer();
+                    Assert.AreNotEqual(otherIcmpLayer.GetHashCode(), actualIcmpLayer.GetHashCode());
                 }
                 Assert.IsTrue(actualIcmp.IsChecksumCorrect);
                 Assert.AreEqual(icmpLayer.MessageType, actualIcmp.MessageType);

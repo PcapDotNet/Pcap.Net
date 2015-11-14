@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
@@ -6,6 +7,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomArpExtensions
     {
         public static ArpLayer NextArpLayer(this Random random)

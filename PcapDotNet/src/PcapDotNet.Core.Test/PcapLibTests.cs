@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
@@ -7,6 +8,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for PcapLibTests.
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PcapLibTests
     {
         /// <summary>

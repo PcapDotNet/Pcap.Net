@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class PacketHandler
     {
         public PacketHandler(Packet expectedPacket, DateTime expectedMinTimestamp, DateTime expectedMaxTimestamp,

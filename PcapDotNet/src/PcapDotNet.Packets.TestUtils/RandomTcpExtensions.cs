@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using PcapDotNet.Packets.Transport;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomTcpExtensions
     {
         public static TcpLayer NextTcpLayer(this Random random)

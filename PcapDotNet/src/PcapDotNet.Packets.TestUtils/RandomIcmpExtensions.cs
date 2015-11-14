@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
@@ -8,6 +9,7 @@ using IEnumerableExtensions = PcapDotNet.Base.IEnumerableExtensions;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomIcmpExtensions
     {
         public static IcmpLayer NextIcmpLayer(this Random random)
@@ -22,7 +24,8 @@ namespace PcapDotNet.Packets.TestUtils
                            {
                                Code = random.NextEnum<IcmpCodeDestinationUnreachable>(),
                                Checksum = checksum,
-                               NextHopMaximumTransmissionUnit = random.NextUShort(),
+                               NextHopMaximumTransmissionUnit =
+                               random.NextUShort(IcmpDestinationUnreachableDatagram.MinimumMaximumTransmissionUnit, ushort.MaxValue),
                            };
 
                 case IcmpMessageType.TimeExceeded:

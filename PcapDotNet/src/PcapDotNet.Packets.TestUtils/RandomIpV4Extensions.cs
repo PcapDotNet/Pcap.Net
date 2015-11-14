@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomIpV4Extensions
     {
         public static IpV4Layer NextIpV4Layer(this Random random, IpV4Protocol? protocol)

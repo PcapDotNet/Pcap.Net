@@ -7,7 +7,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents a generic IGMP version 2 datagram.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public abstract class IgmpVersion2Layer : IgmpSimpleLayer
+    public abstract class IgmpVersion2Layer : IgmpVersion1PlusSimpleLayer
     {
         /// <summary>
         /// The actual time allowed, called the Max Resp Time.

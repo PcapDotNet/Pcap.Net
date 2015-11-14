@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.TestUtils;
@@ -9,6 +10,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for BerkeleyPacketFilterTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage] 
     public class BerkeleyPacketFilterTests
     {
         /// <summary>

@@ -75,7 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ByteExtensions.cs" />
     <Compile Include="MoreAssert.cs" />
     <Compile Include="BoolExtensions.cs" />
     <Compile Include="RandomExtensions.cs" />

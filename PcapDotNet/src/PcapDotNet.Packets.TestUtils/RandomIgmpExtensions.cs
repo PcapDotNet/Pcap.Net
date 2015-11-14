@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Igmp;
@@ -7,6 +8,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomIgmpExtensions
     {
         public static IgmpGroupRecord NextIgmpGroupRecord(this Random random)
@@ -22,25 +24,56 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static IgmpLayer NextIgmpLayer(this Random random)
         {
-            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None, IgmpMessageType.CreateGroupRequestVersion0,
-                                                              IgmpMessageType.CreateGroupReplyVersion0, IgmpMessageType.JoinGroupRequestVersion0,
-                                                              IgmpMessageType.JoinGroupReplyVersion0, IgmpMessageType.LeaveGroupRequestVersion0,
-                                                              IgmpMessageType.LeaveGroupReplyVersion0, IgmpMessageType.ConfirmGroupRequestVersion0,
-                                                              IgmpMessageType.ConfirmGroupReplyVersion0,
+            IgmpMessageType igmpMessageType = random.NextEnum(IgmpMessageType.None,
                                                               IgmpMessageType.MulticastTraceRouteResponse, IgmpMessageType.MulticastTraceRoute); // todo support IGMP traceroute http://www.ietf.org/proceedings/48/I-D/idmr-traceroute-ipm-07.txt.
-            IgmpQueryVersion igmpQueryVersion = IgmpQueryVersion.None;
             TimeSpan igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(256 * 0.1) - TimeSpan.FromTicks(1));
             IpV4Address igmpGroupAddress = random.NextIpV4Address();
-            bool? igmpIsSuppressRouterSideProcessing;
-            byte? igmpQueryRobustnessVariable;
-            TimeSpan? igmpQueryInterval;
-            IpV4Address[] igmpSourceAddresses;
-            IgmpGroupRecord[] igmpGroupRecords;
+            ulong accessKey = random.NextULong();
+            uint identifier = random.NextUInt();
 
             switch (igmpMessageType)
             {
+                case IgmpMessageType.CreateGroupRequestVersion0:
+                    return new IgmpCreateGroupRequestVersion0Layer
+                    {
+                        IsPrivate = random.NextBool(),
+                        Identifier = identifier,
+                    };
+
+                case IgmpMessageType.CreateGroupReplyVersion0:
+                case IgmpMessageType.JoinGroupReplyVersion0:
+                case IgmpMessageType.LeaveGroupReplyVersion0:
+                case IgmpMessageType.ConfirmGroupReplyVersion0:
+                    IgmpVersion0ReplyCode code = random.NextEnum<IgmpVersion0ReplyCode>();
+                    return new IgmpReplyVersion0Layer
+                    {
+                        MessageType = igmpMessageType,
+                        Code = code,
+                        RetryInThisManySeconds = (byte)(code == IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds? random.NextByte((byte)IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds, byte.MaxValue) : 0),
+                        Identifier = identifier,
+                        GroupAddress = igmpGroupAddress,
+                        AccessKey = accessKey,
+                    };
+
+                case IgmpMessageType.JoinGroupRequestVersion0:
+                case IgmpMessageType.LeaveGroupRequestVersion0:
+                    return new IgmpRequestVersion0Layer
+                    {
+                        MessageType = igmpMessageType,
+                        Identifier = identifier,
+                        GroupAddress = igmpGroupAddress,
+                        AccessKey = accessKey,
+                    };
+
+                case IgmpMessageType.ConfirmGroupRequestVersion0:
+                    return new IgmpConfirmGroupRequestVersion0Layer
+                    {
+                        GroupAddress = igmpGroupAddress,
+                        AccessKey = accessKey,
+                    };
+
                 case IgmpMessageType.MembershipQuery:
-                    igmpQueryVersion = random.NextEnum(IgmpQueryVersion.None, IgmpQueryVersion.Unknown);
+                    IgmpQueryVersion igmpQueryVersion = random.NextEnum(IgmpQueryVersion.None, IgmpQueryVersion.Unknown);
                     switch (igmpQueryVersion)
                     {
                         case IgmpQueryVersion.Version1:
@@ -57,20 +90,20 @@ namespace PcapDotNet.Packets.TestUtils
                                    };
 
                         case IgmpQueryVersion.Version3:
-                            igmpIsSuppressRouterSideProcessing = random.NextBool();
-                            igmpQueryRobustnessVariable = random.NextByte(8);
+                            bool igmpIsSuppressRouterSideProcessing = random.NextBool();
+                            byte igmpQueryRobustnessVariable = random.NextByte(8);
                             igmpMaxResponseTime = random.NextTimeSpan(TimeSpan.FromSeconds(0.1),
                                                                       IgmpDatagram.MaxVersion3MaxResponseTime - TimeSpan.FromTicks(1));
-                            igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
-                            igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
+                            TimeSpan igmpQueryInterval = random.NextTimeSpan(TimeSpan.Zero, IgmpDatagram.MaxQueryInterval - TimeSpan.FromTicks(1));
+                            IpV4Address[] igmpSourceAddresses = random.NextIpV4Addresses(random.Next(1000));
                             return new IgmpQueryVersion3Layer
                                    {
                                        SourceAddresses = igmpSourceAddresses.AsReadOnly(),
                                        MaxResponseTime = igmpMaxResponseTime,
                                        GroupAddress = igmpGroupAddress,
-                                       IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing.Value,
-                                       QueryRobustnessVariable = igmpQueryRobustnessVariable.Value,
-                                       QueryInterval = igmpQueryInterval.Value,
+                                       IsSuppressRouterSideProcessing = igmpIsSuppressRouterSideProcessing,
+                                       QueryRobustnessVariable = igmpQueryRobustnessVariable,
+                                       QueryInterval = igmpQueryInterval,
                                    };
 
                         default:
@@ -98,8 +131,8 @@ namespace PcapDotNet.Packets.TestUtils
                            };
 
                 case IgmpMessageType.MembershipReportVersion3:
-                    igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
-                    if (igmpGroupRecords.Count() == 0 && random.NextBool())
+                    IgmpGroupRecord[] igmpGroupRecords = random.NextIgmpGroupRecords(random.Next(100));
+                    if (!igmpGroupRecords.Any() && random.NextBool())
                         return new IgmpReportVersion3Layer();
                     return new IgmpReportVersion3Layer
                            {

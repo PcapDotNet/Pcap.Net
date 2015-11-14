@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Packets.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomVLanTaggedFrameExtensions
     {
         public static VLanTaggedFrameLayer NextVLanTaggedFrameLayer(this Random random, EthernetType etherType)

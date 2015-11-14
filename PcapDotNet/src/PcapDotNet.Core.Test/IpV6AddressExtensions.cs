@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal static class IpV6AddressExtensions
     {
         public static string GetWiresharkString(this IpV6Address address)

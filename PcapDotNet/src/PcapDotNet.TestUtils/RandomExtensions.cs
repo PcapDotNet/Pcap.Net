@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class RandomExtensions
     {
         public static bool NextBool(this Random random, int chance = 2)

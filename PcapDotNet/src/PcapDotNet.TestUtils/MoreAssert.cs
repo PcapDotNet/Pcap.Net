@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.TestUtils
 {
+    [ExcludeFromCodeCoverage]
     public static class MoreAssert
     {
         public static void IsBigger<T>(T expectedMinimum, T actual) where T : IComparable<T>

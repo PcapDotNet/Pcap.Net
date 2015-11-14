@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Packets.Test
@@ -6,6 +7,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for DataLinkTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class DataLinkTests
     {
         /// <summary>

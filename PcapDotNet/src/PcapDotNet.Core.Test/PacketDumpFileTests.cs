@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
@@ -12,6 +13,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for PacketDumpFileTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PacketDumpFileTests
     {
         /// <summary>

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test
@@ -6,6 +7,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for MarshalingServicesTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MarshalingServicesTests
     {
         /// <summary>

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 
@@ -7,6 +8,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for EndianitiyTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class EndianitiyTests
     {
         /// <summary>

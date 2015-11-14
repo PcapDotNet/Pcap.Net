@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,6 +10,7 @@ using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class WiresharkDatagramComparerIpV6MobilityHeader : WiresharkDatagramComparerSimple
     {
         public WiresharkDatagramComparerIpV6MobilityHeader()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Xml.Linq;
 using PcapDotNet.Base;
@@ -6,6 +7,7 @@ using PcapDotNet.Packets;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal abstract class WiresharkDatagramComparer
     {
         public Datagram Compare(XElement layer, object datagramParent)

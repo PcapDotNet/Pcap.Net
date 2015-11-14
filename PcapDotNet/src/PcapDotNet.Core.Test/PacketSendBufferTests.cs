@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.TestUtils;
@@ -11,6 +12,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for PacketSendQueueTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PacketSendQueueTests
     {
         /// <summary>

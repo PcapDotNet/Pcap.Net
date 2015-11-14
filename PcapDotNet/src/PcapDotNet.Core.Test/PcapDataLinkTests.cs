@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
 
@@ -8,6 +9,7 @@ namespace PcapDotNet.Core.Test
     /// Summary description for PcapDataLinkTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class PcapDataLinkTests
     {
         /// <summary>

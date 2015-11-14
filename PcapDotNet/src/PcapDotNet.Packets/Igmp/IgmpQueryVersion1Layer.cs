@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace PcapDotNet.Packets.Igmp
 {
     /// <summary>
@@ -8,7 +10,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public override IgmpMessageType MessageType
+        public override IgmpMessageType MessageTypeValue
         {
             get { return IgmpMessageType.MembershipQuery; }
         }

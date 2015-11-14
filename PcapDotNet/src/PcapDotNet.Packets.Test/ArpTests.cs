@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.Arp;
@@ -12,6 +13,7 @@ namespace PcapDotNet.Packets.Test
     /// Summary description for ArpTests
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class ArpTests
     {
         /// <summary>

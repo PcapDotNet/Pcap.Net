@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Linq;
 using PcapDotNet.Packets;
@@ -6,6 +7,7 @@ using PcapDotNet.Packets.Ethernet;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class WiresharkDatagramComparerVLanTaggedFrame : WiresharkDatagramComparerSimple
     {
         protected override string PropertyName

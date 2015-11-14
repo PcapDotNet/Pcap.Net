@@ -11,7 +11,7 @@ namespace PcapDotNet.Packets.Igmp
     /// Represents an IGMP Query version 3 layer.
     /// <seealso cref="IgmpDatagram"/>
     /// </summary>
-    public sealed class IgmpQueryVersion3Layer : IgmpLayer, IIgmpLayerWithGroupAddress
+    public sealed class IgmpQueryVersion3Layer : IgmpVersion1PlusLayer, IIgmpLayerWithGroupAddress
     {
         /// <summary>
         /// Creates an instance of an IGMP Query Version 3 layer.
@@ -85,7 +85,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public override IgmpMessageType MessageType
+        public override IgmpMessageType MessageTypeValue
         {
             get { return IgmpMessageType.MembershipQuery; }
         }
@@ -122,7 +122,7 @@ namespace PcapDotNet.Packets.Igmp
         /// true iff the GroupAddress, IsSuppressRouterSideProcessing, QueryRobustnessVariable and SourceAddresses fields are equal
         /// and the QueryInterval is similar.
         /// </summary>
-        protected override bool EqualFields(IgmpLayer other)
+        protected override bool EqualFields(IgmpVersion1PlusLayer other)
         {
             return EqualFields(other as IgmpQueryVersion3Layer);
         }

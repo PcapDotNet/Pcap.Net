@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Base.Test
@@ -7,6 +8,7 @@ namespace PcapDotNet.Base.Test
     /// Summary description for DateTimeExtensionsTest
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class DateTimeExtensionsTest
     {
         /// <summary>

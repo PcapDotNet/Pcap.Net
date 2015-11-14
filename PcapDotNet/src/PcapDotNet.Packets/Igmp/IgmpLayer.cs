@@ -1,4 +1,3 @@
-using System;
 using PcapDotNet.Base;
 using PcapDotNet.Packets.IpV4;
 
@@ -13,7 +12,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// The type of the IGMP message of concern to the host-router interaction.
         /// </summary>
-        public abstract IgmpMessageType MessageType { get; }
+        public abstract IgmpMessageType MessageTypeValue { get; }
 
         /// <summary>
         /// The IGMP version of a Membership Query message.
@@ -24,10 +23,6 @@ namespace PcapDotNet.Packets.Igmp
             get { return IgmpQueryVersion.None; }
         }
 
-        /// <summary>
-        /// The actual time allowed, called the Max Resp Time.
-        /// </summary>
-        public abstract TimeSpan MaxResponseTimeValue { get; }
 
         /// <summary>
         /// The protocol that should be written in the previous (IPv4) layer.
@@ -43,10 +38,9 @@ namespace PcapDotNet.Packets.Igmp
         public bool Equals(IgmpLayer other)
         {
             return other != null &&
-                   MessageType == other.MessageType &&
+                   MessageTypeValue == other.MessageTypeValue &&
                    QueryVersion == other.QueryVersion &&
-                   EqualMaxResponseTime(MaxResponseTimeValue, other.MaxResponseTimeValue) &&
-                   EqualFields(other);
+                   EqualsVersionSpecific(other);
         }
 
         /// <summary>
@@ -63,17 +57,12 @@ namespace PcapDotNet.Packets.Igmp
         public override int GetHashCode()
         {
             return base.GetHashCode() ^
-                   Sequence.GetHashCode(MessageType, QueryVersion);
+                   Sequence.GetHashCode(MessageTypeValue, QueryVersion);
         }
 
         /// <summary>
         /// true iff the fields that are not mutual to all IGMP layers are equal.
         /// </summary>
-        protected abstract bool EqualFields(IgmpLayer other);
-
-        private static bool EqualMaxResponseTime(TimeSpan value1, TimeSpan value2)
-        {
-            return value1.Divide(2) <= value2 && value1.Multiply(2) >= value2;
-        }
+        protected abstract bool EqualsVersionSpecific(IgmpLayer other);
     }
 }

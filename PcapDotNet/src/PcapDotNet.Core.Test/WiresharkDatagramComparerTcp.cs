@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -13,6 +14,7 @@ using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class WiresharkDatagramComparerTcp : WiresharkDatagramComparer
     {
         protected override string PropertyName
@@ -28,7 +30,7 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "tcp.len":
-                    field.AssertShowDecimal(tcpDatagram.Payload.Length);
+                    field.AssertShowDecimal(tcpDatagram.Length - tcpDatagram.HeaderLength);
                     field.AssertNoFields();
                     break;
 
@@ -266,6 +268,7 @@ namespace PcapDotNet.Core.Test
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x19) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x2d) ") || // Unknown in Wireshark and unknown and invalid in Pcap.Net.
+                        field.Show().StartsWith("Unknown (0xa9) ") || // Unknown in Wireshark and unknown and invalid in Pcap.Net.
                         field.Show().StartsWith("Echo reply (with option length = ") ||
                         field.Show().Contains("bytes says option goes past end of options") ||
                         field.Show().Contains(") (with too-short option length = ") ||

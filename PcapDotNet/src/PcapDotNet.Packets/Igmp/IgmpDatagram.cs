@@ -7,6 +7,23 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Igmp
 {
     /// <summary>
+    /// RFC 988.
+    /// Version 0:
+    /// <pre>
+    /// +-----+------+------+----------+
+    /// | Bit | 0-7  | 8-15 | 16-31    |
+    /// +-----+------+------+----------+
+    /// | 0   | Type | Code | Checksum |
+    /// +-----+------+------+----------+
+    /// | 32  | Identifier             |
+    /// +-----+------------------------+
+    /// | 64  | Group Address          |
+    /// +-----+------------------------+
+    /// | 96  | Access Key             |
+    /// |     |                        |
+    /// +-----+------------------------+
+    /// </pre>
+    ///
     /// RFC 1112.
     /// Version 1 (query or report):
     /// <pre>
@@ -93,7 +110,12 @@ namespace PcapDotNet.Packets.Igmp
     public sealed class IgmpDatagram : Datagram
     {
         /// <summary>
-        /// The number of bytes the IGMP header takes for all messages but query version 3.
+        /// The number of bytes the version 0 IGMP message header takes.
+        /// </summary>
+        public const int Version0HeaderLength = Offset.AccessKey + sizeof(ulong);
+
+        /// <summary>
+        /// The number of bytes the IGMP header takes for all messages but version 0 and query version 3.
         /// All the bytes but the records of the report version 3.
         /// </summary>
         public const int HeaderLength = 8;
@@ -107,20 +129,32 @@ namespace PcapDotNet.Packets.Igmp
         private static class Offset
         {
             public const int MessageType = 0;
-            public const int MaxResponseCode = 1;
-            public const int Checksum = 2;
-            public const int GroupAddress = 4;
+            public const int MaxResponseCode = MessageType + sizeof(byte);
+            public const int Checksum = MaxResponseCode + sizeof(byte);
+            public const int Version1PlusGroupAddress = Checksum + sizeof(ushort);
+
+            // Version 0
+            public const int Code = MaxResponseCode;
+            public const int Identifier = Checksum + sizeof(ushort);
+            public const int Version0GroupAddress = Identifier + sizeof(uint);
+            public const int AccessKey = Version0GroupAddress + IpV4Address.SizeOf;
 
             // Version 3 query
-            public const int IsSuppressRouterSideProcessing = 8;
-            public const int QueryRobustnessVariable = 8;
-            public const int QueryIntervalCode = 9;
-            public const int NumberOfSources = 10;
-            public const int SourceAddresses = 12;
+            public const int IsSuppressRouterSideProcessing = Version1PlusGroupAddress + IpV4Address.SizeOf;
+            public const int QueryRobustnessVariable = IsSuppressRouterSideProcessing;
+            public const int QueryIntervalCode = QueryRobustnessVariable + sizeof(byte);
+            public const int NumberOfSources = QueryIntervalCode + sizeof(byte);
+            public const int SourceAddresses = NumberOfSources + sizeof(ushort);
 
             // Version 3 report
-            public const int NumberOfGroupRecords = 6;
-            public const int GroupRecords = 8;
+            public const int NumberOfGroupRecords = Checksum + sizeof(ushort) + sizeof(ushort);
+            public const int GroupRecords = NumberOfGroupRecords + sizeof(ushort);
+        }
+
+        private static class Mask
+        {
+            // Version 0
+            public const byte Code = 0x01;
         }
 
         /// <summary>
@@ -162,6 +196,7 @@ namespace PcapDotNet.Packets.Igmp
 
         /// <summary>
         /// The version of the IGMP protocol for this datagram.
+        /// Returns -1 if unknown.
         /// </summary>
         public int Version
         {
@@ -169,6 +204,16 @@ namespace PcapDotNet.Packets.Igmp
             {
                 switch (MessageType)
                 {
+                    case IgmpMessageType.CreateGroupRequestVersion0:
+                    case IgmpMessageType.CreateGroupReplyVersion0:
+                    case IgmpMessageType.JoinGroupRequestVersion0:
+                    case IgmpMessageType.JoinGroupReplyVersion0:
+                    case IgmpMessageType.LeaveGroupRequestVersion0:
+                    case IgmpMessageType.LeaveGroupReplyVersion0:
+                    case IgmpMessageType.ConfirmGroupRequestVersion0:
+                    case IgmpMessageType.ConfirmGroupReplyVersion0:
+                        return 0;
+
                     case IgmpMessageType.MembershipQuery:
                         switch (QueryVersion)
                         {
@@ -198,7 +243,7 @@ namespace PcapDotNet.Packets.Igmp
                         return 2;
 
                     default:
-                        throw new InvalidOperationException("Invalid IGMP Message Type " + MessageType);
+                        return -1;
                 }
             }
         }
@@ -230,6 +275,51 @@ namespace PcapDotNet.Packets.Igmp
                     return IgmpQueryVersion.Version1;
 
                 return IgmpQueryVersion.Version2;
+            }
+        }
+
+        /// <summary>
+        /// In IGMP version 0 Create Group Request message, indicates if the new host group is to be private or public.
+        /// </summary>
+        public bool IsPrivate
+        {
+            get
+            {
+                if (MessageType != IgmpMessageType.CreateGroupRequestVersion0)
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed for CreateGroupRequestVersion0.");
+                return ReadBool(Offset.Code, Mask.Code);
+            }
+        }
+
+        /// <summary>
+        /// In IGMP version 0 Reply message, specifies the outcome of the request.
+        /// </summary>
+        public IgmpVersion0ReplyCode ReplyCode
+        {
+            get
+            {
+                if (MessageType != IgmpMessageType.CreateGroupReplyVersion0 &&
+                    MessageType != IgmpMessageType.JoinGroupReplyVersion0 &&
+                    MessageType != IgmpMessageType.LeaveGroupReplyVersion0 &&
+                    MessageType != IgmpMessageType.ConfirmGroupReplyVersion0)
+                {
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed for Version 0 Replies.");
+                }
+
+                return (IgmpVersion0ReplyCode)Math.Min(this[Offset.Code], (byte)IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds);
+            }
+        }
+
+        /// <summary>
+        /// In IGMP version 0 Reply message with ReplyCode = RequestPendingRetryInThisManySeconds, specifies the amount of seconds to retry in.
+        /// </summary>
+        public byte RetryInThisManySeconds
+        {
+            get
+            {
+                if (ReplyCode != IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds)
+                    throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed when reply code is request pending retry in this many seconds");
+                return this[Offset.Code];
             }
         }
 
@@ -315,19 +405,62 @@ namespace PcapDotNet.Packets.Igmp
         }
 
         /// <summary>
+        /// IGMP version 0 specific.
+        /// In a Confirm Group Request message, the identifier field contains zero.
+        /// 
+        /// In all other Request messages, the identifier field contains a value to distinguish the request from other requests by the same host.
+        /// 
+        /// In a Reply message, the identifier field contains the same value as in the corresponding Request message.
+        /// </summary>
+        public uint Identifier
+        {
+            get
+            {
+                return ReadUInt(Offset.Identifier, Endianity.Big);
+            }
+        }
+
+        /// <summary>
+        /// Version 0:
+        /// In a Create Group Request message, the group address field contains zero.
+        /// In all other Request messages, the group address field contains a host group address.
+        /// In a Create Group Reply message, the group address field contains either a newly allocated host group address (if the request is granted) 
+        /// or zero (if denied).
+        /// In all other Reply messages, the group address field contains the same host group address as in the corresponding Request message.
+        /// 
+        /// Version 1 or higher:
         /// The Group Address field is set to zero when sending a General Query, 
         /// and set to the IP multicast address being queried when sending a Group-Specific Query or Group-and-Source-Specific Query.
-        /// In a Membership Report of version 1 or 2 or Leave Group message, the group address field holds the IP multicast group address of the group being reported or left.
+        /// In a Membership Report of version 1 or 2 or Leave Group message,
+        /// the group address field holds the IP multicast group address of the group being reported or left.
         /// In a Membership Report of version 3 this field is meaningless.
         /// </summary>
         public IpV4Address GroupAddress
         {
-            get { return ReadIpV4Address(Offset.GroupAddress, Endianity.Big); }
+            get { return ReadIpV4Address(Version <= 0 ? Offset.Version0GroupAddress : Offset.Version1PlusGroupAddress, Endianity.Big); }
         }
 
         /// <summary>
-        /// When set to one, the S Flag indicates to any receiving multicast routers that they are to suppress the normal timer updates they perform upon hearing a Query.  
-        /// It does not, however, suppress the querier election or the normal "host-side" processing of a Query 
+        /// Version 0 specific.
+        /// In a Create Group Request message, the access key field contains zero.
+        /// In all other Request messages, the access key field contains the access key assigned to the host group identified in the Group Address field
+        /// (zero for public groups).
+        /// In a Create Group Reply message, the access key field contains either a non-zero 64-bit number (if the request for a private group is granted)
+        /// or zero.
+        /// In all other Reply messages, the access key field contains the same access key as in the corresponding Request.
+        /// </summary>
+        public ulong AccessKey
+        {
+            get
+            {
+                return ReadULong(Offset.AccessKey, Endianity.Big);
+            }
+        }
+
+        /// <summary>
+        /// When set to one, the S Flag indicates to any receiving multicast routers 
+        /// that they are to suppress the normal timer updates they perform upon hearing a Query.
+        /// It does not, however, suppress the querier election or the normal "host-side" processing of a Query
         /// that a router may be required to perform as a consequence of itself being a group member.
         /// </summary>
         /// <remarks>
@@ -492,6 +625,44 @@ namespace PcapDotNet.Packets.Igmp
         {
             switch (MessageType)
             {
+                case IgmpMessageType.CreateGroupRequestVersion0:
+                    return new IgmpCreateGroupRequestVersion0Layer
+                           {
+                               IsPrivate = IsPrivate,
+                               Identifier = Identifier,
+                           };
+
+                case IgmpMessageType.CreateGroupReplyVersion0:
+                case IgmpMessageType.JoinGroupReplyVersion0:
+                case IgmpMessageType.LeaveGroupReplyVersion0:
+                case IgmpMessageType.ConfirmGroupReplyVersion0:
+                    return new IgmpReplyVersion0Layer
+                           {
+                               MessageType = MessageType,
+                               Code = ReplyCode,
+                               RetryInThisManySeconds = (byte)(ReplyCode == IgmpVersion0ReplyCode.RequestPendingRetryInThisManySeconds ? RetryInThisManySeconds : 0),
+                               Identifier = Identifier,
+                               GroupAddress = GroupAddress,
+                               AccessKey = AccessKey,
+                           };
+
+                case IgmpMessageType.JoinGroupRequestVersion0:
+                case IgmpMessageType.LeaveGroupRequestVersion0:
+                    return new IgmpRequestVersion0Layer
+                           {
+                               MessageType = MessageType,
+                               Identifier = Identifier,
+                               GroupAddress = GroupAddress,
+                               AccessKey = AccessKey,
+                           };
+
+                case IgmpMessageType.ConfirmGroupRequestVersion0:
+                    return new IgmpConfirmGroupRequestVersion0Layer
+                           {
+                               GroupAddress = GroupAddress,
+                               AccessKey = AccessKey,
+                           };
+                    
                 case IgmpMessageType.MembershipQuery:
                     switch (QueryVersion)
                     {
@@ -571,8 +742,19 @@ namespace PcapDotNet.Packets.Igmp
                    igmpGroupRecords.Sum(record => IgmpGroupRecordDatagram.GetLength(record.SourceAddresses.Count, record.AuxiliaryData.Length));
         }
 
-        internal static void WriteHeader(byte[] buffer, int offset,
-                                         IgmpMessageType igmpMessageType, TimeSpan maxResponseTime, IpV4Address groupAddress)
+        internal static void WriteVersion0Header(byte[] buffer, int offset,
+                                                 IgmpMessageType igmpMessageType, byte code, uint identifier, IpV4Address groupAddress, ulong accessKey)
+        {
+            buffer.Write(offset + Offset.MessageType, (byte)igmpMessageType);
+            buffer.Write(offset + Offset.Code, code);
+            buffer.Write(offset + Offset.Version0GroupAddress, groupAddress, Endianity.Big);
+            buffer.Write(offset + Offset.Identifier, identifier, Endianity.Big);
+            buffer.Write(offset + Offset.AccessKey, accessKey, Endianity.Big);
+            WriteChecksum(buffer, offset, Version0HeaderLength);
+        }
+
+        internal static void WriteVersion1PlusSimpleHeader(byte[] buffer, int offset,
+                                                           IgmpMessageType igmpMessageType, TimeSpan maxResponseTime, IpV4Address groupAddress)
         {
             buffer.Write(offset + Offset.MessageType, (byte)igmpMessageType);
 
@@ -581,7 +763,7 @@ namespace PcapDotNet.Packets.Igmp
                 throw new ArgumentOutOfRangeException("maxResponseTime", maxResponseTime, "must be in the range [" + TimeSpan.Zero + ", " + TimeSpan.FromSeconds(255 * 0.1) + "]");
             buffer.Write(offset + Offset.MaxResponseCode, (byte)numTenthOfASecond);
 
-            buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
+            buffer.Write(offset + Offset.Version1PlusGroupAddress, groupAddress, Endianity.Big);
 
             WriteChecksum(buffer, offset, HeaderLength);
         }
@@ -602,7 +784,7 @@ namespace PcapDotNet.Packets.Igmp
             buffer.Write(offset + Offset.MaxResponseCode, maxResponseCode);
 
             // GroupAddress
-            buffer.Write(offset + Offset.GroupAddress, groupAddress, Endianity.Big);
+            buffer.Write(offset + Offset.Version1PlusGroupAddress, groupAddress, Endianity.Big);
 
             // IsSuppressRouterSideProcessing and QueryRobustnessVariable
             if (queryRobustnessVariable > MaxQueryRobustnessVariable)
@@ -660,6 +842,9 @@ namespace PcapDotNet.Packets.Igmp
             if (Length < HeaderLength || !IsChecksumCorrect)
                 return false;
 
+            if (Version == 0)
+                return Length == Version0HeaderLength;
+
             switch (MessageType)
             {
                 case IgmpMessageType.MembershipQuery:
@@ -673,6 +858,7 @@ namespace PcapDotNet.Packets.Igmp
                             return Length == GetQueryVersion3Length(NumberOfSources);
 
                         default:
+                            // This never happens, since Version != 0 with MessageType = MembershipQuery requires QueryVersion to be 1, 2 or 3.
                             return false;
                     }
 
@@ -703,7 +889,8 @@ namespace PcapDotNet.Packets.Igmp
 
         private static void WriteChecksum(byte[] buffer, int offset, int length)
         {
-            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(Sum16Bits(buffer, offset, length)), Endianity.Big);
+            uint sum = Sum16Bits(buffer, offset, length);
+            buffer.Write(offset + Offset.Checksum, Sum16BitsToChecksum(sum), Endianity.Big);
         }
 
         /// <summary>

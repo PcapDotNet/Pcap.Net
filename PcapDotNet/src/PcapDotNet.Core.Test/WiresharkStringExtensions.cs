@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
 namespace PcapDotNet.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     public static class WiresharkStringExtensions
     {
         public static string ToWiresharkLiteral(this string value, bool putLeadingZerosInHexAndBackslashesBeforeSpecialCharacters = true, bool escapeSpecialChars = true)
