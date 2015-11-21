@@ -2,7 +2,7 @@ namespace PcapDotNet.Packets.Igmp
 {
     /// <summary>
     /// RFC 988.
-    /// In an IGMP version 0 Reply message, specifies the outcome of the request:
+    /// In an IGMP version 0 Reply message, specifies the outcome of the request.
     /// </summary>
     public enum IgmpVersion0ReplyCode : byte
     {

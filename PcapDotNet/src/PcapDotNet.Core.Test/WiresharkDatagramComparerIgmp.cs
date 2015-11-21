@@ -124,7 +124,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.group_type":
-                    field.AssertShowDecimal(igmpDatagram.IsPrivate);
+                    field.AssertShowDecimal((byte)igmpDatagram.CreateGroupRequestCode);
                     break;
 
                 case "igmp.mtrace.max_hops":

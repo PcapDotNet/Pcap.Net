@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// Indicates if the new host group is to be private or public.
         /// </summary>
-        public bool IsPrivate { get; set; }
+        public IgmpVersion0CreateGroupRequestCode CreateGroupRequestCode { get; set; }
 
         /// <summary>
         /// Contains a value to distinguish the request from other requests by the same host.
@@ -44,7 +44,7 @@ namespace PcapDotNet.Packets.Igmp
 
         internal override byte CodeValue
         {
-            get { return IsPrivate.ToByte(); }
+            get { return (byte)CreateGroupRequestCode; }
         }
 
 

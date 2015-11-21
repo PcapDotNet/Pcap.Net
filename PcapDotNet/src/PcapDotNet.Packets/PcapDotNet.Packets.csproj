@@ -313,6 +313,7 @@
     <Compile Include="Igmp\IgmpReportVersion2Layer.cs" />
     <Compile Include="Igmp\IgmpReportVersion3Layer.cs" />
     <Compile Include="Igmp\IgmpRequestVersion0Layer.cs" />
+    <Compile Include="Igmp\IgmpVersion0CreateGroupRequestCode.cs" />
     <Compile Include="Igmp\IgmpVersion0Layer.cs" />
     <Compile Include="Igmp\IgmpVersion1PlusLayer.cs" />
     <Compile Include="Igmp\IgmpVersion1PlusSimpleLayer.cs" />
