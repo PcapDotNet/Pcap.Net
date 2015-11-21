@@ -37,7 +37,7 @@ namespace PcapDotNet.Core.Test
             get { return RetryNumber != -1; }
         }
 
-        private const int RetryNumber = -1;
+        private const int RetryNumber = 1000;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -592,8 +592,13 @@ namespace PcapDotNet.Core.Test
 
                     case "frame.time_epoch":
                         double timeEpoch = double.Parse(field.Show(), CultureInfo.InvariantCulture);
-                        DateTime fieldTimestamp = new DateTime(1970, 1, 1).AddSeconds(timeEpoch);
-                        MoreAssert.IsInRange(fieldTimestamp.AddMilliseconds(-1), fieldTimestamp.AddMilliseconds(1), packet.Timestamp.ToUniversalTime(), "Timestamp");
+                        // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11582 fixed.
+                        if (timeEpoch >= -2147483648)
+                        {
+                            DateTime fieldTimestamp = new DateTime(1970, 1, 1).AddSeconds(timeEpoch);
+                            MoreAssert.IsInRange(fieldTimestamp.AddMilliseconds(-1), fieldTimestamp.AddMilliseconds(1), packet.Timestamp.ToUniversalTime(),
+                                                 "Timestamp");
+                        }
                         break;
 
                     case "frame.cap_len":
