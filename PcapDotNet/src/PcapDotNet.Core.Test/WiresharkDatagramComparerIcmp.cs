@@ -52,6 +52,7 @@ namespace PcapDotNet.Core.Test
                                      IpV4Protocol.IpComp, // TODO: Support IpComp.
                                      IpV4Protocol.Ax25, // TODO: Support Ax25.
                                      IpV4Protocol.FibreChannel, // TODO: Support FibreChannel.
+                                     IpV4Protocol.MultiprotocolLabelSwitchingInIp, // TODO: Support MPLS.
                                  }.Contains(icmpIpV4PayloadDatagram.IpV4.Protocol))
                         {
                             if (icmpIpV4PayloadDatagram.IpV4.Protocol == IpV4Protocol.Udp)
@@ -173,8 +174,9 @@ namespace PcapDotNet.Core.Test
                 case "icmp.resptime":
                     break;
 
-                // TODO: Remove this case when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10939 is fixed.
                 case "icmp.length":
+                    // TODO: Uncomment this case when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10939 is fixed.
+//                    field.AssertShowDecimal(((IcmpParameterProblemDatagram)icmpDatagram).OriginalDatagramLength);
                     break;
 
                 default:
