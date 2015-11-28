@@ -120,7 +120,8 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.reply.pending":
-                    field.AssertShowDecimal(igmpDatagram.RetryInThisManySeconds);
+                    if (igmpDatagram.MessageType != IgmpMessageType.None)
+                        field.AssertShowDecimal(igmpDatagram.RetryInThisManySeconds);
                     break;
 
                 case "igmp.group_type":

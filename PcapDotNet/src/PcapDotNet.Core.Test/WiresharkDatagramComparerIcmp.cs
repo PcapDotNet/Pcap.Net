@@ -53,6 +53,7 @@ namespace PcapDotNet.Core.Test
                                      IpV4Protocol.Ax25, // TODO: Support Ax25.
                                      IpV4Protocol.FibreChannel, // TODO: Support FibreChannel.
                                      IpV4Protocol.MultiprotocolLabelSwitchingInIp, // TODO: Support MPLS.
+                                     IpV4Protocol.EtherIp, // TODO: Support EtherIP.
                                  }.Contains(icmpIpV4PayloadDatagram.IpV4.Protocol))
                         {
                             if (icmpIpV4PayloadDatagram.IpV4.Protocol == IpV4Protocol.Udp)

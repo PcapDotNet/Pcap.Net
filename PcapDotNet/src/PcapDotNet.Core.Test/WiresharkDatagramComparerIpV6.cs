@@ -187,8 +187,11 @@ namespace PcapDotNet.Core.Test
                                     headerField.AssertNumFields(1);
                                     headerField.Fields().First().AssertName("_ws.expert");
                                 }
-                                // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10560 is fixed.
-//                                headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.Addresses.Count);
+                                // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11803 is fixed.
+                                if (routingProtocolLowPowerAndLossyNetworks.Addresses.Count > 0)
+                                {
+                                    headerField.AssertShowDecimal(routingProtocolLowPowerAndLossyNetworks.Addresses.Count);
+                                }
                                 break;
 
                             case "ipv6.routing_hdr.rpl.address":
