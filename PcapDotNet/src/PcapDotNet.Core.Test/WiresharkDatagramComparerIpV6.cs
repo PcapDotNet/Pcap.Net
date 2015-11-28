@@ -32,9 +32,6 @@ namespace PcapDotNet.Core.Test
             switch (field.Name())
             {
                 case "ipv6.version":
-                    // TODO: Remove this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10706 is fixed.
-                    if (field.Show() != ipV6Datagram.Version.ToString())
-                        return false;
                     field.AssertShowDecimal(ipV6Datagram.Version);
                     foreach (XElement subfield in field.Fields())
                     {
