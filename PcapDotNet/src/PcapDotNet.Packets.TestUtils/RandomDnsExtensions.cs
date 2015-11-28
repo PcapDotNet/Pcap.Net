@@ -143,7 +143,7 @@ namespace PcapDotNet.Packets.TestUtils
                                                                random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt(), random.NextUInt());
 
                 case DnsType.Null:
-                    return new DnsResourceDataAnything(random.NextDataSegment(random.Next(65536)));
+                    return new DnsResourceDataAnything(random.NextDataSegment(random.Next(1000)));
 
                 case DnsType.WellKnownService:
                     return new DnsResourceDataWellKnownService(random.NextIpV4Address(), random.NextEnum<IpV4Protocol>(),
