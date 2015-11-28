@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.TestUtils
                 case IgmpMessageType.CreateGroupRequestVersion0:
                     return new IgmpCreateGroupRequestVersion0Layer
                     {
-                        IsPrivate = random.NextBool(),
+                        CreateGroupRequestCode = random.NextEnum<IgmpVersion0CreateGroupRequestCode>(),
                         Identifier = identifier,
                     };
 

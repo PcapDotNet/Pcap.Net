@@ -170,6 +170,7 @@ namespace PcapDotNet.Core.Test
                 ResetRecordFields();
                 var resourceRecordField = resourceRecordFieldsArray[i];
                 var resourceRecord = resourceRecordsArray[i];
+                int dnsResponseTypeIndex = 0;
                 foreach (var resourceRecordAttributeField in resourceRecordField.Fields())
                 {
                     switch (resourceRecordAttributeField.Name())
@@ -191,9 +192,23 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "dns.qry.type":
-                        case "dns.resp.type":
                             resourceRecordAttributeField.AssertShowDecimal((ushort)resourceRecord.DnsType);
                             resourceRecordAttributeField.AssertNoFields();
+                            break;
+
+                        case "dns.resp.type":
+                            DnsType expectedDnsType;
+                            if (dnsResponseTypeIndex == 0)
+                            {
+                                expectedDnsType = resourceRecord.DnsType;
+                            }
+                            else
+                            {
+                                expectedDnsType = ((DnsResourceDataNextDomain)resourceRecord.Data).TypesExist.Skip(dnsResponseTypeIndex - 1).First();
+                            }
+                            resourceRecordAttributeField.AssertShowDecimal((ushort)expectedDnsType);
+                            resourceRecordAttributeField.AssertNoFields();
+                            ++dnsResponseTypeIndex;
                             break;
 
                         case "dns.qry.class":
@@ -833,19 +848,19 @@ namespace PcapDotNet.Core.Test
 
                         case "dns.loc.size":
                             Assert.AreEqual(0, locData.Version);
-                            string sizeValue = dataField.Showname().Split(new[] {'(', ')'})[1];
-                            Assert.AreEqual(GetPrecisionValueString(locData.Size) + " m", sizeValue);
+                            string sizeValue = dataField.Showname().Split('(', ')')[1];
+                            Assert.AreEqual(GetPrecisionValueString(locData.Size), sizeValue);
                             break;
 
                         case "dns.loc.horizontal_precision":
                             Assert.AreEqual(0, locData.Version);
-                            string horizontalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
+                            string horizontalPrecisionValue = dataField.Showname().Split('(', ')')[1];
                             Assert.AreEqual(GetPrecisionValueString(locData.HorizontalPrecision), horizontalPrecisionValue);
                             break;
 
                         case "dns.loc.vertial_precision":
                             Assert.AreEqual(0, locData.Version);
-                            string verticalPrecisionValue = dataField.Showname().Split(new[] {'(', ')'})[1];
+                            string verticalPrecisionValue = dataField.Showname().Split('(', ')')[1];
                             Assert.AreEqual(GetPrecisionValueString(locData.VerticalPrecision), verticalPrecisionValue);
                             break;
 
@@ -1840,7 +1855,7 @@ namespace PcapDotNet.Core.Test
             double resultValue = value / 100.0;
 
             if (resultValue < 1000000)
-                return resultValue.ToString();
+                return resultValue + " m";
 
             int log = (int)Math.Log10(resultValue);
             resultValue /= Math.Pow(10, log);

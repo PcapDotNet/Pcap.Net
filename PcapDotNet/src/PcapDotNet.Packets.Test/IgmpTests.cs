@@ -121,7 +121,7 @@ namespace PcapDotNet.Packets.Test
                         switch (igmpLayer.MessageTypeValue)
                         {
                             case IgmpMessageType.CreateGroupRequestVersion0:
-                                Assert.AreEqual(((IgmpCreateGroupRequestVersion0Layer)igmpLayer).IsPrivate, packet.Ethernet.Ip.Igmp.IsPrivate);
+                                Assert.AreEqual(((IgmpCreateGroupRequestVersion0Layer)igmpLayer).CreateGroupRequestCode, packet.Ethernet.Ip.Igmp.CreateGroupRequestCode);
                                 break;
 
                             case IgmpMessageType.CreateGroupReplyVersion0:
@@ -519,7 +519,7 @@ namespace PcapDotNet.Packets.Test
         {
             Packet packet = PacketBuilder.Build(DateTime.Now, new EthernetLayer(), new IpV4Layer(), new IgmpQueryVersion1Layer());
             Assert.IsTrue(packet.IsValid);
-            Assert.IsFalse(packet.Ethernet.IpV4.Igmp.IsPrivate);
+            Assert.AreEqual(IgmpVersion0CreateGroupRequestCode.Private, packet.Ethernet.IpV4.Igmp.CreateGroupRequestCode);
         }
 
         [TestMethod]

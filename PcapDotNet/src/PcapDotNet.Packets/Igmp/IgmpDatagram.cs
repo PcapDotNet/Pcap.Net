@@ -281,13 +281,13 @@ namespace PcapDotNet.Packets.Igmp
         /// <summary>
         /// In IGMP version 0 Create Group Request message, indicates if the new host group is to be private or public.
         /// </summary>
-        public bool IsPrivate
+        public IgmpVersion0CreateGroupRequestCode CreateGroupRequestCode
         {
             get
             {
                 if (MessageType != IgmpMessageType.CreateGroupRequestVersion0)
                     throw new InvalidOperationException(System.Reflection.MethodBase.GetCurrentMethod().Name + " can only be accessed for CreateGroupRequestVersion0.");
-                return ReadBool(Offset.Code, Mask.Code);
+                return (IgmpVersion0CreateGroupRequestCode)this[Offset.Code];
             }
         }
 
@@ -628,7 +628,7 @@ namespace PcapDotNet.Packets.Igmp
                 case IgmpMessageType.CreateGroupRequestVersion0:
                     return new IgmpCreateGroupRequestVersion0Layer
                            {
-                               IsPrivate = IsPrivate,
+                               CreateGroupRequestCode = CreateGroupRequestCode,
                                Identifier = Identifier,
                            };
 
