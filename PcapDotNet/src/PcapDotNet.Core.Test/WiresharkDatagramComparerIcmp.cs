@@ -61,9 +61,7 @@ namespace PcapDotNet.Core.Test
                             }
                             else
                             {
-                                // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10991 and https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10992 are fixed.
-                                if (!(icmpIpV4PayloadDatagram is IcmpParameterProblemDatagram || icmpIpV4PayloadDatagram is IcmpRedirectDatagram))
-                                    field.AssertDataField(icmpIpV4PayloadDatagram.IpV4.Payload);
+                                field.AssertDataField(icmpIpV4PayloadDatagram.IpV4.Payload);
                             }
                         }
                     }
