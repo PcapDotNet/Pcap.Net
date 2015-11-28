@@ -36,7 +36,8 @@ namespace PcapDotNet.Core.Test
                     field.AssertNoShow();
 
                 MoreAssert.AreSequenceEqual(httpDatagram.Subsegment(0, _data.Length / 2), HexEncoding.Instance.GetBytes(_data.ToString()));
-                // TODO: Uncomment once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10707 is fixed.
+                Assert.AreEqual(httpDatagram.Subsegment(_data.Length / 2 + 2, httpDatagram.Length - _data.Length / 2 - 2).ToHexadecimalString(), field.Value().Substring(0, 2 * (httpDatagram.Length - _data.Length / 2 - 2)));
+                // TODO: Uncomment instad of the above line once https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11801 is fixed.
 //                field.AssertValue(httpDatagram.Subsegment(_data.Length / 2 + 2, httpDatagram.Length - _data.Length / 2 - 2));
                 return false;
             }
