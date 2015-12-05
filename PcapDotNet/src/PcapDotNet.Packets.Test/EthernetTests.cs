@@ -1,7 +1,10 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
+using PcapDotNet.Packets.Arp;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.IpV6;
@@ -128,6 +131,24 @@ namespace PcapDotNet.Packets.Test
                                                 new PayloadLayer
                                                 {
                                                     Data = new Datagram(new byte[10])
+                                                });
+            Assert.IsTrue(packet.IsValid);
+            Assert.AreEqual(DataSegment.Empty, packet.Ethernet.Padding);
+        }
+
+        [TestMethod]
+        public void PayloadTooBigForPadding()
+        {
+            Packet packet = PacketBuilder.Build(DateTime.Now,
+                                                new EthernetLayer(),
+                                                new ArpLayer
+                                                {
+                                                    ProtocolType = EthernetType.IpV4,
+                                                    Operation = ArpOperation.DynamicReverseError,
+                                                    SenderHardwareAddress = new byte[12].AsReadOnly(),
+                                                    SenderProtocolAddress = new byte[22].AsReadOnly(),
+                                                    TargetHardwareAddress = new byte[12].AsReadOnly(),
+                                                    TargetProtocolAddress = new byte[22].AsReadOnly(),
                                                 });
             Assert.IsTrue(packet.IsValid);
             Assert.AreEqual(DataSegment.Empty, packet.Ethernet.Padding);

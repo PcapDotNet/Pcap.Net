@@ -45,9 +45,11 @@ namespace PcapDotNet.Packets.Ethernet
                 if (payloadByEtherType == null)
                     return null;
 
-                int payloadLength = PayloadByEtherType.Length;
-
-                return new DataSegment(Buffer, StartOffset + HeaderLength + payloadLength, 60 - HeaderLength - payloadLength);
+                int payloadLength = payloadByEtherType.Length;
+                int dataLength = HeaderLength + payloadLength;
+                if (dataLength >= 60)
+                    return DataSegment.Empty;
+                return new DataSegment(Buffer, StartOffset + dataLength, 60 - dataLength);
             }
         }
 
@@ -106,7 +108,7 @@ namespace PcapDotNet.Packets.Ethernet
                 if (payloadByEtherType == null)
                     return null;
 
-                int payloadLength = PayloadByEtherType.Length;
+                int payloadLength = payloadByEtherType.Length;
                 return new DataSegment(Buffer, StartOffset + HeaderLength + payloadLength, Length - HeaderLength - payloadLength);
             }
         }
