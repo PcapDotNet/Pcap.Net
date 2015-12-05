@@ -1600,8 +1600,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.lmaa.ipv6":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10961 is fixed.
-//                                                            optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
+                                                            optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
                                                             break;
 
                                                         case "mip6.lmaa.ipv4":
