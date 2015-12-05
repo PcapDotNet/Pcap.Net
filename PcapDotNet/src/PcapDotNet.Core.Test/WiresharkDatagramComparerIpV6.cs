@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.IpV4;
 using PcapDotNet.Packets.IpV6;
@@ -196,7 +196,14 @@ namespace PcapDotNet.Core.Test
 
                             case "ipv6.routing_hdr.rpl.address":
                                 headerField.AssertNoFields();
-                                // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10560 is fixed.
+                                // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11803 is fixed.
+                                if (routingProtocolLowPowerAndLossyNetworks.Addresses.Count > 0)
+                                {
+                                    IpV6Address actualAddress =
+                                        new IpV6Address(UInt128.Parse(headerField.Value(), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+                                    Assert.AreEqual(routingProtocolLowPowerAndLossyNetworks.Addresses[routingProtocolLowPowerAndLossyNetworksAddressIndex],
+                                                    actualAddress);
+                                }
                                 break;
 
                             case "ipv6.routing_hdr.rpl.full_address":
