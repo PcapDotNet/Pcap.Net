@@ -653,7 +653,7 @@ namespace PcapDotNet.Core.Test
                                                                 "Invalid IPv6 Link Layer Address option field {0}", optionSubfield.Name()));
                                                     }
                                                 }
-                                                // TODO: Change to break when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10043 or https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
+                                                // TODO: Change to break when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
                                                 return false;
 
                                             case IpV6MobilityOptionType.IpV4DefaultRouterAddress:
