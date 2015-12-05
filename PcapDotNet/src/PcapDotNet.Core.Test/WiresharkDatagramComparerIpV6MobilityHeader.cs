@@ -1492,8 +1492,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.auth.auth_data":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10626 is fixed.
-//                                                            optionSubfield.AssertValue(authentication.AuthenticationData);
+                                                            optionSubfield.AssertValue(authentication.AuthenticationData);
                                                             break;
 
                                                         default:
