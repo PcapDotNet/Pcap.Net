@@ -47,24 +47,34 @@ namespace PcapDotNet.Core.Test
                     var icmpIpV4PayloadDatagram = icmpDatagram as IcmpIpV4PayloadDatagram;
                     if (icmpIpV4PayloadDatagram != null)
                     {
-                        if (!new[]
-                                 {
-                                     IpV4Protocol.IpComp, // TODO: Support IpComp.
-                                     IpV4Protocol.Ax25, // TODO: Support Ax25.
-                                     IpV4Protocol.FibreChannel, // TODO: Support FibreChannel.
-                                     IpV4Protocol.MultiprotocolLabelSwitchingInIp, // TODO: Support MPLS.
-                                     IpV4Protocol.EtherIp, // TODO: Support EtherIP.
-                                 }.Contains(icmpIpV4PayloadDatagram.IpV4.Protocol))
+                        IpV4Datagram ipV4 = icmpIpV4PayloadDatagram.IpV4;
+                        switch (ipV4.Protocol)
                         {
-                            if (icmpIpV4PayloadDatagram.IpV4.Protocol == IpV4Protocol.Udp)
-                            {
+                            case IpV4Protocol.Ip:
+                                if (ipV4.Payload.Length < IpV4Datagram.HeaderMinimumLength)
+                                    field.AssertDataField(ipV4.Payload);
+                                else
+                                    field.AssertDataField(ipV4.IpV4.Payload);
+                                break;
+
+                            case IpV4Protocol.Udp:
+
                                 // Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10990 is fixed.
                                 //                                field.AssertDataField(casted1.IpV4.Udp.Payload);
-                            }
-                            else
-                            {
-                                field.AssertDataField(icmpIpV4PayloadDatagram.IpV4.Payload);
-                            }
+                                break;
+
+                            case IpV4Protocol.IpComp: // TODO: Support IpComp.
+                            case IpV4Protocol.Ax25: // TODO: Support Ax25.
+                            case IpV4Protocol.FibreChannel: // TODO: Support FibreChannel.
+                            case IpV4Protocol.MultiprotocolLabelSwitchingInIp: // TODO: Support MPLS.
+                            case IpV4Protocol.EtherIp: // TODO: Support EtherIP.
+                            case IpV4Protocol.LayerTwoTunnelingProtocol: // TODO: Support LayerTwoTunnelingProtocol.
+                            case IpV4Protocol.AuthenticationHeader: // TODO: Support Authentication Header over IPv4.
+                                break;
+
+                            default:
+                                field.AssertDataField(ipV4.Payload);
+                                break;
                         }
                     }
                     else

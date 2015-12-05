@@ -194,7 +194,9 @@ namespace PcapDotNet.Core.Test
                             {
                                 case "tcp.checksum_good":
                                     checksumField.AssertNoFields();
-                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
+                                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11857 is fixed.
+                                    if (!field.Showname().EndsWith(" [unchecked, not all data available]"))
+                                        checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "tcp.checksum_bad":
