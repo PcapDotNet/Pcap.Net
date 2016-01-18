@@ -23,15 +23,7 @@ namespace PcapDotNet.Packets
         /// Take all the bytes as a segment.
         /// </summary>
         /// <param name="buffer">The buffer to take as a segment.</param>
-        public DataSegment(byte[] buffer)
-        {
-            if (buffer == null) 
-                throw new ArgumentNullException("buffer");
-
-            Buffer = buffer;
-            StartOffset = 0;
-            Length = buffer.Length;
-        }
+        public DataSegment(byte[] buffer) : this(buffer, 0 , buffer==null ? 0 : buffer.Length) { }
 
         /// <summary>
         /// Take only part of the bytes as a segment.
@@ -41,6 +33,9 @@ namespace PcapDotNet.Packets
         /// <param name="length">The number of bytes to take.</param>
         public DataSegment(byte[] buffer, int offset, int length)
         {
+            if (buffer == null) 
+                throw new ArgumentNullException("buffer");
+
             Buffer = buffer;
             StartOffset = offset;
             Length = length;
