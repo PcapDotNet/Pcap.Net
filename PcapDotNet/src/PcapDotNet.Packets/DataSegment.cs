@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets
         /// Take all the bytes as a segment.
         /// </summary>
         /// <param name="buffer">The buffer to take as a segment.</param>
-        public DataSegment(byte[] buffer) : this(buffer, 0 , buffer==null ? 0 : buffer.Length) { }
+        public DataSegment(byte[] buffer) : this(buffer, 0 , buffer == null ? 0 : buffer.Length) {}
 
         /// <summary>
         /// Take only part of the bytes as a segment.
