@@ -35,6 +35,11 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.maddr":
+                    if (igmpDatagram.MessageType == IgmpMessageType.MulticastTraceRoute)
+                    {
+                        // TODO: Support IGMP Traceroute request.
+                        break;
+                    }
                     field.AssertShow(igmpDatagram.GroupAddress.ToString());
                     break;
 

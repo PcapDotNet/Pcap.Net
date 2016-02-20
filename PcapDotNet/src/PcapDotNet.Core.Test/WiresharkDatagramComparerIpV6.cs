@@ -208,7 +208,43 @@ namespace PcapDotNet.Core.Test
 
                             case "ipv6.routing_hdr.rpl.full_address":
                                 headerField.AssertNoFields();
-                                // TODO: Implement when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10673 is fixed.
+                                // TODO: Uncomment the following code when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10673 is fixed.
+//                                // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11803 is fixed.
+//                                if (routingProtocolLowPowerAndLossyNetworks.Addresses.Count > 0)
+//                                {
+//                                    IpV6Address actualFullAddress = new IpV6Address(headerField.Show());
+//
+//                                    IpV6Address destinationAddress = ipV6Datagram.CurrentDestination;
+//                                    for (int i = 0; i < _currentExtensionHeaderIndex; ++i)
+//                                    {
+//                                        IpV6ExtensionHeaderRoutingHomeAddress ipV6ExtensionHeaderRoutingHomeAddress =
+//                                            ipV6Datagram.ExtensionHeaders[i] as IpV6ExtensionHeaderRoutingHomeAddress;
+//                                        if (ipV6ExtensionHeaderRoutingHomeAddress != null)
+//                                            destinationAddress = ipV6ExtensionHeaderRoutingHomeAddress.HomeAddress;
+//
+//                                        IpV6ExtensionHeaderRoutingSourceRoute ipV6ExtensionHeaderRoutingSourceRoute =
+//                                            ipV6Datagram.ExtensionHeaders[i] as IpV6ExtensionHeaderRoutingSourceRoute;
+//                                        if (ipV6ExtensionHeaderRoutingSourceRoute != null && ipV6ExtensionHeaderRoutingSourceRoute.Addresses.Any())
+//                                            destinationAddress = ipV6ExtensionHeaderRoutingSourceRoute.Addresses.Last();
+//                                    }
+//
+//                                    int commonPrefixLength =
+//                                        routingProtocolLowPowerAndLossyNetworksAddressIndex == routingProtocolLowPowerAndLossyNetworks.Addresses.Count - 1
+//                                            ? routingProtocolLowPowerAndLossyNetworks.CommonPrefixLengthForLastAddress
+//                                            : routingProtocolLowPowerAndLossyNetworks.CommonPrefixLengthForNonLastAddresses;
+//
+//                                    byte[] destinationAddressBytes = new byte[IpV6Address.SizeOf];
+//                                    destinationAddressBytes.Write(0, destinationAddress, Endianity.Big);
+//
+//                                    byte[] routingAddressBytes = new byte[IpV6Address.SizeOf];
+//                                    routingAddressBytes.Write(0, routingProtocolLowPowerAndLossyNetworks.Addresses[routingProtocolLowPowerAndLossyNetworksAddressIndex], Endianity.Big);
+//                                    
+//                                    byte[] fullAddressBytes = destinationAddressBytes.Subsegment(0, commonPrefixLength).Concat(routingAddressBytes.Subsegment(commonPrefixLength, IpV6Address.SizeOf - commonPrefixLength)).ToArray();
+//                                    IpV6Address expectedFullAddress = fullAddressBytes.ReadIpV6Address(0, Endianity.Big);
+//                                    
+//                                    Assert.AreEqual(expectedFullAddress, actualFullAddress);
+//                                }
+
                                 ++routingProtocolLowPowerAndLossyNetworksAddressIndex;
                                 break;
 

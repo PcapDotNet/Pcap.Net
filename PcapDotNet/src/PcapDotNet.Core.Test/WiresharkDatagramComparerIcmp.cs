@@ -7,6 +7,7 @@ using PcapDotNet.Packets;
 using PcapDotNet.Packets.Icmp;
 using PcapDotNet.Packets.IpV4;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PcapDotNet.Core.Test
 {
@@ -73,7 +74,10 @@ namespace PcapDotNet.Core.Test
                                 break;
 
                             default:
-                                field.AssertDataField(ipV4.Payload);
+                                if (icmpIpV4PayloadDatagram is IcmpIpV4HeaderPlus64BitsPayloadDatagram && field.Value().Length > 2 * 8)
+                                    Assert.AreEqual(ipV4.Payload.BytesSequenceToHexadecimalString(), field.Value().Substring(0, 2 * 8));
+                                else
+                                    field.AssertDataField(ipV4.Payload);
                                 break;
                         }
                     }
