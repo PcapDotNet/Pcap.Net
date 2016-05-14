@@ -40,7 +40,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ip.len":
-                    field.AssertShowDecimal(ipV4Datagram.TotalLength);
+                    field.AssertShowDecimal(ipV4Datagram.TotalLength == 0 ? ipV4Datagram.Length : ipV4Datagram.TotalLength);
                     field.AssertNoFields();
                     break;
 

@@ -245,8 +245,11 @@ namespace PcapDotNet.Packets.IpV4
                 return ipV4Datagram.Length;
 
             ushort totalLength = ReadTotalLength(ipV4Datagram);
-            if (ipV4Datagram.Length < totalLength)
+            if (ipV4Datagram.Length < totalLength ||
+                totalLength == 0) // Large segment offload.
+            {
                 return ipV4Datagram.Length;
+            }
 
             return totalLength;
         }
