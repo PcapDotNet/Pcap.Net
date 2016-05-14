@@ -309,10 +309,7 @@ namespace PcapDotNet.Packets.Http
                 if (chunkSizeValue == 0)
                 {
                     int? endOffset;
-//                    HttpHeader trailerHeader = new HttpHeader(
-                        GetHeaderFields(out endOffset, buffer, parser.Offset, offset + length - parser.Offset)
-//                        )
-                        ;
+                    GetHeaderFields(out endOffset, buffer, parser.Offset, offset + length - parser.Offset);
                     if (endOffset != null)
                         parser.Skip(endOffset.Value - parser.Offset);
                     break;
@@ -332,7 +329,6 @@ namespace PcapDotNet.Packets.Http
                 datagram.Write(contentBuffer, contentBufferOffset);
                 contentBufferOffset += datagram.Length;
             }
-//            Datagram content = new Datagram(contentBuffer);
 
             return new Datagram(buffer, offset, parser.Offset - offset);
         }

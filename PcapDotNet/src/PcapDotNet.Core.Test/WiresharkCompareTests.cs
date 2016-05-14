@@ -82,13 +82,35 @@ namespace PcapDotNet.Core.Test
             Console.WriteLine("Seed: " + seed);
             Random random = new Random(seed);
 
-            for (int i = 0; i != 10; ++i)
+            try
             {
-                // Create packets
-                List<Packet> packets = new List<Packet>(CreateRandomPackets(random, 200));
+                for (int i = 0; i != 10; ++i)
+                {
+                    List<Packet> packets;
+                    try
+                    {
+                        // Create packets
+                        packets = new List<Packet>(CreateRandomPackets(random, 200));
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new AssertFailedException("Failed creating packets. " + exception, exception);
+                    }
 
-                // Compare packets to wireshark
-                ComparePacketsToWireshark(packets);
+                    try
+                    {
+                        // Compare packets to wireshark
+                        ComparePacketsToWireshark(packets);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new AssertFailedException("Failed comparing packets. " + exception, exception);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new AssertFailedException("Failed test with seed " + seed + ". " + exception, exception);
             }
         }
 
@@ -102,7 +124,7 @@ namespace PcapDotNet.Core.Test
             Packet packet = new Packet(new byte[14], timestamp, DataLinkKind.Ethernet);
 
             // Compare packet to wireshark
-            ComparePacketsToWireshark(new[] { packet });
+            ComparePacketsToWireshark(packet);
 
             // BUG: Limited timestamp due to Windows bug: https://connect.microsoft.com/VisualStudio/feedback/details/559198/net-4-datetime-tolocaltime-is-sometimes-wrong
             // Now check different dates.
@@ -495,9 +517,9 @@ namespace PcapDotNet.Core.Test
             {
                 Compare(XDocument.Load(fixedDocumentFilename, LoadOptions.None), packets);
             }
-            catch (AssertFailedException exception)
+            catch (Exception exception)
             {
-                throw new AssertFailedException("Failed comparing packets in file " + pcapFilename + ". Message: " + exception.Message, exception);
+                throw new AssertFailedException("Failed comparing packets in file " + pcapFilename + ". " + exception, exception);
             }
         }
 

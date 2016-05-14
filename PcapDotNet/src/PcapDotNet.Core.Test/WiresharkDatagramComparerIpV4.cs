@@ -40,7 +40,7 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "ip.len":
-                    field.AssertShowDecimal(ipV4Datagram.TotalLength);
+                    field.AssertShowDecimal(ipV4Datagram.TotalLength == 0 ? ipV4Datagram.Length : ipV4Datagram.TotalLength);
                     field.AssertNoFields();
                     break;
 
@@ -188,6 +188,7 @@ namespace PcapDotNet.Core.Test
                     Assert.IsFalse(options.IsValid);
                     Assert.IsTrue(field.Show() == "Commercial IP security option" ||
                                   field.Show() == "Loose source route (length byte past end of options)" ||
+                                  field.Show() == "Loose Source Route (5 bytes)" ||
                                   field.Show() == "Time stamp:" ||
                                   field.Show().StartsWith("Unknown") ||
                                   field.Show().StartsWith("Security") ||

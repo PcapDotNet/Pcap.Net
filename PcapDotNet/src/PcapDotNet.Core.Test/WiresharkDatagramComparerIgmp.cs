@@ -35,6 +35,11 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.maddr":
+                    if (igmpDatagram.MessageType == IgmpMessageType.MulticastTraceRoute)
+                    {
+                        // TODO: Support IGMP Traceroute request.
+                        break;
+                    }
                     field.AssertShow(igmpDatagram.GroupAddress.ToString());
                     break;
 
@@ -72,8 +77,7 @@ namespace PcapDotNet.Core.Test
                                 case "Data":
                                     if (field.Value().Length > 0)
                                     {
-                                        // TODO: Change following https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11582
-                                        field.AssertValue(field.Value().Length / 2 == igmpDatagram.Length - 21 ? igmpDatagram.Skip(21) : igmpDatagram.Skip(1));
+                                        field.AssertValue(igmpDatagram.Skip(1));
                                     }
                                     break;
 
@@ -120,7 +124,8 @@ namespace PcapDotNet.Core.Test
                     break;
 
                 case "igmp.reply.pending":
-                    field.AssertShowDecimal(igmpDatagram.RetryInThisManySeconds);
+                    if (!new[] {IgmpMessageType.None, (IgmpMessageType)12}.Contains(igmpDatagram.MessageType))
+                        field.AssertShowDecimal(igmpDatagram.RetryInThisManySeconds);
                     break;
 
                 case "igmp.group_type":

@@ -653,7 +653,7 @@ namespace PcapDotNet.Core.Test
                                                                 "Invalid IPv6 Link Layer Address option field {0}", optionSubfield.Name()));
                                                     }
                                                 }
-                                                // TODO: Change to break when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10043 or https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
+                                                // TODO: Change to break when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10627 is fixed.
                                                 return false;
 
                                             case IpV6MobilityOptionType.IpV4DefaultRouterAddress:
@@ -1492,8 +1492,7 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.auth.auth_data":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10626 is fixed.
-//                                                            optionSubfield.AssertValue(authentication.AuthenticationData);
+                                                            optionSubfield.AssertValue(authentication.AuthenticationData);
                                                             break;
 
                                                         default:
@@ -1601,13 +1600,11 @@ namespace PcapDotNet.Core.Test
                                                             break;
 
                                                         case "mip6.lmaa.ipv6":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10961 is fixed.
-//                                                            optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
+                                                            optionSubfield.AssertValue(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV6.Value.ToValue());
                                                             break;
 
                                                         case "mip6.lmaa.ipv4":
-                                                            // TODO: Uncomment when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10961 is fixed.
-//                                                            optionSubfield.AssertShow(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV4.Value.ToString());
+                                                            optionSubfield.AssertShow(localMobilityAnchorAddress.LocalMobilityAnchorAddressIpV4.Value.ToString());
                                                             break;
 
                                                         default:

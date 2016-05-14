@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
 using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.IpV6;
-using PcapDotNet.TestUtils;
 
 namespace PcapDotNet.Core.Test
 {
@@ -269,8 +265,7 @@ namespace PcapDotNet.Core.Test
         {
             _hipRendezvousServersIndex = 0;
             _wksBitmapIndex = 0;
-            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
-//            _nxtTypeIndex = 0;
+            _nxtTypeIndex = 0;
             _spfTypeIndex = 0;
             _txtTypeIndex = 0;
             _nSecTypeIndex = 0;
@@ -893,12 +888,11 @@ namespace PcapDotNet.Core.Test
                             break;
 
                         case "":
-                            // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
-//                            DnsType actualType = nxtData.TypesExist.Skip(_nxtTypeIndex++).First();
-//                            DnsType expectedType;
-//                            if (!TryGetDnsType(dataFieldShow, out expectedType))
-//                                throw new InvalidOperationException(string.Format("Can't parse DNS field {0} : {1}", dataFieldShow, actualType));
-//                            Assert.AreEqual(expectedType, actualType);
+                            DnsType actualType = nxtData.TypesExist.Skip(_nxtTypeIndex++).First();
+                            DnsType expectedType;
+                            if (!TryGetDnsType(dataFieldShow, out expectedType))
+                                throw new InvalidOperationException(string.Format("Can't parse DNS field {0} : {1}", dataFieldShow, actualType));
+                            Assert.AreEqual(expectedType, actualType);
                             return false;
 
                         default:
@@ -1864,8 +1858,7 @@ namespace PcapDotNet.Core.Test
 
         private int _hipRendezvousServersIndex;
         private int _wksBitmapIndex;
-        // TODO: Uncomment this when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=10615 is fixed.
-//        private int _nxtTypeIndex;
+        private int _nxtTypeIndex;
         private int _spfTypeIndex;
         private int _txtTypeIndex;
         private int _nSecTypeIndex;

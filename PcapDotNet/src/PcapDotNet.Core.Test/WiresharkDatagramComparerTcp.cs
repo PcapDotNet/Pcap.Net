@@ -194,7 +194,9 @@ namespace PcapDotNet.Core.Test
                             {
                                 case "tcp.checksum_good":
                                     checksumField.AssertNoFields();
-                                    checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
+                                    // TODO: Remove this condition when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11857 is fixed.
+                                    if (!field.Showname().EndsWith(" [unchecked, not all data available]"))
+                                        checksumField.AssertShowDecimal(tcpDatagram.Checksum != 0 && ipDatagram.IsTransportChecksumCorrect);
                                     break;
 
                                 case "tcp.checksum_bad":
@@ -268,6 +270,7 @@ namespace PcapDotNet.Core.Test
                         field.Show().StartsWith("Unknown (0x0a) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x19) ") || // Unknown in Wireshark but known (and invalid) in Pcap.Net.
                         field.Show().StartsWith("Unknown (0x2d) ") || // Unknown in Wireshark and unknown and invalid in Pcap.Net.
+                        field.Show().StartsWith("Unknown (0x84) ") || // Unknown in Wireshark and unknown and invalid in Pcap.Net.
                         field.Show().StartsWith("Unknown (0xa9) ") || // Unknown in Wireshark and unknown and invalid in Pcap.Net.
                         field.Show().StartsWith("Echo reply (with option length = ") ||
                         field.Show().Contains("bytes says option goes past end of options") ||

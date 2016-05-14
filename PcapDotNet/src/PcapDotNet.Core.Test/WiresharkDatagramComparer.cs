@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Xml.Linq;
 using PcapDotNet.Base;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.IpV4;
+using PcapDotNet.Packets.IpV6;
 
 namespace PcapDotNet.Core.Test
 {
@@ -48,6 +50,10 @@ namespace PcapDotNet.Core.Test
             bool success = true;
             foreach (var element in layer.Fields())
             {
+                // TODO: Remove this hack when https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=11802 is fixed.
+                IpV6Datagram ipV6ParentDatagram = parentDatagram as IpV6Datagram;
+                if (ipV6ParentDatagram != null && (ipV6ParentDatagram.NextHeader == IpV4Protocol.IsoIp || ipV6ParentDatagram.ExtensionHeaders.NextHeader == IpV4Protocol.IsoIp))
+                    return false;
                 if (!CompareField(element, parentDatagram, datagram))
                 {
                     success = false;

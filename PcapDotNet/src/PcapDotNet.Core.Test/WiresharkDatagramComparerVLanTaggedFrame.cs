@@ -55,6 +55,7 @@ namespace PcapDotNet.Core.Test
                              {
                                  (EthernetType)1,
                                  (EthernetType)5,
+                                 (EthernetType)12,
                                  (EthernetType)17,
                                  (EthernetType)29,
                                  (EthernetType)30,
