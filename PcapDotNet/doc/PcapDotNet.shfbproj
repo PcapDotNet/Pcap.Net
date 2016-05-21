@@ -33,7 +33,7 @@
     <CppCommentsFixup>True</CppCommentsFixup>
     <HelpTitle>Pcap.Net Documented Class Library</HelpTitle>
     <MissingTags>None</MissingTags>
-    <HelpFileVersion>1.0.3.0</HelpFileVersion>
+    <HelpFileVersion>1.0.4.0</HelpFileVersion>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <ShowFeedbackControl>False</ShowFeedbackControl>
     <IndentHtml>False</IndentHtml>
