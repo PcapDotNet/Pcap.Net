@@ -28,8 +28,8 @@ using namespace System::Runtime::InteropServices;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("1.0.3.*")];
-[assembly:AssemblyFileVersionAttribute("1.0.3.0")]
+[assembly:AssemblyVersionAttribute("1.0.4.*")];
+[assembly:AssemblyFileVersionAttribute("1.0.4.0")]
 
 [assembly:ComVisible(false)];
 
