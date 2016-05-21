@@ -182,7 +182,7 @@ namespace PcapDotNet.Packets.Test
                     case IcmpMessageType.AddressMaskReply:
                         break;
                     case IcmpMessageType.TraceRoute:
-                        Assert.AreEqual(((IcmpTraceRouteLayer)icmpLayer).OutboundHopCount == 0xFFFF, ((IcmpTraceRouteDatagram)actualIcmp).IsOutbound);
+                        Assert.AreEqual(((IcmpTraceRouteLayer)icmpLayer).ReturnHopCount == 0xFFFF, ((IcmpTraceRouteDatagram)actualIcmp).IsOutbound);
                         break;
                     case IcmpMessageType.DomainNameRequest:
                     case IcmpMessageType.SecurityFailures:
