@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Icmp
                 select new
                        {
                            GetRegistrationAttribute(type).MessageType,
-                           Datagram = (IcmpDatagram)constructor.Invoke(new object[] {null, 0, 0})
+                           Datagram = (IcmpDatagram)constructor.Invoke(new object[] {new byte[0], 0, 0})
                        };
 
             return prototypes.ToDictionary(prototype => prototype.MessageType, prototype => prototype.Datagram);
