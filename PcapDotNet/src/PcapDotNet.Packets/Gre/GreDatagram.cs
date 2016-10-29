@@ -94,7 +94,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool ChecksumPresent
         {
-            get { return (this[Offset.ChecksumPresent] & Mask.ChecksumPresent) == Mask.ChecksumPresent; }
+            get { return ReadBool(Offset.ChecksumPresent, Mask.ChecksumPresent); }
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool RoutingPresent
         {
-            get { return (this[Offset.RoutingPresent] & Mask.RoutingPresent) == Mask.RoutingPresent; }
+            get { return ReadBool(Offset.RoutingPresent, Mask.RoutingPresent); }
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool KeyPresent
         {
-            get { return (this[Offset.KeyPresent] & Mask.KeyPresent) == Mask.KeyPresent; }
+            get { return ReadBool(Offset.KeyPresent, Mask.KeyPresent); }
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool SequenceNumberPresent
         {
-            get { return (this[Offset.SequenceNumberPresent] & Mask.SequenceNumberPresent) == Mask.SequenceNumberPresent; }
+            get { return ReadBool(Offset.SequenceNumberPresent, Mask.SequenceNumberPresent); }
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool StrictSourceRoute
         {
-            get { return (this[Offset.StrictSourceRoute] & Mask.StrictSourceRoute) == Mask.StrictSourceRoute; }
+            get { return ReadBool(Offset.StrictSourceRoute, Mask.StrictSourceRoute); }
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace PcapDotNet.Packets.Gre
         /// </summary>
         public bool AcknowledgmentSequenceNumberPresent
         {
-            get { return (this[Offset.AcknowledgmentSequenceNumberPresent] & Mask.AcknowledgmentSequenceNumberPresent) == Mask.AcknowledgmentSequenceNumberPresent; }
+            get { return ReadBool(Offset.AcknowledgmentSequenceNumberPresent, Mask.AcknowledgmentSequenceNumberPresent); }
         }
 
         /// <summary>

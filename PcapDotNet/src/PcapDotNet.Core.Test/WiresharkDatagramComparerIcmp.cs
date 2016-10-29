@@ -71,6 +71,7 @@ namespace PcapDotNet.Core.Test
                             case IpV4Protocol.EtherIp: // TODO: Support EtherIP.
                             case IpV4Protocol.LayerTwoTunnelingProtocol: // TODO: Support LayerTwoTunnelingProtocol.
                             case IpV4Protocol.AuthenticationHeader: // TODO: Support Authentication Header over IPv4.
+                            case IpV4Protocol.UdpLite: // TODO: Support UdpLite.
                                 break;
 
                             default:

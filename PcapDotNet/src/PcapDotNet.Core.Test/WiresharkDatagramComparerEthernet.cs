@@ -46,7 +46,9 @@ namespace PcapDotNet.Core.Test
 
                 case "eth.padding":
                     field.AssertNoFields();
-                    field.AssertValue(ethernetDatagram.Padding);
+                    // TODO: Support RARP.
+                    if (ethernetDatagram.EtherType != EthernetType.ReverseArp)
+                        field.AssertValue(ethernetDatagram.Padding);
                     break;
 
                 default:
