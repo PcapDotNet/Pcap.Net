@@ -15,3 +15,5 @@ TemporaryGeneratedFile_*
 *.snk
 *.suo
 *.vcxproj.user
+*.db
+*.opendb

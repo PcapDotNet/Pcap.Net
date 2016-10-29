@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PcapDotNet.Core.Extensions</RootNamespace>
     <AssemblyName>PcapDotNet.Core.Extensions</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -169,7 +169,7 @@
       <Name>PcapDotNet.Base</Name>
     </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Core\PcapDotNet.Core.vcxproj">
-      <Project>{89C63BE1-AF9A-472E-B256-A4F56B1655A7}</Project>
+      <Project>{89c63be1-af9a-472e-b256-a4f56b1655a7}</Project>
       <Name>PcapDotNet.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\PcapDotNet.Packets\PcapDotNet.Packets.csproj">
