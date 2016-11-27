@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="HexEncoding.cs" />
     <Compile Include="RandomArpExtensions.cs" />
+    <Compile Include="RandomDhcpExtensions.cs" />
     <Compile Include="RandomDnsExtensions.cs" />
     <Compile Include="RandomEthernetExtensions.cs" />
     <Compile Include="RandomGreExtensions.cs" />
