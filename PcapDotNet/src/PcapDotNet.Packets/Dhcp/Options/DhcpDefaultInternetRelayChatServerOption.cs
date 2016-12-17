@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The IRC server option specifies a list of IRC available to the
+    /// client.Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpDefaultInternetRelayChatServerOption : DhcpAddressListOption
     {
-        public DhcpDefaultInternetRelayChatServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.DefaultInternetRelayChatServer, addresses)
+        /// <summary>
+        /// create new DhcpDefaultInternetRelayChatServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpDefaultInternetRelayChatServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultInternetRelayChatServer)
         {
         }
 
         internal static DhcpDefaultInternetRelayChatServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpDefaultInternetRelayChatServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpDefaultInternetRelayChatServerOption>(data, ref offset, (p) => new DhcpDefaultInternetRelayChatServerOption(p));
         }
     }
 }

@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The WWW server option specifies a list of WWW available to the
+    /// client.Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpDefaultWorldWideWebServerOption : DhcpAddressListOption
     {
-        public DhcpDefaultWorldWideWebServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.DefaultWorldWideWebServer, addresses)
+        /// <summary>
+        /// create new DhcpDefaultWorldWideWebServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpDefaultWorldWideWebServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultWorldWideWebServer)
         {
         }
 
         internal static DhcpDefaultWorldWideWebServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpDefaultWorldWideWebServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpDefaultWorldWideWebServerOption>(data, ref offset, p => new DhcpDefaultWorldWideWebServerOption(p));
         }
     }
 }

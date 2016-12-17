@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies the default time-to-live that the client should
+    /// use on outgoing datagrams.
     /// <pre>
     ///  Code   Len   TTL
     /// +-----+-----+-----+
@@ -15,38 +17,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpDefaultIPTimeToLiveOption : DhcpOption
+    public class DhcpDefaultIPTimeToLiveOption : DhcpByteOption
     {
-        public DhcpDefaultIPTimeToLiveOption(byte ttl) : base(DhcpOptionCode.DefaultIPTimeToLive)
+        /// <summary>
+        /// create new DhcpDefaultIPTimeToLiveOption
+        /// </summary>
+        /// <param name="ttl">TTL</param>
+        public DhcpDefaultIPTimeToLiveOption(byte ttl) : base(ttl, DhcpOptionCode.DefaultIpTimeToLive)
         {
-            TTL = ttl;
         }
 
         internal static DhcpDefaultIPTimeToLiveOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 1)
-            {
-                throw new ArgumentException("Length of a DHCP DefaultIPTimeToLive Option has to be 1");
-            }
-            DhcpDefaultIPTimeToLiveOption option = new DhcpDefaultIPTimeToLiveOption(data[offset++]);
-            return option;
+            return Read<DhcpDefaultIPTimeToLiveOption>(data, ref offset, p => new DhcpDefaultIPTimeToLiveOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// TTL
+        /// </summary>
+        public byte Ttl
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, TTL);
-        }
-
-        public override byte Length
-        {
-            get { return 1; }
-        }
-
-        public byte TTL
-        {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

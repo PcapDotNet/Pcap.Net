@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client should use Ethernet
+    /// Version 2 (RFC 894 [15]) or IEEE 802.3 (RFC 1042 [16]) encapsulation
+    /// if the interface is an Ethernet.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +19,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpEthernetEncapsulationOption : DhcpOption
+    public class DhcpEthernetEncapsulationOption : DhcpBooleanOption
     {
-        public DhcpEthernetEncapsulationOption(bool enabled) : base(DhcpOptionCode.EthernetEncapsulation)
+        /// <summary>
+        /// create new DhcpEthernetEncapsulationOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpEthernetEncapsulationOption(bool value) : base(value, DhcpOptionCode.EthernetEncapsulation)
         {
         }
 
         internal static DhcpEthernetEncapsulationOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP EthernetEncapsulation Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP EthernetEncapsulation Option has to be 0 or 1");
-            DhcpEthernetEncapsulationOption option = new DhcpEthernetEncapsulationOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpEthernetEncapsulationOption>(data, ref offset, p => new DhcpEthernetEncapsulationOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// A value of false indicates that the
+        /// client should use RFC 894 encapsulation. A value of true  means that the
+        /// client should use RFC 1042 encapsulation.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

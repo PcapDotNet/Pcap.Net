@@ -8,6 +8,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the name of the client's NIS+ [17] domain.
     /// <pre>
     ///  Code   Len      NIS Client Domain Name
     /// +-----+-----+-----+-----+-----+-----+---
@@ -15,52 +16,30 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpNetworkInformationServicePlusDomainOption : DhcpOption
+    public class DhcpNetworkInformationServicePlusDomainOption : DhcpStringOption
     {
-        public DhcpNetworkInformationServicePlusDomainOption(string domainName) : base(DhcpOptionCode.NetworkInformationServicePlusDomain)
+        /// <summary>
+        /// create new DhcpNetworkInformationServicePlusDomainOption
+        /// </summary>
+        /// <param name="nisClientDomainName">NIS Client Domain Name</param>
+        public DhcpNetworkInformationServicePlusDomainOption(string nisClientDomainName) : base(nisClientDomainName, DhcpOptionCode.NetworkInformationServicePlusDomain)
         {
-            DomainName = domainName;
         }
 
         internal static DhcpNetworkInformationServicePlusDomainOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            DhcpNetworkInformationServicePlusDomainOption option = new DhcpNetworkInformationServicePlusDomainOption(Encoding.ASCII.GetString(data.ReadBytes(offset, len)));
-            offset += option.Length;
-            return option;
+            return Read<DhcpNetworkInformationServicePlusDomainOption>(data, ref offset, p => new Options.DhcpNetworkInformationServicePlusDomainOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// NIS Client Domain Name
+        /// </summary>
+        public string NisClientDomainName
+
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(DomainName));
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(DomainName);
-            }
-        }
-
-        public string DomainName
-        {
-            get { return _domainName; }
-
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(DomainName));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(DomainName), value.Length, "DomainName has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(DomainName), value.Length, "DomainName has to be less than 256 characters long");
-
-                _domainName = value;
-            }
-        }
-
-        private string _domainName;
     }
 }

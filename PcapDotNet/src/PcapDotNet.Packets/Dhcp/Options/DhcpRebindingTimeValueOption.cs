@@ -7,47 +7,39 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies the time interval from address assignment until
+    /// the client transitions to the REBINDING state.
     /// <pre>
-    ///  Code   Len         T1 Interval
+    ///  Code   Len         T2 Interval
     /// +-----+-----+-----+-----+-----+-----+
     /// |  59 |  4  |  t1 |  t2 |  t3 |  t4 |
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpRebindingTimeValueOption : DhcpOption
+    public class DhcpRebindingTimeValueOption : DhcpUIntOption
     {
-        public DhcpRebindingTimeValueOption(uint interval) : base(DhcpOptionCode.RebindingTimeValue)
+        /// <summary>
+        /// create new DhcpRebindingTimeValueOption
+        /// </summary>
+        /// <param name="t2Interval">T1 Interval</param>
+        public DhcpRebindingTimeValueOption(uint t2Interval) : base(t2Interval, DhcpOptionCode.RebindingTimeValue)
         {
-            Interval = interval;
         }
 
         internal static DhcpRebindingTimeValueOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-            {
-                throw new ArgumentException("Length of a DHCP RebindingTimeValue Option has to be 4");
-            }
-            DhcpRebindingTimeValueOption option = new DhcpRebindingTimeValueOption(data.ReadUInt(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpRebindingTimeValueOption>(data, ref offset, p => new Options.DhcpRebindingTimeValueOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// T2 Interval
+        /// </summary>
+        public uint T2Interval
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Interval, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
-        public uint Interval
-        {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

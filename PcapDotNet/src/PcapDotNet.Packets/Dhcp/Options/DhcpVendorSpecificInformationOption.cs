@@ -8,6 +8,16 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option is used by clients and servers to exchange vendor-
+    /// specific information. The information is an opaque object of n
+    /// octets, presumably interpreted by vendor-specific code on the clients
+    /// and servers. The definition of this information is vendor specific.
+    /// The vendor is indicated in the vendor class identifier option.
+    /// Servers not equipped to interpret the vendor-specific information
+    /// sent by a client MUST ignore it(although it may be reported).
+    /// Clients which do not receive desired vendor-specific information
+    /// SHOULD make an attempt to operate without it, although they may do so
+    /// (and announce they are doing so) in a degraded mode.
     /// <pre>
     /// Code   Len   Vendor-specific information
     /// +-----+-----+-----+-----+---
@@ -15,56 +25,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpVendorSpecificInformationOption : DhcpOption
+    public class DhcpVendorSpecificInformationOption : DhcpDataSegmentOption
     {
-        public DhcpVendorSpecificInformationOption(DataSegment vendorSpecificInformation) : base(DhcpOptionCode.VendorSpecificInformation)
+        /// <summary>
+        /// create new DhcpVendorSpecificInformationOption
+        /// </summary>
+        /// <param name="vendorSpecificInformation">Vendor-specific information</param>
+        public DhcpVendorSpecificInformationOption(DataSegment vendorSpecificInformation) : base(vendorSpecificInformation, DhcpOptionCode.VendorSpecificInformation)
         {
-            VendorSpecificInformation = vendorSpecificInformation;
         }
 
         internal static DhcpVendorSpecificInformationOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            DhcpVendorSpecificInformationOption option = new DhcpVendorSpecificInformationOption(data.Subsegment(offset, length));
-            offset += length;
-            return option;
+            return Read<DhcpVendorSpecificInformationOption>(data, ref offset, p => new DhcpVendorSpecificInformationOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            if (VendorSpecificInformation == null)
-                throw new ArgumentNullException(nameof(VendorSpecificInformation));
-            if (VendorSpecificInformation.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(VendorSpecificInformation), VendorSpecificInformation.Length, "VendorSpecificInformation.Length has to be less than 256");
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, VendorSpecificInformation);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                if (VendorSpecificInformation == null)
-                {
-                    return 0;
-                }
-                return (byte)VendorSpecificInformation.Length;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132
+        /// Vendor-specific information
+        /// </summary>
         public DataSegment VendorSpecificInformation
         {
-            get { return _vendorSpecificInformation; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(VendorSpecificInformation));
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(VendorSpecificInformation), value.Length, "VendorSpecificInformation.Length has to be less than 256");
-                _vendorSpecificInformation = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private DataSegment _vendorSpecificInformation;
     }
 }

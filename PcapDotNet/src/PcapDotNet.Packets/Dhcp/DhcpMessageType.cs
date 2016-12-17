@@ -9,8 +9,8 @@ namespace PcapDotNet.Packets.Dhcp
     /// <summary>
     /// RFCs 2131.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum DhcpMessageType : byte
-
     {
         /// <summary>
         /// RFC 2131.

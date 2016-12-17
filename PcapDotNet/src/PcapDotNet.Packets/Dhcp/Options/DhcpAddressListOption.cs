@@ -13,21 +13,35 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public abstract class DhcpAddressListOption : DhcpOption
     {
-        internal const int MAX_ADDRESSES = 255 / IpV4Address.SizeOf;
+        internal const int MAX_ADDRESSES = byte.MaxValue / IpV4Address.SizeOf;
 
-        internal DhcpAddressListOption(DhcpOptionCode code, IList<IpV4Address> addresses) : base(code)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        internal DhcpAddressListOption(IList<IpV4Address> addresses, DhcpOptionCode code) : base(code)
         {
             if (addresses == null)
                 throw new ArgumentNullException(nameof(addresses));
+            if (addresses.Count == 0 && !AllowEmptyAddresses)
+                throw new ArgumentOutOfRangeException(nameof(addresses), addresses.Count, "The minimum items in addresses is 1");
             if (addresses.Count > MAX_ADDRESSES)
-                throw new ArgumentOutOfRangeException(nameof(addresses), addresses.Count, $"The maximum items in addresses is {MAX_ADDRESSES}");
+                throw new ArgumentOutOfRangeException(nameof(addresses), addresses.Count, "The maximum items in addresses is " + MAX_ADDRESSES);
             Addresses = new ReadOnlyCollection<IpV4Address>(addresses);
+        }
+
+        internal static T Read<T>(DataSegment data, ref int offset, Func<IList<IpV4Address>, T> ctor) where T : DhcpAddressListOption
+        {
+            return ctor(GetAddresses(data, ref offset));
+        }
+
+        internal static IList<IpV4Address> GetAddresses(DataSegment data, ref int offset)
+        {
+            byte length = data[offset++];
+            return GetAddresses(data, length, ref offset);
         }
 
         internal static IList<IpV4Address> GetAddresses(DataSegment data, byte length, ref int offset)
         {
             if (length % IpV4Address.SizeOf != 0)
-                throw new ArgumentOutOfRangeException(nameof(length), length, $"length has to be multiple of {IpV4Address.SizeOf}");
+                throw new ArgumentOutOfRangeException(nameof(length), length, "length has to be multiple of " + IpV4Address.SizeOf);
             List<IpV4Address> addresses = new List<IpV4Address>();
             for (int i = 0; i < length; i += IpV4Address.SizeOf)
             {
@@ -47,6 +61,14 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
+        /// true if Addresses-List is allowed to be empty (Default false)
+        /// </summary>
+        protected virtual bool AllowEmptyAddresses
+        {
+            get { return false; }
+        }
+
+        /// <summary>
         /// RFC 2132.
         /// Value of Length-Field
         /// </summary>
@@ -54,14 +76,12 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
             get
             {
-                if (Addresses.Count > MAX_ADDRESSES)
-                    throw new ArgumentOutOfRangeException(nameof(Addresses), Addresses.Count, $"The maximum items in addresses is {MAX_ADDRESSES}");
-
                 return (byte)(Addresses.Count * IpV4Address.SizeOf);
             }
         }
 
         /// <summary>
+        /// RFC 2132.
         /// collection of all addresses of this option
         /// </summary>
         public IReadOnlyCollection<IpV4Address> Addresses

@@ -9,6 +9,10 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the maximum length DHCP message that it is
+    /// willing to accept. A client may use the maximum DHCP message size option in
+    /// DHCPDISCOVER or DHCPREQUEST messages, but should not use the option
+    /// in DHCPDECLINE messages.
     /// <pre>
     ///  Code   Len     Length
     /// +-----+-----+-----+-----+
@@ -16,41 +20,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpMaximumDhcpMessageSizeOption : DhcpOption
+    public class DhcpMaximumDhcpMessageSizeOption : DhcpUShortOption
     {
-        public DhcpMaximumDhcpMessageSizeOption(ushort maxLength) : base(DhcpOptionCode.MaximumDhcpMessageSize)
+        /// <summary>
+        /// create new DhcpMaximumDhcpMessageSizeOption
+        /// </summary>
+        /// <param name="length">Length</param>
+        public DhcpMaximumDhcpMessageSizeOption(ushort length) : base(length, DhcpOptionCode.MaximumDhcpMessageSize)
         {
-            MaxLength = maxLength;
         }
 
         internal static DhcpMaximumDhcpMessageSizeOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 2)
-                throw new ArgumentException("Length of a DHCP MaximumDhcpMessageSize Option has to be 2");
-            DhcpMaximumDhcpMessageSizeOption option = new DhcpMaximumDhcpMessageSizeOption(data.ReadUShort(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpMaximumDhcpMessageSizeOption>(data, ref offset, p => new DhcpMaximumDhcpMessageSizeOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, MaxLength, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 2;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Length
+        /// </summary>
         public ushort MaxLength
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

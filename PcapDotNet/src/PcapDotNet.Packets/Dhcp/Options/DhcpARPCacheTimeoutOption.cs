@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies the timeout in seconds for ARP cache entries.
     /// <pre>
     ///  Code   Len           Time
     /// +-----+-----+-----+-----+-----+-----+
@@ -15,43 +16,30 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpARPCacheTimeoutOption : DhcpOption
+    public class DhcpArpCacheTimeoutOption : DhcpUIntOption
     {
-        public DhcpARPCacheTimeoutOption() : base(DhcpOptionCode.ARPCacheTimeout)
+        /// <summary>
+        /// create new ArpCacheTimeoutOption
+        /// </summary>
+        /// <param name="time">Time</param>
+        public DhcpArpCacheTimeoutOption(uint time) : base(time, DhcpOptionCode.ArpCacheTimeout)
         {
         }
 
-        public DhcpARPCacheTimeoutOption(uint timeOffset) : this()
+        internal static DhcpArpCacheTimeoutOption Read(DataSegment data, ref int offset)
         {
-            TimeOffset = timeOffset;
+            return DhcpUIntOption.Read(data, ref offset, p => new DhcpArpCacheTimeoutOption(p));
         }
 
-        internal static DhcpARPCacheTimeoutOption Read(DataSegment data, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// Time
+        /// timeout in seconds for ARP cache entries
+        /// </summary>
+        public uint Time
         {
-            if (data[offset++] != 4)
-            {
-                throw new ArgumentException("Length of a DHCP ARPCacheTimeout Option has to be 4");
-            }
-            DhcpARPCacheTimeoutOption option = new DhcpARPCacheTimeoutOption(data.ReadUInt(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
-        }
-
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, TimeOffset, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
-        public uint TimeOffset
-        {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

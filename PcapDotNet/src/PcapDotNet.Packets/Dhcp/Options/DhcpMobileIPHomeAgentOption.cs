@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies a list of IP addresses indicating mobile IP
+    /// home agents available to the client. Agents SHOULD be listed in
+    /// order of preference.
     /// <pre>
     ///  Code Len    Home Agent Addresses (zero or more)
     /// +-----+-----+-----+-----+-----+-----+--
@@ -18,7 +21,11 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpMobileIPHomeAgentOption : DhcpAddressListOption
     {
-        public DhcpMobileIPHomeAgentOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.MobileIPHomeAgent, addresses)
+        /// <summary>
+        /// create new DhcpMobileIPHomeAgentOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpMobileIPHomeAgentOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.MobileIPHomeAgent)
         {
         }
 
@@ -26,6 +33,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
             byte length = data[offset++];
             return new DhcpMobileIPHomeAgentOption(GetAddresses(data, length, ref offset));
+        }
+
+        /// <summary>
+        /// true if Addresses-List is allowed to be empty
+        /// </summary>
+        protected override bool AllowEmptyAddresses
+        {
+            get
+            {
+                return true;
+            }
         }
     }
 }

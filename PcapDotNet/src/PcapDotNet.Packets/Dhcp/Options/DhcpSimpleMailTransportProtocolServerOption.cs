@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The SMTP server option specifies a list of SMTP servers available to
+    /// the client. Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpSimpleMailTransportProtocolServerOption : DhcpAddressListOption
     {
-        public DhcpSimpleMailTransportProtocolServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.SimpleMailTransportProtocolServer, addresses)
+        /// <summary>
+        /// create new DhcpSimpleMailTransportProtocolServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpSimpleMailTransportProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.SimpleMailTransportProtocolServer)
         {
         }
 
         internal static DhcpSimpleMailTransportProtocolServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpSimpleMailTransportProtocolServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpSimpleMailTransportProtocolServerOption>(data, ref offset, p => new DhcpSimpleMailTransportProtocolServerOption(p));
         }
     }
 }

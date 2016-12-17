@@ -17,30 +17,70 @@ namespace PcapDotNet.Packets.Dhcp
     /// </summary>
     public sealed class DhcpLayer : SimpleLayer, IEquatable<DhcpLayer>
     {
+        /// <summary>
+        /// Message op code
+        /// </summary>
         public DhcpMessageType MessageType { get; set; }
 
+        /// <summary>
+        /// Hardware address type
+        /// </summary>
         public ArpHardwareType HardwareType { get; set; }
 
+        /// <summary>
+        /// Hardware address length
+        /// </summary>
         public byte HardwareAddressLength { get; set; }
 
+        /// <summary>
+        /// Client sets to zero, optionally used by relay agents when booting via a relay agent.
+        /// </summary>
         public byte Hops { get; set; }
 
+        /// <summary>
+        /// Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.
+        /// </summary>
         public int TransactionId { get; set; }
 
+        /// <summary>
+        /// Filled in by client, seconds elapsed since client began address acquisition or renewal process.
+        /// </summary>
         public ushort SecondsElapsed { get; set; }
 
-        public DhcpFlags Flags { get; set; }
+        /// <summary>
+        /// Flags
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+        public DhcpFlags DhcpFlags { get; set; }
 
+        /// <summary>
+        /// Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.
+        /// </summary>
         public IpV4Address ClientIpAddress { get; set; }
 
+        /// <summary>
+        /// 'your' (client) IP address.
+        /// </summary>
         public IpV4Address YourClientIpAddress { get; set; }
 
+        /// <summary>
+        /// IP address of next server to use in bootstrap; returned in DHCPOFFER, DHCPACK by server.
+        /// </summary>
         public IpV4Address NextServerIpAddress { get; set; }
 
+        /// <summary>
+        /// Relay agent IP address, used in booting via a relay agent.
+        /// </summary>
         public IpV4Address RelayAgentIpAddress { get; set; }
 
+        /// <summary>
+        /// Client hardware address.
+        /// </summary>
         public DataSegment ClientHardwareAddress { get; set; }
 
+        /// <summary>
+        /// Client MAC address
+        /// </summary>
         public MacAddress ClientMacAddress
         {
             get
@@ -57,12 +97,24 @@ namespace PcapDotNet.Packets.Dhcp
             }
         }
 
+        /// <summary>
+        /// Optional server host name
+        /// </summary>
         public string ServerHostName { get; set; }
 
+        /// <summary>
+        /// Boot file name; "generic" name or null in DHCPDISCOVER, fully qualified directory-path name in DHCPOFFER.
+        /// </summary>
         public string BootFileName { get; set; }
 
+        /// <summary>
+        /// true if the magic dhcp-cookie is set
+        /// </summary>
         public bool IsDhcp { get; set; }
 
+        /// <summary>
+        /// Optional parameters field
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DhcpOption> Options { get; set; }
 
@@ -85,7 +137,7 @@ namespace PcapDotNet.Packets.Dhcp
         protected override void Write(byte[] buffer, int offset)
         {
             DhcpDatagram.Write(buffer, offset,
-                              MessageType, HardwareType, HardwareAddressLength, Hops, TransactionId, SecondsElapsed, Flags, ClientIpAddress, YourClientIpAddress,
+                              MessageType, HardwareType, HardwareAddressLength, Hops, TransactionId, SecondsElapsed, DhcpFlags, ClientIpAddress, YourClientIpAddress,
                               NextServerIpAddress, RelayAgentIpAddress, ClientHardwareAddress, ServerHostName, BootFileName, IsDhcp, Options);
         }
 
@@ -113,7 +165,7 @@ namespace PcapDotNet.Packets.Dhcp
                    Equals(Hops, other.Hops) &&
                    Equals(TransactionId, other.TransactionId) &&
                    Equals(SecondsElapsed, other.SecondsElapsed) &&
-                   Equals(Flags, other.Flags) &&
+                   Equals(DhcpFlags, other.DhcpFlags) &&
                    Equals(ClientIpAddress, other.ClientIpAddress) &&
                    Equals(YourClientIpAddress, other.YourClientIpAddress) &&
                    Equals(NextServerIpAddress, other.NextServerIpAddress) &&

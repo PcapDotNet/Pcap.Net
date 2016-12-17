@@ -8,6 +8,10 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the name of the client. The name may or may
+    /// not be qualified with the local domain name(see section 3.17 for the
+    /// preferred way to retrieve the domain name). See RFC 1035 for
+    /// character set restrictions.
     /// <pre>
     ///  Code   Len                 Host Name
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -15,52 +19,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
     /// </pre>
     /// </summary>
-    public class DhcpHostNameOption : DhcpOption
+    public class DhcpHostNameOption : DhcpStringOption
     {
-        public DhcpHostNameOption(string hostName) : base(DhcpOptionCode.HostName)
+        /// <summary>
+        /// create new DhcpHostNameOption
+        /// </summary>
+        /// <param name="hostName">Host Name</param>
+        public DhcpHostNameOption(string hostName) : base(hostName, DhcpOptionCode.HostName)
         {
-            HostName = hostName;
         }
 
         internal static DhcpHostNameOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            string hostName = Encoding.ASCII.GetString(data.ReadBytes(offset, len));
-            DhcpHostNameOption option = new DhcpHostNameOption(hostName);
-            offset += option.Length;
-            return option;
+            return Read<DhcpHostNameOption>(data, ref offset, p => new DhcpHostNameOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(HostName));
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(HostName);
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Host Name
+        /// </summary>
         public string HostName
         {
-            get { return _hostName; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(HostName));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(HostName), value.Length, "HostName has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(HostName), value.Length, "HostName has to be less than 256 characters long");
-
-                _hostName = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private string _hostName;
     }
 }

@@ -8,6 +8,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the path-name that contains the client's root
+    /// disk.
     /// <pre>
     ///  Code   Len      Root Disk Pathname
     /// +-----+-----+-----+-----+-----+-----+---
@@ -15,52 +17,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpRootPathOption : DhcpOption
+    public class DhcpRootPathOption : DhcpStringOption
     {
-        public DhcpRootPathOption(string rootPath) : base(DhcpOptionCode.RootPath)
+        /// <summary>
+        /// create new DhcpRootPathOption
+        /// </summary>
+        /// <param name="rootDiskPathname">Root Disk Pathname</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
+        public DhcpRootPathOption(string rootDiskPathname) : base(rootDiskPathname, DhcpOptionCode.RootPath)
         {
-            RootPath = rootPath;
         }
 
         internal static DhcpRootPathOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            string hostName = Encoding.ASCII.GetString(data.ReadBytes(offset, len));
-            DhcpRootPathOption option = new DhcpRootPathOption(hostName);
-            offset += option.Length;
-            return option;
+            return Read<DhcpRootPathOption>(data, ref offset, p => new DhcpRootPathOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// Root Disk Pathname
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
+        public string RootDiskPathname
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(RootPath));
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(RootPath);
-            }
-        }
-
-        public string RootPath
-        {
-            get { return _rootPath; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(RootPath));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(RootPath), value.Length, "RootPath has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(RootPath), value.Length, "RootPath has to be less than 256 characters long");
-
-                _rootPath = value;
-            }
-        }
-
-        private string _rootPath;
     }
 }

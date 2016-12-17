@@ -9,6 +9,10 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client may assume that all
+    /// subnets of the IP network to which the client is connected use the
+    /// same MTU as the subnet of that network to which the client is
+    /// directly connected.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +20,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpAllSubnetsAreLocalOption : DhcpOption
+    public class DhcpAllSubnetsAreLocalOption : DhcpBooleanOption
     {
-        public DhcpAllSubnetsAreLocalOption(bool enabled) : base(DhcpOptionCode.AllSubnetsAreLocal)
+        /// <summary>
+        /// create new AllSubnetsAreLocalOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpAllSubnetsAreLocalOption(bool value) : base(value, DhcpOptionCode.AllSubnetsAreLocal)
         {
         }
 
         internal static DhcpAllSubnetsAreLocalOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP AllSubnetsAreLocal Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP AllSubnetsAreLocal Option has to be 0 or 1");
-            DhcpAllSubnetsAreLocalOption option = new DhcpAllSubnetsAreLocalOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return DhcpBooleanOption.Read(data, ref offset, p => new DhcpAllSubnetsAreLocalOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// True indicates that all subnets share
+        /// the same MTU. False means that the client should assume that
+        /// some subnets of the directly connected network may have smaller MTUs.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

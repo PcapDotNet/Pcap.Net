@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The StreetTalk server option specifies a list of StreetTalk servers
+    /// available to the client.Servers SHOULD be listed in order of
+    /// preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +21,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpStreetTalkServerOption : DhcpAddressListOption
     {
-        public DhcpStreetTalkServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.StreetTalkServer, addresses)
+        /// <summary>
+        /// create new DhcpStreetTalkServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpStreetTalkServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.StreetTalkServer)
         {
         }
 
         internal static DhcpStreetTalkServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpStreetTalkServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpStreetTalkServerOption>(data, ref offset, p => new DhcpStreetTalkServerOption(p));
         }
     }
 }

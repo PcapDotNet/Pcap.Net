@@ -8,7 +8,9 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies the broadcast address in use on the client's
+    /// subnet.
     /// <pre>
     ///  Code   Len     Broadcast Address
     /// +-----+-----+-----+-----+-----+-----+
@@ -16,37 +18,28 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpBroadcastAddressOption : DhcpOption
+    public class DhcpBroadcastAddressOption : DhcpSingleAddressOption
     {
-        public DhcpBroadcastAddressOption(IpV4Address broadcastAddress) : base(DhcpOptionCode.BroadcastAddress)
+        /// <summary>
+        /// create new DhcpBroadcastAddressOption
+        /// </summary>
+        /// <param name="broadcastAddress">Broadcast Address</param>
+        public DhcpBroadcastAddressOption(IpV4Address broadcastAddress) : base(broadcastAddress, DhcpOptionCode.BroadcastAddress)
         {
-            BroadcastAddress = broadcastAddress;
         }
 
         internal static DhcpBroadcastAddressOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-                throw new ArgumentException("Length of a DHCP SubnetMask Option has to be 4");
-            DhcpBroadcastAddressOption option = new DhcpBroadcastAddressOption(data.ReadIpV4Address(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return DhcpSingleAddressOption.Read(data, ref offset, p => new DhcpBroadcastAddressOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, BroadcastAddress, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
+        /// <summary>
+        /// Broadcast Address
+        /// </summary>
         public IpV4Address BroadcastAddress
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The StreetTalk Directory Assistance (STDA) server option specifies a
+    /// list of STDA servers available to the client.Servers SHOULD be
+    /// listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +21,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpStreetTalkDirectoryAssistanceServerOption : DhcpAddressListOption
     {
-        public DhcpStreetTalkDirectoryAssistanceServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.StreetTalkDirectoryAssistanceServer, addresses)
+        /// <summary>
+        /// create new DhcpStreetTalkDirectoryAssistanceServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpStreetTalkDirectoryAssistanceServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.StreetTalkDirectoryAssistanceServer)
         {
         }
 
         internal static DhcpStreetTalkDirectoryAssistanceServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpStreetTalkDirectoryAssistanceServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpStreetTalkDirectoryAssistanceServerOption>(data, ref offset, p => new Options.DhcpStreetTalkDirectoryAssistanceServerOption(p));
         }
     }
 }

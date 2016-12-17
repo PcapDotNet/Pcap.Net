@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The NNTP server option specifies a list of NNTP available to the
+    /// client.Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpNetworkNewsTransportProtocolServerOption : DhcpAddressListOption
     {
-        public DhcpNetworkNewsTransportProtocolServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.NetworkNewsTransportProtocolServer, addresses)
+        /// <summary>
+        /// create new DhcpNetworkNewsTransportProtocolServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpNetworkNewsTransportProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NetworkNewsTransportProtocolServer)
         {
         }
 
         internal static DhcpNetworkNewsTransportProtocolServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpNetworkNewsTransportProtocolServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpNetworkNewsTransportProtocolServerOption>(data, ref offset, p => new Options.DhcpNetworkNewsTransportProtocolServerOption(p));
         }
     }
 }

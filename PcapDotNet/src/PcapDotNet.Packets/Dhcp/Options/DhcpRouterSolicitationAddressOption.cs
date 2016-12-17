@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the address to which the client should transmit
+    /// router solicitation requests.
     /// <pre>
     ///  Code   Len            Address
     /// +-----+-----+-----+-----+-----+-----+
@@ -16,37 +18,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpRouterSolicitationAddressOption : DhcpOption
+    public class DhcpRouterSolicitationAddressOption : DhcpSingleAddressOption
     {
-        public DhcpRouterSolicitationAddressOption(IpV4Address address) : base(DhcpOptionCode.RouterSolicitationAddress)
+        /// <summary>
+        /// create new DhcpRouterSolicitationAddressOption
+        /// </summary>
+        /// <param name="address">Address</param>
+        public DhcpRouterSolicitationAddressOption(IpV4Address address) : base(address, DhcpOptionCode.RouterSolicitationAddress)
         {
-            Address = address;
         }
 
         internal static DhcpRouterSolicitationAddressOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-                throw new ArgumentException("Length of a DHCP RouterSolicitationAddress Option has to be 4");
-            DhcpRouterSolicitationAddressOption option = new DhcpRouterSolicitationAddressOption(data.ReadIpV4Address(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpRouterSolicitationAddressOption>(data, ref offset, p => new DhcpRouterSolicitationAddressOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Address, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Address
+        /// </summary>
         public IpV4Address Address
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

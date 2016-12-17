@@ -8,7 +8,11 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// The subnet mask option specifies the client's subnet mask as per RFC
+    /// 950 [5].
+    /// If both the subnet mask and the router option are specified in a DHCP
+    /// reply, the subnet mask option MUST be first.
     /// <pre>
     ///  Code   Len        Subnet Mask
     /// +-----+-----+-----+-----+-----+-----+
@@ -16,37 +20,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpSubnetMaskOption : DhcpOption
+    public class DhcpSubnetMaskOption : DhcpSingleAddressOption
     {
-        public DhcpSubnetMaskOption(IpV4Address subnetMask) : base(DhcpOptionCode.SubnetMask)
+        /// <summary>
+        /// create new DhcpSubnetMaskOption
+        /// </summary>
+        /// <param name="subnetMask">Subnet Mask></param>
+        public DhcpSubnetMaskOption(IpV4Address subnetMask) : base(subnetMask, DhcpOptionCode.SubnetMask)
         {
-            SubnetMask = subnetMask;
         }
 
         internal static DhcpSubnetMaskOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != IpV4Address.SizeOf)
-                throw new ArgumentException("Length of a DHCP SubnetMask Option has to be 4");
-            DhcpSubnetMaskOption option = new DhcpSubnetMaskOption(data.ReadIpV4Address(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpSubnetMaskOption>(data, ref offset, p => new Options.DhcpSubnetMaskOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, SubnetMask, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return IpV4Address.SizeOf; }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Subnet Mask
+        /// </summary>
         public IpV4Address SubnetMask
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

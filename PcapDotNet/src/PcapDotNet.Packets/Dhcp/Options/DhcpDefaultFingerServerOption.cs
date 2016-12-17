@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The Finger server option specifies a list of Finger available to the
+    /// client.Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpDefaultFingerServerOption : DhcpAddressListOption
     {
-        public DhcpDefaultFingerServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.DefaultFingerServer, addresses)
+        /// <summary>
+        /// create new DhcpDefaultFingerServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpDefaultFingerServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultFingerServer)
         {
         }
 
         internal static DhcpDefaultFingerServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpDefaultFingerServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpDefaultFingerServerOption>(data, ref offset, (p) => new DhcpDefaultFingerServerOption(p));
         }
     }
 }

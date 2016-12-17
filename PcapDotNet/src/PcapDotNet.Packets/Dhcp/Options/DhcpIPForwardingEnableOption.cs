@@ -9,50 +9,38 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether the client should configure its IP
+    /// layer for packet forwarding.
     /// <pre>
-    ///  Code   Len  Type
+    ///  Code   Len  Value
     /// +-----+-----+-----+
-    /// |  15 |  1  | 0/1 |
+    /// |  19 |  1  | 0/1 |
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpIPForwardingEnableOption : DhcpOption
+    public class DhcpIPForwardingEnableOption : DhcpBooleanOption
     {
-        public DhcpIPForwardingEnableOption(bool value) : base(DhcpOptionCode.IPForwardingEnable)
+        /// <summary>
+        /// create new DhcpIPForwardingEnableOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpIPForwardingEnableOption(bool value) : base(value, DhcpOptionCode.IPForwardingEnable)
         {
-            Value = value;
         }
 
         internal static DhcpIPForwardingEnableOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP MessageTypeOption has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a  DHCP MessageTypeOption has to be 0 or 1");
-            DhcpIPForwardingEnableOption option = new DhcpIPForwardingEnableOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpIPForwardingEnableOption>(data, ref offset, p => new DhcpIPForwardingEnableOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// A value of false means disable IP forwarding, and a value of true means enable IP forwarding.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

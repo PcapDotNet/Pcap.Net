@@ -9,6 +9,7 @@ using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PcapDotNet.Packets;
+using PcapDotNet.Packets.Dhcp;
 using PcapDotNet.Packets.Dns;
 using PcapDotNet.Packets.Ethernet;
 using PcapDotNet.Packets.Gre;
@@ -400,14 +401,48 @@ namespace PcapDotNet.Core.Test
                 return;
             }
 
-            DnsLayer dnsLayer = random.NextDnsLayer();
-            layers.Add(dnsLayer);
+            switch (random.Next(0, 2))
+            {
+                case 0:
+                    {
+                        DnsLayer dnsLayer = random.NextDnsLayer();
+                        layers.Add(dnsLayer);
 
-            ushort specialPort = (ushort)(random.NextBool() ? 53 : 5355);
-            if (dnsLayer.IsQuery)
-                udpLayer.DestinationPort = specialPort;
-            else
-                udpLayer.SourcePort = specialPort;
+                        ushort specialPort = (ushort)(random.NextBool() ? 53 : 5355);
+                        if (dnsLayer.IsQuery)
+                            udpLayer.DestinationPort = specialPort;
+                        else
+                            udpLayer.SourcePort = specialPort;
+                        break;
+                    }
+
+                case 1:
+                    {
+                        DhcpLayer dhcpLayer = random.NextDhcpLayer();
+                        layers.Add(dhcpLayer);
+
+                        if (random.NextBool())
+                        {
+                            udpLayer.SourcePort = (ushort)(random.NextBool() ? 67 : 68);
+                        }
+                        else
+                        {
+                            udpLayer.DestinationPort = 5355;
+                        }
+                        if (random.NextBool())
+                        {
+                            udpLayer.SourcePort = (ushort)(random.NextBool() ? 67 : 68);
+                        }
+                        else
+                        {
+                            udpLayer.SourcePort = 5355;
+                        }
+                        break;
+                    }
+
+                default:
+                    throw new InvalidOperationException("Invalid value.");
+            }
         }
 
         private static void CreateRandomTcpPayload(Random random, TcpLayer tcpLayer, List<ILayer> layers)

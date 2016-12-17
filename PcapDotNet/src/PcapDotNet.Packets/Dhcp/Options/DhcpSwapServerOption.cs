@@ -9,6 +9,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This specifies the IP address of the client's swap server.
     /// <pre>
     ///  Code   Len    Swap Server Address
     /// +-----+-----+-----+-----+-----+-----+
@@ -16,37 +17,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpSwapServerOption : DhcpOption
+    public class DhcpSwapServerOption : DhcpSingleAddressOption
     {
-        public DhcpSwapServerOption(IpV4Address swapServer) : base(DhcpOptionCode.SwapServer)
+        /// <summary>
+        /// create new DhcpSwapServerOption
+        /// </summary>
+        /// <param name="swapServerAddress">Swap Server Address</param>
+        public DhcpSwapServerOption(IpV4Address swapServerAddress) : base(swapServerAddress, DhcpOptionCode.SwapServer)
         {
-            SwapServer = swapServer;
         }
 
         internal static DhcpSwapServerOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-                throw new ArgumentException("Length of a DHCP SwapServer Option has to be 4");
-            DhcpSwapServerOption option = new DhcpSwapServerOption(data.ReadIpV4Address(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpSwapServerOption>(data, ref offset, p => new DhcpSwapServerOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// Swap Server Address
+        /// </summary>
+        public IpV4Address SwapServerAddress
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, SwapServer, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
-        public IpV4Address SwapServer
-        {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

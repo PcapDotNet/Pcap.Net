@@ -15,219 +15,153 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        /// +-----+
-        /// |  0  |
-        /// +-----+
-        /// </pre>
+        /// The pad option can be used to cause subsequent fields to align on
+        /// word boundaries.
         /// </summary>
         Pad = 0,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        /// +-----+
-        /// | 255 |
-        /// +-----+
-        /// </pre>
+        /// The end option marks the end of valid information in the vendor field.
         /// </summary>
         End = 255,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len        Subnet Mask
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  1  |  4  |  m1 |  m2 |  m3 |  m4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// The subnet mask option specifies the client's subnet mask as per RFC
+        /// 950 [5].
+        /// If both the subnet mask and the router option are specified in a DHCP
+        /// reply, the subnet mask option MUST be first.
         /// </summary>
         SubnetMask = 1,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len        Time Offset
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  1  |  4  |  n1 |  n2 |  n3 |  n4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// The time offset field specifies the offset of the client's subnet in
+        /// seconds from Coordinated Universal Time(UTC).
         /// </summary>
         TimeOffset = 2,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  3  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The router option specifies a list of IP addresses for routers on the
+        /// client's subnet. Routers SHOULD be listed in order of preference.
         /// </summary>
         Router = 3,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  4  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The time server option specifies a list of RFC 868 [6] time servers
+        /// available to the client.Servers SHOULD be listed in order of
+        /// preference.
         /// </summary>
         TimeServer = 4,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  5  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The name server option specifies a list of IEN 116 [7] name servers
+        /// available to the client.Servers SHOULD be listed in order of preference.
         /// </summary>
         NameServer = 5,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  6  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The domain name server option specifies a list of Domain Name System
+        /// (STD 13, RFC 1035 [8]) name servers available to the client. Servers
+        /// SHOULD be listed in order of preference.
         /// </summary>
         DomainNameServerServer = 6,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  7  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The log server option specifies a list of MIT-LCS UDP log servers
+        /// available to the client
         /// </summary>
         LogServer = 7,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  8  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The cookie server option specifies a list of RFC 865 [9] cookie
+        /// servers available to the client. Servers SHOULD be listed in order
+        /// of preference.
         /// </summary>
         CookieServer = 8,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  9  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The LPR server option specifies a list of RFC 1179 [10] line printer
+        /// servers available to the client. Servers SHOULD be listed in order
+        /// of preference.
         /// </summary>
-        LPRServer = 9,
+        LprServer = 9,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  10 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The Impress server option specifies a list of Imagen Impress servers
+        /// available to the client.Servers SHOULD be listed in order of
+        /// preference.
         /// </summary>
         ImpressServer = 10,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  11 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies a list of RFC 887 [11] Resource Location
+        /// servers available to the client.Servers SHOULD be listed in order
+        /// of preference.
         /// </summary>
         ResourceLocationServer = 11,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len                 Host Name
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  12 |  n  |  h1 |  h2 |  h3 |  h4 |  h5 |  h6 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies the name of the client. The name may or may
+        /// not be qualified with the local domain name(see section 3.17 for the
+        /// preferred way to retrieve the domain name). See RFC 1035 for
+        /// character set restrictions.
         /// </summary>
         HostName = 12,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len   File Size
-        /// +-----+-----+-----+-----+
-        /// |  13 |  2  |  l1 |  l2 |
-        /// +-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the length in 512-octet blocks of the default
+        /// boot image for the client.
         /// </summary>
         BootFileSize = 13,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      Dump File Pathname
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  14 |  n  |  n1 |  n2 |  n3 |  n4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies the path-name of a file to which the client's
+        /// core image should be dumped in the event the client crashes.
         /// </summary>
         MeritDumpFile = 14,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len        Domain Name
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  15 |  n  |  d1 |  d2 |  d3 |  d4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies the domain name that client should use when
+        /// resolving hostnames via the Domain Name System.
         /// </summary>
         DomainName = 15,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len    Swap Server Address
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  16 |  4  |  a1 |  a2 |  a3 |  a4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This specifies the IP address of the client's swap server.
         /// </summary>
         SwapServer = 16,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      Root Disk Pathname
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  17 |  n  |  n1 |  n2 |  n3 |  n4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies the path-name that contains the client's root
+        /// disk.
         /// </summary>
         RootPath = 17,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      Extensions Pathname
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  18 |  n  |  n1 |  n2 |  n3 |  n4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// A string to specify a file, retrievable via TFTP, which contains
+        /// information which can be interpreted in the same way as the 64-octet
+        /// vendor-extension field within the BOOTP response, with the following
+        /// exceptions:
+        /// - the length of the file is unconstrained;
+        /// - all references to Tag 18 (i.e., instances of the BOOTP Extensions Path field) within the file are ignored.
         /// </summary>
         ExtensionsPath = 18,
 
@@ -237,178 +171,117 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  19 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether the client should configure its IP
+        /// layer for packet forwarding.
         /// </summary>
         IPForwardingEnable = 19,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  20 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether the client should configure its IP
+        /// layer to allow forwarding of datagrams with non-local source routes.
         /// </summary>
         NonLocalSourceRoutingEnable = 20,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1                  Mask 1
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-        /// |  21 |  n  |  a1 |  a2 |  a3 |  a4 |  m1 |  m2 |  m3 |  m4 |
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-        ///         Address 2                  Mask 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// |  a1 |  a2 |  a3 |  a4 |  m1 |  m2 |  m3 |  m4 | ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies policy filters for non-local source routing.
+        /// The filters consist of a list of IP addresses and masks which specify
+        /// destination/mask pairs with which to filter incoming source routes.
+        /// Any source routed datagram whose next-hop address does not match one
+        /// of the filters should be discarded by the client.
         /// </summary>
         PolicyFilter = 21,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      Size
-        /// +-----+-----+-----+-----+
-        /// |  22 |  2  |  s1 |  s2 |
-        /// +-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the maximum size datagram that the client
+        /// should be prepared to reassemble.unsigned integer.
         /// </summary>
         MaximumDatagramReassemblySize = 22,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len   TTL
-        /// +-----+-----+-----+
-        /// |  23 |  1  | ttl |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the default time-to-live that the client should
+        /// use on outgoing datagrams.
         /// </summary>
-        DefaultIPTimeToLive = 23,
+        DefaultIpTimeToLive = 23,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len           Timeout
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  24 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the timeout (in seconds) to use when aging Path
+        /// MTU values discovered by the mechanism defined in RFC 1191 [12].
         /// </summary>
-        PathMTUAgingTimeout = 24,
+        PathMtuAgingTimeout = 24,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len     Size 1      Size 2
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  25 |  n  |  s1 |  s2 |  s1 |  s2 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies a table of MTU sizes to use when performing
+        /// Path MTU Discovery as defined in RFC 1191.  The table is formatted as
+        /// a list of 16-bit unsigned integers, ordered from smallest to largest.
         /// </summary>
-        PathMTUPlateauTable = 25,
+        PathMtuPlateauTable = 25,
 
         #endregion 4. IP Layer Parameters per Host
 
         #region 5. IP Layer Parameters per Interface
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len      MTU
-        /// +-----+-----+-----+-----+
-        /// |  26 |  2  |  m1 |  m2 |
-        /// +-----+-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the MTU to use on this interface.
         /// </summary>
-        InterfaceMTU = 26,
+        InterfaceMtu = 26,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  27 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client may assume that all
+        /// subnets of the IP network to which the client is connected use the
+        /// same MTU as the subnet of that network to which the client is
+        /// directly connected.
         /// </summary>
         AllSubnetsAreLocal = 27,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len     Broadcast Address
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  28 |  4  |  b1 |  b2 |  b3 |  b4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the broadcast address in use on the client's
+        /// subnet.
         /// </summary>
         BroadcastAddress = 28,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  29 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client should perform subnet
+        /// mask discovery using ICMP.
         /// </summary>
         PerformMaskDiscovery = 29,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  30 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client should respond to
+        /// subnet mask requests using ICMP.
         /// </summary>
         MaskSupplier = 30,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  31 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client should solicit
+        /// routers using the Router Discovery mechanism defined in RFC 1256.
         /// </summary>
         PerformRouterDiscovery = 31,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len            Address
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  32 |  4  |  a1 |  a2 |  a3 |  a4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the address to which the client should transmit
+        /// router solicitation requests.
         /// </summary>
         RouterSolicitationAddress = 32,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Destination 1           Router 1
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-        /// |  33 |  n  |  d1 |  d2 |  d3 |  d4 |  r1 |  r2 |  r3 |  r4 |
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-        ///         Destination 2           Router 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// |  d1 |  d2 |  d3 |  d4 |  r1 |  r2 |  r3 |  r4 | ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies a list of static routes that the client should
+        /// install in its routing cache.If multiple routes to the same
+        /// destination are specified, they are listed in descending order of
+        /// priority.
         /// </summary>
         StaticRoute = 33,
 
@@ -418,34 +291,22 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  34 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client should negotiate the
+        /// use of trailers(RFC 893 [14]) when using the ARP protocol.
         /// </summary>
         TrailerEncapsulation = 34,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len           Time
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  35 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the timeout in seconds for ARP cache entries.
         /// </summary>
-        ARPCacheTimeout = 35,
+        ArpCacheTimeout = 35,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  36 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies whether or not the client should use Ethernet
+        /// Version 2 (RFC 894 [15]) or IEEE 802.3 (RFC 1042 [16]) encapsulation
+        /// if the interface is an Ethernet.
         /// </summary>
         EthernetEncapsulation = 36,
 
@@ -455,36 +316,25 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  37 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies the default TTL that the client should use when
+        /// sending TCP segments.
         /// </summary>
-        TCPDefaultTTL = 37,
+        TcpDefaultTtl = 37,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len           Time
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  38 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the interval (in seconds) that the client TCP
+        /// should wait before sending a keepalive message on a TCP connection.
         /// </summary>
-        TCPKeepaliveInterval = 38,
+        TcpKeepaliveInterval = 38,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  39 |  1  | 0/1 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option specifies the whether or not the client should send TCP
+        /// keepalive messages with a octet of garbage for compatibility with
+        /// older implementations.
         /// </summary>
-        TCPKeepaliveGarbage = 39,
+        TcpKeepaliveGarbage = 39,
 
         #endregion 7. TCP Parameters
 
@@ -492,232 +342,161 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      NIS Domain Name
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  40 |  n  |  n1 |  n2 |  n3 |  n4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies the name of the client's NIS [17] domain.
         /// </summary>
         NetworkInformationServiceDomain = 40,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  41 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies a list of IP addresses indicating NIS servers
+        /// available to the client.Servers SHOULD be listed in order of
         /// </summary>
         NetworkInformationServers = 41,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  42 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies a list of IP addresses indicating NTP [18]
+        /// servers available to the client.Servers SHOULD be listed in order
+        /// of preference.
         /// </summary>
         NetworkTimeProtocolServers = 42,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        /// Code   Len   Vendor-specific information
-        /// +-----+-----+-----+-----+---
-        /// |  43 |  n  |  i1 |  i2 | ...
-        /// +-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used by clients and servers to exchange vendor-
+        /// specific information. The information is an opaque object of n
+        /// octets, presumably interpreted by vendor-specific code on the clients
+        /// and servers. The definition of this information is vendor specific.
+        /// The vendor is indicated in the vendor class identifier option.
+        /// Servers not equipped to interpret the vendor-specific information
+        /// sent by a client MUST ignore it(although it may be reported).
+        /// Clients which do not receive desired vendor-specific information
+        /// SHOULD make an attempt to operate without it, although they may do so
+        /// (and announce they are doing so) in a degraded mode.
         /// </summary>
         VendorSpecificInformation = 43,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len           Address 1              Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----
-        /// |  44 |  n  |  a1 |  a2 |  a3 |  a4 |  b1 |  b2 |  b3 |  b4 | ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----
-        /// </pre>
+        /// The NetBIOS name server (NBNS) option specifies a list of RFC 1001/1002 [19] [20]
+        /// NBNS name servers listed in order of preference.
         /// </summary>
-        NetBIOSOverTCPIPNameServer = 44,
+        NetBiosOverTcpIpNameServer = 44,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len           Address 1              Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----
-        /// |  45 |  n  |  a1 |  a2 |  a3 |  a4 |  b1 |  b2 |  b3 |  b4 | ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----
-        /// </pre>
+        /// The NetBIOS datagram distribution server (NBDD) option specifies a
+        /// list of RFC 1001/1002 NBDD servers listed in order of preference.
         /// </summary>
-        NetBIOSOverTCPIPDatagramDistributionServer = 45,
+        NetBiosOverTcpIpDatagramDistributionServer = 45,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Node Type
-        /// +-----+-----+-----------+
-        /// |  46 |  1  |   flags   |
-        /// +-----+-----+-----------+
-        /// </pre>
+        /// The NetBIOS node type option allows NetBIOS over TCP/IP clients which
+        /// are configurable to be configured as described in RFC 1001/1002.
         /// </summary>
-        NetBIOSOverTCPIPNodeType = 46,
+        NetBiosOverTcpIpNodeType = 46,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        /// Code   Len       NetBIOS Scope
-        /// +-----+-----+-----+-----+-----+-----+----
-        /// |  47 |  n  |  s1 |  s2 |  s3 |  s4 | ...
-        /// +-----+-----+-----+-----+-----+-----+----
-        /// </pre>
+        /// The NetBIOS scope option specifies the NetBIOS over TCP/IP scope
+        /// parameter for the client as specified in RFC 1001/1002.
         /// </summary>
-        NetBIOSOverTCPIPScope = 47,
+        NetBiosOverTcpIpScope = 47,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// |  48 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |   ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies a list of X Window System [21] Font servers
+        /// available to the client. Servers SHOULD be listed in order of
+        /// preference.
         /// </summary>
         XWindowSystemFontServer = 48,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// |  49 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |   ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies a list of IP addresses of systems that are
+        /// running the X Window System Display Manager and are available to the
+        /// client.
         /// </summary>
         XWindowSystemDisplayManager = 49,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len      NIS Client Domain Name
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// |  64 |  n  |  n1 |  n2 |  n3 |  n4 | ...
-        /// +-----+-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option specifies the name of the client's NIS+ [17] domain.
         /// </summary>
         NetworkInformationServicePlusDomain = 64,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// |  65 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies a list of IP addresses indicating NIS+ servers
+        /// available to the client.Servers SHOULD be listed in order of
+        /// preference.
         /// </summary>
         NetworkInformationServicePlusServers = 65,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code Len    Home Agent Addresses (zero or more)
-        /// +-----+-----+-----+-----+-----+-----+--
-        /// | 68  |  n  | a1  | a2  | a3  | a4  | ...
-        /// +-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// This option specifies a list of IP addresses indicating mobile IP
+        /// home agents available to the client. Agents SHOULD be listed in
+        /// order of preference.
         /// </summary>
         MobileIPHomeAgent = 68,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 69  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        ///  The SMTP server option specifies a list of SMTP servers available to
+        ///  the client. Servers SHOULD be listed in order of preference.
         /// </summary>
         SimpleMailTransportProtocolServer = 69,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 70  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The POP3 server option specifies a list of POP3 available to the
+        /// client.Servers SHOULD be listed in order of preference.
         /// </summary>
         PostOfficeProtocolServer = 70,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 71  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The NNTP server option specifies a list of NNTP available to the
+        /// client.Servers SHOULD be listed in order of preference.
         /// </summary>
         NetworkNewsTransportProtocolServer = 71,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 72  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The WWW server option specifies a list of WWW available to the
+        /// client.Servers SHOULD be listed in order of preference.
         /// </summary>
         DefaultWorldWideWebServer = 72,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 73  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The Finger server option specifies a list of Finger available to the
+        /// client.Servers SHOULD be listed in order of preference.
         /// </summary>
         DefaultFingerServer = 73,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 74  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The IRC server option specifies a list of IRC available to the
+        /// client.Servers SHOULD be listed in order of preference.
         /// </summary>
         DefaultInternetRelayChatServer = 74,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 75  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The StreetTalk server option specifies a list of StreetTalk servers
+        /// available to the client.Servers SHOULD be listed in order of
+        /// preference.
         /// </summary>
         StreetTalkServer = 75,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Address 1               Address 2
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// | 76  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
-        /// +-----+-----+-----+-----+-----+-----+-----+-----+--
-        /// </pre>
+        /// The StreetTalk Directory Assistance (STDA) server option specifies a
+        /// list of STDA servers available to the client.Servers SHOULD be
+        /// listed in order of preference.
         /// </summary>
         StreetTalkDirectoryAssistanceServer = 76,
 
@@ -727,155 +506,123 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len          Address
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  50 |  4  |  a1 |  a2 |  a3 |  a4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option is used in a client request (DHCPDISCOVER) to allow the
+        /// client to request that a particular IP address be assigned.
         /// </summary>
         RequestedIPAddress = 50,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len         Lease Time
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  51 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option is used in a client request (DHCPDISCOVER or DHCPREQUEST)
+        /// to allow the client to request a lease time for the IP address. In a
+        /// server reply(DHCPOFFER), a DHCP server uses this option to specify
+        /// the lease time it is willing to offer.
         /// </summary>
         IPAddressLeaseTime = 51,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Value
-        /// +-----+-----+-----+
-        /// |  52 |  1  |1/2/3|
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option is used to indicate that the DHCP 'sname' or 'file'
+        /// fields are being overloaded by using them to carry DHCP options.A
+        /// DHCP server inserts this option if the returned parameters will
+        /// exceed the usual space allotted for options.
+        /// If this option is present, the client interprets the specified
+        /// additional fields after it concludes interpretation of the standard
+        /// option fields.
         /// </summary>
         OptionOverload = 52,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code Len    TFTP server
-        /// +-----+-----+-----+-----+-----+---
-        /// | 66  |  n  |  c1 |  c2 |  c3 | ...
-        /// +-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used to identify a TFTP server when the 'sname' field
+        /// in the DHCP header has been used for DHCP options.
         /// </summary>
-        TFTPServerName = 66,
+        TfptServerName = 66,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code Len    Bootfile name
-        /// +-----+-----+-----+-----+-----+---
-        /// | 67  |  n  |  c1 |  c2 |  c3 | ...
-        /// +-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used to identify a bootfile when the 'file' field in
+        /// the DHCP header has been used for DHCP options.
         /// </summary>
         BootfileName = 67,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len  Type
-        /// +-----+-----+-----+
-        /// |  53 |  1  | 1-7 |
-        /// +-----+-----+-----+
-        /// </pre>
+        /// This option is used to convey the type of the DHCP message.
         /// </summary>
         MessageType = 53,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len            Address
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  54 |  4  |  a1 |  a2 |  a3 |  a4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// This option is used in DHCPOFFER and DHCPREQUEST messages, and may
+        /// optionally be included in the DHCPACK and DHCPNAK messages.DHCP
+        /// servers include this option in the DHCPOFFER in order to allow the
+        /// client to distinguish between lease offers.  DHCP clients use the
+        /// contents of the 'server identifier' field as the destination address
+        /// for any DHCP messages unicast to the DHCP server.  DHCP clients also
+        /// indicate which of several lease offers is being accepted by including
+        /// this option in a DHCPREQUEST message.
         /// </summary>
         ServerIdentifier = 54,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        /// Code   Len   Option Codes
-        /// +-----+-----+-----+-----+---
-        /// |  55 |  n  |  c1 |  c2 | ...
-        /// +-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used by a DHCP client to request values for specified
+        /// configuration parameters.The list of requested parameters is
+        /// specified as n octets, where each octet is a valid DHCP option code
+        /// as defined in this document.
+        /// The client MAY list the options in order of preference.The DHCP
+        /// server is not required to return the options in the requested order,
+        /// but MUST try to insert the requested options in the order requested
+        /// by the client.
         /// </summary>
         ParameterRequestList = 55,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len     Text
-        /// +-----+-----+-----+-----+---
-        /// |  56 |  n  |  c1 |  c2 | ...
-        /// +-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used by a DHCP server to provide an error message to a
+        /// DHCP client in a DHCPNAK message in the event of a failure. A client
+        /// may use this option in a DHCPDECLINE message to indicate the why the
+        /// client declined the offered parameters.
         /// </summary>
         Message = 56,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len     Length
-        /// +-----+-----+-----+-----+
-        /// |  57 |  2  |  l1 |  l2 |
-        /// +-----+-----+-----+-----+
-        /// </pre>
+        /// This option specifies the maximum length DHCP message that it is
+        /// willing to accept. A client may use the maximum DHCP message size option in
+        /// DHCPDISCOVER or DHCPREQUEST messages, but should not use the option
+        /// in DHCPDECLINE messages.
         /// </summary>
         MaximumDhcpMessageSize = 57,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len         T1 Interval
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  58 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the time interval from address assignment until
+        /// the client transitions to the RENEWING state.
         /// </summary>
         RenewalTimeValue = 58,
 
         /// <summary>
-        /// RFC 2132
-        /// <pre>
-        ///  Code   Len         T1 Interval
-        /// +-----+-----+-----+-----+-----+-----+
-        /// |  5859 |  4  |  t1 |  t2 |  t3 |  t4 |
-        /// +-----+-----+-----+-----+-----+-----+
-        /// </pre>
+        /// RFC 2132.
+        /// This option specifies the time interval from address assignment until
+        /// the client transitions to the REBINDING state.
         /// </summary>
         RebindingTimeValue = 59,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len   Vendor class Identifier
-        /// +-----+-----+-----+-----+---
-        /// |  60 |  n  |  i1 |  i2 | ...
-        /// +-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used by DHCP clients to optionally identify the vendor
+        /// type and configuration of a DHCP client.
         /// </summary>
         VendorClassidentifier = 60,
 
         /// <summary>
         /// RFC 2132.
-        /// <pre>
-        ///  Code   Len   Type  Client-Identifier
-        /// +-----+-----+-----+-----+-----+---
-        /// |  61 |  n  |  t1 |  i1 |  i2 | ...
-        /// +-----+-----+-----+-----+-----+---
-        /// </pre>
+        /// This option is used by DHCP clients to specify their unique
+        /// identifier.DHCP servers use this value to index their database of
+        /// address bindings.  This value is expected to be unique for all
+        /// clients in an administrative domain.
         /// </summary>
         ClientIdentifier = 61,
 

@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The cookie server option specifies a list of RFC 865 [9] cookie
+    /// servers available to the client.Servers SHOULD be listed in order
+    /// of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +21,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpCookieServerOption : DhcpAddressListOption
     {
-        public DhcpCookieServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.CookieServer, addresses)
+        /// <summary>
+        /// create new DhcpCookieServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpCookieServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.CookieServer)
         {
         }
 
         internal static DhcpCookieServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpCookieServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpCookieServerOption>(data, ref offset, (p) => new DhcpCookieServerOption(p));
         }
     }
 }

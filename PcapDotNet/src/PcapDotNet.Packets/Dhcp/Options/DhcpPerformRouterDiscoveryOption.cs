@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client should solicit
+    /// routers using the Router Discovery mechanism defined in RFC 1256.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +18,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpPerformRouterDiscoveryOption : DhcpOption
+    public class DhcpPerformRouterDiscoveryOption : DhcpBooleanOption
     {
-        public DhcpPerformRouterDiscoveryOption(bool enabled) : base(DhcpOptionCode.PerformRouterDiscovery)
+        /// <summary>
+        /// create new DhcpPerformRouterDiscoveryOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpPerformRouterDiscoveryOption(bool value) : base(value, DhcpOptionCode.PerformRouterDiscovery)
         {
         }
 
         internal static DhcpPerformRouterDiscoveryOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP PerformRouterDiscovery Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP PerformRouterDiscovery Option has to be 0 or 1");
-            DhcpPerformRouterDiscoveryOption option = new DhcpPerformRouterDiscoveryOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpPerformRouterDiscoveryOption>(data, ref offset, p => new DhcpPerformRouterDiscoveryOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// A value of false indicates that the client should not perform
+        /// router discovery. A value of true means that the client should perform
+        /// router discovery.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

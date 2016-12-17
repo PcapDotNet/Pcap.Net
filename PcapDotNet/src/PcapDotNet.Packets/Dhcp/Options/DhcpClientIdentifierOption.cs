@@ -8,6 +8,10 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option is used by DHCP clients to specify their unique
+    /// identifier.DHCP servers use this value to index their database of
+    /// address bindings.  This value is expected to be unique for all
+    /// clients in an administrative domain.
     /// <pre>
     ///  Code   Len   Type  Client-Identifier
     /// +-----+-----+-----+-----+-----+---
@@ -17,9 +21,14 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpClientIdentifierOption : DhcpOption
     {
+        /// <summary>
+        /// create new DhcpClientIdentifierOption
+        /// </summary>
+        /// <param name="type">Type </param>
+        /// <param name="clientIdentifier">Client-Identifier</param>
         public DhcpClientIdentifierOption(byte type, DataSegment clientIdentifier) : base(DhcpOptionCode.ClientIdentifier)
         {
-            Type = type;
+            ClientIdentifierType = type;
             ClientIdentifier = clientIdentifier;
         }
 
@@ -34,10 +43,14 @@ namespace PcapDotNet.Packets.Dhcp.Options
         internal override void Write(byte[] buffer, ref int offset)
         {
             base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Type);
+            buffer.Write(ref offset, ClientIdentifierType);
             buffer.Write(ref offset, ClientIdentifier);
         }
 
+        /// <summary>
+        /// RFC 2132.
+        /// Value of Length-Field
+        /// </summary>
         public override byte Length
         {
             get
@@ -46,12 +59,20 @@ namespace PcapDotNet.Packets.Dhcp.Options
             }
         }
 
-        public byte Type
+        /// <summary>
+        /// RFC 2132.
+        /// Type
+        /// </summary>
+        public byte ClientIdentifierType
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// RFC 2132.
+        /// Client-Identifier
+        /// </summary>
         public DataSegment ClientIdentifier
         {
             get { return _clientIdentifier; }
@@ -59,15 +80,15 @@ namespace PcapDotNet.Packets.Dhcp.Options
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException(nameof(ClientIdentifier));
+                    throw new ArgumentNullException(nameof(value));
                 }
                 if (value.Length < 1)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(ClientIdentifier), value.Length, "ClientIdentifier.Length has to be greater than 0");
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Length, "ClientIdentifier.Length has to be greater than 0");
                 }
-                if (value.Length > byte.MaxValue - 1)
+                if (value.Length >= byte.MaxValue - 1)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(ClientIdentifier), value.Length, "ClientIdentifier.Length has to be less than 255");
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Length, "ClientIdentifier.Length has to be less than 254");
                 }
                 _clientIdentifier = value;
             }

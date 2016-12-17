@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the length in 512-octet blocks of the default
+    /// boot image for the client.
     /// <pre>
     ///  Code   Len   File Size
     /// +-----+-----+-----+-----+
@@ -16,41 +18,28 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpBootFileSizeOption : DhcpOption
+    public class DhcpBootFileSizeOption : DhcpUShortOption
     {
-        public DhcpBootFileSizeOption(ushort fileSize) : base(DhcpOptionCode.BootFileSize)
+        /// <summary>
+        /// create new DhcpBootFileSizeOption
+        /// </summary>
+        /// <param name="fileSize">File Size</param>
+        public DhcpBootFileSizeOption(ushort fileSize) : base(fileSize, DhcpOptionCode.BootFileSize)
         {
-            FileSize = fileSize;
         }
 
         internal static DhcpBootFileSizeOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 2)
-                throw new ArgumentException("Length of a DHCP BootFileSize Option has to be 2");
-            DhcpBootFileSizeOption option = new DhcpBootFileSizeOption(data.ReadUShort(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return DhcpUShortOption.Read(data, ref offset, p => new DhcpBootFileSizeOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, FileSize, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 2;
-            }
-        }
-
+        /// <summary>
+        /// File Size
+        /// </summary>
         public ushort FileSize
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

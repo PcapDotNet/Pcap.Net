@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client should negotiate the
+    /// use of trailers (RFC 893 [14]) when using the ARP protocol.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,43 +18,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpTrailerEncapsulationOption : DhcpOption
+    public class DhcpTrailerEncapsulationOption : DhcpBooleanOption
     {
-        public DhcpTrailerEncapsulationOption(bool enabled) : base(DhcpOptionCode.TrailerEncapsulation)
+        /// <summary>
+        /// create new DhcpTrailerEncapsulationOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpTrailerEncapsulationOption(bool value) : base(value, DhcpOptionCode.TrailerEncapsulation)
         {
-            Value = enabled;
         }
 
         internal static DhcpTrailerEncapsulationOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP TrailerEncapsulation Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP TrailerEncapsulation Option has to be 0 or 1");
-            DhcpTrailerEncapsulationOption option = new DhcpTrailerEncapsulationOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpTrailerEncapsulationOption>(data, ref offset, p => new DhcpTrailerEncapsulationOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Value.
+        /// A value of false indicates that the client should not attempt to use trailers. A
+        /// value of true means that the client should attempt to use trailers.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

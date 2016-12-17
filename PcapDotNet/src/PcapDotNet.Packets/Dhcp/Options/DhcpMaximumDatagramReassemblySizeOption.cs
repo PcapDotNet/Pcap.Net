@@ -8,6 +8,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the maximum size datagram that the client
+    /// should be prepared to reassemble.unsigned integer.
     /// <pre>
     ///  Code   Len      Size
     /// +-----+-----+-----+-----+
@@ -15,43 +17,38 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpMaximumDatagramReassemblySizeOption : DhcpOption
+    public class DhcpMaximumDatagramReassemblySizeOption : DhcpUShortOption
     {
-        public DhcpMaximumDatagramReassemblySizeOption() : base(DhcpOptionCode.MaximumDatagramReassemblySize)
-        {
-        }
+        private const ushort MIN_SIZE = 576;
 
-        public DhcpMaximumDatagramReassemblySizeOption(ushort size) : this()
+        /// <summary>
+        /// create new DhcpMaximumDatagramReassemblySizeOption
+        /// </summary>
+        /// <param name="size">Size</param>
+        public DhcpMaximumDatagramReassemblySizeOption(ushort size) : base(size, DhcpOptionCode.MaximumDatagramReassemblySize)
         {
-            Size = size;
+            if (size < MIN_SIZE)
+                throw new ArgumentOutOfRangeException(nameof(size), size, "Minimum value of Size is " + MIN_SIZE);
         }
 
         internal static DhcpMaximumDatagramReassemblySizeOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 2)
-            {
-                throw new ArgumentException("Length of a DHCP MaximumDatagramReassemblySize Option has to be 2");
-            }
-            DhcpMaximumDatagramReassemblySizeOption option = new DhcpMaximumDatagramReassemblySizeOption(data.ReadUShort(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpMaximumDatagramReassemblySizeOption>(data, ref offset, p => new DhcpMaximumDatagramReassemblySizeOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Size, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 2; }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Size
+        /// </summary>
         public ushort Size
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set
+            {
+                if (value < MIN_SIZE)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Minimum value of Size is " + MIN_SIZE);
+                InternalValue = value;
+            }
         }
     }
 }

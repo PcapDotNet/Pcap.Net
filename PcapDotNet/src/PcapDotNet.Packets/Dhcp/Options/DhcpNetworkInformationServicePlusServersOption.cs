@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies a list of IP addresses indicating NIS+ servers
+    /// available to the client.Servers SHOULD be listed in order of
+    /// preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +21,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpNetworkInformationServicePlusServersOption : DhcpAddressListOption
     {
-        public DhcpNetworkInformationServicePlusServersOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.NetworkInformationServicePlusServers, addresses)
+        /// <summary>
+        /// create new DhcpNetworkInformationServicePlusServersOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpNetworkInformationServicePlusServersOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NetworkInformationServicePlusServers)
         {
         }
 
         internal static DhcpNetworkInformationServicePlusServersOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpNetworkInformationServicePlusServersOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpNetworkInformationServicePlusServersOption>(data, ref offset, p => new DhcpNetworkInformationServicePlusServersOption(p));
         }
     }
 }

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies the time interval from address assignment until
+    /// the client transitions to the RENEWING state.
     /// <pre>
     ///  Code   Len         T1 Interval
     /// +-----+-----+-----+-----+-----+-----+
@@ -15,39 +17,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpRenewalTimeValueOption : DhcpOption
+    public class DhcpRenewalTimeValueOption : DhcpUIntOption
     {
-        public DhcpRenewalTimeValueOption(uint interval) : base(DhcpOptionCode.RenewalTimeValue)
+        /// <summary>
+        /// DhcpRenewalTimeValueOption
+        /// </summary>
+        /// <param name="t1Interval"></param>
+        public DhcpRenewalTimeValueOption(uint t1Interval) : base(t1Interval, DhcpOptionCode.RenewalTimeValue)
         {
-            Interval = interval;
         }
 
         internal static DhcpRenewalTimeValueOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-            {
-                throw new ArgumentException("Length of a DHCP RenewalTimeValue Option has to be 4");
-            }
-            DhcpRenewalTimeValueOption option = new DhcpRenewalTimeValueOption(data.ReadUInt(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpRenewalTimeValueOption>(data, ref offset, p => new DhcpRenewalTimeValueOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
+        /// <summary>
+        /// RFC 2132.
+        /// T1 Interval
+        /// </summary>
+        public uint T1Interval
         {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Interval, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
-        public uint Interval
-        {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

@@ -72,71 +72,127 @@ namespace PcapDotNet.Packets.Dhcp
 
         internal const int DHCP_MAGIC_COOKIE = 0x63825363;
 
+        /// <summary>
+        /// RFC 2131.
+        /// Message op code
+        /// </summary>
         public DhcpMessageType MessageType
         {
             get { return (DhcpMessageType)this[Offset.Op]; }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Hardware address type
+        /// </summary>
         public ArpHardwareType HardwareType
         {
             get { return (ArpHardwareType)this[Offset.Htype]; }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Hardware address length
+        /// </summary>
         public byte HardwareAddressLength
         {
             get { return (byte)this[Offset.Hlen]; }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Client sets to zero, optionally used by relay agents when booting via a relay agent.
+        /// </summary>
         public byte Hops
         {
             get { return (byte)this[Offset.Hops]; }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.
+        /// </summary>
         public int TransactionId
         {
             get { return ReadInt(Offset.Xid, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Filled in by client, seconds elapsed since client began address acquisition or renewal process.
+        /// </summary>
         public ushort SecondsElapsed
         {
             get { return ReadUShort(Offset.Secs, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Flags
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DhcpFlags Flags
         {
             get { return (DhcpFlags)ReadUShort(Offset.Flags, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.
+        /// </summary>
         public IpV4Address ClientIpAddress
         {
             get { return ReadIpV4Address(Offset.CiAddr, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// 'your' (client) IP address.
+        /// </summary>
         public IpV4Address YourClientIpAddress
         {
             get { return ReadIpV4Address(Offset.YiAddr, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// IP address of next server to use in bootstrap; returned in DHCPOFFER, DHCPACK by server.
+        /// </summary>
         public IpV4Address NextServerIpAddress
         {
             get { return ReadIpV4Address(Offset.SiAddr, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Relay agent IP address, used in booting via a relay agent.
+        /// </summary>
         public IpV4Address RelayAgentIpAddress
         {
             get { return ReadIpV4Address(Offset.GiAddr, Endianity.Big); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Client hardware address.
+        /// </summary>
         public DataSegment ClientHardwareAddress
         {
             get { return this.Subsegment(Offset.ChAddr, 16); }
         }
 
+        /// <summary>
+        /// Client MAC address
+        /// </summary>
         public MacAddress ClientMacAddress
         {
             get { return new MacAddress(ReadUInt48(Offset.ChAddr, Endianity.Big)); }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Optional server host name
+        /// </summary>
         public string ServerHostName
         {
             get
@@ -146,6 +202,10 @@ namespace PcapDotNet.Packets.Dhcp
             }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Boot file name; "generic" name or null in DHCPDISCOVER, fully qualified directory-path name in DHCPOFFER.
+        /// </summary>
         public string BootFileName
         {
             get
@@ -155,6 +215,10 @@ namespace PcapDotNet.Packets.Dhcp
             }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// true if the magic dhcp-cookie is set
+        /// </summary>
         public bool IsDhcp
         {
             get
@@ -170,6 +234,10 @@ namespace PcapDotNet.Packets.Dhcp
             }
         }
 
+        /// <summary>
+        /// RFC 2131.
+        /// Optional parameters field
+        /// </summary>
         public IReadOnlyCollection<DhcpOption> Options
         {
             get
@@ -230,7 +298,7 @@ namespace PcapDotNet.Packets.Dhcp
                 Hops = Hops,
                 TransactionId = TransactionId,
                 SecondsElapsed = SecondsElapsed,
-                Flags = Flags,
+                DhcpFlags = Flags,
                 ClientIpAddress = ClientIpAddress,
                 YourClientIpAddress = YourClientIpAddress,
                 NextServerIpAddress = NextServerIpAddress,
@@ -257,7 +325,6 @@ namespace PcapDotNet.Packets.Dhcp
 
         internal static void Write(byte[] buffer, int offset, DhcpMessageType messageType, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, int transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
         {
-            int startOffset = offset;
             buffer.Write(ref offset, (byte)messageType);
             buffer.Write(ref offset, (byte)hardwareType);
             buffer.Write(ref offset, hardwareAddressLength);
@@ -289,15 +356,7 @@ namespace PcapDotNet.Packets.Dhcp
             {
                 foreach (DhcpOption option in options)
                 {
-                    startOffset = offset;
                     option.Write(buffer, ref offset);
-                    if (offset != startOffset + option.Length + 2)
-                    {
-                        if (!(option is DhcpPadOption || option is DhcpEndOption))
-                        {
-                            Console.WriteLine("fail2");
-                        }
-                    }
                 }
             }
         }

@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// The POP3 server option specifies a list of POP3 available to the
+    /// client.Servers SHOULD be listed in order of preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+--
@@ -18,14 +20,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpPostOfficeProtocolServerOption : DhcpAddressListOption
     {
-        public DhcpPostOfficeProtocolServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.PostOfficeProtocolServer, addresses)
+        /// <summary>
+        /// create new DhcpPostOfficeProtocolServerOption
+        /// </summary>
+        /// <param name="addresses"></param>
+        public DhcpPostOfficeProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.PostOfficeProtocolServer)
         {
         }
 
         internal static DhcpPostOfficeProtocolServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpPostOfficeProtocolServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpPostOfficeProtocolServerOption>(data, ref offset, p => new DhcpPostOfficeProtocolServerOption(p));
         }
     }
 }

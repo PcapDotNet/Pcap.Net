@@ -27,11 +27,10 @@ namespace PcapDotNet.Packets.TestUtils
             dhcpLayer.Hops = random.NextByte();
             dhcpLayer.TransactionId = random.NextInt();
             dhcpLayer.SecondsElapsed = random.NextUShort();
-            dhcpLayer.Flags = random.NextEnum<DhcpFlags>();
+            dhcpLayer.DhcpFlags = random.NextEnum<DhcpFlags>();
             dhcpLayer.ClientIpAddress = random.NextIpV4Address();
             dhcpLayer.YourClientIpAddress = random.NextIpV4Address();
             dhcpLayer.NextServerIpAddress = random.NextIpV4Address();
-            dhcpLayer.RelayAgentIpAddress = random.NextIpV4Address();
             dhcpLayer.RelayAgentIpAddress = random.NextIpV4Address();
             dhcpLayer.ClientHardwareAddress = random.NextDataSegment(16);
             if (random.NextBool())
@@ -76,7 +75,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DhcpSubnetMaskOption(random.NextIpV4Address());
 
                 case DhcpOptionCode.TimeOffset:
-                    return new DhcpTimeOffsetOption(random.NextUInt());
+                    return new DhcpTimeOffsetOption(random.NextInt());
 
                 case DhcpOptionCode.Router:
                     return new DhcpRouterOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
@@ -96,8 +95,8 @@ namespace PcapDotNet.Packets.TestUtils
                 case DhcpOptionCode.CookieServer:
                     return new DhcpCookieServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
 
-                case DhcpOptionCode.LPRServer:
-                    return new DhcpLPRServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
+                case DhcpOptionCode.LprServer:
+                    return new DhcpLprServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
 
                 case DhcpOptionCode.ImpressServer:
                     return new DhcpImpressServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
@@ -137,26 +136,26 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DhcpNonLocalSourceRoutingEnableOption(random.NextBool());
 
                 case DhcpOptionCode.PolicyFilter:
-                    return new DhcpPolicyFilterOption(Enumerable.Range(0, random.NextByte() / DhcpPolicyFilterOption.IpV4AddressWithMask.SizeOf).Select(p => new DhcpPolicyFilterOption.IpV4AddressWithMask(random.NextIpV4Address(), random.NextIpV4Address())).ToList());
+                    return new DhcpPolicyFilterOption(Enumerable.Range(0, random.NextByte(DhcpPolicyFilterOption.IpV4AddressWithMask.SizeOf, byte.MaxValue) / DhcpPolicyFilterOption.IpV4AddressWithMask.SizeOf).Select(p => new DhcpPolicyFilterOption.IpV4AddressWithMask(random.NextIpV4Address(), random.NextIpV4Address())).ToList());
 
                 case DhcpOptionCode.MaximumDatagramReassemblySize:
-                    return new DhcpMaximumDatagramReassemblySizeOption(random.NextUShort());
+                    return new DhcpMaximumDatagramReassemblySizeOption(random.NextUShort(576, ushort.MaxValue));
 
-                case DhcpOptionCode.DefaultIPTimeToLive:
+                case DhcpOptionCode.DefaultIpTimeToLive:
                     return new DhcpDefaultIPTimeToLiveOption(random.NextByte());
 
-                case DhcpOptionCode.PathMTUAgingTimeout:
-                    return new DhcpPathMTUAgingTimeoutOption(random.NextUInt());
+                case DhcpOptionCode.PathMtuAgingTimeout:
+                    return new DhcpPathMtuAgingTimeoutOption(random.NextUInt());
 
-                case DhcpOptionCode.PathMTUPlateauTable:
-                    return new DhcpPathMTUPlateauTableOption(Enumerable.Range(0, random.NextByte() / sizeof(ushort)).Select(p => random.NextUShort()).ToList());
+                case DhcpOptionCode.PathMtuPlateauTable:
+                    return new DhcpPathMtuPlateauTableOption(Enumerable.Range(0, random.NextByte(sizeof(ushort), byte.MaxValue) / sizeof(ushort)).Select(p => random.NextUShort()).ToList());
 
                 #endregion 4. IP Layer Parameters per Host
 
                 #region 5. IP Layer Parameters per Interface
 
-                case DhcpOptionCode.InterfaceMTU:
-                    return new DhcpInterfaceMTUOption(random.NextUShort());
+                case DhcpOptionCode.InterfaceMtu:
+                    return new DhcpInterfaceMtuOption(random.NextUShort(68, ushort.MaxValue));
 
                 case DhcpOptionCode.AllSubnetsAreLocal:
                     return new DhcpAllSubnetsAreLocalOption(random.NextBool());
@@ -177,7 +176,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DhcpRouterSolicitationAddressOption(random.NextIpV4Address());
 
                 case DhcpOptionCode.StaticRoute:
-                    return new DhcpStaticRouteOption(Enumerable.Range(0, random.NextByte() / IpV4Address.SizeOf / 2).Select(p => new DhcpStaticRouteOption.IpV4AddressRoute(random.NextIpV4Address(), random.NextIpV4Address())).ToList());
+                    return new DhcpStaticRouteOption(Enumerable.Range(0, random.NextByte(IpV4Address.SizeOf * 2, byte.MaxValue) / IpV4Address.SizeOf / 2).Select(p => new DhcpStaticRouteOption.IpV4AddressRoute(random.NextIpV4Address(), random.NextIpV4Address())).ToList());
 
                 #endregion 5. IP Layer Parameters per Interface
 
@@ -186,8 +185,8 @@ namespace PcapDotNet.Packets.TestUtils
                 case DhcpOptionCode.TrailerEncapsulation:
                     return new DhcpTrailerEncapsulationOption(random.NextBool());
 
-                case DhcpOptionCode.ARPCacheTimeout:
-                    return new DhcpARPCacheTimeoutOption(random.NextUInt());
+                case DhcpOptionCode.ArpCacheTimeout:
+                    return new DhcpArpCacheTimeoutOption(random.NextUInt());
 
                 case DhcpOptionCode.EthernetEncapsulation:
                     return new DhcpEthernetEncapsulationOption(random.NextBool());
@@ -196,14 +195,14 @@ namespace PcapDotNet.Packets.TestUtils
 
                 #region 7. TCP Parameters
 
-                case DhcpOptionCode.TCPDefaultTTL:
-                    return new DhcpTCPDefaultTTLOption(random.NextBool());
+                case DhcpOptionCode.TcpDefaultTtl:
+                    return new DhcpTcpDefaultTtlOption(random.NextByte());
 
-                case DhcpOptionCode.TCPKeepaliveInterval:
-                    return new DhcpTCPKeepaliveIntervalOption(random.NextUInt());
+                case DhcpOptionCode.TcpKeepaliveInterval:
+                    return new DhcpTcpKeepaliveIntervalOption(random.NextUInt());
 
-                case DhcpOptionCode.TCPKeepaliveGarbage:
-                    return new DhcpTCPKeepaliveGarbageOption(random.NextBool());
+                case DhcpOptionCode.TcpKeepaliveGarbage:
+                    return new DhcpTcpKeepaliveGarbageOption(random.NextBool());
 
                 #endregion 7. TCP Parameters
 
@@ -221,22 +220,22 @@ namespace PcapDotNet.Packets.TestUtils
                 case DhcpOptionCode.VendorSpecificInformation:
                     return new DhcpVendorSpecificInformationOption(random.NextDataSegment(random.NextByte(1, 254)));
 
-                case DhcpOptionCode.NetBIOSOverTCPIPNameServer:
-                    return new DhcpNetBIOSOverTCPIPNameServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf))); ;
+                case DhcpOptionCode.NetBiosOverTcpIpNameServer:
+                    return new DhcpNetBiosOverTcpIpNameServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf))); ;
 
-                case DhcpOptionCode.NetBIOSOverTCPIPDatagramDistributionServer:
-                    return new DhcpNetBIOSOverTCPIPDatagramDistributionServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
+                case DhcpOptionCode.NetBiosOverTcpIpDatagramDistributionServer:
+                    return new DhcpNetBiosOverTcpIpDatagramDistributionServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
 
-                case DhcpOptionCode.NetBIOSOverTCPIPNodeType:
-                    DhcpNetBIOSOverTCPIPNodeTypeOption.NodeType flag;
+                case DhcpOptionCode.NetBiosOverTcpIpNodeType:
+                    DhcpNetBiosOverTcpIpNodeTypeOption.NodeType flag;
                     do
                     {
-                        flag = random.NextFlags<DhcpNetBIOSOverTCPIPNodeTypeOption.NodeType>();
+                        flag = random.NextFlags<DhcpNetBiosOverTcpIpNodeTypeOption.NodeType>();
                     } while (flag == 0);
-                    return new DhcpNetBIOSOverTCPIPNodeTypeOption(flag);
+                    return new DhcpNetBiosOverTcpIpNodeTypeOption(flag);
 
-                case DhcpOptionCode.NetBIOSOverTCPIPScope:
-                    return new DhcpNetBIOSOverTCPIPScopeOption(random.NextDataSegment(random.NextByte(1, 254)));
+                case DhcpOptionCode.NetBiosOverTcpIpScope:
+                    return new DhcpNetBiosOverTcpIpScopeOption(random.NextDataSegment(random.NextByte(1, 254)));
 
                 case DhcpOptionCode.XWindowSystemFontServer:
                     return new DhcpXWindowSystemFontServerOption(random.NextIpV4Addresses(random.Next(1, byte.MaxValue / IpV4Address.SizeOf)));
@@ -290,8 +289,8 @@ namespace PcapDotNet.Packets.TestUtils
                 case DhcpOptionCode.OptionOverload:
                     return new DhcpOptionOverloadOption(random.NextEnum<DhcpOptionOverloadOption.OptionOverloadValue>());
 
-                case DhcpOptionCode.TFTPServerName:
-                    return new DhcpTFTPServerNameOption(random.NextCString(1, byte.MaxValue - 1));
+                case DhcpOptionCode.TfptServerName:
+                    return new DhcpTFtpServerNameOption(random.NextCString(1, byte.MaxValue - 1));
 
                 case DhcpOptionCode.BootfileName:
                     return new DhcpBootfileNameOption(random.NextCString(1, byte.MaxValue - 1));
@@ -303,7 +302,7 @@ namespace PcapDotNet.Packets.TestUtils
                     return new DhcpServerIdentifierOption(random.NextIpV4Address());
 
                 case DhcpOptionCode.ParameterRequestList:
-                    return new DhcpParameterRequestListOption(Enumerable.Range(1, random.NextByte(byte.MaxValue - 1)).Select(p => random.NextEnum<DhcpOptionCode>()).ToList());
+                    return new DhcpParameterRequestListOption(Enumerable.Range(0, random.NextByte(sizeof(DhcpOptionCode), byte.MaxValue) / sizeof(DhcpOptionCode)).Select(p => random.NextEnum<DhcpOptionCode>()).ToList());
 
                 case DhcpOptionCode.Message:
                     return new DhcpMessageOption(random.NextCString(1, byte.MaxValue - 1));

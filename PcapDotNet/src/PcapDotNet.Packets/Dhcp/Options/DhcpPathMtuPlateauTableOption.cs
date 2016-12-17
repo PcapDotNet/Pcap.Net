@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option specifies a table of MTU sizes to use when performing
+    /// Path MTU Discovery as defined in RFC 1191.  The table is formatted as
+    /// a list of 16-bit unsigned integers, ordered from smallest to largest.
     /// <pre>
     ///  Code   Len     Size 1      Size 2
     /// +-----+-----+-----+-----+-----+-----+---
@@ -16,21 +19,27 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpPathMTUPlateauTableOption : DhcpOption
+    public class DhcpPathMtuPlateauTableOption : DhcpOption
     {
         internal const int MAX_SIZES = 255 / sizeof(ushort);
 
-        public DhcpPathMTUPlateauTableOption(IList<ushort> sizes) : base(DhcpOptionCode.PathMTUPlateauTable)
+        /// <summary>
+        /// create new DhcpPathMtuPlateauTableOption
+        /// </summary>
+        /// <param name="sizes">Sizes</param>
+        public DhcpPathMtuPlateauTableOption(IList<ushort> sizes) : base(DhcpOptionCode.PathMtuPlateauTable)
         {
             if (sizes == null)
                 throw new ArgumentNullException(nameof(sizes));
+            if (sizes.Count < 1)
+                throw new ArgumentOutOfRangeException(nameof(sizes), sizes.Count, "The minimum items in sizes is 1");
             if (sizes.Count > MAX_SIZES)
-                throw new ArgumentOutOfRangeException(nameof(sizes), sizes.Count, $"The maximum items in addresses is {MAX_SIZES}");
+                throw new ArgumentOutOfRangeException(nameof(sizes), sizes.Count, "The maximum items in addresses is " + MAX_SIZES);
 
             Sizes = new ReadOnlyCollection<ushort>(sizes);
         }
 
-        internal static DhcpPathMTUPlateauTableOption Read(DataSegment data, ref int offset)
+        internal static DhcpPathMtuPlateauTableOption Read(DataSegment data, ref int offset)
         {
             byte len = data[offset++];
             if (len % sizeof(ushort) != 0)
@@ -42,7 +51,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             {
                 sizes.Add(data.ReadUShort(offset + i, Endianity.Big));
             }
-            DhcpPathMTUPlateauTableOption option = new DhcpPathMTUPlateauTableOption(sizes);
+            DhcpPathMtuPlateauTableOption option = new DhcpPathMtuPlateauTableOption(sizes);
             offset += option.Length;
             return option;
         }
@@ -56,17 +65,21 @@ namespace PcapDotNet.Packets.Dhcp.Options
             }
         }
 
+        /// <summary>
+        /// Length of the Dhcp-Option
+        /// </summary>
         public override byte Length
         {
             get
             {
-                if (Sizes.Count > MAX_SIZES)
-                    throw new ArgumentOutOfRangeException(nameof(Sizes), Sizes.Count, $"The maximum items in addresses is {MAX_SIZES}");
-
                 return (byte)(Sizes.Count * sizeof(ushort));
             }
         }
 
+        /// <summary>
+        /// RFC 2132.
+        /// Sizes
+        /// </summary>
         public IReadOnlyCollection<ushort> Sizes
         {
             get;

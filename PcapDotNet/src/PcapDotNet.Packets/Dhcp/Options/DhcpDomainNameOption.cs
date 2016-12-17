@@ -8,6 +8,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the domain name that client should use when
+    /// resolving hostnames via the Domain Name System.
     /// <pre>
     ///  Code   Len        Domain Name
     /// +-----+-----+-----+-----+-----+-----+---
@@ -15,53 +17,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpDomainNameOption : DhcpOption
+    public class DhcpDomainNameOption : DhcpStringOption
     {
-        public DhcpDomainNameOption(string domainName) : base(DhcpOptionCode.DomainName)
+        /// <summary>
+        /// create new DhcpDomainNameOption
+        /// </summary>
+        /// <param name="domainName">Domain Name</param>
+        public DhcpDomainNameOption(string domainName) : base(domainName, DhcpOptionCode.DomainName)
         {
-            DomainName = domainName;
         }
 
         internal static DhcpDomainNameOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            string hostName = Encoding.ASCII.GetString(data.ReadBytes(offset, len));
-            DhcpDomainNameOption option = new DhcpDomainNameOption(hostName);
-            offset += option.Length;
-            return option;
+            return DhcpStringOption.Read(data, ref offset, p => new DhcpDomainNameOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(DomainName));
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(DomainName);
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Domain Name
+        /// </summary>
         public string DomainName
         {
-            get { return _domainName; }
-
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(DomainName));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(DomainName), value.Length, "DomainName has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(DomainName), value.Length, "DomainName has to be less than 256 characters long");
-
-                _domainName = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private string _domainName;
     }
 }

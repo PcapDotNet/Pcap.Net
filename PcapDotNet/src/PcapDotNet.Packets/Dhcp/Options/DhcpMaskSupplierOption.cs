@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client should respond to
+    /// subnet mask requests using ICMP.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +18,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpMaskSupplierOption : DhcpOption
+    public class DhcpMaskSupplierOption : DhcpBooleanOption
     {
-        public DhcpMaskSupplierOption(bool enabled) : base(DhcpOptionCode.MaskSupplier)
+        /// <summary>
+        /// create new DhcpMaskSupplierOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpMaskSupplierOption(bool value) : base(value, DhcpOptionCode.MaskSupplier)
         {
         }
 
         internal static DhcpMaskSupplierOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP MaskSupplier Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP MaskSupplier Option has to be 0 or 1");
-            DhcpMaskSupplierOption option = new DhcpMaskSupplierOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpMaskSupplierOption>(data, ref offset, p => new Options.DhcpMaskSupplierOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// A value of false indicates that the client
+        /// should not perform mask discovery. A value of true means that the
+        /// client should perform mask discovery.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

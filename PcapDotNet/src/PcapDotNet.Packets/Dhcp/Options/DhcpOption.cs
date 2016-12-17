@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PcapDotNet.Base;
 
 namespace PcapDotNet.Packets.Dhcp.Options
 {
@@ -10,6 +11,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// RFC 2132.
     /// Abstract class for all possible Dhcp-Options
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract class DhcpOption : IEquatable<DhcpOption>
     {
         /// <summary>
@@ -33,11 +35,13 @@ namespace PcapDotNet.Packets.Dhcp.Options
         /// create new Option
         /// </summary>
         /// <param name="code">Option-Code</param>
-        public DhcpOption(DhcpOptionCode code)
+        protected DhcpOption(DhcpOptionCode code)
         {
             OptionCode = code;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         internal static DhcpOption CreateInstance(DataSegment data, ref int offset)
         {
             switch ((DhcpOptionCode)data[offset++])
@@ -74,8 +78,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 case DhcpOptionCode.CookieServer:
                     return DhcpCookieServerOption.Read(data, ref offset);
 
-                case DhcpOptionCode.LPRServer:
-                    return DhcpLPRServerOption.Read(data, ref offset);
+                case DhcpOptionCode.LprServer:
+                    return DhcpLprServerOption.Read(data, ref offset);
 
                 case DhcpOptionCode.ImpressServer:
                     return DhcpImpressServerOption.Read(data, ref offset);
@@ -120,21 +124,21 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 case DhcpOptionCode.MaximumDatagramReassemblySize:
                     return DhcpMaximumDatagramReassemblySizeOption.Read(data, ref offset);
 
-                case DhcpOptionCode.DefaultIPTimeToLive:
+                case DhcpOptionCode.DefaultIpTimeToLive:
                     return DhcpDefaultIPTimeToLiveOption.Read(data, ref offset);
 
-                case DhcpOptionCode.PathMTUAgingTimeout:
-                    return DhcpPathMTUAgingTimeoutOption.Read(data, ref offset);
+                case DhcpOptionCode.PathMtuAgingTimeout:
+                    return DhcpPathMtuAgingTimeoutOption.Read(data, ref offset);
 
-                case DhcpOptionCode.PathMTUPlateauTable:
-                    return DhcpPathMTUPlateauTableOption.Read(data, ref offset);
+                case DhcpOptionCode.PathMtuPlateauTable:
+                    return DhcpPathMtuPlateauTableOption.Read(data, ref offset);
 
                 #endregion 4. IP Layer Parameters per Host
 
                 #region 5. IP Layer Parameters per Interface
 
-                case DhcpOptionCode.InterfaceMTU:
-                    return DhcpInterfaceMTUOption.Read(data, ref offset);
+                case DhcpOptionCode.InterfaceMtu:
+                    return DhcpInterfaceMtuOption.Read(data, ref offset);
 
                 case DhcpOptionCode.AllSubnetsAreLocal:
                     return DhcpAllSubnetsAreLocalOption.Read(data, ref offset);
@@ -164,8 +168,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 case DhcpOptionCode.TrailerEncapsulation:
                     return DhcpTrailerEncapsulationOption.Read(data, ref offset);
 
-                case DhcpOptionCode.ARPCacheTimeout:
-                    return DhcpARPCacheTimeoutOption.Read(data, ref offset);
+                case DhcpOptionCode.ArpCacheTimeout:
+                    return DhcpArpCacheTimeoutOption.Read(data, ref offset);
 
                 case DhcpOptionCode.EthernetEncapsulation:
                     return DhcpEthernetEncapsulationOption.Read(data, ref offset);
@@ -174,14 +178,14 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
                 #region 7. TCP Parameters
 
-                case DhcpOptionCode.TCPDefaultTTL:
-                    return DhcpTCPDefaultTTLOption.Read(data, ref offset);
+                case DhcpOptionCode.TcpDefaultTtl:
+                    return DhcpTcpDefaultTtlOption.Read(data, ref offset);
 
-                case DhcpOptionCode.TCPKeepaliveInterval:
-                    return DhcpTCPKeepaliveIntervalOption.Read(data, ref offset);
+                case DhcpOptionCode.TcpKeepaliveInterval:
+                    return DhcpTcpKeepaliveIntervalOption.Read(data, ref offset);
 
-                case DhcpOptionCode.TCPKeepaliveGarbage:
-                    return DhcpTCPKeepaliveGarbageOption.Read(data, ref offset);
+                case DhcpOptionCode.TcpKeepaliveGarbage:
+                    return DhcpTcpKeepaliveGarbageOption.Read(data, ref offset);
 
                 #endregion 7. TCP Parameters
 
@@ -199,17 +203,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 case DhcpOptionCode.VendorSpecificInformation:
                     return DhcpVendorSpecificInformationOption.Read(data, ref offset);
 
-                case DhcpOptionCode.NetBIOSOverTCPIPNameServer:
-                    return DhcpNetBIOSOverTCPIPNameServerOption.Read(data, ref offset);
+                case DhcpOptionCode.NetBiosOverTcpIpNameServer:
+                    return DhcpNetBiosOverTcpIpNameServerOption.Read(data, ref offset);
 
-                case DhcpOptionCode.NetBIOSOverTCPIPDatagramDistributionServer:
-                    return DhcpNetBIOSOverTCPIPDatagramDistributionServerOption.Read(data, ref offset);
+                case DhcpOptionCode.NetBiosOverTcpIpDatagramDistributionServer:
+                    return DhcpNetBiosOverTcpIpDatagramDistributionServerOption.Read(data, ref offset);
 
-                case DhcpOptionCode.NetBIOSOverTCPIPNodeType:
-                    return DhcpNetBIOSOverTCPIPNodeTypeOption.Read(data, ref offset);
+                case DhcpOptionCode.NetBiosOverTcpIpNodeType:
+                    return DhcpNetBiosOverTcpIpNodeTypeOption.Read(data, ref offset);
 
-                case DhcpOptionCode.NetBIOSOverTCPIPScope:
-                    return DhcpNetBIOSOverTCPIPScopeOption.Read(data, ref offset);
+                case DhcpOptionCode.NetBiosOverTcpIpScope:
+                    return DhcpNetBiosOverTcpIpScopeOption.Read(data, ref offset);
 
                 case DhcpOptionCode.XWindowSystemFontServer:
                     return DhcpXWindowSystemFontServerOption.Read(data, ref offset);
@@ -263,8 +267,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 case DhcpOptionCode.OptionOverload:
                     return DhcpOptionOverloadOption.Read(data, ref offset);
 
-                case DhcpOptionCode.TFTPServerName:
-                    return DhcpTFTPServerNameOption.Read(data, ref offset);
+                case DhcpOptionCode.TfptServerName:
+                    return DhcpTFtpServerNameOption.Read(data, ref offset);
 
                 case DhcpOptionCode.BootfileName:
                     return DhcpBootfileNameOption.Read(data, ref offset);
@@ -353,7 +357,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             int offset = 0;
             Write(selfData, ref offset);
 
-            return selfData.GetHashCode();
+            return Sequence.GetHashCode(selfData.Cast<object>().ToArray());
         }
     }
 }

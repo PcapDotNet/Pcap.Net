@@ -8,6 +8,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies the path-name of a file to which the client's
+    /// core image should be dumped in the event the client crashes.
     /// <pre>
     ///  Code   Len      Dump File Pathname
     /// +-----+-----+-----+-----+-----+-----+---
@@ -15,52 +17,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpMeritDumpFileOption : DhcpOption
+    public class DhcpMeritDumpFileOption : DhcpStringOption
     {
-        public DhcpMeritDumpFileOption(string dumpFilePathname) : base(DhcpOptionCode.MeritDumpFile)
+        /// <summary>
+        /// create new DhcpMeritDumpFileOption
+        /// </summary>
+        /// <param name="dumpFilePathname">Dump File Pathname</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
+        public DhcpMeritDumpFileOption(string dumpFilePathname) : base(dumpFilePathname, DhcpOptionCode.MeritDumpFile)
         {
-            DumpFilePathname = dumpFilePathname;
         }
 
         internal static DhcpMeritDumpFileOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            string hostName = Encoding.ASCII.GetString(data.ReadBytes(offset, len));
-            DhcpMeritDumpFileOption option = new DhcpMeritDumpFileOption(hostName);
-            offset += option.Length;
-            return option;
+            return Read<DhcpMeritDumpFileOption>(data, ref offset, p => new DhcpMeritDumpFileOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(DumpFilePathname));
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(DumpFilePathname);
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Dump File Pathname
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
         public string DumpFilePathname
         {
-            get { return _dumpFilePathname; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(DumpFilePathname));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(DumpFilePathname), value.Length, "DumpFilePathname has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(DumpFilePathname), value.Length, "DumpFilePathname has to be less than 256 characters long");
-
-                _dumpFilePathname = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private string _dumpFilePathname;
     }
 }

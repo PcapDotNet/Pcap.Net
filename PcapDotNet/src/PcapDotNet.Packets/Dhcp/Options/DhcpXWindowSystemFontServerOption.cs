@@ -9,6 +9,9 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies a list of X Window System [21] Font servers
+    /// available to the client. Servers SHOULD be listed in order of
+    /// preference.
     /// <pre>
     ///  Code   Len         Address 1               Address 2
     /// +-----+-----+-----+-----+-----+-----+-----+-----+---
@@ -18,14 +21,17 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// </summary>
     public class DhcpXWindowSystemFontServerOption : DhcpAddressListOption
     {
-        public DhcpXWindowSystemFontServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.XWindowSystemFontServer, addresses)
+        /// <summary>
+        /// create new DhcpXWindowSystemFontServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpXWindowSystemFontServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.XWindowSystemFontServer)
         {
         }
 
         internal static DhcpXWindowSystemFontServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpXWindowSystemFontServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpXWindowSystemFontServerOption>(data, ref offset, p => new DhcpXWindowSystemFontServerOption(p));
         }
     }
 }

@@ -8,6 +8,10 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option is used by a DHCP server to provide an error message to a
+    /// DHCP client in a DHCPNAK message in the event of a failure. A client
+    /// may use this option in a DHCPDECLINE message to indicate the why the
+    /// client declined the offered parameters.
     /// <pre>
     ///  Code   Len     Text
     /// +-----+-----+-----+-----+---
@@ -15,52 +19,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpMessageOption : DhcpOption
+    public class DhcpMessageOption : DhcpStringOption
     {
-        public DhcpMessageOption(string text) : base(DhcpOptionCode.Message)
+        /// <summary>
+        /// create new DhcpMessageOption
+        /// </summary>
+        /// <param name="text">Text</param>
+        public DhcpMessageOption(string text) : base(text, DhcpOptionCode.Message)
         {
-            Text = text;
         }
 
         internal static DhcpMessageOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            string text = Encoding.ASCII.GetString(data.ReadBytes(offset, len));
-            DhcpMessageOption option = new DhcpMessageOption(text);
-            offset += option.Length;
-            return option;
+            return Read<DhcpMessageOption>(data, ref offset, p => new DhcpMessageOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Encoding.ASCII.GetBytes(Text));
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return (byte)Encoding.ASCII.GetByteCount(Text);
-            }
-        }
-
+        ///<summary>
+        /// RFC 2132.
+        /// Text
+        /// </summary>
         public string Text
         {
-            get { return _rootPath; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(Text));
-                if (value.Length < 1)
-                    throw new ArgumentOutOfRangeException(nameof(Text), value.Length, "Text has to be at least 1 characters long");
-                if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(Text), value.Length, "Text has to be less than 256 characters long");
-
-                _rootPath = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private string _rootPath;
     }
 }

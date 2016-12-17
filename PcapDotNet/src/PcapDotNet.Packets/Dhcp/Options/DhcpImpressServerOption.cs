@@ -7,16 +7,31 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Dhcp.Options
 {
+    /// <summary>
+    /// RFC 2132.
+    /// The Impress server option specifies a list of Imagen Impress servers
+    /// available to the client.Servers SHOULD be listed in order of
+    /// preference.
+    /// <pre>
+    ///  Code   Len         Address 1               Address 2
+    /// +-----+-----+-----+-----+-----+-----+-----+-----+--
+    /// |  10 |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
+    /// +-----+-----+-----+-----+-----+-----+-----+-----+--
+    /// </pre>
+    /// </summary>
     public class DhcpImpressServerOption : DhcpAddressListOption
     {
-        public DhcpImpressServerOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.ImpressServer, addresses)
+        /// <summary>
+        /// create new DhcpImpressServerOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpImpressServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.ImpressServer)
         {
         }
 
         internal static DhcpImpressServerOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpImpressServerOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpImpressServerOption>(data, ref offset, p => new Options.DhcpImpressServerOption(p));
         }
     }
 }

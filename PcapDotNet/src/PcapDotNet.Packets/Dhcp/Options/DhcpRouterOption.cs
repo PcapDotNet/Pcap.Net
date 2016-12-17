@@ -7,16 +7,30 @@ using PcapDotNet.Packets.IpV4;
 
 namespace PcapDotNet.Packets.Dhcp.Options
 {
+    /// <summary>
+    /// RFC 2132.
+    /// The router option specifies a list of IP addresses for routers on the
+    /// client's subnet. Routers SHOULD be listed in order of preference.
+    /// <pre>
+    ///  Code   Len         Address 1               Address 2
+    /// +-----+-----+-----+-----+-----+-----+-----+-----+--
+    /// |  3  |  n  |  a1 |  a2 |  a3 |  a4 |  a1 |  a2 |  ...
+    /// +-----+-----+-----+-----+-----+-----+-----+-----+--
+    /// </pre>
+    /// </summary>
     public class DhcpRouterOption : DhcpAddressListOption
     {
-        public DhcpRouterOption(IList<IpV4Address> addresses) : base(DhcpOptionCode.Router, addresses)
+        /// <summary>
+        /// create new DhcpRouterOption
+        /// </summary>
+        /// <param name="addresses">Addresses</param>
+        public DhcpRouterOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.Router)
         {
         }
 
         internal static DhcpRouterOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            return new DhcpRouterOption(GetAddresses(data, length, ref offset));
+            return Read<DhcpRouterOption>(data, ref offset, p => new DhcpRouterOption(p));
         }
     }
 }

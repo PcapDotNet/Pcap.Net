@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether or not the client should perform subnet
+    /// mask discovery using ICMP.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +18,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpPerformMaskDiscoveryOption : DhcpOption
+    public class DhcpPerformMaskDiscoveryOption : DhcpBooleanOption
     {
-        public DhcpPerformMaskDiscoveryOption(bool enabled) : base(DhcpOptionCode.PerformMaskDiscovery)
+        /// <summary>
+        /// create new DhcpPerformMaskDiscoveryOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpPerformMaskDiscoveryOption(bool value) : base(value, DhcpOptionCode.PerformMaskDiscovery)
         {
         }
 
         internal static DhcpPerformMaskDiscoveryOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP PerformMaskDiscovery Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP PerformMaskDiscovery Option has to be 0 or 1");
-            DhcpPerformMaskDiscoveryOption option = new DhcpPerformMaskDiscoveryOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpPerformMaskDiscoveryOption>(data, ref offset, p => new DhcpPerformMaskDiscoveryOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// A value of false indicates that the client
+        /// should not perform mask discovery. A value of true means that the
+        /// client should perform mask discovery.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

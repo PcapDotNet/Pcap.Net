@@ -7,46 +7,42 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// RFC 2132
+    /// RFC 2132.
+    /// This option is used in a client request (DHCPDISCOVER or DHCPREQUEST)
+    /// to allow the client to request a lease time for the IP address. In a
+    /// server reply(DHCPOFFER), a DHCP server uses this option to specify
+    /// the lease time it is willing to offer.
     /// <pre>
-    ///  Code   Len        Time Offset
+    ///  Code   Len         Lease Time
     /// +-----+-----+-----+-----+-----+-----+
-    /// |  1  |  4  |  n1 |  n2 |  n3 |  n4 |
+    /// |  51 |  4  |  t1 |  t2 |  t3 |  t4 |
     /// +-----+-----+-----+-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpIPAddressLeaseTimeOption : DhcpOption
+    public class DhcpIPAddressLeaseTimeOption : DhcpUIntOption
     {
-        public DhcpIPAddressLeaseTimeOption(uint leaseTime) : base(DhcpOptionCode.IPAddressLeaseTime)
+        /// <summary>
+        /// create new DhcpIPAddressLeaseTimeOption
+        /// </summary>
+        /// <param name="leaseTime">Lease Time</param>
+        public DhcpIPAddressLeaseTimeOption(uint leaseTime) : base(leaseTime, DhcpOptionCode.IPAddressLeaseTime)
         {
-            LeaseTime = leaseTime;
         }
 
         internal static DhcpIPAddressLeaseTimeOption Read(DataSegment data, ref int offset)
         {
-            if (data[offset++] != 4)
-                throw new ArgumentException("Length of a DHCP IPAddressLeaseTime Option has to be 4");
-
-            DhcpIPAddressLeaseTimeOption option = new DhcpIPAddressLeaseTimeOption(data.ReadUInt(offset, Endianity.Big));
-            offset += option.Length;
-            return option;
+            return Read<DhcpIPAddressLeaseTimeOption>(data, ref offset, p => new Options.DhcpIPAddressLeaseTimeOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, LeaseTime, Endianity.Big);
-        }
-
-        public override byte Length
-        {
-            get { return 4; }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Lease Time
+        /// The time is in units of seconds
+        /// </summary>
         public uint LeaseTime
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

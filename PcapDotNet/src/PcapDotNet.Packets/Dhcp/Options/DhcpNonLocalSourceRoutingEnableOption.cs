@@ -9,6 +9,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option specifies whether the client should configure its IP
+    /// layer to allow forwarding of datagrams with non-local source routes.
     /// <pre>
     ///  Code   Len  Value
     /// +-----+-----+-----+
@@ -16,42 +18,31 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+
     /// </pre>
     /// </summary>
-    public class DhcpNonLocalSourceRoutingEnableOption : DhcpOption
+    public class DhcpNonLocalSourceRoutingEnableOption : DhcpBooleanOption
     {
-        public DhcpNonLocalSourceRoutingEnableOption(bool enabled) : base(DhcpOptionCode.NonLocalSourceRoutingEnable)
+        /// <summary>
+        /// create new DhcpNonLocalSourceRoutingEnableOption
+        /// </summary>
+        /// <param name="value">Value</param>
+        public DhcpNonLocalSourceRoutingEnableOption(bool value) : base(value, DhcpOptionCode.NonLocalSourceRoutingEnable)
         {
         }
 
         internal static DhcpNonLocalSourceRoutingEnableOption Read(DataSegment data, ref int offset)
         {
-            byte len = data[offset++];
-            if (len != 1)
-                throw new ArgumentException("Length of a DHCP NonLocalSourceRoutingEnable Option has to be 1");
-            if (data[offset] != 0 && data[offset] != 1)
-                throw new ArgumentException("Value of a DHCP NonLocalSourceRoutingEnable Option has to be 0 or 1");
-            DhcpNonLocalSourceRoutingEnableOption option = new DhcpNonLocalSourceRoutingEnableOption(data[offset] == 1 ? true : false);
-            offset += option.Length;
-            return option;
+            return Read<DhcpNonLocalSourceRoutingEnableOption>(data, ref offset, p => new DhcpNonLocalSourceRoutingEnableOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, Value ? (byte)1 : (byte)0);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Value
+        /// A value of false means disallow forwarding of such datagrams, and a value of true
+        /// means allow forwarding.
+        /// </summary>
         public bool Value
         {
-            get;
-            set;
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
     }
 }

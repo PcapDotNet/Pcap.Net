@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Dhcp
     /// MBZ:  MUST BE ZERO(reserved for future use)
     /// </pre>
     /// </summary>
-    [Flags]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public enum DhcpFlags : ushort
     {
         /// <summary>

@@ -8,6 +8,16 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
+    /// This option is used by DHCP clients to optionally identify the vendor
+    /// type and configuration of a DHCP client. The information is a string
+    /// of n octets, interpreted by servers. Vendors may choose to define
+    /// specific vendor class identifiers to convey particular configuration
+    /// or other identification information about a client. For example, the
+    /// identifier may encode the client's hardware configuration. Servers
+    /// not equipped to interpret the class-specific information sent by a
+    /// client MUST ignore it(although it may be reported). Servers that
+    /// respond SHOULD only use option 43 to return the vendor-specific
+    /// information to the client.
     /// <pre>
     ///  Code   Len   Vendor class Identifier
     /// +-----+-----+-----+-----+---
@@ -15,60 +25,29 @@ namespace PcapDotNet.Packets.Dhcp.Options
     /// +-----+-----+-----+-----+---
     /// </pre>
     /// </summary>
-    public class DhcpVendorClassidentifierOption : DhcpOption
+    public class DhcpVendorClassidentifierOption : DhcpDataSegmentOption
     {
-        public DhcpVendorClassidentifierOption(DataSegment vendorClassIdentifier) : base(DhcpOptionCode.VendorClassidentifier)
+        /// <summary>
+        /// create new DhcpVendorClassidentifierOption
+        /// </summary>
+        /// <param name="vendorClassIdentifier">Vendor class Identifier</param>
+        public DhcpVendorClassidentifierOption(DataSegment vendorClassIdentifier) : base(vendorClassIdentifier, DhcpOptionCode.VendorClassidentifier)
         {
-            VendorClassIdentifier = vendorClassIdentifier;
         }
 
         internal static DhcpVendorClassidentifierOption Read(DataSegment data, ref int offset)
         {
-            byte length = data[offset++];
-            DhcpVendorClassidentifierOption option = new DhcpVendorClassidentifierOption(data.Subsegment(offset, length));
-            offset += option.Length;
-            return option;
+            return Read<DhcpVendorClassidentifierOption>(data, ref offset, p => new DhcpVendorClassidentifierOption(p));
         }
 
-        internal override void Write(byte[] buffer, ref int offset)
-        {
-            base.Write(buffer, ref offset);
-            buffer.Write(ref offset, VendorClassIdentifier);
-        }
-
-        public override byte Length
-        {
-            get
-            {
-                if (VendorClassIdentifier == null)
-                {
-                    return 0;
-                }
-                return (byte)VendorClassIdentifier.Length;
-            }
-        }
-
+        /// <summary>
+        /// RFC 2132.
+        /// Vendor class Identifier
+        /// </summary>
         public DataSegment VendorClassIdentifier
         {
-            get { return _vendorClassIdentifier; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(VendorClassIdentifier));
-                }
-                if (value.Length < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(VendorClassIdentifier), value.Length, "VendorClassIdentifier.Length has to be greater than 0");
-                }
-                if (value.Length > byte.MaxValue)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(VendorClassIdentifier), value.Length, "VendorClassIdentifier.Length has to be less than 256");
-                }
-                _vendorClassIdentifier = value;
-            }
+            get { return InternalValue; }
+            set { InternalValue = value; }
         }
-
-        private DataSegment _vendorClassIdentifier;
     }
 }

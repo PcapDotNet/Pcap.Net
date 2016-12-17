@@ -7,23 +7,27 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// DHCP option for undefined options
+    /// DHCP option for any options
     /// </summary>
     public class DhcpAnyOption : DhcpOption
     {
+        /// <summary>
+        /// create new Any-Option
+        /// </summary>
+        /// <param name="data">data represented by the option</param>
+        /// <param name="code">the OptionCode</param>
         public DhcpAnyOption(DataSegment data, DhcpOptionCode code) : base(code)
         {
             Data = data;
         }
 
+        /// <summary>
+        /// Length of the Dhcp-Option
+        /// </summary>
         public override byte Length
         {
             get
             {
-                if (Data == null)
-                {
-                    return 0;
-                }
                 return (byte)Data.Length;
             }
         }
@@ -39,23 +43,24 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         internal override void Write(byte[] buffer, ref int offset)
         {
-            if (Data == null)
-                throw new ArgumentNullException(nameof(Data));
             if (Data.Length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(Data), Data.Length, "Data.Length has to be less than 256");
+                throw new InvalidOperationException("Data.Length has to be less than 256 but is " + Data.Length);
             base.Write(buffer, ref offset);
             buffer.Write(ref offset, Data);
         }
 
+        /// <summary>
+        /// Data of the Option
+        /// </summary>
         public DataSegment Data
         {
             get { return _data; }
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException(nameof(Data));
+                    throw new ArgumentNullException(nameof(value));
                 if (value.Length > byte.MaxValue)
-                    throw new ArgumentOutOfRangeException(nameof(Data), value.Length, "Data.Length has to be less than 256");
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Length, "Data.Length has to be less than 256");
                 _data = value;
             }
         }
