@@ -502,6 +502,46 @@ namespace PcapDotNet.Packets.Test
             Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
         }
 
+        [TestMethod]
+        public void HttpValidResponseTest()
+        {
+            var packet = BuildPacket("HTTP/1.0 200 OK\r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpMinimalResponseTest()
+        {
+            var packet = BuildPacket("HTTP/1.0 200 \r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpResponseMissingVersionNumberNotAllowed()
+        {
+            var packet = BuildPacket("HTTP/ 200 OK\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpResponseMissingVersionNotAllowed()
+        {
+            var packet = BuildPacket(" 200 OK\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpResponseMissingStatusCodeNotAllowed()
+        {
+            var packet = BuildPacket("HTTP/1.0  OK \r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
         {
             Datagram expectedBody = expectedBodyString == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedBodyString));
