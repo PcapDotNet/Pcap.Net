@@ -46,6 +46,18 @@ namespace PcapDotNet.Packets.Http
                        Body = Body,
                    };
         }
+        
+        /// <summary>
+        /// An HTTP Request is valid if it contains a method, an URI, and a version.
+        /// </summary>
+        protected override bool CalculateIsValid()
+        {
+            if (_isValid == null)
+            {
+                _isValid = Method != null && !string.IsNullOrEmpty(Uri) && Version != null;
+            }
+            return _isValid.Value;
+        }
 
         internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
             : this(buffer, offset, Parse(buffer, offset, length))
@@ -99,5 +111,7 @@ namespace PcapDotNet.Packets.Http
         {
             return header.ContentLength != null;
         }
+
+        private bool? _isValid;
     }
 }

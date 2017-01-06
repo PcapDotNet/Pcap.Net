@@ -470,6 +470,38 @@ namespace PcapDotNet.Packets.Test
             Assert.IsNotNull(new HttpRequestMethod(HttpRequestKnownMethod.Unknown));
         }
 
+        [TestMethod]
+        public void HttpMinimalValidRequestTest()
+        {
+            var packet = BuildPacket("UnknownMethod / HTTP/1.0\r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpRequestEmptyRequestUriNotAllowed()
+        {
+            var packet = BuildPacket("GET  HTTP/1.1\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpRequestMissingVersionNumberNotAllowed()
+        {
+            var packet = BuildPacket("GET / HTTP/\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
+        public void HttpRequestMissingVersionNotAllowed()
+        {
+            var packet = BuildPacket("GET /\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)
         {
             Datagram expectedBody = expectedBodyString == null ? null : new Datagram(Encoding.ASCII.GetBytes(expectedBodyString));
