@@ -503,6 +503,14 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
+        public void HttpRequestMissingMethodNotAllowed()
+        {
+            var packet = BuildPacket(" / HTTP/1.0\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+        }
+
+        [TestMethod]
         public void HttpValidResponseTest()
         {
             var packet = BuildPacket("HTTP/1.0 200 OK\r\n\r\n");
