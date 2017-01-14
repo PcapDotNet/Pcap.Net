@@ -178,7 +178,7 @@ namespace PcapDotNet.Packets.Dhcp
         /// </summary>
         public DataSegment ClientHardwareAddress
         {
-            get { return this.Subsegment(Offset.ChAddr, 16); }
+            get { return Subsegment(Offset.ChAddr, 16); }
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace PcapDotNet.Packets.Dhcp
                 {
                     options.Add(DhcpOption.CreateInstance(this, ref offset));
                 }
-                this._options = new ReadOnlyCollection<DhcpOption>(options);
+                _options = new ReadOnlyCollection<DhcpOption>(options);
             }
         }
 
