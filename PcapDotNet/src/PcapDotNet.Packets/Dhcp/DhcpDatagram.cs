@@ -276,10 +276,10 @@ namespace PcapDotNet.Packets.Dhcp
             if (_options == null)
             {
                 List<DhcpOption> options = new List<DhcpOption>();
-                int pos = IsDhcp ? Offset.OptionsWithMagicCookie : Offset.Options;
-                while (pos < Length)
+                int offset = IsDhcp ? Offset.OptionsWithMagicCookie : Offset.Options;
+                while (offset < Length)
                 {
-                    options.Add(DhcpOption.CreateInstance(this, ref pos));
+                    options.Add(DhcpOption.CreateInstance(this, ref offset));
                 }
                 this._options = new ReadOnlyCollection<DhcpOption>(options);
             }
