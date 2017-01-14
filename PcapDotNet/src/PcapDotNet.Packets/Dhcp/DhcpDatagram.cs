@@ -112,9 +112,9 @@ namespace PcapDotNet.Packets.Dhcp
         /// RFC 2131.
         /// Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.
         /// </summary>
-        public int TransactionId
+        public uint TransactionId
         {
-            get { return ReadInt(Offset.Xid, Endianity.Big); }
+            get { return ReadUInt(Offset.Xid, Endianity.Big); }
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace PcapDotNet.Packets.Dhcp
             return length;
         }
 
-        internal static void Write(byte[] buffer, int offset, DhcpMessageType messageType, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, int transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
+        internal static void Write(byte[] buffer, int offset, DhcpMessageType messageType, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, uint transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
         {
             buffer.Write(ref offset, (byte)messageType);
             buffer.Write(ref offset, (byte)hardwareType);

@@ -25,7 +25,7 @@ namespace PcapDotNet.Packets.TestUtils
             dhcpLayer.HardwareType = random.NextEnum<ArpHardwareType>(Enum.GetValues(typeof(ArpHardwareType)).Cast<ArpHardwareType>().Where(p => ((short)p) > byte.MaxValue));
             dhcpLayer.HardwareAddressLength = random.NextByte(16);
             dhcpLayer.Hops = random.NextByte();
-            dhcpLayer.TransactionId = random.NextInt();
+            dhcpLayer.TransactionId = random.NextUInt();
             dhcpLayer.SecondsElapsed = random.NextUShort();
             dhcpLayer.DhcpFlags = random.NextEnum<DhcpFlags>();
             dhcpLayer.ClientIpAddress = random.NextIpV4Address();

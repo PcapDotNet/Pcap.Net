@@ -40,7 +40,7 @@ namespace PcapDotNet.Packets.Dhcp
         /// <summary>
         /// Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.
         /// </summary>
-        public int TransactionId { get; set; }
+        public uint TransactionId { get; set; }
 
         /// <summary>
         /// Filled in by client, seconds elapsed since client began address acquisition or renewal process.
