@@ -423,20 +423,15 @@ namespace PcapDotNet.Core.Test
 
                         if (random.NextBool())
                         {
-                            udpLayer.SourcePort = (ushort)(random.NextBool() ? 67 : 68);
+                            udpLayer.SourcePort = 67 ;
+                            udpLayer.DestinationPort = 68;
                         }
                         else
                         {
-                            udpLayer.DestinationPort = 5355;
+                            udpLayer.SourcePort = 68;
+                            udpLayer.DestinationPort = 67;
                         }
-                        if (random.NextBool())
-                        {
-                            udpLayer.SourcePort = (ushort)(random.NextBool() ? 67 : 68);
-                        }
-                        else
-                        {
-                            udpLayer.SourcePort = 5355;
-                        }
+
                         break;
                     }
 
