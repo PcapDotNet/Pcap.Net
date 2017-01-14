@@ -142,18 +142,6 @@ namespace PcapDotNet.Packets.Dhcp
         }
 
         /// <summary>
-        /// Finalizes the layer data in the buffer.
-        /// Used for fields that must be calculated according to the layer's payload (like checksum).
-        /// </summary>
-        /// <param name="buffer">The buffer to finalize the layer in.</param>
-        /// <param name="offset">The offset in the buffer the layer starts.</param>
-        /// <param name="payloadLength">The length of the layer's payload (the number of bytes after the layer in the packet).</param>
-        /// <param name="nextLayer">The layer that comes after this layer. null if this is the last layer.</param>
-        public override void Finalize(byte[] buffer, int offset, int payloadLength, ILayer nextLayer)
-        {
-        }
-
-        /// <summary>
         /// True if the two objects are equal Layers.
         /// </summary>
         public bool Equals(DhcpLayer other)
