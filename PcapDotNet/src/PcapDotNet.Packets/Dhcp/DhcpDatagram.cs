@@ -247,44 +247,6 @@ namespace PcapDotNet.Packets.Dhcp
             }
         }
 
-        internal DhcpDatagram(byte[] buffer, int offset, int length) : base(buffer, offset, length)
-        {
-        }
-
-        private void ParseServerHostName()
-        {
-            if (_serverHostName == null)
-            {
-                //at the moment we only interpret server host name as sname and ignore options
-                byte[] byteServerHostName = ReadBytes(Offset.Sname, 64);
-                _serverHostName = Encoding.ASCII.GetString(byteServerHostName).TrimEnd('\0');
-            }
-        }
-
-        private void ParseBootFileName()
-        {
-            if (_bootFileName == null)
-            {
-                //at the moment we only interpret server host name as sname and ignore options
-                byte[] byteBootFileName = ReadBytes(Offset.File, 128);
-                _bootFileName = Encoding.ASCII.GetString(byteBootFileName).TrimEnd('\0');
-            }
-        }
-
-        private void ParseOptions()
-        {
-            if (_options == null)
-            {
-                List<DhcpOption> options = new List<DhcpOption>();
-                int offset = IsDhcp ? Offset.OptionsWithMagicCookie : Offset.Options;
-                while (offset < Length)
-                {
-                    options.Add(DhcpOption.CreateInstance(this, ref offset));
-                }
-                _options = new ReadOnlyCollection<DhcpOption>(options);
-            }
-        }
-
         /// <summary>
         /// Creates a Layer that represents the datagram to be used with PacketBuilder.
         /// </summary>
@@ -309,6 +271,11 @@ namespace PcapDotNet.Packets.Dhcp
                 IsDhcp = IsDhcp,
                 Options = Options.ToList()
             };
+        }
+
+        
+        internal DhcpDatagram(byte[] buffer, int offset, int length) : base(buffer, offset, length)
+        {
         }
 
         internal static int GetLength(bool isDhcp, IList<DhcpOption> options)
@@ -358,6 +325,40 @@ namespace PcapDotNet.Packets.Dhcp
                 {
                     option.Write(buffer, ref offset);
                 }
+            }
+        }
+
+        private void ParseServerHostName()
+        {
+            if (_serverHostName == null)
+            {
+                //at the moment we only interpret server host name as sname and ignore options
+                byte[] byteServerHostName = ReadBytes(Offset.Sname, 64);
+                _serverHostName = Encoding.ASCII.GetString(byteServerHostName).TrimEnd('\0');
+            }
+        }
+
+        private void ParseBootFileName()
+        {
+            if (_bootFileName == null)
+            {
+                //at the moment we only interpret server host name as sname and ignore options
+                byte[] byteBootFileName = ReadBytes(Offset.File, 128);
+                _bootFileName = Encoding.ASCII.GetString(byteBootFileName).TrimEnd('\0');
+            }
+        }
+
+        private void ParseOptions()
+        {
+            if (_options == null)
+            {
+                List<DhcpOption> options = new List<DhcpOption>();
+                int offset = IsDhcp ? Offset.OptionsWithMagicCookie : Offset.Options;
+                while (offset < Length)
+                {
+                    options.Add(DhcpOption.CreateInstance(this, ref offset));
+                }
+                _options = new ReadOnlyCollection<DhcpOption>(options);
             }
         }
 
