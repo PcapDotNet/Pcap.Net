@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetBiosOverTcpIpNodeTypeOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpNetBIOSOverTCPIPNodeTypeOption
+        /// create new DhcpNetBIOSOverTCPIPNodeTypeOption.
         /// </summary>
         /// <param name="type">Type</param>
         public DhcpNetBiosOverTcpIpNodeTypeOption(NodeType type) : base(DhcpOptionCode.NetBiosOverTcpIpNodeType)
@@ -46,7 +46,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {

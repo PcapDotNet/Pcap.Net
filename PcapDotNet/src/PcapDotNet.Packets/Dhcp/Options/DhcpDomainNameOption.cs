@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpDomainNameOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpDomainNameOption
+        /// create new DhcpDomainNameOption.
         /// </summary>
         /// <param name="domainName">Domain Name</param>
         public DhcpDomainNameOption(string domainName) : base(domainName, DhcpOptionCode.DomainName)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Domain Name
+        /// Domain Name.
         /// </summary>
         public string DomainName
         {

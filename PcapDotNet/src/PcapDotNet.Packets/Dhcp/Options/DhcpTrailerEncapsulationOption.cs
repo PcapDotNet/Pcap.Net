@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTrailerEncapsulationOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpTrailerEncapsulationOption
+        /// create new DhcpTrailerEncapsulationOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpTrailerEncapsulationOption(bool value) : base(value, DhcpOptionCode.TrailerEncapsulation)

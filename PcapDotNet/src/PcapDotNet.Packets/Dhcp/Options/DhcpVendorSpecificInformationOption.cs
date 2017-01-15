@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpVendorSpecificInformationOption : DhcpDataSegmentOption
     {
         /// <summary>
-        /// create new DhcpVendorSpecificInformationOption
+        /// create new DhcpVendorSpecificInformationOption.
         /// </summary>
         /// <param name="vendorSpecificInformation">Vendor-specific information</param>
         public DhcpVendorSpecificInformationOption(DataSegment vendorSpecificInformation) : base(vendorSpecificInformation, DhcpOptionCode.VendorSpecificInformation)
@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132
-        /// Vendor-specific information
+        /// Vendor-specific information.
         /// </summary>
         public DataSegment VendorSpecificInformation
         {

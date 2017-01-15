@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTcpKeepaliveIntervalOption : DhcpUIntOption
     {
         /// <summary>
-        /// create new DhcpTcpKeepaliveIntervalOption
+        /// create new DhcpTcpKeepaliveIntervalOption.
         /// </summary>
         /// <param name="time">Time</param>
         public DhcpTcpKeepaliveIntervalOption(uint time) : base(time, DhcpOptionCode.TcpKeepaliveInterval)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Time
+        /// Time.
         /// A value of zero
         /// indicates that the client should not generate keepalive messages on
         /// connections unless specifically requested by an application.

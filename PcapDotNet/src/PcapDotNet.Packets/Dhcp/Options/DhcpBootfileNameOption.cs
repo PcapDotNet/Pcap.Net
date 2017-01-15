@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpBootfileNameOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpBootfileNameOption
+        /// create new DhcpBootfileNameOption.
         /// </summary>
         /// <param name="bootfileName">Bootfilename</param>
         public DhcpBootfileNameOption(string bootfileName) : base(bootfileName, DhcpOptionCode.BootfileName)
@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Bootfilename
+        /// Bootfilename.
         /// </summary>
         public string BootfileName
         {

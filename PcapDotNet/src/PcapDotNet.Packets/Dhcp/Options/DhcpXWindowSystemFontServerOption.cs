@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpXWindowSystemFontServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpXWindowSystemFontServerOption
+        /// create new DhcpXWindowSystemFontServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpXWindowSystemFontServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.XWindowSystemFontServer)

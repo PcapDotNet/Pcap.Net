@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpPerformMaskDiscoveryOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpPerformMaskDiscoveryOption
+        /// create new DhcpPerformMaskDiscoveryOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpPerformMaskDiscoveryOption(bool value) : base(value, DhcpOptionCode.PerformMaskDiscovery)

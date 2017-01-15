@@ -9,7 +9,7 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// Abstract class for all Dhcp-Options with a list of Addresses
+    /// Abstract class for all Dhcp-Options with a list of Addresses.
     /// </summary>
     public abstract class DhcpAddressListOption : DhcpOption
     {
@@ -61,7 +61,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// true if Addresses-List is allowed to be empty (Default false)
+        /// true if Addresses-List is allowed to be empty (Default false).
         /// </summary>
         protected virtual bool AllowEmptyAddresses
         {
@@ -70,7 +70,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Value of Length-Field
+        /// Value of Length-Field.
         /// </summary>
         public override byte Length
         {
@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// collection of all addresses of this option
+        /// collection of all addresses of this option.
         /// </summary>
         public IReadOnlyCollection<IpV4Address> Addresses
         {

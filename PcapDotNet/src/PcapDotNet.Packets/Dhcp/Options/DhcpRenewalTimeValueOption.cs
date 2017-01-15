@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpRenewalTimeValueOption : DhcpUIntOption
     {
         /// <summary>
-        /// DhcpRenewalTimeValueOption
+        /// DhcpRenewalTimeValueOption.
         /// </summary>
         /// <param name="t1Interval"></param>
         public DhcpRenewalTimeValueOption(uint t1Interval) : base(t1Interval, DhcpOptionCode.RenewalTimeValue)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// T1 Interval
+        /// T1 Interval.
         /// </summary>
         public uint T1Interval
         {

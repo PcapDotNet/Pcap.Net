@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpRootPathOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpRootPathOption
+        /// create new DhcpRootPathOption.
         /// </summary>
         /// <param name="rootDiskPathname">Root Disk Pathname</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Root Disk Pathname
+        /// Root Disk Pathname.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
         public string RootDiskPathname

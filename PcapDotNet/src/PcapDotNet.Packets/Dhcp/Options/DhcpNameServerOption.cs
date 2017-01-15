@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNameServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpNameServerOption
+        /// create new DhcpNameServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpNameServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NameServer)

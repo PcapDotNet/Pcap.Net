@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpIPForwardingEnableOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpIPForwardingEnableOption
+        /// create new DhcpIPForwardingEnableOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpIPForwardingEnableOption(bool value) : base(value, DhcpOptionCode.IPForwardingEnable)

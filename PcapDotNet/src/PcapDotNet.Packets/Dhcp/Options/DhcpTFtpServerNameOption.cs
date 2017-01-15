@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTFtpServerNameOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpTFtpServerNameOption
+        /// create new DhcpTFtpServerNameOption.
         /// </summary>
         /// <param name="tfptServer">TFTP server</param>
         public DhcpTFtpServerNameOption(string tfptServer) : base(tfptServer, DhcpOptionCode.TfptServerName)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// TFTP server
+        /// TFTP server.
         /// </summary>
         public string TFtpServer
         {

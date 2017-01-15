@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMeritDumpFileOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpMeritDumpFileOption
+        /// create new DhcpMeritDumpFileOption.
         /// </summary>
         /// <param name="dumpFilePathname">Dump File Pathname</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Dump File Pathname
+        /// Dump File Pathname.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
         public string DumpFilePathname

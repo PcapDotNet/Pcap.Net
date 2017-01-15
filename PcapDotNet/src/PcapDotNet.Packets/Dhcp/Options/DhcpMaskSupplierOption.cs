@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMaskSupplierOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpMaskSupplierOption
+        /// create new DhcpMaskSupplierOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpMaskSupplierOption(bool value) : base(value, DhcpOptionCode.MaskSupplier)

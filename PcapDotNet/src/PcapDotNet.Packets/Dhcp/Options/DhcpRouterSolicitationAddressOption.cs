@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpRouterSolicitationAddressOption : DhcpSingleAddressOption
     {
         /// <summary>
-        /// create new DhcpRouterSolicitationAddressOption
+        /// create new DhcpRouterSolicitationAddressOption.
         /// </summary>
         /// <param name="address">Address</param>
         public DhcpRouterSolicitationAddressOption(IpV4Address address) : base(address, DhcpOptionCode.RouterSolicitationAddress)
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Address
+        /// Address.
         /// </summary>
         public IpV4Address Address
         {

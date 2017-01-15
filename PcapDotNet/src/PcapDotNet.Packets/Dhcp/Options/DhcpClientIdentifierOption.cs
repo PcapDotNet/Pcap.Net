@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpClientIdentifierOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpClientIdentifierOption
+        /// create new DhcpClientIdentifierOption.
         /// </summary>
         /// <param name="type">Type </param>
         /// <param name="clientIdentifier">Client-Identifier</param>
@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Value of Length-Field
+        /// Value of Length-Field.
         /// </summary>
         public override byte Length
         {
@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Client-Identifier
+        /// Client-Identifier.
         /// </summary>
         public DataSegment ClientIdentifier
         {

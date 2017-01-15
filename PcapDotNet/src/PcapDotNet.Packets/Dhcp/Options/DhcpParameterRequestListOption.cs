@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpParameterRequestListOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpParameterRequestListOption
+        /// create new DhcpParameterRequestListOption.
         /// </summary>
         /// <param name="optionCodes">Option Codes</param>
         public DhcpParameterRequestListOption(IList<DhcpOptionCode> optionCodes) : base(DhcpOptionCode.ParameterRequestList)
@@ -60,13 +60,13 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
             get
             {
-                return (byte)OptionCodes.Count;
+                return (byte)(OptionCodes.Count * sizeof(DhcpOptionCode));
             }
         }
 

@@ -74,7 +74,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Message op code
+        /// Message op code.
         /// </summary>
         public DhcpMessageType MessageType
         {
@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Hardware address type
+        /// Hardware address type.
         /// </summary>
         public ArpHardwareType HardwareType
         {
@@ -92,7 +92,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Hardware address length
+        /// Hardware address length.
         /// </summary>
         public byte HardwareAddressLength
         {
@@ -128,7 +128,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Flags
+        /// Flags.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DhcpFlags Flags
@@ -182,7 +182,7 @@ namespace PcapDotNet.Packets.Dhcp
         }
 
         /// <summary>
-        /// Client MAC address
+        /// Client MAC address.
         /// </summary>
         public MacAddress ClientMacAddress
         {
@@ -191,7 +191,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Optional server host name
+        /// Optional server host name.
         /// </summary>
         public string ServerHostName
         {
@@ -217,7 +217,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// true if the magic dhcp-cookie is set
+        /// true if the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
         /// </summary>
         public bool IsDhcp
         {
@@ -236,7 +236,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// Optional parameters field
+        /// Optional parameters field.
         /// </summary>
         public IReadOnlyCollection<DhcpOption> Options
         {

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNonLocalSourceRoutingEnableOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpNonLocalSourceRoutingEnableOption
+        /// create new DhcpNonLocalSourceRoutingEnableOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpNonLocalSourceRoutingEnableOption(bool value) : base(value, DhcpOptionCode.NonLocalSourceRoutingEnable)

@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpSwapServerOption : DhcpSingleAddressOption
     {
         /// <summary>
-        /// create new DhcpSwapServerOption
+        /// create new DhcpSwapServerOption.
         /// </summary>
         /// <param name="swapServerAddress">Swap Server Address</param>
         public DhcpSwapServerOption(IpV4Address swapServerAddress) : base(swapServerAddress, DhcpOptionCode.SwapServer)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Swap Server Address
+        /// Swap Server Address.
         /// </summary>
         public IpV4Address SwapServerAddress
         {

@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMessageTypeOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpMessageTypeOption
+        /// create new DhcpMessageTypeOption.
         /// </summary>
         /// <param name="type">Type</param>
         public DhcpMessageTypeOption(MessageType type) : base(DhcpOptionCode.MessageType)
@@ -45,13 +45,13 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
             get
             {
-                return 1;
+                return sizeof(MessageType);
             }
         }
 
@@ -75,7 +75,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Supported Message-Types
+        /// Supported Message-Types.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
         public enum MessageType : byte

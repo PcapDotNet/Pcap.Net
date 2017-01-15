@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpCookieServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpCookieServerOption
+        /// create new DhcpCookieServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpCookieServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.CookieServer)

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTcpDefaultTtlOption : DhcpByteOption
     {
         /// <summary>
-        /// create new DhcpTcpDefaultTtlOption
+        /// create new DhcpTcpDefaultTtlOption.
         /// </summary>
         /// <param name="ttl">TTL</param>
         public DhcpTcpDefaultTtlOption(byte ttl) : base(ttl, DhcpOptionCode.TcpDefaultTtl)
@@ -35,7 +35,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// TTL
+        /// TTL.
         /// </summary>
         public byte Ttl
         {

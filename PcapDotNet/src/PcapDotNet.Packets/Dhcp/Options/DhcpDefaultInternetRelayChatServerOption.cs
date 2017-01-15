@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpDefaultInternetRelayChatServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpDefaultInternetRelayChatServerOption
+        /// create new DhcpDefaultInternetRelayChatServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpDefaultInternetRelayChatServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultInternetRelayChatServer)

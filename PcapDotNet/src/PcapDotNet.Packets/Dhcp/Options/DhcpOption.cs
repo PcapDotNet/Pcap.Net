@@ -9,13 +9,13 @@ namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
     /// RFC 2132.
-    /// Abstract class for all possible Dhcp-Options
+    /// Abstract class for all possible Dhcp-Options.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract class DhcpOption : IEquatable<DhcpOption>
     {
         /// <summary>
-        /// Option-Code according RFC 2132
+        /// Option-Code according RFC 2132.
         /// </summary>
         public DhcpOptionCode OptionCode
         {
@@ -24,7 +24,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public abstract byte Length
         {
@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// create new Option
+        /// create new Option.
         /// </summary>
         /// <param name="code">Option-Code</param>
         protected DhcpOption(DhcpOptionCode code)
@@ -348,7 +348,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// calucate a hash of the option
+        /// calculate a hash of the option.
         /// </summary>
         /// <returns>a hash representing this instance</returns>
         public override int GetHashCode()

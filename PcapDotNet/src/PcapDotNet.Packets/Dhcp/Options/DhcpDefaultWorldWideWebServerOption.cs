@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpDefaultWorldWideWebServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpDefaultWorldWideWebServerOption
+        /// create new DhcpDefaultWorldWideWebServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpDefaultWorldWideWebServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultWorldWideWebServer)

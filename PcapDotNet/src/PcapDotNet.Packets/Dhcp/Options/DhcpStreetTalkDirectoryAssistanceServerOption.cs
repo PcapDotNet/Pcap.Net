@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpStreetTalkDirectoryAssistanceServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpStreetTalkDirectoryAssistanceServerOption
+        /// create new DhcpStreetTalkDirectoryAssistanceServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpStreetTalkDirectoryAssistanceServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.StreetTalkDirectoryAssistanceServer)

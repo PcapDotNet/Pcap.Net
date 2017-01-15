@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         private const ushort MIN_MTU = 68;
 
         /// <summary>
-        /// create new DhcpInterfaceMTUOption
+        /// create new DhcpInterfaceMTUOption.
         /// </summary>
         /// <param name="mtu">MTU</param>
         public DhcpInterfaceMtuOption(ushort mtu) : base(mtu, DhcpOptionCode.InterfaceMtu)
@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// MTU
+        /// MTU.
         /// </summary>
         public ushort Mtu
         {

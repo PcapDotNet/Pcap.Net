@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMobileIPHomeAgentOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpMobileIPHomeAgentOption
+        /// create new DhcpMobileIPHomeAgentOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpMobileIPHomeAgentOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.MobileIPHomeAgent)
@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// true if Addresses-List is allowed to be empty
+        /// true if Addresses-List is allowed to be empty.
         /// </summary>
         protected override bool AllowEmptyAddresses
         {

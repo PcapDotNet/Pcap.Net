@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpBootFileSizeOption : DhcpUShortOption
     {
         /// <summary>
-        /// create new DhcpBootFileSizeOption
+        /// create new DhcpBootFileSizeOption.
         /// </summary>
         /// <param name="fileSize">File Size</param>
         public DhcpBootFileSizeOption(ushort fileSize) : base(fileSize, DhcpOptionCode.BootFileSize)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// File Size
+        /// File Size.
         /// </summary>
         public ushort FileSize
         {

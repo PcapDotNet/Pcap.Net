@@ -26,7 +26,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpOptionOverloadOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpOptionOverloadOption
+        /// create new DhcpOptionOverloadOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpOptionOverloadOption(OptionOverloadValue value) : base(DhcpOptionCode.OptionOverload)
@@ -51,19 +51,19 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
             get
             {
-                return 1;
+                return sizeof(OptionOverloadValue);
             }
         }
 
         /// <summary>
         /// RFC 2132.
-        /// Value
+        /// Value.
         /// </summary>
         public OptionOverloadValue Value
         {

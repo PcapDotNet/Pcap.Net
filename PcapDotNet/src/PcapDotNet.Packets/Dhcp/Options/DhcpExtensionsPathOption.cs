@@ -24,7 +24,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpExtensionsPathOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpExtensionsPathOption
+        /// create new DhcpExtensionsPathOption.
         /// </summary>
         /// <param name="extensionsPathname">Extensions Pathname</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
@@ -39,7 +39,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Extensions Pathname
+        /// Extensions Pathname.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Pathname")]
         public string ExtensionsPathname

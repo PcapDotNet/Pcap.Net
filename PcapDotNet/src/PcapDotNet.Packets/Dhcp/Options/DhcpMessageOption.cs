@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMessageOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpMessageOption
+        /// create new DhcpMessageOption.
         /// </summary>
         /// <param name="text">Text</param>
         public DhcpMessageOption(string text) : base(text, DhcpOptionCode.Message)
@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         ///<summary>
         /// RFC 2132.
-        /// Text
+        /// Text.
         /// </summary>
         public string Text
         {

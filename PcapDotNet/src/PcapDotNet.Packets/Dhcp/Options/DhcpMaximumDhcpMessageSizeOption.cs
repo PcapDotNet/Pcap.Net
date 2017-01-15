@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpMaximumDhcpMessageSizeOption : DhcpUShortOption
     {
         /// <summary>
-        /// create new DhcpMaximumDhcpMessageSizeOption
+        /// create new DhcpMaximumDhcpMessageSizeOption.
         /// </summary>
         /// <param name="length">Length</param>
         public DhcpMaximumDhcpMessageSizeOption(ushort length) : base(length, DhcpOptionCode.MaximumDhcpMessageSize)
@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Length
+        /// Length.
         /// </summary>
         public ushort MaxLength
         {

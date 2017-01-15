@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpBroadcastAddressOption : DhcpSingleAddressOption
     {
         /// <summary>
-        /// create new DhcpBroadcastAddressOption
+        /// create new DhcpBroadcastAddressOption.
         /// </summary>
         /// <param name="broadcastAddress">Broadcast Address</param>
         public DhcpBroadcastAddressOption(IpV4Address broadcastAddress) : base(broadcastAddress, DhcpOptionCode.BroadcastAddress)

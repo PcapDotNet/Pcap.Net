@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpEndOption : DhcpOption
     {
         /// <summary>
-        /// create new EndOption
+        /// create new EndOption.
         /// </summary>
         public DhcpEndOption() : base(DhcpOptionCode.End)
         {

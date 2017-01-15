@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTimeOffsetOption : DhcpIntOption
     {
         /// <summary>
-        /// create new DhcpTimeOffsetOption
+        /// create new DhcpTimeOffsetOption.
         /// </summary>
         /// <param name="timeOffset">Time Offset</param>
         public DhcpTimeOffsetOption(int timeOffset) : base(timeOffset, DhcpOptionCode.TimeOffset)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Time Offset
+        /// Time Offset.
         /// The offset is
         /// expressed as a two's complement 32-bit integer.  A positive offset
         /// indicates a location east of the zero meridian and a negative offset

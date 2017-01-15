@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// DHCP option for any options
+    /// DHCP option for any options.
     /// </summary>
     public class DhcpAnyOption : DhcpOption
     {
         /// <summary>
-        /// create new Any-Option
+        /// create new Any-Option.
         /// </summary>
         /// <param name="data">data represented by the option</param>
         /// <param name="code">the OptionCode</param>
@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
@@ -50,7 +50,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Data of the Option
+        /// Data of the Option.
         /// </summary>
         public DataSegment Data
         {

@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpAllSubnetsAreLocalOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new AllSubnetsAreLocalOption
+        /// create new AllSubnetsAreLocalOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpAllSubnetsAreLocalOption(bool value) : base(value, DhcpOptionCode.AllSubnetsAreLocal)

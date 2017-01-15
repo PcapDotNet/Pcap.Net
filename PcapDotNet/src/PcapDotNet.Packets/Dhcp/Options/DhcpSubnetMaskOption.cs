@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpSubnetMaskOption : DhcpSingleAddressOption
     {
         /// <summary>
-        /// create new DhcpSubnetMaskOption
+        /// create new DhcpSubnetMaskOption.
         /// </summary>
         /// <param name="subnetMask">Subnet Mask></param>
         public DhcpSubnetMaskOption(IpV4Address subnetMask) : base(subnetMask, DhcpOptionCode.SubnetMask)
@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Subnet Mask
+        /// Subnet Mask.
         /// </summary>
         public IpV4Address SubnetMask
         {

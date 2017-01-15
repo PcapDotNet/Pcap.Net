@@ -30,7 +30,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         internal const int MAX_ROUTES = 255 / 8;
 
         /// <summary>
-        /// create new DhcpStaticRouteOption
+        /// create new DhcpStaticRouteOption.
         /// </summary>
         /// <param name="routes">Routes</param>
         public DhcpStaticRouteOption(IList<IpV4AddressRoute> routes) : base(DhcpOptionCode.StaticRoute)
@@ -71,7 +71,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
@@ -82,7 +82,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Routes
+        /// Routes.
         /// </summary>
         public IReadOnlyCollection<IpV4AddressRoute> Routes
         {
@@ -91,7 +91,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Mapping between Ipv$Address and Route Address
+        /// Mapping between Ipv$Address and Route Address.
         /// </summary>
         public struct IpV4AddressRoute : IEquatable<IpV4AddressRoute>
         {
@@ -101,7 +101,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             public const int SizeOf = IpV4Address.SizeOf + IpV4Address.SizeOf;
 
             /// <summary>
-            /// Destination Address
+            /// Destination Address.
             /// </summary>
             public IpV4Address Destination
 
@@ -111,7 +111,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             }
 
             /// <summary>
-            /// Router-IP
+            /// Router-IP.
             /// </summary>
             public IpV4Address Router
             {
@@ -120,7 +120,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             }
 
             /// <summary>
-            /// create new IpV4AddressRoute
+            /// create new IpV4AddressRoute.
             /// </summary>
             /// <param name="destination">Destination IP</param>
             /// <param name="router">Router IP</param>

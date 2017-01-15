@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpRebindingTimeValueOption : DhcpUIntOption
     {
         /// <summary>
-        /// create new DhcpRebindingTimeValueOption
+        /// create new DhcpRebindingTimeValueOption.
         /// </summary>
         /// <param name="t2Interval">T1 Interval</param>
         public DhcpRebindingTimeValueOption(uint t2Interval) : base(t2Interval, DhcpOptionCode.RebindingTimeValue)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// T2 Interval
+        /// T2 Interval.
         /// </summary>
         public uint T2Interval
         {

@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpEthernetEncapsulationOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpEthernetEncapsulationOption
+        /// create new DhcpEthernetEncapsulationOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpEthernetEncapsulationOption(bool value) : base(value, DhcpOptionCode.EthernetEncapsulation)

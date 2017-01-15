@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpIPAddressLeaseTimeOption : DhcpUIntOption
     {
         /// <summary>
-        /// create new DhcpIPAddressLeaseTimeOption
+        /// create new DhcpIPAddressLeaseTimeOption.
         /// </summary>
         /// <param name="leaseTime">Lease Time</param>
         public DhcpIPAddressLeaseTimeOption(uint leaseTime) : base(leaseTime, DhcpOptionCode.IPAddressLeaseTime)
@@ -36,8 +36,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Lease Time
-        /// The time is in units of seconds
+        /// Lease Time.
+        /// The time is in units of seconds.
         /// </summary>
         public uint LeaseTime
         {

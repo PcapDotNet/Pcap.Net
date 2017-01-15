@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpHostNameOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpHostNameOption
+        /// create new DhcpHostNameOption.
         /// </summary>
         /// <param name="hostName">Host Name</param>
         public DhcpHostNameOption(string hostName) : base(hostName, DhcpOptionCode.HostName)
@@ -36,7 +36,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Host Name
+        /// Host Name.
         /// </summary>
         public string HostName
         {

@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTimeServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpTimeServerOption
+        /// create new DhcpTimeServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpTimeServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.TimeServer)

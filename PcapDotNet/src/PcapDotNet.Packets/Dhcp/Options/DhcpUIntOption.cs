@@ -8,7 +8,7 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// Abstract class for all Dhcp-Options with a uint value
+    /// Abstract class for all Dhcp-Options with a uint value.
     /// </summary>
     public class DhcpUIntOption : DhcpOption
     {
@@ -37,7 +37,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Value of Length-Field
+        /// Value of Length-Field.
         /// </summary>
         public override byte Length
         {
@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// The real value of the UIntOption
+        /// The real value of the UIntOption.
         /// </summary>
         protected uint InternalValue
         {

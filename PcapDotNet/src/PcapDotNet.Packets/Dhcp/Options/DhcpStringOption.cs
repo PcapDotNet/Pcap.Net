@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    ///
+    /// Abstract class for all Dhcp-Options with a string property
     /// </summary>
     public abstract class DhcpStringOption : DhcpOption
     {
@@ -32,7 +32,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Value of Length-Field
+        /// Value of Length-Field.
         /// </summary>
         public override byte Length
         {
@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// The real value of the StringOption
+        /// The real value of the StringOption.
         /// </summary>
         protected string InternalValue
         {

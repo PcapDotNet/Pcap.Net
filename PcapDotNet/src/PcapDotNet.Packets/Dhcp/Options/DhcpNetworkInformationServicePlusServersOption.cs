@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetworkInformationServicePlusServersOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpNetworkInformationServicePlusServersOption
+        /// create new DhcpNetworkInformationServicePlusServersOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpNetworkInformationServicePlusServersOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NetworkInformationServicePlusServers)

@@ -31,7 +31,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         internal const int MAX_FILTERS = 255 / IpV4AddressWithMask.SizeOf;
 
         /// <summary>
-        /// create new DhcpPolicyFilterOption
+        /// create new DhcpPolicyFilterOption.
         /// </summary>
         /// <param name="filters">Filters</param>
         public DhcpPolicyFilterOption(IList<IpV4AddressWithMask> filters) : base(DhcpOptionCode.PolicyFilter)
@@ -72,7 +72,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
@@ -83,7 +83,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Filters
+        /// Filters.
         /// </summary>
         public IReadOnlyCollection<IpV4AddressWithMask> Filters
         {
@@ -92,7 +92,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Represents and IpV4Address with Mask
+        /// Represents and IpV4Address with Mask.
         /// </summary>
         public struct IpV4AddressWithMask : IEquatable<IpV4AddressWithMask>
         {
@@ -121,7 +121,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             }
 
             /// <summary>
-            /// create new IpV4AddressWithMask
+            /// create new IpV4AddressWithMask.
             /// </summary>
             /// <param name="address">Address</param>
             /// <param name="mask">Mask</param>

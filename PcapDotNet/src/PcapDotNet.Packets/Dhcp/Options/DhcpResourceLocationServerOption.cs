@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpResourceLocationServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpResourceLocationServerOption
+        /// create new DhcpResourceLocationServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpResourceLocationServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.ResourceLocationServer)

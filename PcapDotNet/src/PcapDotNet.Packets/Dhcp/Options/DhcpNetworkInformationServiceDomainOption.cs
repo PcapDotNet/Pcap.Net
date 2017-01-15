@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetworkInformationServiceDomainOption : DhcpStringOption
     {
         /// <summary>
-        /// create new DhcpNetworkInformationServiceDomainOption
+        /// create new DhcpNetworkInformationServiceDomainOption.
         /// </summary>
         /// <param name="nisDomainName">NIS Domain Name</param>
         public DhcpNetworkInformationServiceDomainOption(string nisDomainName) : base(nisDomainName, DhcpOptionCode.NetworkInformationServiceDomain)
@@ -33,7 +33,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// NIS Domain Name
+        /// NIS Domain Name.
         /// </summary>
         public string NisDomainName
         {

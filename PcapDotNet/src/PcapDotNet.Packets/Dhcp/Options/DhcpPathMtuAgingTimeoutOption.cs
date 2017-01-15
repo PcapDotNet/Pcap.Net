@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpPathMtuAgingTimeoutOption : DhcpUIntOption
     {
         /// <summary>
-        /// create new DhcpPathMtuAgingTimeoutOption
+        /// create new DhcpPathMtuAgingTimeoutOption.
         /// </summary>
         /// <param name="timeout">Timeout</param>
         public DhcpPathMtuAgingTimeoutOption(uint timeout) : base(timeout, DhcpOptionCode.PathMtuAgingTimeout)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Timeout
+        /// Timeout.
         /// </summary>
         public uint Timeout
         {

@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpServerIdentifierOption : DhcpSingleAddressOption
     {
         /// <summary>
-        /// create new DhcpServerIdentifierOption
+        /// create new DhcpServerIdentifierOption.
         /// </summary>
         /// <param name="address">Address</param>
         public DhcpServerIdentifierOption(IpV4Address address) : base(address, DhcpOptionCode.ServerIdentifier)
@@ -41,8 +41,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// RFC 2132
-        /// Address
+        /// RFC 2132.
+        /// Address.
         /// </summary>
         public IpV4Address Address
         {

@@ -23,7 +23,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpXWindowSystemDisplayManagerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpXWindowSystemDisplayManagerOption
+        /// create new DhcpXWindowSystemDisplayManagerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpXWindowSystemDisplayManagerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.XWindowSystemDisplayManager)

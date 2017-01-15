@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetworkNewsTransportProtocolServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpNetworkNewsTransportProtocolServerOption
+        /// create new DhcpNetworkNewsTransportProtocolServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpNetworkNewsTransportProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NetworkNewsTransportProtocolServer)

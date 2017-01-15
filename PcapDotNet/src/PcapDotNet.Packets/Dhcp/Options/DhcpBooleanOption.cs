@@ -8,7 +8,7 @@ using PcapDotNet.Packets.IpV4;
 namespace PcapDotNet.Packets.Dhcp.Options
 {
     /// <summary>
-    /// Abstract class for all Dhcp-Options with a boolean value
+    /// Abstract class for all Dhcp-Options with a boolean value.
     /// </summary>
     public class DhcpBooleanOption : DhcpOption
     {
@@ -38,7 +38,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Value of Length-Field
+        /// Value of Length-Field.
         /// </summary>
         public override byte Length
         {
@@ -49,7 +49,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// The real value of the BooleanOption
+        /// The real value of the BooleanOption.
         /// </summary>
         protected bool InternalValue
         {

@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpDefaultFingerServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpDefaultFingerServerOption
+        /// create new DhcpDefaultFingerServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpDefaultFingerServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.DefaultFingerServer)

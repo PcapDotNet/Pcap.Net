@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpPostOfficeProtocolServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpPostOfficeProtocolServerOption
+        /// create new DhcpPostOfficeProtocolServerOption.
         /// </summary>
         /// <param name="addresses"></param>
         public DhcpPostOfficeProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.PostOfficeProtocolServer)

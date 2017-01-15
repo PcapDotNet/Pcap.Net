@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetBiosOverTcpIpScopeOption : DhcpOption
     {
         /// <summary>
-        /// create new DhcpNetBiosOverTcpIpScopeOption
+        /// create new DhcpNetBiosOverTcpIpScopeOption.
         /// </summary>
         /// <param name="netBiosScope">NetBIOS Scope</param>
         public DhcpNetBiosOverTcpIpScopeOption(DataSegment netBiosScope) : base(DhcpOptionCode.NetBiosOverTcpIpScope)
@@ -43,7 +43,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
@@ -55,7 +55,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// NetBIOS Scope
+        /// NetBIOS Scope.
         /// </summary>
         public DataSegment NetBiosScope
         {

@@ -28,7 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpVendorClassidentifierOption : DhcpDataSegmentOption
     {
         /// <summary>
-        /// create new DhcpVendorClassidentifierOption
+        /// create new DhcpVendorClassidentifierOption.
         /// </summary>
         /// <param name="vendorClassIdentifier">Vendor class Identifier</param>
         public DhcpVendorClassidentifierOption(DataSegment vendorClassIdentifier) : base(vendorClassIdentifier, DhcpOptionCode.VendorClassidentifier)
@@ -42,7 +42,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Vendor class Identifier
+        /// Vendor class Identifier.
         /// </summary>
         public DataSegment VendorClassIdentifier
         {

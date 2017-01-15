@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpTcpKeepaliveGarbageOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpTcpKeepaliveGarbageOption
+        /// create new DhcpTcpKeepaliveGarbageOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpTcpKeepaliveGarbageOption(bool value) : base(value, DhcpOptionCode.TcpKeepaliveGarbage)

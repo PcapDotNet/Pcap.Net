@@ -24,7 +24,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         internal const int MAX_SIZES = 255 / sizeof(ushort);
 
         /// <summary>
-        /// create new DhcpPathMtuPlateauTableOption
+        /// create new DhcpPathMtuPlateauTableOption.
         /// </summary>
         /// <param name="sizes">Sizes</param>
         public DhcpPathMtuPlateauTableOption(IList<ushort> sizes) : base(DhcpOptionCode.PathMtuPlateauTable)
@@ -66,7 +66,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
@@ -78,7 +78,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Sizes
+        /// Sizes.
         /// </summary>
         public IReadOnlyCollection<ushort> Sizes
         {

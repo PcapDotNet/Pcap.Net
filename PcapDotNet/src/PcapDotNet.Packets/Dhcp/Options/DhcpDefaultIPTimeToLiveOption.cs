@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpDefaultIPTimeToLiveOption : DhcpByteOption
     {
         /// <summary>
-        /// create new DhcpDefaultIPTimeToLiveOption
+        /// create new DhcpDefaultIPTimeToLiveOption.
         /// </summary>
         /// <param name="ttl">TTL</param>
         public DhcpDefaultIPTimeToLiveOption(byte ttl) : base(ttl, DhcpOptionCode.DefaultIpTimeToLive)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// TTL
+        /// TTL.
         /// </summary>
         public byte Ttl
         {

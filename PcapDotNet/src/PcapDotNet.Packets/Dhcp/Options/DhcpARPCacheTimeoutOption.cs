@@ -19,7 +19,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpArpCacheTimeoutOption : DhcpUIntOption
     {
         /// <summary>
-        /// create new ArpCacheTimeoutOption
+        /// create new ArpCacheTimeoutOption.
         /// </summary>
         /// <param name="time">Time</param>
         public DhcpArpCacheTimeoutOption(uint time) : base(time, DhcpOptionCode.ArpCacheTimeout)
@@ -34,7 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         /// <summary>
         /// RFC 2132.
         /// Time
-        /// timeout in seconds for ARP cache entries
+        /// timeout in seconds for ARP cache entries.
         /// </summary>
         public uint Time
         {

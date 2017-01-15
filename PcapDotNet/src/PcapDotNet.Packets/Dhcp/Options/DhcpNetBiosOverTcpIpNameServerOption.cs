@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpNetBiosOverTcpIpNameServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpNetBiosOverTcpIpNameServerOption
+        /// create new DhcpNetBiosOverTcpIpNameServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpNetBiosOverTcpIpNameServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.NetBiosOverTcpIpNameServer)

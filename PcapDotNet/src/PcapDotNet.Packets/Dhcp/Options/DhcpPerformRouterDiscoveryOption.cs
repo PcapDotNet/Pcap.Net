@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpPerformRouterDiscoveryOption : DhcpBooleanOption
     {
         /// <summary>
-        /// create new DhcpPerformRouterDiscoveryOption
+        /// create new DhcpPerformRouterDiscoveryOption.
         /// </summary>
         /// <param name="value">Value</param>
         public DhcpPerformRouterDiscoveryOption(bool value) : base(value, DhcpOptionCode.PerformRouterDiscovery)

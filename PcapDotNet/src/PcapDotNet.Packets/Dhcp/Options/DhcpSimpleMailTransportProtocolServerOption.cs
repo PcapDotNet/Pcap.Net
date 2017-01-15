@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpSimpleMailTransportProtocolServerOption : DhcpAddressListOption
     {
         /// <summary>
-        /// create new DhcpSimpleMailTransportProtocolServerOption
+        /// create new DhcpSimpleMailTransportProtocolServerOption.
         /// </summary>
         /// <param name="addresses">Addresses</param>
         public DhcpSimpleMailTransportProtocolServerOption(IList<IpV4Address> addresses) : base(addresses, DhcpOptionCode.SimpleMailTransportProtocolServer)

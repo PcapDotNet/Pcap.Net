@@ -18,17 +18,17 @@ namespace PcapDotNet.Packets.Dhcp
     public sealed class DhcpLayer : SimpleLayer, IEquatable<DhcpLayer>
     {
         /// <summary>
-        /// Message op code
+        /// Message op code.
         /// </summary>
         public DhcpMessageType MessageType { get; set; }
 
         /// <summary>
-        /// Hardware address type
+        /// Hardware address type.
         /// </summary>
         public ArpHardwareType HardwareType { get; set; }
 
         /// <summary>
-        /// Hardware address length
+        /// Hardware address length.
         /// </summary>
         public byte HardwareAddressLength { get; set; }
 
@@ -48,7 +48,7 @@ namespace PcapDotNet.Packets.Dhcp
         public ushort SecondsElapsed { get; set; }
 
         /// <summary>
-        /// Flags
+        /// Flags.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public DhcpFlags DhcpFlags { get; set; }
@@ -79,7 +79,7 @@ namespace PcapDotNet.Packets.Dhcp
         public DataSegment ClientHardwareAddress { get; set; }
 
         /// <summary>
-        /// Client MAC address
+        /// Client MAC address.
         /// </summary>
         public MacAddress ClientMacAddress
         {
@@ -98,7 +98,7 @@ namespace PcapDotNet.Packets.Dhcp
         }
 
         /// <summary>
-        /// Optional server host name
+        /// Optional server host name.
         /// </summary>
         public string ServerHostName { get; set; }
 
@@ -108,12 +108,12 @@ namespace PcapDotNet.Packets.Dhcp
         public string BootFileName { get; set; }
 
         /// <summary>
-        /// true if the magic dhcp-cookie is set
+        /// true if the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
         /// </summary>
         public bool IsDhcp { get; set; }
 
         /// <summary>
-        /// Optional parameters field
+        /// Optional parameters field.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<DhcpOption> Options { get; set; }

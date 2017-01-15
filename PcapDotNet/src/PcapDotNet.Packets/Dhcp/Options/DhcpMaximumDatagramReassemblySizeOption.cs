@@ -22,7 +22,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         private const ushort MIN_SIZE = 576;
 
         /// <summary>
-        /// create new DhcpMaximumDatagramReassemblySizeOption
+        /// create new DhcpMaximumDatagramReassemblySizeOption.
         /// </summary>
         /// <param name="size">Size</param>
         public DhcpMaximumDatagramReassemblySizeOption(ushort size) : base(size, DhcpOptionCode.MaximumDatagramReassemblySize)
@@ -38,7 +38,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
 
         /// <summary>
         /// RFC 2132.
-        /// Size
+        /// Size.
         /// </summary>
         public ushort Size
         {

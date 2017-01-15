@@ -20,14 +20,14 @@ namespace PcapDotNet.Packets.Dhcp.Options
     public class DhcpPadOption : DhcpOption
     {
         /// <summary>
-        /// create new PadOption
+        /// create new PadOption.
         /// </summary>
         public DhcpPadOption() : base(DhcpOptionCode.Pad)
         {
         }
 
         /// <summary>
-        /// Length of the Dhcp-Option
+        /// Length of the Dhcp-Option.
         /// </summary>
         public override byte Length
         {
