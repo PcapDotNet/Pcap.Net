@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PcapDotNet.Packets.Dhcp
 {
     /// <summary>
-    /// RFCs 2131.
+    /// RFC 2131.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum DhcpMessageOPCode : byte
