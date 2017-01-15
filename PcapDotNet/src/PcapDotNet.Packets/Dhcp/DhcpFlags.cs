@@ -24,13 +24,13 @@ namespace PcapDotNet.Packets.Dhcp
     {
         /// <summary>
         /// RFCs 2131.
-        /// Response as Unicast
+        /// Response as Unicast.
         /// </summary>
         Unicast = 0 << 15,
 
         /// <summary>
         /// RFCs 2131.
-        /// Response as Broadcast
+        /// Response as Broadcast.
         /// </summary>
         Broadcast = 1 << 15
     }

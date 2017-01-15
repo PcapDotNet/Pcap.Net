@@ -21,7 +21,7 @@ namespace PcapDotNet.Packets.TestUtils
             const int MaxOptions = 10;
 
             DhcpLayer dhcpLayer = new DhcpLayer();
-            dhcpLayer.MessageType = random.NextEnum<DhcpMessageType>();
+            dhcpLayer.MessageOPCode = random.NextEnum<DhcpMessageOPCode>();
             dhcpLayer.HardwareType = random.NextEnum<ArpHardwareType>(Enum.GetValues(typeof(ArpHardwareType)).Cast<ArpHardwareType>().Where(p => ((short)p) > byte.MaxValue));
             dhcpLayer.HardwareAddressLength = random.NextByte(16);
             dhcpLayer.Hops = random.NextByte();

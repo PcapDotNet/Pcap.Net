@@ -20,7 +20,7 @@ namespace PcapDotNet.Packets.Dhcp
         /// <summary>
         /// Message op code.
         /// </summary>
-        public DhcpMessageType MessageType { get; set; }
+        public DhcpMessageOPCode MessageOPCode { get; set; }
 
         /// <summary>
         /// Hardware address type.
@@ -137,7 +137,7 @@ namespace PcapDotNet.Packets.Dhcp
         protected override void Write(byte[] buffer, int offset)
         {
             DhcpDatagram.Write(buffer, offset,
-                              MessageType, HardwareType, HardwareAddressLength, Hops, TransactionId, SecondsElapsed, DhcpFlags, ClientIpAddress, YourClientIpAddress,
+                              MessageOPCode, HardwareType, HardwareAddressLength, Hops, TransactionId, SecondsElapsed, DhcpFlags, ClientIpAddress, YourClientIpAddress,
                               NextServerIpAddress, RelayAgentIpAddress, ClientHardwareAddress, ServerHostName, BootFileName, IsDhcp, Options);
         }
 
@@ -147,7 +147,7 @@ namespace PcapDotNet.Packets.Dhcp
         public bool Equals(DhcpLayer other)
         {
             return other != null &&
-                   Equals(MessageType, other.MessageType) &&
+                   Equals(MessageOPCode, other.MessageOPCode) &&
                    Equals(HardwareType, other.HardwareType) &&
                    Equals(HardwareAddressLength, other.HardwareAddressLength) &&
                    Equals(Hops, other.Hops) &&
