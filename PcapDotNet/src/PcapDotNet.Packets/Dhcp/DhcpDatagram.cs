@@ -290,9 +290,9 @@ namespace PcapDotNet.Packets.Dhcp
             return length;
         }
 
-        internal static void Write(byte[] buffer, int offset, DhcpMessageOPCode messageOPCode, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, uint transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
+        internal static void Write(byte[] buffer, int offset, DhcpMessageOPCode messageType, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, uint transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
         {
-            buffer.Write(ref offset, (byte)messageOPCode);
+            buffer.Write(ref offset, (byte)messageType);
             buffer.Write(ref offset, (byte)hardwareType);
             buffer.Write(ref offset, hardwareAddressLength);
             buffer.Write(ref offset, hops);
