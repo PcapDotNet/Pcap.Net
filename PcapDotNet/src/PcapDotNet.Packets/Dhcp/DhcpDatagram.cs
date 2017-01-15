@@ -292,33 +292,40 @@ namespace PcapDotNet.Packets.Dhcp
 
         internal static void Write(byte[] buffer, int offset, DhcpMessageOPCode messageType, ArpHardwareType hardwareType, byte hardwareAddressLength, byte hops, uint transactionId, ushort secondsElapsed, DhcpFlags flags, IpV4Address clientIpAddress, IpV4Address yourClientIpAddress, IpV4Address nextServerIpAddress, IpV4Address relayAgentIpAddress, DataSegment clientHardwareAddress, string serverHostName, string bootFileName, bool isDhcp, IList<DhcpOption> options)
         {
-            buffer.Write(ref offset, (byte)messageType);
-            buffer.Write(ref offset, (byte)hardwareType);
-            buffer.Write(ref offset, hardwareAddressLength);
-            buffer.Write(ref offset, hops);
-            buffer.Write(ref offset, transactionId, Endianity.Big);
-            buffer.Write(ref offset, secondsElapsed, Endianity.Big);
-            buffer.Write(ref offset, (ushort)flags, Endianity.Big);
-            buffer.Write(ref offset, clientIpAddress, Endianity.Big);
-            buffer.Write(ref offset, yourClientIpAddress, Endianity.Big);
-            buffer.Write(ref offset, nextServerIpAddress, Endianity.Big);
-            buffer.Write(ref offset, relayAgentIpAddress, Endianity.Big);
-            buffer.Write(offset, clientHardwareAddress);
-            offset += Offset.Sname - Offset.ChAddr;
+            buffer.Write(offset + Offset.Op, (byte)messageType);
+            buffer.Write(offset + Offset.Htype, (byte)hardwareType);
+            buffer.Write(offset + Offset.Hlen, hardwareAddressLength);
+            buffer.Write(offset + Offset.Hops, hops);
+            buffer.Write(offset + Offset.Xid, transactionId, Endianity.Big);
+            buffer.Write(offset + Offset.Secs, secondsElapsed, Endianity.Big);
+            buffer.Write(offset + Offset.Flags, (ushort)flags, Endianity.Big);
+            buffer.Write(offset + Offset.CiAddr, clientIpAddress, Endianity.Big);
+            buffer.Write(offset + Offset.YiAddr, yourClientIpAddress, Endianity.Big);
+            buffer.Write(offset + Offset.SiAddr, nextServerIpAddress, Endianity.Big);
+            buffer.Write(offset + Offset.GiAddr, relayAgentIpAddress, Endianity.Big);
+            buffer.Write(offset + Offset.ChAddr, clientHardwareAddress);
+
+            buffer.Write(offset + Offset.Sname, new DataSegment(new byte[Offset.File - Offset.Sname])); // ensure 0
             if (serverHostName != null)
             {
-                buffer.Write(offset, new DataSegment(Encoding.ASCII.GetBytes(serverHostName)));
+                buffer.Write(offset + Offset.Sname, new DataSegment(Encoding.ASCII.GetBytes(serverHostName)));
             }
-            offset += Offset.File - Offset.Sname;
+            buffer.Write(offset + Offset.File, new DataSegment(new byte[Offset.Options - Offset.File])); // ensure 0
             if (bootFileName != null)
             {
-                buffer.Write(offset, new DataSegment(Encoding.ASCII.GetBytes(bootFileName)));
+                buffer.Write(offset + Offset.File, new DataSegment(Encoding.ASCII.GetBytes(bootFileName)));
             }
-            offset += Offset.Options - Offset.File;
+
             if (isDhcp)
             {
-                buffer.Write(ref offset, DHCP_MAGIC_COOKIE, Endianity.Big);
+                buffer.Write(offset + Offset.Options, DHCP_MAGIC_COOKIE, Endianity.Big);
+                offset += Offset.OptionsWithMagicCookie;
             }
+            else
+            {
+                offset += Offset.Options;
+            }
+
             if (options != null)
             {
                 foreach (DhcpOption option in options)
