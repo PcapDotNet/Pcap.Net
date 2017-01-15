@@ -70,7 +70,7 @@ namespace PcapDotNet.Packets.Dhcp
             public const int OptionsWithMagicCookie = 240;
         }
 
-        internal const int DHCP_MAGIC_COOKIE = 0x63825363;
+        internal const uint DHCP_MAGIC_COOKIE = 0x63825363;
 
         /// <summary>
         /// RFC 2131.
@@ -223,9 +223,9 @@ namespace PcapDotNet.Packets.Dhcp
         {
             get
             {
-                if (Length >= Offset.Options + 4)
+                if (Length >= Offset.Options + sizeof(uint))
                 {
-                    return ReadInt(Offset.Options, Endianity.Big) == DHCP_MAGIC_COOKIE;
+                    return ReadUInt(Offset.Options, Endianity.Big) == DHCP_MAGIC_COOKIE;
                 }
                 else
                 {
@@ -284,7 +284,7 @@ namespace PcapDotNet.Packets.Dhcp
 
             if (options != null)
             {
-                length += options.Sum(p => 1 + (!(p is DhcpPadOption || p is DhcpEndOption) ? 1 : 0) + p.Length); //Type + Len? + Option
+                length += options.Sum(option => sizeof(byte) + (!(option.OptionCode == DhcpOptionCode.Pad || option.OptionCode == DhcpOptionCode.End) ? sizeof(byte) : 0) + option.Length); // Type + Len? + Option
             }
 
             return length;
