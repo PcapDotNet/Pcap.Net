@@ -217,7 +217,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// RFC 2131.
-        /// true if the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
+        /// Whether the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
         /// </summary>
         public bool IsDhcp
         {

@@ -108,7 +108,7 @@ namespace PcapDotNet.Packets.Dhcp
         public string BootFileName { get; set; }
 
         /// <summary>
-        /// true if the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
+        /// Whether the magic dhcp-cookie is set. If set this datagram is a dhcp-datagram. Otherwise it's a bootp-datagram.
         /// </summary>
         public bool IsDhcp { get; set; }
 
