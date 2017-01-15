@@ -137,6 +137,14 @@ namespace PcapDotNet.Packets.Dhcp
         }
 
         /// <summary>
+        /// Whether the broadcast-flag is set.
+        /// </summary>
+        public bool Broadcast
+        {
+            get { return Flags.HasFlag(DhcpFlags.Broadcast); }
+        }
+
+        /// <summary>
         /// RFC 2131.
         /// Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.
         /// </summary>

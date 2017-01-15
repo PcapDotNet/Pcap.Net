@@ -54,6 +54,28 @@ namespace PcapDotNet.Packets.Dhcp
         public DhcpFlags DhcpFlags { get; set; }
 
         /// <summary>
+        /// Whether the broadcast-flag is set.
+        /// </summary>
+        public bool Broadcast
+        {
+            get
+            {
+                return DhcpFlags.HasFlag(DhcpFlags.Broadcast);
+            }
+            set
+            {
+                if (value)
+                {
+                    DhcpFlags |= DhcpFlags.Broadcast;
+                }
+                else
+                {
+                    DhcpFlags &= ~DhcpFlags.Broadcast;
+                }
+            }
+        }
+
+        /// <summary>
         /// Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.
         /// </summary>
         public IpV4Address ClientIpAddress { get; set; }
