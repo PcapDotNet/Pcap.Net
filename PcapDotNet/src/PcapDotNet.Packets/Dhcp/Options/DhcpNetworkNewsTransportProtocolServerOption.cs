@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetworkNewsTransportProtocolServer)]
         internal static DhcpNetworkNewsTransportProtocolServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNetworkNewsTransportProtocolServerOption>(data, ref offset, p => new Options.DhcpNetworkNewsTransportProtocolServerOption(p));

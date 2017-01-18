@@ -28,6 +28,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetBiosOverTcpIpNameServer)]
         internal static DhcpNetBiosOverTcpIpNameServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNetBiosOverTcpIpNameServerOption>(data, ref offset, p => new DhcpNetBiosOverTcpIpNameServerOption(p));

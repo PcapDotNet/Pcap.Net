@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.BroadcastAddress)]
         internal static DhcpBroadcastAddressOption Read(DataSegment data, ref int offset)
         {
             return DhcpSingleAddressOption.Read(data, ref offset, p => new DhcpBroadcastAddressOption(p));

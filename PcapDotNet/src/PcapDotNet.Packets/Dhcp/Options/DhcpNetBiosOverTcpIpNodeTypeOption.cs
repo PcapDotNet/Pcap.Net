@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Type = type;
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetBiosOverTcpIpNodeType)]
         internal static DhcpNetBiosOverTcpIpNodeTypeOption Read(DataSegment data, ref int offset)
         {
             byte len = data[offset++];

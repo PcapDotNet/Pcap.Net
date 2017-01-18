@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.EthernetEncapsulation)]
         internal static DhcpEthernetEncapsulationOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpEthernetEncapsulationOption>(data, ref offset, p => new DhcpEthernetEncapsulationOption(p));

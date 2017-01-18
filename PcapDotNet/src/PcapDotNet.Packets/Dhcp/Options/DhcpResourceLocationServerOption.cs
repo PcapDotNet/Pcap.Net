@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ResourceLocationServer)]
         internal static DhcpResourceLocationServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpResourceLocationServerOption>(data, ref offset, p => new Options.DhcpResourceLocationServerOption(p));

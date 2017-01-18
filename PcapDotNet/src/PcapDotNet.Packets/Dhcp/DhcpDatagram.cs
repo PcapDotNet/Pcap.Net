@@ -371,7 +371,7 @@ namespace PcapDotNet.Packets.Dhcp
                 int offset = IsDhcp ? Offset.OptionsWithMagicCookie : Offset.Options;
                 while (offset < Length)
                 {
-                    options.Add(DhcpOption.CreateInstance(this, ref offset));
+                    options.Add(DhcpOptionFactory.CreateInstance(this, ref offset));
                 }
                 _options = new ReadOnlyCollection<DhcpOption>(options);
             }

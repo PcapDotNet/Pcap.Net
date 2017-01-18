@@ -31,6 +31,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 throw new ArgumentOutOfRangeException(nameof(size), size, "Minimum value of Size is " + MIN_SIZE);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.MaximumDatagramReassemblySize)]
         internal static DhcpMaximumDatagramReassemblySizeOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpMaximumDatagramReassemblySizeOption>(data, ref offset, p => new DhcpMaximumDatagramReassemblySizeOption(p));

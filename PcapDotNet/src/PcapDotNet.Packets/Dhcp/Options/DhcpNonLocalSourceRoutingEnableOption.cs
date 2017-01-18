@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NonLocalSourceRoutingEnable)]
         internal static DhcpNonLocalSourceRoutingEnableOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNonLocalSourceRoutingEnableOption>(data, ref offset, p => new DhcpNonLocalSourceRoutingEnableOption(p));

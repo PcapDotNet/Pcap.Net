@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.XWindowSystemFontServer)]
         internal static DhcpXWindowSystemFontServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpXWindowSystemFontServerOption>(data, ref offset, p => new DhcpXWindowSystemFontServerOption(p));

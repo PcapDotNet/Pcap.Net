@@ -32,6 +32,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
                 throw new ArgumentOutOfRangeException(nameof(mtu), mtu, "Minimum value of MTU is " + MIN_MTU);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.InterfaceMtu)]
         internal static DhcpInterfaceMtuOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpInterfaceMtuOption>(data, ref offset, p => new DhcpInterfaceMtuOption(p));

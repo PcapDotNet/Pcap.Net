@@ -42,6 +42,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             OptionCodes = new ReadOnlyCollection<DhcpOptionCode>(optionCodes);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ParameterRequestList)]
         internal static DhcpParameterRequestListOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

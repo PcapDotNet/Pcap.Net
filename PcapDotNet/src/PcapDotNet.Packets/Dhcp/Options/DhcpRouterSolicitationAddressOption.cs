@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.RouterSolicitationAddress)]
         internal static DhcpRouterSolicitationAddressOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpRouterSolicitationAddressOption>(data, ref offset, p => new DhcpRouterSolicitationAddressOption(p));

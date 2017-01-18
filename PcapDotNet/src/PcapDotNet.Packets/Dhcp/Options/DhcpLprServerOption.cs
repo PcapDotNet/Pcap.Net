@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.LprServer)]
         internal static DhcpLprServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpLprServerOption>(data, ref offset, p => new DhcpLprServerOption(p));

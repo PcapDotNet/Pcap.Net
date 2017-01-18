@@ -30,6 +30,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.AllSubnetsAreLocal)]
         internal static DhcpAllSubnetsAreLocalOption Read(DataSegment data, ref int offset)
         {
             return DhcpBooleanOption.Read(data, ref offset, p => new DhcpAllSubnetsAreLocalOption(p));

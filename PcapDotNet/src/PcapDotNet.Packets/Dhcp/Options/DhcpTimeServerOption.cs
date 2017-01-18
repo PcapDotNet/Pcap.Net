@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TimeServer)]
         internal static DhcpTimeServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTimeServerOption>(data, ref offset, p => new Options.DhcpTimeServerOption(p));

@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.DefaultIpTimeToLive)]
         internal static DhcpDefaultIPTimeToLiveOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpDefaultIPTimeToLiveOption>(data, ref offset, p => new DhcpDefaultIPTimeToLiveOption(p));

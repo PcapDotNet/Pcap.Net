@@ -35,6 +35,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.VendorSpecificInformation)]
         internal static DhcpVendorSpecificInformationOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpVendorSpecificInformationOption>(data, ref offset, p => new DhcpVendorSpecificInformationOption(p));

@@ -26,6 +26,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetworkInformationServiceDomain)]
         internal static DhcpNetworkInformationServiceDomainOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNetworkInformationServiceDomainOption>(data, ref offset, p => new DhcpNetworkInformationServiceDomainOption(p));

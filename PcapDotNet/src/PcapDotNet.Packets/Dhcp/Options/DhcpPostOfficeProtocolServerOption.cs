@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.PostOfficeProtocolServer)]
         internal static DhcpPostOfficeProtocolServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpPostOfficeProtocolServerOption>(data, ref offset, p => new DhcpPostOfficeProtocolServerOption(p));

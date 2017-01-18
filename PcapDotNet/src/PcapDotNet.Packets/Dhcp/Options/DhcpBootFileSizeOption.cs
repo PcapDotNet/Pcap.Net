@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.BootFileSize)]
         internal static DhcpBootFileSizeOption Read(DataSegment data, ref int offset)
         {
             return DhcpUShortOption.Read(data, ref offset, p => new DhcpBootFileSizeOption(p));

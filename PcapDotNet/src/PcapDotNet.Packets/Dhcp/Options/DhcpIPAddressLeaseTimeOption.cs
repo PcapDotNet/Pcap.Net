@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.IPAddressLeaseTime)]
         internal static DhcpIPAddressLeaseTimeOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpIPAddressLeaseTimeOption>(data, ref offset, p => new Options.DhcpIPAddressLeaseTimeOption(p));

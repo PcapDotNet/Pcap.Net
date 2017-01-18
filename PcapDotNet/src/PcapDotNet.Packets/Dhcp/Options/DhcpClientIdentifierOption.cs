@@ -32,6 +32,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             ClientIdentifier = clientIdentifier;
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ClientIdentifier)]
         internal static DhcpClientIdentifierOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

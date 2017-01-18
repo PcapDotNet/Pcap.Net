@@ -39,6 +39,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Sizes = new ReadOnlyCollection<ushort>(sizes);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.PathMtuPlateauTable)]
         internal static DhcpPathMtuPlateauTableOption Read(DataSegment data, ref int offset)
         {
             byte len = data[offset++];

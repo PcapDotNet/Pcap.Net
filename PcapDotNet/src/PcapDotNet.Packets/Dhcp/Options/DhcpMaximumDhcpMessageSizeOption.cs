@@ -30,6 +30,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.MaximumDhcpMessageSize)]
         internal static DhcpMaximumDhcpMessageSizeOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpMaximumDhcpMessageSizeOption>(data, ref offset, p => new DhcpMaximumDhcpMessageSizeOption(p));

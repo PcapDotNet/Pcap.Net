@@ -34,6 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Value = value;
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.OptionOverload)]
         internal static DhcpOptionOverloadOption Read(DataSegment data, ref int offset)
         {
             byte len = data[offset++];

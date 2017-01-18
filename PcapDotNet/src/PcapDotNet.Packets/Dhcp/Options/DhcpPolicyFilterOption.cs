@@ -46,6 +46,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Filters = new ReadOnlyCollection<IpV4AddressWithMask>(filters);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.PolicyFilter)]
         internal static DhcpPolicyFilterOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

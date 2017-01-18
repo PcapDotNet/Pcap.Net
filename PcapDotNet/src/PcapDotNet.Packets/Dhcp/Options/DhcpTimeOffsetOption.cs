@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TimeOffset)]
         internal static DhcpTimeOffsetOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTimeOffsetOption>(data, ref offset, p => new DhcpTimeOffsetOption(p));

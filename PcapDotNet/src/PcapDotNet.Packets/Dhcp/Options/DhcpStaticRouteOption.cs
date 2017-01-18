@@ -45,6 +45,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Routes = new ReadOnlyCollection<IpV4AddressRoute>(routes);
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.StaticRoute)]
         internal static DhcpStaticRouteOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

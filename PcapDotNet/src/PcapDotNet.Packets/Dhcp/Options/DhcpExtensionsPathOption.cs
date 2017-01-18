@@ -32,6 +32,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ExtensionsPath)]
         internal static DhcpExtensionsPathOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpExtensionsPathOption>(data, ref offset, p => new Options.DhcpExtensionsPathOption(p));

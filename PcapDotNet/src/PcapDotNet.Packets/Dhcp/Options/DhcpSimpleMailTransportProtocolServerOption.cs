@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.SimpleMailTransportProtocolServer)]
         internal static DhcpSimpleMailTransportProtocolServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpSimpleMailTransportProtocolServerOption>(data, ref offset, p => new DhcpSimpleMailTransportProtocolServerOption(p));

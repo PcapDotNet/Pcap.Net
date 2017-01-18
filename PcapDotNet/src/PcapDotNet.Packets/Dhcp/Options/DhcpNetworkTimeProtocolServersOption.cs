@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetworkTimeProtocolServers)]
         internal static DhcpNetworkTimeProtocolServersOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNetworkTimeProtocolServersOption>(data, ref offset, p => new Options.DhcpNetworkTimeProtocolServersOption(p));

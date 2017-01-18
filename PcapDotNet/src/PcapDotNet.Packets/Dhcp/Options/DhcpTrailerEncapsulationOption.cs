@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TrailerEncapsulation)]
         internal static DhcpTrailerEncapsulationOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTrailerEncapsulationOption>(data, ref offset, p => new DhcpTrailerEncapsulationOption(p));

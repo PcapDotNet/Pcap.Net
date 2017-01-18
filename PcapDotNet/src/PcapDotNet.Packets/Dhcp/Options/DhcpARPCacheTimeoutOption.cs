@@ -26,6 +26,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ArpCacheTimeout)]
         internal static DhcpArpCacheTimeoutOption Read(DataSegment data, ref int offset)
         {
             return DhcpUIntOption.Read(data, ref offset, p => new DhcpArpCacheTimeoutOption(p));

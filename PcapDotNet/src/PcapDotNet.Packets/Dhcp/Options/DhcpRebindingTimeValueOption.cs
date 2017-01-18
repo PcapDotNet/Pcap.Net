@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.RebindingTimeValue)]
         internal static DhcpRebindingTimeValueOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpRebindingTimeValueOption>(data, ref offset, p => new Options.DhcpRebindingTimeValueOption(p));

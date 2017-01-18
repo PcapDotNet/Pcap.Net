@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.PerformMaskDiscovery)]
         internal static DhcpPerformMaskDiscoveryOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpPerformMaskDiscoveryOption>(data, ref offset, p => new DhcpPerformMaskDiscoveryOption(p));

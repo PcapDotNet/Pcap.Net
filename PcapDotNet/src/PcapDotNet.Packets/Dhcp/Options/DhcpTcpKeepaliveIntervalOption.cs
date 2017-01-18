@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TcpKeepaliveInterval)]
         internal static DhcpTcpKeepaliveIntervalOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTcpKeepaliveIntervalOption>(data, ref offset, p => new DhcpTcpKeepaliveIntervalOption(p));

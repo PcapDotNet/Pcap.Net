@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.DefaultWorldWideWebServer)]
         internal static DhcpDefaultWorldWideWebServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpDefaultWorldWideWebServerOption>(data, ref offset, p => new DhcpDefaultWorldWideWebServerOption(p));

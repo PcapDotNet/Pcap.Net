@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.StreetTalkServer)]
         internal static DhcpStreetTalkServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpStreetTalkServerOption>(data, ref offset, p => new DhcpStreetTalkServerOption(p));

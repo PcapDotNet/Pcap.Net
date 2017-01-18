@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.RenewalTimeValue)]
         internal static DhcpRenewalTimeValueOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpRenewalTimeValueOption>(data, ref offset, p => new DhcpRenewalTimeValueOption(p));

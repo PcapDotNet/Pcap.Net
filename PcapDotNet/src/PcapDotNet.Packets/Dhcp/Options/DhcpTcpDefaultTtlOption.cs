@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TcpDefaultTtl)]
         internal static DhcpTcpDefaultTtlOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTcpDefaultTtlOption>(data, ref offset, p => new DhcpTcpDefaultTtlOption(p));

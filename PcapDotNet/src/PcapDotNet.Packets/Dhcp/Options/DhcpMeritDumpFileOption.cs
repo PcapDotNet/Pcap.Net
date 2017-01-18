@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.MeritDumpFile)]
         internal static DhcpMeritDumpFileOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpMeritDumpFileOption>(data, ref offset, p => new DhcpMeritDumpFileOption(p));

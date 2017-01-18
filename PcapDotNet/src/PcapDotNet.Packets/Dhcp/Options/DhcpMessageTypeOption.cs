@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             Type = type;
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.MessageType)]
         internal static DhcpMessageTypeOption Read(DataSegment data, ref int offset)
         {
             byte len = data[offset++];

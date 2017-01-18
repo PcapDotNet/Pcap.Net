@@ -30,6 +30,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.XWindowSystemDisplayManager)]
         internal static DhcpXWindowSystemDisplayManagerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpXWindowSystemDisplayManagerOption>(data, ref offset, p => new Options.DhcpXWindowSystemDisplayManagerOption(p));

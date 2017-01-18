@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.DefaultFingerServer)]
         internal static DhcpDefaultFingerServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpDefaultFingerServerOption>(data, ref offset, (p) => new DhcpDefaultFingerServerOption(p));

@@ -30,6 +30,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.SubnetMask)]
         internal static DhcpSubnetMaskOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpSubnetMaskOption>(data, ref offset, p => new Options.DhcpSubnetMaskOption(p));

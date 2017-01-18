@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             NetBiosScope = netBiosScope;
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetBiosOverTcpIpScope)]
         internal static DhcpNetBiosOverTcpIpScopeOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.DefaultInternetRelayChatServer)]
         internal static DhcpDefaultInternetRelayChatServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpDefaultInternetRelayChatServerOption>(data, ref offset, (p) => new DhcpDefaultInternetRelayChatServerOption(p));

@@ -34,6 +34,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
             get { return 0; }
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.Pad)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "data")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "offset")]
         internal static DhcpPadOption Read(DataSegment data, ref int offset)

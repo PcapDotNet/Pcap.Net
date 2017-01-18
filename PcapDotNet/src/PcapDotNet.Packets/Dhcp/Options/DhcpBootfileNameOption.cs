@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.BootfileName)]
         internal static DhcpBootfileNameOption Read(DataSegment data, ref int offset)
         {
             return DhcpStringOption.Read(data, ref offset, p => new DhcpBootfileNameOption(p));

@@ -28,6 +28,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.IPForwardingEnable)]
         internal static DhcpIPForwardingEnableOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpIPForwardingEnableOption>(data, ref offset, p => new DhcpIPForwardingEnableOption(p));

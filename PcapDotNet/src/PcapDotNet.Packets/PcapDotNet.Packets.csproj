@@ -99,6 +99,8 @@
     <Compile Include="Dhcp\DhcpFlags.cs" />
     <Compile Include="Dhcp\DhcpLayer.cs" />
     <Compile Include="Dhcp\DhcpMessageType.cs" />
+    <Compile Include="Dhcp\DhcpOptionReadRegistrationAttribute.cs" />
+    <Compile Include="Dhcp\DhcpOptionFactory.cs" />
     <Compile Include="Dhcp\Options\DhcpSingleAddressOption.cs" />
     <Compile Include="Dhcp\Options\DhcpIntOption.cs" />
     <Compile Include="Dhcp\Options\DhcpDataSegmentOption.cs" />

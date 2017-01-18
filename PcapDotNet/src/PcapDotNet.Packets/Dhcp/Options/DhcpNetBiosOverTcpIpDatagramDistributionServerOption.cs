@@ -28,6 +28,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+
+        [DhcpOptionReadRegistration(DhcpOptionCode.NetBiosOverTcpIpDatagramDistributionServer)]
         internal static DhcpNetBiosOverTcpIpDatagramDistributionServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpNetBiosOverTcpIpDatagramDistributionServerOption>(data, ref offset, p => new DhcpNetBiosOverTcpIpDatagramDistributionServerOption(p));

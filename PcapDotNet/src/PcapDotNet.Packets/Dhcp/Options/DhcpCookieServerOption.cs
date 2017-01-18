@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.CookieServer)]
         internal static DhcpCookieServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpCookieServerOption>(data, ref offset, (p) => new DhcpCookieServerOption(p));

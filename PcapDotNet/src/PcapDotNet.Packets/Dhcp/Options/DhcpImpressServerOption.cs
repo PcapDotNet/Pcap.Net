@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.ImpressServer)]
         internal static DhcpImpressServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpImpressServerOption>(data, ref offset, p => new Options.DhcpImpressServerOption(p));

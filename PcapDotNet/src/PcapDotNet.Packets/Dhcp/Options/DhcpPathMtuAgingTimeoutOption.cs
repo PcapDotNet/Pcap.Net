@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.PathMtuAgingTimeout)]
         internal static DhcpPathMtuAgingTimeoutOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpPathMtuAgingTimeoutOption>(data, ref offset, p => new DhcpPathMtuAgingTimeoutOption(p));

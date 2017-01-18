@@ -34,7 +34,8 @@ namespace PcapDotNet.Packets.Dhcp.Options
         public DhcpServerIdentifierOption(IpV4Address address) : base(address, DhcpOptionCode.ServerIdentifier)
         {
         }
-
+        
+        [DhcpOptionReadRegistration(DhcpOptionCode.ServerIdentifier)]
         internal static DhcpServerIdentifierOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpServerIdentifierOption>(data, ref offset, p => new DhcpServerIdentifierOption(p));

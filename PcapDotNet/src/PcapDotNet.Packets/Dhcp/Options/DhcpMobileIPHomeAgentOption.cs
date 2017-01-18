@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.MobileIPHomeAgent)]
         internal static DhcpMobileIPHomeAgentOption Read(DataSegment data, ref int offset)
         {
             byte length = data[offset++];

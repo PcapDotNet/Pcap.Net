@@ -29,6 +29,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.TcpKeepaliveGarbage)]
         internal static DhcpTcpKeepaliveGarbageOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpTcpKeepaliveGarbageOption>(data, ref offset, p => new DhcpTcpKeepaliveGarbageOption(p));

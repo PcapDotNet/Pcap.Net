@@ -27,6 +27,7 @@ namespace PcapDotNet.Packets.Dhcp.Options
         {
         }
 
+        [DhcpOptionReadRegistration(DhcpOptionCode.SwapServer)]
         internal static DhcpSwapServerOption Read(DataSegment data, ref int offset)
         {
             return Read<DhcpSwapServerOption>(data, ref offset, p => new DhcpSwapServerOption(p));
