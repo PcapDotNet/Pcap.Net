@@ -30,7 +30,17 @@ namespace PcapDotNet.Packets.Dhcp
         /// <summary>
         /// Hardware address length.
         /// </summary>
-        public byte HardwareAddressLength { get; set; }
+        public byte HardwareAddressLength
+        {
+            get
+            {
+                return _hardwareAddressLength.GetValueOrDefault();
+            }
+            set
+            {
+                _hardwareAddressLength = value;
+            }
+        }
 
         /// <summary>
         /// Client sets to zero, optionally used by relay agents when booting via a relay agent.
@@ -102,6 +112,7 @@ namespace PcapDotNet.Packets.Dhcp
 
         /// <summary>
         /// Client MAC address.
+        /// When setting this property and the HardwareAddressLength has not been set, the HardwareAddressLength will be automatically set according MacAddress.SizeOf (6).
         /// </summary>
         public MacAddress ClientMacAddress
         {
@@ -116,6 +127,11 @@ namespace PcapDotNet.Packets.Dhcp
                 if (ClientHardwareAddress == null)
                     ClientHardwareAddress = new DataSegment(new byte[16]);
                 ClientHardwareAddress.Buffer.Write(0, value, Endianity.Big);
+
+                if (!_hardwareAddressLength.HasValue)
+                {
+                    HardwareAddressLength = MacAddress.SizeOf;
+                }
             }
         }
 
@@ -194,5 +210,7 @@ namespace PcapDotNet.Packets.Dhcp
         {
             return Equals(other as DhcpLayer);
         }
+
+        private byte? _hardwareAddressLength;
     }
 }
