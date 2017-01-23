@@ -108,6 +108,7 @@ namespace PcapDotNet.Packets.Test
                 if (httpLayer.Header != null)
                 {
                     Assert.AreEqual(httpLayer.Header.GetHashCode(), httpDatagram.Header.GetHashCode());
+                    Assert.IsTrue(httpDatagram.IsValidStart, "IsValidStart");
 
                     foreach (var field in httpLayer.Header)
                         Assert.IsFalse(field.Equals("abc"));
