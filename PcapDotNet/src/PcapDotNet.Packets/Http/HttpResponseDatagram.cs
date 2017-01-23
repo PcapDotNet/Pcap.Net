@@ -51,15 +51,18 @@ namespace PcapDotNet.Packets.Http
         }
 
         /// <summary>
-        /// A HTTP response is valid if it contains a version and a status code.
+        /// A HTTP response has a valid start if it contains a version and a status code.
         /// </summary>
-        protected override bool CalculateIsValid()
+        public override bool IsValidStart
         {
-            if (_isValid == null)
+            get
             {
-                _isValid = Version != null && StatusCode != null;
+                if (_isValidStart == null)
+                {
+                    _isValidStart = Version != null && StatusCode != null;
+                }
+                return _isValidStart.Value;
             }
-            return _isValid.Value;
         }
 
         internal HttpResponseDatagram(byte[] buffer, int offset, int length) 
@@ -117,6 +120,6 @@ namespace PcapDotNet.Packets.Http
             return true;
         }
 
-        private bool? _isValid;
+        private bool? _isValidStart;
     }
 }

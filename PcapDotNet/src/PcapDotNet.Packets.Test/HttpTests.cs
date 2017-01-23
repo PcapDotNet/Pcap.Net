@@ -475,7 +475,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("UnknownMethod / HTTP/1.0\r\n\r\n");
 
-            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -483,7 +483,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("GET  HTTP/1.1\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -491,7 +491,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("GET / HTTP/\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -499,7 +499,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("GET /\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -507,7 +507,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket(" / HTTP/1.0\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -515,7 +515,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("HTTP/1.0 200 OK\r\n\r\n");
 
-            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -523,7 +523,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("HTTP/1.0 200 \r\n\r\n");
 
-            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -531,7 +531,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("HTTP/ 200 OK\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -539,7 +539,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket(" 200 OK\r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         [TestMethod]
@@ -547,7 +547,7 @@ namespace PcapDotNet.Packets.Test
         {
             var packet = BuildPacket("HTTP/1.0  OK \r\n\r\n");
 
-            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValid);
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)

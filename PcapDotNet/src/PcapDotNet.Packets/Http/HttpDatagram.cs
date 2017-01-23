@@ -239,6 +239,8 @@ namespace PcapDotNet.Packets.Http
         /// </summary>
         public Datagram Body { get; private set; }
 
+        public virtual bool IsValidStart => false;
+
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
