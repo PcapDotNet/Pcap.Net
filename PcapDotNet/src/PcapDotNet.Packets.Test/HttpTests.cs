@@ -108,6 +108,7 @@ namespace PcapDotNet.Packets.Test
                 if (httpLayer.Header != null)
                 {
                     Assert.AreEqual(httpLayer.Header.GetHashCode(), httpDatagram.Header.GetHashCode());
+                    Assert.IsTrue(httpDatagram.IsValidStart, "IsValidStart");
 
                     foreach (var field in httpLayer.Header)
                         Assert.IsFalse(field.Equals("abc"));
@@ -468,6 +469,86 @@ namespace PcapDotNet.Packets.Test
         public void HttpRequestMethodBadKnownTest()
         {
             Assert.IsNotNull(new HttpRequestMethod(HttpRequestKnownMethod.Unknown));
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartRequestValidTest()
+        {
+            var packet = BuildPacket("UnknownMethod / HTTP/1.0\r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartRequestWithMissingUriNotAllowedTest()
+        {
+            var packet = BuildPacket("GET  HTTP/1.1\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartRequestWithMissingVersionNumberNotAllowedTest()
+        {
+            var packet = BuildPacket("GET / HTTP/\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartRequestWithMissingVersionNotAllowedTest()
+        {
+            var packet = BuildPacket("GET /\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartRequestWithMissingMethodNotAllowedTest()
+        {
+            var packet = BuildPacket(" / HTTP/1.0\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartResponseValidTest()
+        {
+            var packet = BuildPacket("HTTP/1.0 200 OK\r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartResponseMinimalValidTest()
+        {
+            var packet = BuildPacket("HTTP/1.0 200 \r\n\r\n");
+
+            Assert.IsTrue(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartResponseWithMissingVersionNumberNotAllowedTest()
+        {
+            var packet = BuildPacket("HTTP/ 200 OK\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartResponseWithMissingVersionNotAllowed()
+        {
+            var packet = BuildPacket(" 200 OK\r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
+        }
+
+        [TestMethod]
+        public void HttpIsValidStartResponseWithMissingStatusCodeNotAllowedTest()
+        {
+            var packet = BuildPacket("HTTP/1.0  OK \r\n\r\n");
+
+            Assert.IsFalse(packet.Ethernet.IpV4.Tcp.Http.IsValidStart);
         }
 
         private static void TestHttpRequest(string httpString, string expectedMethodString = null, string expectedUri = null, HttpVersion expectedVersion = null, HttpHeader expectedHeader = null, string expectedBodyString = null)

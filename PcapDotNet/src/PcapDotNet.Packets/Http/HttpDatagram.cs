@@ -239,6 +239,24 @@ namespace PcapDotNet.Packets.Http
         /// </summary>
         public Datagram Body { get; private set; }
 
+        /// <summary>
+        /// True if this datagram contains a valid start for an HTTP message.
+        /// </summary>
+        public bool IsValidStart
+        {
+            get
+            {
+                if (_isValidStart == null)
+                    _isValidStart = CalculateIsValidStart();
+                return _isValidStart.Value;
+            }
+        }
+
+        /// <summary>
+        /// Calculate whether the HTTP datagram has a valid start. 
+        /// </summary>
+        protected abstract bool CalculateIsValidStart();
+
         internal static HttpDatagram CreateDatagram(byte[] buffer, int offset, int length)
         {
             if (length >= _httpSlash.Length && buffer.SequenceEqual(offset, _httpSlash, 0, _httpSlash.Length))
@@ -355,5 +373,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         private static readonly byte[] _httpSlash = Encoding.ASCII.GetBytes("HTTP/");
+
+        private bool? _isValidStart;
     }
 }

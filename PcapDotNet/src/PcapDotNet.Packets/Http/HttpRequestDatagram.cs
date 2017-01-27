@@ -47,6 +47,14 @@ namespace PcapDotNet.Packets.Http
                    };
         }
 
+        /// <summary>
+        /// An HTTP Request has a valid start if it contains a method, an URI, and a version.
+        /// </summary>
+        protected override bool CalculateIsValidStart()
+        {
+            return Method != null && !string.IsNullOrEmpty(Uri) && Version != null;
+        }
+
         internal HttpRequestDatagram(byte[] buffer, int offset, int length) 
             : this(buffer, offset, Parse(buffer, offset, length))
         {
