@@ -472,7 +472,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpMinimalValidRequestTest()
+        public void HttpIsValidStartRequestValidTest()
         {
             var packet = BuildPacket("UnknownMethod / HTTP/1.0\r\n\r\n");
 
@@ -480,7 +480,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpRequestEmptyRequestUriNotAllowed()
+        public void HttpIsValidStartRequestWithMissingUriNotAllowedTest()
         {
             var packet = BuildPacket("GET  HTTP/1.1\r\n\r\n");
 
@@ -488,7 +488,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpRequestMissingVersionNumberNotAllowed()
+        public void HttpIsValidStartRequestWithMissingVersionNumberNotAllowedTest()
         {
             var packet = BuildPacket("GET / HTTP/\r\n\r\n");
 
@@ -496,7 +496,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpRequestMissingVersionNotAllowed()
+        public void HttpIsValidStartRequestWithMissingVersionNotAllowedTest()
         {
             var packet = BuildPacket("GET /\r\n\r\n");
 
@@ -504,7 +504,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpRequestMissingMethodNotAllowed()
+        public void HttpIsValidStartRequestWithMissingMethodNotAllowedTest()
         {
             var packet = BuildPacket(" / HTTP/1.0\r\n\r\n");
 
@@ -512,7 +512,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpValidResponseTest()
+        public void HttpIsValidStartResponseValidTest()
         {
             var packet = BuildPacket("HTTP/1.0 200 OK\r\n\r\n");
 
@@ -520,7 +520,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpMinimalResponseTest()
+        public void HttpIsValidStartResponseMinimalValidTest()
         {
             var packet = BuildPacket("HTTP/1.0 200 \r\n\r\n");
 
@@ -528,7 +528,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpResponseMissingVersionNumberNotAllowed()
+        public void HttpIsValidStartResponseWithMissingVersionNumberNotAllowedTest()
         {
             var packet = BuildPacket("HTTP/ 200 OK\r\n\r\n");
 
@@ -536,7 +536,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpResponseMissingVersionNotAllowed()
+        public void HttpIsValidStartResponseWithMissingVersionNotAllowed()
         {
             var packet = BuildPacket(" 200 OK\r\n\r\n");
 
@@ -544,7 +544,7 @@ namespace PcapDotNet.Packets.Test
         }
 
         [TestMethod]
-        public void HttpResponseMissingStatusCodeNotAllowed()
+        public void HttpIsValidStartResponseWithMissingStatusCodeNotAllowedTest()
         {
             var packet = BuildPacket("HTTP/1.0  OK \r\n\r\n");
 
