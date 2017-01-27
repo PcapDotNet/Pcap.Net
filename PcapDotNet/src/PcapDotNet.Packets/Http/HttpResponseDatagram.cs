@@ -51,7 +51,7 @@ namespace PcapDotNet.Packets.Http
         }
 
         /// <summary>
-        /// A HTTP response has a valid start if it contains a version and a status code.
+        /// An HTTP response has a valid start if it contains a version and a status code.
         /// </summary>
         protected override bool CalculateIsValidStart()
         {
