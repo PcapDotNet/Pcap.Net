@@ -138,7 +138,7 @@ namespace PcapDotNet.Packets.TestUtils
 
         public static string NextHttpUri(this Random random)
         {
-            int uriLength = random.Next(100);
+            int uriLength = random.Next(1, 100);
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i != uriLength; ++i)
                 stringBuilder.Append(random.NextChar((char)33, (char)127));
