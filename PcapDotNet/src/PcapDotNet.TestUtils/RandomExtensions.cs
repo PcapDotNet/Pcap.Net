@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using PcapDotNet.Base;
 
 namespace PcapDotNet.TestUtils
@@ -206,6 +207,29 @@ namespace PcapDotNet.TestUtils
                                                                                    : result);
             T resultEnum = (T)Convert.ChangeType(resultValue, underlyingType);
             return resultEnum;
+        }
+
+        public static string NextCString(this Random random, int minLength, int maxLength)
+        {
+            if (minLength < 0)
+                throw new ArgumentOutOfRangeException(nameof(minLength), minLength, $"{nameof(minLength)} has to be greater than {nameof(maxLength)}");
+            if (minLength > maxLength)
+                throw new ArgumentOutOfRangeException(nameof(minLength), minLength, $"{nameof(minLength)} has to be greater or equal than {nameof(maxLength)}");
+
+            return random.NextCString(random.NextInt(minLength, maxLength));
+        }
+
+        public static string NextCString(this Random random, int length)
+        {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} has to be greater than 0");
+
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < length; i++)
+            {
+                builder.Append(random.NextChar((char)1, (char)127));
+            }
+            return builder.ToString();
         }
     }
 }

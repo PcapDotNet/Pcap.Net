@@ -75,6 +75,7 @@
     <Compile Include="DatagramTests.cs" />
     <Compile Include="DataLinkTests.cs" />
     <Compile Include="DataSegmentTests.cs" />
+    <Compile Include="DhcpTests.cs" />
     <Compile Include="DnsTests.cs" />
     <Compile Include="EndianitiyTests.cs" />
     <Compile Include="EthernetTests.cs" />

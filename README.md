@@ -35,6 +35,7 @@ Not including:
 * UDP
 * TCP
 * DNS
+* DHCP
 * HTTP
 
 [![Follow Pcap.Net on Google+](https://ssl.gstatic.com/images/icons/gplus-32.png)](https://plus.google.com/111766834267147414574) [Follow Pcap.Net on Google+](https://plus.google.com/111766834267147414574)
