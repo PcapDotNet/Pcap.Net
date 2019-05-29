@@ -252,6 +252,23 @@ namespace PcapDotNet.Packets.Ip
         }
 
         /// <summary>
+        /// The payload of the datagram as an ESP datagram.
+        /// </summary>
+        public EspDatagram Esp
+        {
+            get 
+            {
+                if (_esp == null) 
+                {
+                    DataSegment payload = GetPayload();
+                    if (payload != null)
+                        _esp = new EspDatagram(payload.Buffer, payload.StartOffset, payload.Length);
+                }
+                return _esp;
+            }
+        }
+
+        /// <summary>
         /// Calculates the Transport checksum field value.
         /// </summary>
         /// <returns>The calculated checksum value.</returns>
@@ -306,5 +323,6 @@ namespace PcapDotNet.Packets.Ip
         private GreDatagram _gre;
         private TcpDatagram _tcp;
         private UdpDatagram _udp;
+        private EspDatagram _esp;
     }
 }
