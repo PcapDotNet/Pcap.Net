@@ -597,6 +597,7 @@
     <Compile Include="Transport\TransportDatagram.cs" />
     <Compile Include="Transport\UdpDatagram.cs" />
     <Compile Include="Transport\UdpLayer.cs" />
+    <Compile Include="Transport\EspDatagram.cs" />
     <Compile Include="Ethernet\ClassOfService.cs" />
     <Compile Include="Ethernet\VLanTaggedFrameDatagram.cs" />
     <Compile Include="Ethernet\VLanTaggedFrameLayer.cs" />
